@@ -1,0 +1,131 @@
+<div class="equipement-list">
+  <div class="header-section">
+    <div class="header-content">
+      <h1>Liste des Équipements</h1>
+      <p class="subtitle">Gestion complète des équipements de maintenance</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="creerNouvelEquipement()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 4v16m8-8H4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Nouveau Équipement
+      </button>
+    </div>
+  </div>
+
+
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label for="search">Rechercher</label>
+        <input
+          type="text"
+          id="search"
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+          placeholder="Nom, description, numéro de série..."
+          class="form-control">
+      </div>
+
+      <div class="filter-group">
+        <label for="type">Type d'équipement</label>
+        <select
+          id="type"
+          [(ngModel)]="selectedType"
+          (change)="onTypeChange()"
+          class="form-control">
+          <option value="">Tous les types</option>
+          <option *ngFor="let type of types" [value]="type">{{ type }}</option>
+        </select>
+      </div>
+
+
+
+      <div class="filter-actions">
+        <button class="btn btn-outline" (click)="clearFilters()" [disabled]="!searchTerm && !selectedType">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Effacer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement des équipements...</p>
+  </div>
+
+  <!-- Equipements Table -->
+  <div class="table-container" *ngIf="!loading">
+    <div class="table-responsive">
+      <table class="equipement-table">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Type</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let equipement of filteredEquipements" class="equipement-row">
+            <td>
+              <div class="equipement-info">
+                <div class="equipement-name">{{ equipement.nomEquipement }}</div>
+                <div class="equipement-description" *ngIf="equipement.description">{{ equipement.description }}</div>
+              </div>
+            </td>
+            <td>{{ getEquipementType(equipement) }}</td>
+            <td>
+              <div class="flex space-x-2">
+                <!-- Voir -->
+                <button
+                  class="bg-green-500 hover:bg-green-600 text-white p-2 rounded"
+                  title="Voir"
+                  (click)="viewEquipement(equipement)"
+                >
+                  <i class="bi bi-eye"></i>
+                </button>
+
+                <!-- Éditer -->
+                <button
+                  class="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded"
+                  title="Éditer"
+                  routerLink="/equipements/{{ equipement.id }}/edit"
+                >
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+
+                <!-- Supprimer -->
+                <button
+                  class="bg-red-500 hover:bg-red-600 text-white p-2 rounded"
+                  title="Supprimer"
+                  (click)="deleteEquipement(equipement)"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="filteredEquipements.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>Aucun équipement trouvé</h3>
+      <p *ngIf="equipements.length > 0 && filteredEquipements.length === 0">Aucun équipement ne correspond à vos critères de recherche.</p>
+    
+    </div>
+  </div>
+</div>

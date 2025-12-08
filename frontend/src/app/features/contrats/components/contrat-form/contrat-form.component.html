@@ -1,0 +1,250 @@
+<div class="modal-overlay" *ngIf="!loading">
+  <div class="modal-content form-modal large-modal">
+    <form [formGroup]="contratForm" (ngSubmit)="onSubmit()" class="contrat-form">
+      <div class="form-header">
+        <h2>{{ isEditMode ? 'Modifier le contrat' : 'Créer un nouveau contrat' }}</h2>
+        <button type="button" class="close-btn" (click)="onCancel()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Informations générales du contrat -->
+      <div class="form-section">
+        <div class="section-header">
+          <h3>Informations générales</h3>
+          <div class="section-divider"></div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="idContrat">Num du contrat *</label>
+            <input
+              type="text"
+              id="idContrat"
+              formControlName="idContrat"
+              placeholder="Ex: CNT-2025-001"
+              class="line-input"
+              [class.error]="contratForm.get('idContrat')?.invalid && contratForm.get('idContrat')?.touched"
+            />
+            <div class="input-line" [class.error]="contratForm.get('idContrat')?.invalid && contratForm.get('idContrat')?.touched"></div>
+            <div class="error-message" *ngIf="contratForm.get('idContrat')?.invalid && contratForm.get('idContrat')?.touched">
+              <span *ngIf="contratForm.get('idContrat')?.errors?.['required']">L'ID du contrat est requis</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="dateDebut">Date de début *</label>
+            <input
+              type="date"
+              id="dateDebut"
+              formControlName="dateDebut"
+              class="line-input"
+              [class.error]="contratForm.get('dateDebut')?.invalid && contratForm.get('dateDebut')?.touched"
+            />
+            <div class="input-line" [class.error]="contratForm.get('dateDebut')?.invalid && contratForm.get('dateDebut')?.touched"></div>
+            <div class="error-message" *ngIf="contratForm.get('dateDebut')?.invalid && contratForm.get('dateDebut')?.touched">
+              <span *ngIf="contratForm.get('dateDebut')?.errors?.['required']">La date de début est requise</span>
+            </div>
+          </div>
+
+          <div class="form-group half">
+            <label for="dateFin">Date de fin *</label>
+            <input
+              type="date"
+              id="dateFin"
+              formControlName="dateFin"
+              class="line-input"
+              [class.error]="contratForm.get('dateFin')?.invalid && contratForm.get('dateFin')?.touched"
+            />
+            <div class="input-line" [class.error]="contratForm.get('dateFin')?.invalid && contratForm.get('dateFin')?.touched"></div>
+            <div class="error-message" *ngIf="contratForm.get('dateFin')?.invalid && contratForm.get('dateFin')?.touched">
+              <span *ngIf="contratForm.get('dateFin')?.errors?.['required']">La date de fin est requise</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="montant">Montant du contrat (FCFA) *</label>
+            <input
+              type="number"
+              id="montant"
+              formControlName="montant"
+              placeholder="0"
+              class="line-input"
+              [class.error]="contratForm.get('montant')?.invalid && contratForm.get('montant')?.touched"
+            />
+            <div class="input-line" [class.error]="contratForm.get('montant')?.invalid && contratForm.get('montant')?.touched"></div>
+            <div class="error-message" *ngIf="contratForm.get('montant')?.invalid && contratForm.get('montant')?.touched">
+              <span *ngIf="contratForm.get('montant')?.errors?.['required']">Le montant est requis</span>
+              <span *ngIf="contratForm.get('montant')?.errors?.['min']">Le montant doit être positif</span>
+            </div>
+          </div>
+
+          <div class="form-group half">
+            <label for="statut">Statut *</label>
+            <select
+              id="statut"
+              formControlName="statut"
+              class="line-input"
+              [class.error]="contratForm.get('statut')?.invalid && contratForm.get('statut')?.touched"
+            >
+              <option value="">-- Sélectionner un statut --</option>
+              <option *ngFor="let statut of statutOptions" [value]="statut.value">
+                {{ statut.label }}
+              </option>
+            </select>
+            <div class="input-line" [class.error]="contratForm.get('statut')?.invalid && contratForm.get('statut')?.touched"></div>
+            <div class="error-message" *ngIf="contratForm.get('statut')?.invalid && contratForm.get('statut')?.touched">
+              <span *ngIf="contratForm.get('statut')?.errors?.['required']">Le statut est requis</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half">
+            <label for="nomPrestataire">Nom du prestataire *</label>
+            <input
+              type="text"
+              id="nomPrestataire"
+              formControlName="nomPrestataire"
+              placeholder="Nom du prestataire"
+              class="line-input"
+              [class.error]="contratForm.get('nomPrestataire')?.invalid && contratForm.get('nomPrestataire')?.touched"
+            />
+            <div class="input-line" [class.error]="contratForm.get('nomPrestataire')?.invalid && contratForm.get('nomPrestataire')?.touched"></div>
+            <div class="error-message" *ngIf="contratForm.get('nomPrestataire')?.invalid && contratForm.get('nomPrestataire')?.touched">
+              <span *ngIf="contratForm.get('nomPrestataire')?.errors?.['required']">Le nom du prestataire est requis</span>
+            </div>
+          </div>
+
+          <div class="form-group half">
+            <label for="lot">Lot *</label>
+            <input
+              type="text"
+              id="lot"
+              formControlName="lot"
+              placeholder="Ex: Lot A, Lot B"
+              class="line-input"
+              [class.error]="contratForm.get('lot')?.invalid && contratForm.get('lot')?.touched"
+              (input)="onLotChange()"
+            />
+            <div class="input-line" [class.error]="contratForm.get('lot')?.invalid && contratForm.get('lot')?.touched"></div>
+            <div class="error-message" *ngIf="contratForm.get('lot')?.invalid && contratForm.get('lot')?.touched">
+              <span *ngIf="contratForm.get('lot')?.errors?.['required']">Le lot est requis</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="ville">Ville *</label>
+          <input
+            type="text"
+            id="ville"
+            formControlName="ville"
+            placeholder="Ville d'exécution du contrat"
+            class="line-input"
+            [class.error]="contratForm.get('ville')?.invalid && contratForm.get('ville')?.touched"
+          />
+          <div class="input-line" [class.error]="contratForm.get('ville')?.invalid && contratForm.get('ville')?.touched"></div>
+          <div class="error-message" *ngIf="contratForm.get('ville')?.invalid && contratForm.get('ville')?.touched">
+            <span *ngIf="contratForm.get('ville')?.errors?.['required']">La ville est requise</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fichierContrat">Fichier contrat *</label>
+          <input
+            type="file"
+            id="fichierContrat"
+            (change)="onFileSelected($event)"
+            class="line-input"
+            [class.error]="contratForm.get('fichierContrat')?.invalid && contratForm.get('fichierContrat')?.touched"
+            accept=".pdf,.doc,.docx"
+            required
+          />
+          <div class="input-line" [class.error]="contratForm.get('fichierContrat')?.invalid && contratForm.get('fichierContrat')?.touched"></div>
+          <div class="error-message" *ngIf="contratForm.get('fichierContrat')?.invalid && contratForm.get('fichierContrat')?.touched">
+            <span *ngIf="contratForm.get('fichierContrat')?.errors?.['required']">Le fichier contrat est requis</span>
+          </div>
+          <small class="info-text">Formats acceptés: PDF, DOC, DOCX</small>
+        </div>
+      </div>
+
+      <!-- Sélection des items -->
+      <div class="form-section">
+        <div class="section-header">
+          <h3>Items associés au contrat</h3>
+          <div class="section-divider"></div>
+        </div>
+
+        <div class="items-selection-summary">
+          <div class="summary-item">
+            <span class="label">Items sélectionnés:</span>
+            <span class="value">{{ getSelectedItemsCount() }}</span>
+          </div>
+        </div>
+
+        <div class="items-grid" *ngIf="filteredItems.length > 0">
+          <div *ngFor="let item of filteredItems"
+               class="item-card"
+               [class.selected]="isItemSelected(item)">
+            <div class="item-header">
+              <div class="item-checkbox">
+                <input
+                  type="checkbox"
+                  [id]="'item-' + item.id"
+                  [checked]="isItemSelected(item)"
+                  (change)="onItemSelectionChange(item, $event)"
+                />
+              </div>
+              <div class="item-number">{{ item.id }}</div>
+            </div>
+
+            <div class="item-details">
+              <h4>{{ item.nomItem }}</h4>
+              <p class="item-description">{{ item.description || 'Aucune description' }}</p>
+              <div class="item-pricing">
+                <span class="unit-price">Prix: {{ item.prix || 0 }} FCFA</span>
+              </div>
+              <div class="item-capacity">
+                <small>Capacité max trimestre: {{ item.quantiteMaxTrimestre }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="no-items-message" *ngIf="filteredItems.length === 0 && !loading">
+          <p>Aucun item disponible.</p>
+        </div>
+
+        <div class="loading-message" *ngIf="loading">
+          <p>Chargement des items...</p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline" (click)="onCancel()">
+          Annuler
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
+          <span *ngIf="loading">Enregistrement...</span>
+          <span *ngIf="!loading">{{ isEditMode ? 'Modifier' : 'Créer' }} le contrat</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="modal-overlay" *ngIf="loading">
+  <div class="loading-content">
+    <div class="spinner"></div>
+    <p>Enregistrement en cours...</p>
+  </div>
+</div>

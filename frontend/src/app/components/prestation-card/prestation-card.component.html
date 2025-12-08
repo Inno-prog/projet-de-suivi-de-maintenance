@@ -1,0 +1,112 @@
+<div class="prestation-card">
+  <!-- Header avec gradient -->
+  <div class="card-header">
+    <div class="header-logo">
+      <img src="assets/logoFinal.png" alt="MainTrack Pro Logo" class="logo-image">
+    </div>
+    <div class="header-info">
+      <h2 class="brand-title">MainTrack Pro</h2>
+      <p class="brand-subtitle">Acteurs de maintenance Pro</p>
+    </div>
+  </div>
+
+  <!-- Contenu de la prestation -->
+  <div class="card-content">
+    <div class="prestation-info">
+      <h3 class="prestation-title">{{ titre }}</h3>
+
+      <!-- Informations structurées comme les structures MEFP -->
+      <div class="info-row" *ngIf="getParsedPrestationData()['prestataire'] || getParsedPrestationData()['structure']">
+        <div class="info-item" *ngIf="getParsedPrestationData()['prestataire']">
+          <i class="fas fa-user info-icon"></i>
+          <span class="info-label">Prestataire:</span>
+          <span class="info-value">{{ getParsedPrestationData()['prestataire'] }}</span>
+        </div>
+        <div class="info-item" *ngIf="getParsedPrestationData()['structure']">
+          <i class="fas fa-building info-icon"></i>
+          <span class="info-label">Structure:</span>
+          <span class="info-value">{{ getParsedPrestationData()['structure'] }}</span>
+        </div>
+      </div>
+
+      <div class="info-row" *ngIf="getParsedPrestationData()['montant'] || getParsedPrestationData()['statutIntervention']">
+        <div class="info-item" *ngIf="getParsedPrestationData()['montant']">
+          <i class="fas fa-money-bill-wave info-icon"></i>
+          <span class="info-label">Montant intervention:</span>
+          <span class="info-value">{{ getParsedPrestationData()['montant'] }}</span>
+        </div>
+        <div class="info-item" *ngIf="getParsedPrestationData()['statutIntervention']">
+          <i class="fas fa-cogs info-icon"></i>
+          <span class="info-label">Statut intervention:</span>
+          <span class="info-value">{{ getParsedPrestationData()['statutIntervention'] }}</span>
+        </div>
+      </div>
+
+      <div class="info-row" *ngIf="getParsedPrestationData()['statutValidation'] || fiche?.statut">
+        <div class="info-item" *ngIf="getParsedPrestationData()['statutValidation']">
+          <i class="fas fa-check-circle info-icon"></i>
+          <span class="info-label">Statut validation:</span>
+          <span class="info-value">{{ getParsedPrestationData()['statutValidation'] }}</span>
+        </div>
+        <div class="info-item" *ngIf="fiche?.statut">
+          <i class="fas fa-clipboard-check info-icon"></i>
+          <span class="info-label">État fiche:</span>
+          <span class="status-badge info-status" [ngClass]="getValidationStatusClass(fiche?.statut)">
+            {{ getValidationStatusLabel(fiche?.statut) }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Boutons d'action -->
+  <div class="card-actions">
+    <button class="action-btn details-btn" (click)="onDetailsClick()">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+      </svg>
+      <span>Détails</span>
+    </button>
+
+    <!-- Bouton Soumettre (pour prestataires) -->
+    <button class="action-btn submit-btn" *ngIf="isPrestataire()" (click)="onSubmitClick()">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+        <path d="M8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01l-4-4z"/>
+      </svg>
+      <span>Soumettre</span>
+    </button>
+
+    <button class="action-btn download-btn" (click)="onDownloadClick()">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+      </svg>
+      <span>Télécharger</span>
+    </button>
+
+    <!-- BOUTONS ADMIN -->
+    <ng-container *ngIf="isAdmin()">
+      <button class="action-btn validate-btn" (click)="onValidateClick()" [disabled]="!canValidate()" [class.disabled]="!canValidate()">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+        </svg>
+        <span>Valider</span>
+      </button>
+
+      <button class="action-btn reject-btn" (click)="onRejectClick()" [disabled]="!canReject()" [class.disabled]="!canReject()">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+        <span>Rejeter</span>
+      </button>
+    </ng-container>
+
+    <!-- Bouton Supprimer (pour prestataires et admins) -->
+    <button class="action-btn delete-btn" *ngIf="isPrestataire() || isAdmin()" (click)="onDeleteClick()">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+      </svg>
+      <span>Supprimer</span>
+    </button>
+  </div>
+</div>

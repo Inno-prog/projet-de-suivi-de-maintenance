@@ -1,0 +1,16 @@
+Updating the configuration and installing your custom providers, if any. Please wait.
+2025-12-08 15:06:45,853 INFO  [io.quarkus.deployment.QuarkusAugmentor] (main) Quarkus augmentation completed in 11012ms
+2025-12-08 15:06:48,945 INFO  [org.keycloak.quarkus.runtime.hostname.DefaultHostnameProvider] (main) Hostname settings: Base URL: <unset>, Hostname: <request>, Strict HTTPS: false, Path: <request>, Strict BackChannel: false, Admin URL: <unset>, Admin: <request>, Port: -1, Proxied: false
+2025-12-08 15:06:52,033 WARN  [io.quarkus.agroal.runtime.DataSources] (main) Datasource <default> enables XA but transaction recovery is not enabled. Please enable transaction recovery by setting quarkus.transaction-manager.enable-recovery=true, otherwise data may be lost if the application is terminated abruptly
+2025-12-08 15:06:52,992 WARN  [org.infinispan.PERSISTENCE] (keycloak-cache-init) ISPN000554: jboss-marshalling is deprecated and planned for removal
+2025-12-08 15:06:53,149 WARN  [org.infinispan.CONFIG] (keycloak-cache-init) ISPN000569: Unable to persist Infinispan internal caches as no global state enabled
+2025-12-08 15:06:53,303 INFO  [org.infinispan.CONTAINER] (keycloak-cache-init) ISPN000556: Starting user marshaller 'org.infinispan.jboss.marshalling.core.JBossUserMarshaller'
+2025-12-08 15:06:54,774 INFO  [org.keycloak.connections.infinispan.DefaultInfinispanConnectionProviderFactory] (main) Node name: node_832140, Site name: null
+2025-12-08 15:06:54,785 INFO  [org.keycloak.broker.provider.AbstractIdentityProviderMapper] (main) Registering class org.keycloak.broker.provider.mappersync.ConfigSyncEventListener
+2025-12-08 15:06:56,776 INFO  [io.quarkus] (main) Keycloak 23.0.7 on JVM (powered by Quarkus 3.2.10.Final) started in 10.463s. Listening on: http://0.0.0.0:8080
+2025-12-08 15:06:56,777 INFO  [io.quarkus] (main) Profile dev activated. 
+2025-12-08 15:06:56,777 INFO  [io.quarkus] (main) Installed features: [agroal, cdi, hibernate-orm, jdbc-h2, jdbc-mariadb, jdbc-mssql, jdbc-mysql, jdbc-oracle, jdbc-postgresql, keycloak, logging-gelf, micrometer, narayana-jta, reactive-routes, resteasy-reactive, resteasy-reactive-jackson, smallrye-context-propagation, smallrye-health, vertx]
+2025-12-08 15:06:56,783 WARN  [org.keycloak.quarkus.runtime.KeycloakMain] (main) Running the server in development mode. DO NOT use this configuration in production.
+2025-12-08 15:08:29,608 WARN  [org.keycloak.events] (executor-thread-1) type="LOGOUT_ERROR", realmId="a3858ef1-48da-4d2d-a3a4-990ef6de4db1", clientId="null", userId="null", ipAddress="0:0:0:0:0:0:0:1", error="invalid_request"
+2025-12-08 15:08:29,609 WARN  [org.keycloak.protocol.oidc.endpoints.LogoutEndpoint] (executor-thread-1) Either the parameter 'client_id' or the parameter 'id_token_hint' is required when 'post_logout_redirect_uri' is used.
+2025-12-08 15:14:19,740 INFO  [io.quarkus] (Shutdown thread) Keycloak stopped in 0.211s

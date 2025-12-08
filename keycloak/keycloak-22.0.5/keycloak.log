@@ -1,0 +1,131 @@
+Updating the configuration and installing your custom providers, if any. Please wait.
+ERROR: Failed to run 'build' command.
+ERROR: io.quarkus.builder.BuildException: Build failure: Build failed due to errors
+	[error]: Build step io.quarkus.deployment.steps.ClassTransformingBuildStep#handleClassTransformation threw an exception: java.lang.IllegalStateException: java.util.concurrent.ExecutionException: org.hibernate.bytecode.enhance.spi.EnhancementException: Failed to enhance class org.keycloak.models.jpa.entities.ClientScopeAttributeEntity
+	at io.quarkus.deployment.ExtensionLoader$3.execute(ExtensionLoader.java:873)
+	at io.quarkus.builder.BuildContext.run(BuildContext.java:282)
+	at org.jboss.threads.ContextHandler$1.runWith(ContextHandler.java:18)
+	at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+	at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+	at org.jboss.threads.JBossThread.run(JBossThread.java:501)
+Caused by: java.util.concurrent.ExecutionException: org.hibernate.bytecode.enhance.spi.EnhancementException: Failed to enhance class org.keycloak.models.jpa.entities.ClientScopeAttributeEntity
+	at java.base/java.util.concurrent.FutureTask.report(FutureTask.java:122)
+	at java.base/java.util.concurrent.FutureTask.get(FutureTask.java:191)
+	at io.quarkus.deployment.steps.ClassTransformingBuildStep.handleClassTransformation(ClassTransformingBuildStep.java:267)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at io.quarkus.deployment.ExtensionLoader$3.execute(ExtensionLoader.java:864)
+	... 6 more
+Caused by: org.hibernate.bytecode.enhance.spi.EnhancementException: Failed to enhance class org.keycloak.models.jpa.entities.ClientScopeAttributeEntity
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl.enhance(EnhancerImpl.java:157)
+	at io.quarkus.hibernate.orm.deployment.HibernateEntityEnhancer$HibernateEnhancingClassVisitor.hibernateEnhancement(HibernateEntityEnhancer.java:86)
+	at io.quarkus.hibernate.orm.deployment.HibernateEntityEnhancer$HibernateEnhancingClassVisitor.visitEnd(HibernateEntityEnhancer.java:79)
+	at org.objectweb.asm.ClassVisitor.visitEnd(ClassVisitor.java:395)
+	at io.quarkus.panache.common.deployment.visitors.PanacheEntityClassAccessorGenerationVisitor.visitEnd(PanacheEntityClassAccessorGenerationVisitor.java:126)
+	at org.objectweb.asm.ClassReader.accept(ClassReader.java:748)
+	at org.objectweb.asm.ClassReader.accept(ClassReader.java:424)
+	at io.quarkus.deployment.steps.ClassTransformingBuildStep.transformClass(ClassTransformingBuildStep.java:361)
+	at io.quarkus.deployment.steps.ClassTransformingBuildStep$2.call(ClassTransformingBuildStep.java:232)
+	at io.quarkus.deployment.steps.ClassTransformingBuildStep$2.call(ClassTransformingBuildStep.java:219)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	... 5 more
+Caused by: java.lang.IllegalArgumentException: Java 21 (65) is not supported by the current version of Byte Buddy which officially supports Java 20 (64) - update Byte Buddy or set net.bytebuddy.experimental as a VM property
+	at net.bytebuddy.utility.OpenedClassReader.of(OpenedClassReader.java:96)
+	at net.bytebuddy.pool.TypePool$Default.parse(TypePool.java:855)
+	at net.bytebuddy.pool.TypePool$Default.doDescribe(TypePool.java:841)
+	at net.bytebuddy.pool.TypePool$Default$WithLazyResolution.access$001(TypePool.java:921)
+	at net.bytebuddy.pool.TypePool$Default$WithLazyResolution.doResolve(TypePool.java:1019)
+	at net.bytebuddy.pool.TypePool$Default$WithLazyResolution$LazyTypeDescription.delegate(TypePool.java:1088)
+	at net.bytebuddy.description.type.TypeDescription$AbstractBase$OfSimpleType$WithDelegation.getTypeVariables(TypeDescription.java:8448)
+	at net.bytebuddy.description.type.TypeDescription$AbstractBase.isGenerified(TypeDescription.java:8059)
+	at net.bytebuddy.description.type.TypeDescription$Generic$Visitor$Reifying.onNonGenericType(TypeDescription.java:1707)
+	at net.bytebuddy.description.type.TypeDescription$Generic$Visitor$Reifying$1.onNonGenericType(TypeDescription.java:1663)
+	at net.bytebuddy.description.type.TypeDescription$Generic$OfNonGenericType.accept(TypeDescription.java:3672)
+	at net.bytebuddy.dynamic.scaffold.MethodGraph$Compiler$Default.analyzeNullable(MethodGraph.java:698)
+	at net.bytebuddy.dynamic.scaffold.MethodGraph$Compiler$Default.doAnalyze(MethodGraph.java:712)
+	at net.bytebuddy.dynamic.scaffold.MethodGraph$Compiler$Default.compile(MethodGraph.java:637)
+	at net.bytebuddy.dynamic.scaffold.MethodGraph$Compiler$AbstractBase.compile(MethodGraph.java:527)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.ByteBuddyEnhancementContext.lambda$resolveGetter$0(ByteBuddyEnhancementContext.java:94)
+	at java.base/java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1708)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.ByteBuddyEnhancementContext.resolveGetter(ByteBuddyEnhancementContext.java:93)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl$AnnotatedFieldDescription.getGetter(EnhancerImpl.java:545)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl$AnnotatedFieldDescription.doGetAnnotations(EnhancerImpl.java:574)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl$AnnotatedFieldDescription.getAnnotations(EnhancerImpl.java:553)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl$AnnotatedFieldDescription.hasAnnotation(EnhancerImpl.java:503)
+	at org.hibernate.bytecode.enhance.spi.DefaultEnhancementContext.isPersistentField(DefaultEnhancementContext.java:103)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.ByteBuddyEnhancementContext.isPersistentField(ByteBuddyEnhancementContext.java:68)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl.collectCollectionFields(EnhancerImpl.java:441)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl.doEnhance(EnhancerImpl.java:215)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl.lambda$enhance$0(EnhancerImpl.java:151)
+	at org.hibernate.bytecode.internal.bytebuddy.ByteBuddyState.rewrite(ByteBuddyState.java:163)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl.enhance(EnhancerImpl.java:151)
+	... 15 more
+
+ERROR: Build failure: Build failed due to errors
+	[error]: Build step io.quarkus.deployment.steps.ClassTransformingBuildStep#handleClassTransformation threw an exception: java.lang.IllegalStateException: java.util.concurrent.ExecutionException: org.hibernate.bytecode.enhance.spi.EnhancementException: Failed to enhance class org.keycloak.models.jpa.entities.ClientScopeAttributeEntity
+	at io.quarkus.deployment.ExtensionLoader$3.execute(ExtensionLoader.java:873)
+	at io.quarkus.builder.BuildContext.run(BuildContext.java:282)
+	at org.jboss.threads.ContextHandler$1.runWith(ContextHandler.java:18)
+	at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+	at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+	at org.jboss.threads.JBossThread.run(JBossThread.java:501)
+Caused by: java.util.concurrent.ExecutionException: org.hibernate.bytecode.enhance.spi.EnhancementException: Failed to enhance class org.keycloak.models.jpa.entities.ClientScopeAttributeEntity
+	at java.base/java.util.concurrent.FutureTask.report(FutureTask.java:122)
+	at java.base/java.util.concurrent.FutureTask.get(FutureTask.java:191)
+	at io.quarkus.deployment.steps.ClassTransformingBuildStep.handleClassTransformation(ClassTransformingBuildStep.java:267)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at io.quarkus.deployment.ExtensionLoader$3.execute(ExtensionLoader.java:864)
+	... 6 more
+Caused by: org.hibernate.bytecode.enhance.spi.EnhancementException: Failed to enhance class org.keycloak.models.jpa.entities.ClientScopeAttributeEntity
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl.enhance(EnhancerImpl.java:157)
+	at io.quarkus.hibernate.orm.deployment.HibernateEntityEnhancer$HibernateEnhancingClassVisitor.hibernateEnhancement(HibernateEntityEnhancer.java:86)
+	at io.quarkus.hibernate.orm.deployment.HibernateEntityEnhancer$HibernateEnhancingClassVisitor.visitEnd(HibernateEntityEnhancer.java:79)
+	at org.objectweb.asm.ClassVisitor.visitEnd(ClassVisitor.java:395)
+	at io.quarkus.panache.common.deployment.visitors.PanacheEntityClassAccessorGenerationVisitor.visitEnd(PanacheEntityClassAccessorGenerationVisitor.java:126)
+	at org.objectweb.asm.ClassReader.accept(ClassReader.java:748)
+	at org.objectweb.asm.ClassReader.accept(ClassReader.java:424)
+	at io.quarkus.deployment.steps.ClassTransformingBuildStep.transformClass(ClassTransformingBuildStep.java:361)
+	at io.quarkus.deployment.steps.ClassTransformingBuildStep$2.call(ClassTransformingBuildStep.java:232)
+	at io.quarkus.deployment.steps.ClassTransformingBuildStep$2.call(ClassTransformingBuildStep.java:219)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	... 5 more
+Caused by: java.lang.IllegalArgumentException: Java 21 (65) is not supported by the current version of Byte Buddy which officially supports Java 20 (64) - update Byte Buddy or set net.bytebuddy.experimental as a VM property
+	at net.bytebuddy.utility.OpenedClassReader.of(OpenedClassReader.java:96)
+	at net.bytebuddy.pool.TypePool$Default.parse(TypePool.java:855)
+	at net.bytebuddy.pool.TypePool$Default.doDescribe(TypePool.java:841)
+	at net.bytebuddy.pool.TypePool$Default$WithLazyResolution.access$001(TypePool.java:921)
+	at net.bytebuddy.pool.TypePool$Default$WithLazyResolution.doResolve(TypePool.java:1019)
+	at net.bytebuddy.pool.TypePool$Default$WithLazyResolution$LazyTypeDescription.delegate(TypePool.java:1088)
+	at net.bytebuddy.description.type.TypeDescription$AbstractBase$OfSimpleType$WithDelegation.getTypeVariables(TypeDescription.java:8448)
+	at net.bytebuddy.description.type.TypeDescription$AbstractBase.isGenerified(TypeDescription.java:8059)
+	at net.bytebuddy.description.type.TypeDescription$Generic$Visitor$Reifying.onNonGenericType(TypeDescription.java:1707)
+	at net.bytebuddy.description.type.TypeDescription$Generic$Visitor$Reifying$1.onNonGenericType(TypeDescription.java:1663)
+	at net.bytebuddy.description.type.TypeDescription$Generic$OfNonGenericType.accept(TypeDescription.java:3672)
+	at net.bytebuddy.dynamic.scaffold.MethodGraph$Compiler$Default.analyzeNullable(MethodGraph.java:698)
+	at net.bytebuddy.dynamic.scaffold.MethodGraph$Compiler$Default.doAnalyze(MethodGraph.java:712)
+	at net.bytebuddy.dynamic.scaffold.MethodGraph$Compiler$Default.compile(MethodGraph.java:637)
+	at net.bytebuddy.dynamic.scaffold.MethodGraph$Compiler$AbstractBase.compile(MethodGraph.java:527)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.ByteBuddyEnhancementContext.lambda$resolveGetter$0(ByteBuddyEnhancementContext.java:94)
+	at java.base/java.util.concurrent.ConcurrentHashMap.computeIfAbsent(ConcurrentHashMap.java:1708)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.ByteBuddyEnhancementContext.resolveGetter(ByteBuddyEnhancementContext.java:93)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl$AnnotatedFieldDescription.getGetter(EnhancerImpl.java:545)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl$AnnotatedFieldDescription.doGetAnnotations(EnhancerImpl.java:574)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl$AnnotatedFieldDescription.getAnnotations(EnhancerImpl.java:553)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl$AnnotatedFieldDescription.hasAnnotation(EnhancerImpl.java:503)
+	at org.hibernate.bytecode.enhance.spi.DefaultEnhancementContext.isPersistentField(DefaultEnhancementContext.java:103)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.ByteBuddyEnhancementContext.isPersistentField(ByteBuddyEnhancementContext.java:68)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl.collectCollectionFields(EnhancerImpl.java:441)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl.doEnhance(EnhancerImpl.java:215)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl.lambda$enhance$0(EnhancerImpl.java:151)
+	at org.hibernate.bytecode.internal.bytebuddy.ByteBuddyState.rewrite(ByteBuddyState.java:163)
+	at org.hibernate.bytecode.enhance.internal.bytebuddy.EnhancerImpl.enhance(EnhancerImpl.java:151)
+	... 15 more
+
+ERROR: java.util.concurrent.ExecutionException: org.hibernate.bytecode.enhance.spi.EnhancementException: Failed to enhance class org.keycloak.models.jpa.entities.ClientScopeAttributeEntity
+ERROR: org.hibernate.bytecode.enhance.spi.EnhancementException: Failed to enhance class org.keycloak.models.jpa.entities.ClientScopeAttributeEntity
+ERROR: Failed to enhance class org.keycloak.models.jpa.entities.ClientScopeAttributeEntity
+ERROR: Java 21 (65) is not supported by the current version of Byte Buddy which officially supports Java 20 (64) - update Byte Buddy or set net.bytebuddy.experimental as a VM property
+For more details run the same command passing the '--verbose' option. Also you can use '--help' to see the details about the usage of the particular command.

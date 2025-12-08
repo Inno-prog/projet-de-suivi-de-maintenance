@@ -1,0 +1,213 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <title th:text="${report.title}">Rapport Prestations</title>
+  <style>
+    /* Reset simple */
+    body { font-family: Arial, Helvetica, sans-serif; color:#1f2937; margin: 0; padding: 0; }
+    .page { padding: 24px; }
+    header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+    h1 { font-size:20px; margin:0; color:#ee7a2d; }
+    p.sub { margin:0; color:#6b7280; font-size:12px; }
+
+    .meta { margin: 12px 0 20px 0; font-size:12px; color:#444; }
+    .section { margin-bottom:18px; }
+    .section h2 { background:#f7f7f7; padding:8px 12px; border-left:6px solid #ee7a2d; font-size:14px; margin:0 0 8px 0; }
+    table { width:100%; border-collapse:collapse; font-size:12px; }
+    th, td { padding:8px 6px; border-bottom: 1px solid #e6e6e6; text-align:left; vertical-align:top; }
+    th { background:#fafafa; font-weight:700; font-size:12px; color:#374151; }
+    .small { font-size:11px; color:#6b7280; }
+    .two-col { display:flex; gap:16px; }
+    .col { flex:1; }
+
+    /* badges */
+    .badge { display:inline-block; padding:4px 8px; border-radius:12px; font-size:11px; color:white; }
+    .badge-success { background:#10b981; }
+    .badge-warning { background:#f59e0b; }
+    .badge-danger { background:#ef4444; }
+
+    /* items table narrower columns */
+    .col-id { width:80px; }
+    .col-amount { text-align:right; }
+
+    /* footer */
+    footer { margin-top:20px; font-size:11px; color:#7c8594; text-align:center; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <h1 th:text="${report.title} ?: 'Rapport de Suivi des Prestations'">Rapport</h1>
+        <p class="sub" th:text="${report.period} ?: 'Période non spécifiée'">Période</p>
+      </div>
+      <div>
+        <p class="small">Généré par: <strong th:text="${report.generatedBy} ?: 'Système'">Author</strong></p>
+        <p class="small">Date: <strong th:text="${generatedAt}">now</strong></p>
+      </div>
+    </header>
+
+    <!-- General meta -->
+    <div class="meta">
+      <span class="small">Objectif:</span>
+      <span>Rapport trimestriel consolidé des prestations de maintenance informatique pour l'ensemble du Ministère</span>
+    </div>
+
+    <!-- Section: Méthodologie d'évaluation -->
+    <div class="section">
+      <h2>Méthodologie d'Évaluation (6 Étapes)</h2>
+      <div style="background:#f9f9f9; padding:15px; border-radius:5px; margin-bottom:10px;">
+        <ol style="margin:0; padding-left:20px;">
+          <li><strong>Étape 1:</strong> Collecte des informations sur les prestataires ayant travaillé durant le trimestre</li>
+          <li><strong>Étape 2:</strong> Analyse détaillée des prestations réalisées</li>
+          <li><strong>Étape 3:</strong> Vérification des ordres de commande émis</li>
+          <li><strong>Étape 4:</strong> Contrôle des contrats actifs et renouvellements</li>
+          <li><strong>Étape 5:</strong> Inventaire des items et équipements gérés</li>
+          <li><strong>Étape 6:</strong> Évaluation des structures MEFP et couverture territoriale</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Étape 1: Prestataires ayant travaillé durant le trimestre -->
+    <div class="section">
+      <h2>Étape 1: Prestataires actifs durant la période</h2>
+      <table>
+        <thead>
+          <tr><th class="col-id">N°</th><th>Nom</th><th>Entreprise</th><th>Contact</th><th>Email</th><th>Spécialité</th><th>Contrat(s)</th></tr>
+        </thead>
+        <tbody>
+          <tr th:each="u,iterStat : ${report.utilisateurs}">
+            <td class="col-id" th:text="${iterStat.index + 1}">1</td>
+            <td th:text="${u.nom}">Prestataire</td>
+            <td th:text="${u.entreprise}">Entreprise</td>
+            <td th:text="${u.contact}">+226 ...</td>
+            <td th:text="${u.email}">mail</td>
+            <td th:text="${u.specialite}">Spécialité</td>
+            <td th:text="${u.contrats != null ? u.contrats.size() : 0}">0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Étape 4: Contrats enregistrés -->
+    <div class="section">
+      <h2>Étape 4: Contrats actifs et renouvellements</h2>
+      <table>
+        <thead><tr><th>N° Contrat</th><th>Prestataire</th><th>Date Début</th><th>Date Fin</th><th>Type</th><th class="col-amount">Montant (FCFA)</th><th>Statut</th></tr></thead>
+        <tbody>
+          <tr th:each="c : ${report.contrats}">
+            <td th:text="${c.idContrat}">CT-001</td>
+            <td th:text="${c.nomPrestataire}">Prestataire</td>
+            <td th:text="${c.dateDebut}">01/01/2025</td>
+            <td th:text="${c.dateFin}">31/12/2025</td>
+            <td th:text="${c.typeContrat}">Maintenance</td>
+            <td class="col-amount" th:text="${#numbers.formatInteger(c.montant)} ?: '0'">0</td>
+            <td>
+              <span th:classappend="${c.statut == 'ACTIF'} ? 'badge badge-success' : (c.statut == 'TERMINE' ? 'badge badge-warning' : 'badge badge-danger')"
+                    th:text="${c.statut}">STATUT</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Étape 3: Ordres de commande -->
+    <div class="section">
+      <h2>Étape 3: Ordres de commande émis</h2>
+      <table>
+        <thead><tr><th>N° OC</th><th>Date</th><th>Prestataire</th><th>Objet</th><th class="col-amount">Montant (FCFA)</th><th>Statut</th></tr></thead>
+        <tbody>
+          <tr th:each="o : ${report.ordres}">
+            <td th:text="${o.numeroOc ?: o.idOC}">OC-001</td>
+            <td th:text="${o.date}">15/01/2025</td>
+            <td th:text="${o.prestataireItem}">Prestataire</td>
+            <td th:text="${o.objet}">Objet</td>
+            <td class="col-amount" th:text="${#numbers.formatInteger(o.montant)}">0</td>
+            <td th:text="${o.statut}">EN_ATTENTE</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Étape 2: Prestations réalisées -->
+    <div class="section">
+      <h2>Étape 2: Prestations réalisées durant la période</h2>
+      <table>
+        <thead><tr><th>N° Prestation</th><th>Prestataire</th><th>Date Début</th><th>Date Fin</th><th>Type</th><th class="col-amount">Montant</th><th>Statut</th></tr></thead>
+        <tbody>
+          <tr th:each="p : ${report.prestations}">
+            <td th:text="${p.idPrestation}">P-001</td>
+            <td th:text="${p.nomPrestataire}">Prestataire</td>
+            <td th:text="${p.dateHeureDebut}">10/01/2025</td>
+            <td th:text="${p.dateHeureFin}">12/01/2025</td>
+            <td th:text="${p.type}">Maintenance</td>
+            <td class="col-amount" th:text="${#numbers.formatInteger(p.montantIntervention)}">0</td>
+            <td th:text="${p.statutIntervention}">Reussie</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+    <!-- Étape 5: Items enregistrés (conditionnel) -->
+    <div class="section" th:if="${report.meta.includeItems}">
+      <h2>Étape 5: Items et équipements gérés</h2>
+      <table>
+        <thead><tr><th>Item</th><th>Description</th><th>Quantité</th><th class="col-amount">Prix Unitaire</th><th class="col-amount">Total</th></tr></thead>
+        <tbody>
+          <tr th:each="it : ${report.items}">
+            <td th:text="${it.nomItem}">Serveur</td>
+            <td th:text="${it.description}">Description</td>
+            <td th:text="${it.quantite} ?: 0">0</td>
+            <td class="col-amount" th:text="${#numbers.formatInteger(it.prix || 0)}">0</td>
+            <td class="col-amount" th:text="${#numbers.formatInteger((it.prix ?: 0) * (it.quantite ?: 0))}">0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section: Évaluations Trimestrielles Consolidées (conditionnel) -->
+    <div class="section" th:if="${report.meta.includeEvaluations}">
+      <h2>Évaluations Trimestrielles Consolidées</h2>
+      <table>
+        <thead><tr><th>Lot</th><th>Trimestre</th><th>Date</th><th>Évaluateur</th><th>Observations</th><th>Statut</th></tr></thead>
+        <tbody>
+          <tr th:each="e : ${report.evaluations}">
+            <td th:text="${e.lot}">Lot A</td>
+            <td th:text="${e.trimestre}">T1 2025</td>
+            <td th:text="${#temporals.format(e.dateEvaluation, 'dd/MM/yyyy')}">15/01/2025</td>
+            <td th:text="${e.evaluateurNom}">Évaluateur</td>
+            <td th:text="${e.observationsGenerales}">Observations générales</td>
+            <td>
+              <span th:classappend="${e.statut == 'Validé'} ? 'badge badge-success' : (e.statut == 'Brouillon' ? 'badge badge-warning' : 'badge badge-danger')"
+                    th:text="${e.statut}">STATUT</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Étape 6: Structures du ministère (conditionnel) -->
+    <div class="section" th:if="${report.meta.includeStructures}">
+      <h2>Étape 6: Structures MEFP et couverture territoriale</h2>
+      <table>
+        <thead><tr><th>Structure</th><th>Responsable</th><th>Nb équipements</th><th>Localisation</th><th>Prestataire assigné</th></tr></thead>
+        <tbody>
+          <tr th:each="s : ${report.structures}">
+            <td th:text="${s.nom}">Direction</td>
+            <td th:text="${s.responsable}">M. X</td>
+            <td th:text="${s.nombreEquipements}">0</td>
+            <td th:text="${s.ville}">Ouagadougou</td>
+            <td th:text="${s.prestataireAssigne}">MainTrack Pro</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      Rapport généré automatiquement — MEFP • Système de suivi des prestations
+    </footer>
+  </div>
+</body>
+</html>

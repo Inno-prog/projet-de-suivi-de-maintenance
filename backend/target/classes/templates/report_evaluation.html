@@ -1,0 +1,261 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8"/>
+  <title>Rapport d'Évaluation Trimestrielle</title>
+  <style>
+    /* Reset simple */
+    body { font-family: Arial, Helvetica, sans-serif; color:#1f2937; margin: 0; padding: 0; }
+    .page { padding: 24px; }
+    header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+    h1 { font-size:20px; margin:0; color:#ee7a2d; }
+    p.sub { margin:0; color:#6b7280; font-size:12px; }
+
+    .meta { margin: 12px 0 20px 0; font-size:12px; color:#444; }
+    .section { margin-bottom:18px; }
+    .section h2 { background:#f7f7f7; padding:8px 12px; border-left:6px solid #ee7a2d; font-size:14px; margin:0 0 8px 0; }
+    table { width:100%; border-collapse:collapse; font-size:12px; }
+    th, td { padding:8px 6px; border-bottom: 1px solid #e6e6e6; text-align:left; vertical-align:top; }
+    th { background:#fafafa; font-weight:700; font-size:12px; color:#374151; }
+    .small { font-size:11px; color:#6b7280; }
+
+    /* badges */
+    .badge { display:inline-block; padding:4px 8px; border-radius:12px; font-size:11px; color:white; }
+    .badge-success { background:#10b981; }
+    .badge-warning { background:#f59e0b; }
+    .badge-danger { background:#ef4444; }
+
+    /* footer */
+    footer { margin-top:20px; font-size:11px; color:#7c8594; text-align:center; }
+
+    /* Specific styles for evaluation report */
+    .evaluation-header { text-align: center; margin-bottom: 20px; }
+    .evaluation-title { font-size: 18px; font-weight: bold; color: #1f2937; margin-bottom: 10px; }
+    .evaluation-info { display: flex; justify-content: space-between; margin-bottom: 20px; }
+    .info-item { flex: 1; text-align: center; }
+    .info-label { font-weight: bold; color: #6b7280; }
+    .info-value { color: #1f2937; }
+
+    .criteria-table { margin: 20px 0; }
+    .criteria-table th { background: #ee7a2d; color: white; }
+    .criteria-table .status-yes { color: #10b981; font-weight: bold; }
+    .criteria-table .status-no { color: #ef4444; font-weight: bold; }
+
+    .score-section { background: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center; }
+    .final-score { font-size: 24px; font-weight: bold; color: #1e40af; margin: 10px 0; }
+    .recommendation { font-size: 14px; color: #374151; font-weight: 600; }
+
+    .signatures { display: flex; justify-content: space-between; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; }
+    .signature-item { text-align: center; flex: 1; }
+    .signature-label { font-weight: bold; color: #6b7280; font-size: 12px; }
+    .signature-value { color: #1f2937; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <h1>RAPPORT D'ÉVALUATION TRIMESTRIELLE</h1>
+        <p class="sub">Maintenance Informatique - Ministère de l'Économie et des Finances</p>
+      </div>
+      <div>
+        <p class="small">Généré le: <strong th:text="${generatedAt}">now</strong></p>
+      </div>
+    </header>
+
+    <!-- Evaluation Header -->
+    <div class="evaluation-header">
+      <h2 class="evaluation-title" th:text="'RAPPORT DU ' + ${evaluation.trimestre} + ' DE LA MAINTENANCE'">RAPPORT TRIMESTRIEL</h2>
+      <div class="evaluation-info">
+        <div class="info-item">
+          <div class="info-label">Lot</div>
+          <div class="info-value" th:text="${evaluation.lot}">Lot A</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Période</div>
+          <div class="info-value" th:text="${evaluation.trimestre == 'T1' ? '01 Janvier – 31 Mars' : (evaluation.trimestre == 'T2' ? '01 Avril – 30 Juin' : (evaluation.trimestre == 'T3' ? '01 Juillet – 30 Septembre' : '01 Octobre – 31 Décembre'))}">Période</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Prestataire</div>
+          <div class="info-value" th:text="${evaluation.prestataireNom}">Prestataire</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Date d'évaluation</div>
+          <div class="info-value" th:text="${#temporals.format(evaluation.dateEvaluation, 'dd/MM/yyyy')}">15/01/2025</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Introduction Section -->
+    <div class="section">
+      <h2>I. INTRODUCTION</h2>
+      <p>
+        Le Ministère de l'Économie et des Finances (MEF) signe annuellement des contrats
+        de maintenance informatique avec des prestataires privés.
+        Une évaluation trimestrielle est réalisée pour vérifier si les prestations attendues
+        sont respectées conformément aux contrats.
+      </p>
+    </div>
+
+    <!-- Allotissement Section -->
+    <div class="section">
+      <h2>II. ALLOTISSEMENT</h2>
+      <p th:text="'Lot ' + ${evaluation.lot.replace('Lot ', '')} + ' : Maintenance du matériel informatique et support bureautique des bâtiments R+5, R+4, R+1 du MEF.'">
+        Lot X : Maintenance du matériel informatique et support bureautique des bâtiments R+5, R+4, R+1 du MEF.
+      </p>
+      <p><strong>Direction concernée :</strong> <span th:text="${evaluation.lot.contains('BCMP') ? 'BCMP' : 'Direction concernée'}">Direction</span></p>
+    </div>
+
+    <!-- Exigences Section -->
+    <div class="section">
+      <h2>III. EXIGENCES À SATISFAIRE</h2>
+      <table class="criteria-table">
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Exigences du DAO</th>
+            <th>Prestataire</th>
+            <th>Observations</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Vérification des techniciens avec chef de site certifié ITIL Foundation</td>
+            <td th:class="${evaluation.techniciensCertifies ? 'status-yes' : 'status-no'}"
+                th:text="${evaluation.techniciensCertifies ? 'Liste effective fournie' : 'Non fournie'}">Status</td>
+            <td th:text="${evaluation.obsTechniciens ?: (evaluation.techniciensCertifies ? 'RAS' : 'À fournir')}">Observations</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Transmission du rapport d'intervention trimestriel</td>
+            <td th:class="${evaluation.rapportInterventionTransmis ? 'status-yes' : 'status-no'}"
+                th:text="${evaluation.rapportInterventionTransmis ? 'Transmis' : 'Non transmis'}">Status</td>
+            <td th:text="${evaluation.obsRapport ?: (evaluation.rapportInterventionTransmis ? 'RAS' : 'A transmettre au plus tard le ' + (evaluation.trimestre == 'T1' ? '1er Avril' : (evaluation.trimestre == 'T2' ? '1er Juillet' : (evaluation.trimestre == 'T3' ? '1er Octobre' : '1er Janvier'))))}">Observations</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Remplissage quotidien du registre et fiches d'interventions</td>
+            <td th:class="${evaluation.registreRempli ? 'status-yes' : 'status-no'}"
+                th:text="${evaluation.registreRempli ? 'Effectué' : 'Non effectué'}">Status</td>
+            <td th:text="${evaluation.obsRegistre ?: (evaluation.registreRempli ? 'RAS' : 'À régulariser')}">Observations</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Respect des horaires d'intervention</td>
+            <td th:class="${evaluation.horairesRespectes ? 'status-yes' : 'status-no'}"
+                th:text="${evaluation.horairesRespectes ? 'Respectés' : 'Non respectés'}">Status</td>
+            <td th:text="${evaluation.obsHoraires ?: (evaluation.horairesRespectes ? 'RAS' : 'Amélioration requise')}">Observations</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>Respect du délai de réaction (4h)</td>
+            <td th:class="${evaluation.delaiReactionRespecte ? 'status-yes' : 'status-no'}"
+                th:text="${evaluation.delaiReactionRespecte ? 'Respecté' : 'Non respecté'}">Status</td>
+            <td th:text="${evaluation.obsDelaiReaction ?: (evaluation.delaiReactionRespecte ? 'RAS' : 'Délais dépassés constatés')}">Observations</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>Respect du délai d'intervention (24h)</td>
+            <td th:class="${evaluation.delaiInterventionRespecte ? 'status-yes' : 'status-no'}"
+                th:text="${evaluation.delaiInterventionRespecte ? 'Respecté' : 'Non respecté'}">Status</td>
+            <td th:text="${evaluation.obsDelaiIntervention ?: (evaluation.delaiInterventionRespecte ? 'RAS' : 'Interventions tardives')}">Observations</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>Disponibilité du véhicule de service</td>
+            <td th:class="${evaluation.vehiculeDisponible ? 'status-yes' : 'status-no'}"
+                th:text="${evaluation.vehiculeDisponible ? 'Disponible' : 'Non disponible'}">Status</td>
+            <td th:text="${evaluation.obsVehicule ?: (evaluation.vehiculeDisponible ? 'RAS' : 'Véhicule indisponible')}">Observations</td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>Disponibilité de la tenue réglementaire</td>
+            <td th:class="${evaluation.tenueDisponible ? 'status-yes' : 'status-no'}"
+                th:text="${evaluation.tenueDisponible ? 'Disponible' : 'Non disponible'}">Status</td>
+            <td th:text="${evaluation.obsTenue ?: (evaluation.tenueDisponible ? 'RAS' : 'Tenue manquante')}">Observations</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Instances Non Résolues Section -->
+    <div class="section">
+      <h2>IV. INSTANCES NON RÉSOLUES</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Instance</th>
+            <th>Direction</th>
+            <th>Date début</th>
+            <th>Jours pénalité</th>
+            <th>Observation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:if="${evaluation.instancesNonResolues == null or evaluation.instancesNonResolues.trim() == ''}">
+            <td>1</td>
+            <td>RAS</td>
+            <td th:text="${evaluation.lot.contains('BCMP') ? 'BCMP' : '-'}">-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+          </tr>
+          <tr th:if="${evaluation.instancesNonResolues != null and evaluation.instancesNonResolues.trim() != ''}">
+            <td>1</td>
+            <td th:text="${evaluation.instancesNonResolues}">Instance</td>
+            <td th:text="${evaluation.lot.contains('BCMP') ? 'BCMP' : 'Direction concernée'}">Direction</td>
+            <td th:text="${#temporals.format(evaluation.dateEvaluation, 'dd/MM/yyyy')}">Date</td>
+            <td th:text="${evaluation.penalitesCalcul ?: 0}">0</td>
+            <td>Instance en cours de résolution</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Appréciations Section -->
+    <div class="section">
+      <h2>V. APPRÉCIATIONS</h2>
+
+      <div th:if="${evaluation.observationsGenerales}" style="margin-bottom: 15px;">
+        <strong>Observations générales :</strong>
+        <p th:text="${evaluation.observationsGenerales}">Observations générales</p>
+      </div>
+
+      <div th:if="${evaluation.appreciationRepresentant}" style="margin-bottom: 15px;">
+        <strong>Appréciation du représentant :</strong>
+        <p th:text="${evaluation.appreciationRepresentant}">Appréciation du représentant</p>
+      </div>
+
+      <div class="score-section">
+        <div class="final-score" th:text="'Note finale : ' + ${evaluation.noteFinale ?: (evaluation.techniciensCertifies ? 1 : 0) + (evaluation.rapportInterventionTransmis ? 1 : 0) + (evaluation.registreRempli ? 1 : 0) + (evaluation.horairesRespectes ? 1 : 0) + (evaluation.delaiReactionRespecte ? 1 : 0) + (evaluation.delaiInterventionRespecte ? 1 : 0) + (evaluation.vehiculeDisponible ? 1 : 0) + (evaluation.tenueDisponible ? 1 : 0)} + '/8'">
+          Note finale : 8/8
+        </div>
+        <div class="recommendation" th:text="${(evaluation.noteFinale ?: (evaluation.techniciensCertifies ? 1 : 0) + (evaluation.rapportInterventionTransmis ? 1 : 0) + (evaluation.registreRempli ? 1 : 0) + (evaluation.horairesRespectes ? 1 : 0) + (evaluation.delaiReactionRespecte ? 1 : 0) + (evaluation.delaiInterventionRespecte ? 1 : 0) + (evaluation.vehiculeDisponible ? 1 : 0) + (evaluation.tenueDisponible ? 1 : 0)) >= 7 ? 'MAINTENIR LE PRESTATAIRE' : ((evaluation.noteFinale ?: (evaluation.techniciensCertifies ? 1 : 0) + (evaluation.rapportInterventionTransmis ? 1 : 0) + (evaluation.registreRempli ? 1 : 0) + (evaluation.horairesRespectes ? 1 : 0) + (evaluation.delaiReactionRespecte ? 1 : 0) + (evaluation.delaiInterventionRespecte ? 1 : 0) + (evaluation.vehiculeDisponible ? 1 : 0) + (evaluation.tenueDisponible ? 1 : 0)) >= 5 ? 'FORMATION REQUISE' : 'DÉCLASSER LE PRESTATAIRE')}">
+          MAINTENIR LE PRESTATAIRE
+        </div>
+      </div>
+
+      <div class="signatures">
+        <div class="signature-item">
+          <div class="signature-label">DGSI :</div>
+          <div class="signature-value" th:text="${evaluation.evaluateurNom ?: 'Non spécifié'}">Évaluateur</div>
+        </div>
+        <div class="signature-item">
+          <div class="signature-label">Agent DGSI :</div>
+          <div class="signature-value" th:text="${evaluation.correspondantId ? 'Agent ' + evaluation.correspondantId : 'Non spécifié'}">Agent</div>
+        </div>
+        <div class="signature-item">
+          <div class="signature-label">Prestataire :</div>
+          <div class="signature-value" th:text="${evaluation.prestataireNom}">Prestataire</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Rapport d'évaluation généré automatiquement — MEFP • Système de suivi des prestations de maintenance
+    </footer>
+  </div>
+</body>
+</html>

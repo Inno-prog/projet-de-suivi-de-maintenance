@@ -1,0 +1,4425 @@
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------------------< [0;36mcom.dgsi:maintenance[0;1m >------------------------[m
+[[1;34mINFO[m] [1mBuilding dgsi-maintenance 0.0.1-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m>>> [0;32mspring-boot-maven-plugin:3.3.0:run[m [1m(default-cli)[0;1m > [0;1mtest-compile[m @ [36mmaintenance[0;1m >>>[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mmaintenance[0;1m ---[m
+[[1;34mINFO[m] Copying 1 resource from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 3 resources from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.13.0:compile[m [1m(default-compile)[m @ [36mmaintenance[0;1m ---[m
+[[1;34mINFO[m] Nothing to compile - all classes are up to date.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mmaintenance[0;1m ---[m
+[[1;34mINFO[m] Copying 1 resource from src/test/resources to target/test-classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.13.0:testCompile[m [1m(default-testCompile)[m @ [36mmaintenance[0;1m ---[m
+[[1;34mINFO[m] Nothing to compile - all classes are up to date.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m<<< [0;32mspring-boot-maven-plugin:3.3.0:run[m [1m(default-cli)[0;1m < [0;1mtest-compile[m @ [36mmaintenance[0;1m <<<[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.3.0:run[m [1m(default-cli)[m @ [36mmaintenance[0;1m ---[m
+[[1;34mINFO[m] Attaching agents: []
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.0)
+
+2025-12-04T15:49:28.219Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.maintenance.MaintenanceApplication   : Starting MaintenanceApplication using Java 21.0.9 with PID 169766 (/home/inno/Images/projet-de-suivi-de-prestations-de-maintenance/backend/target/classes started by inno in /home/inno/Images/projet-de-suivi-de-prestations-de-maintenance/backend)
+2025-12-04T15:49:28.222Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.maintenance.MaintenanceApplication   : No active profile set, falling back to 1 default profile: "default"
+2025-12-04T15:49:29.199Z  INFO 169766 --- [dgsi-maintenance] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-12-04T15:49:29.321Z  INFO 169766 --- [dgsi-maintenance] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 112 ms. Found 13 JPA repository interfaces.
+2025-12-04T15:49:30.168Z  INFO 169766 --- [dgsi-maintenance] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8085 (http)
+2025-12-04T15:49:30.185Z  INFO 169766 --- [dgsi-maintenance] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-12-04T15:49:30.186Z  INFO 169766 --- [dgsi-maintenance] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.24]
+2025-12-04T15:49:30.266Z  INFO 169766 --- [dgsi-maintenance] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-12-04T15:49:30.268Z  INFO 169766 --- [dgsi-maintenance] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1983 ms
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2025-12-04T15:49:30.520Z  INFO 169766 --- [dgsi-maintenance] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-12-04T15:49:30.583Z  INFO 169766 --- [dgsi-maintenance] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-12-04T15:49:30.622Z  INFO 169766 --- [dgsi-maintenance] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-12-04T15:49:30.998Z  INFO 169766 --- [dgsi-maintenance] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-12-04T15:49:31.031Z  INFO 169766 --- [dgsi-maintenance] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-12-04T15:49:31.449Z  INFO 169766 --- [dgsi-maintenance] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5273143e
+2025-12-04T15:49:31.450Z  INFO 169766 --- [dgsi-maintenance] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-12-04T15:49:31.492Z  WARN 169766 --- [dgsi-maintenance] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-12-04T15:49:31.641Z  WARN 169766 --- [dgsi-maintenance] [           main] o.h.boot.model.internal.EntityBinder     : HHH000457: Joined inheritance hierarchy [com.dgsi.maintenance.entity.User] defined explicit @DiscriminatorColumn.  Legacy Hibernate behavior was to ignore the @DiscriminatorColumn.  However, as part of issue HHH-6911 we now apply the explicit @DiscriminatorColumn.  If you would prefer the legacy behavior, enable the `hibernate.discriminator.ignore_explicit_for_joined` setting (hibernate.discriminator.ignore_explicit_for_joined=true)
+2025-12-04T15:49:33.429Z  INFO 169766 --- [dgsi-maintenance] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-12-04T15:49:33.507Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists evaluation_trimestrielle 
+       alter column appreciation_representant set data type TEXT
+Hibernate: 
+    alter table if exists evaluation_trimestrielle 
+       alter column appreciation_representant set data type TEXT
+2025-12-04T15:49:33.519Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists evaluation_trimestrielle 
+       alter column observations_generales set data type TEXT
+Hibernate: 
+    alter table if exists evaluation_trimestrielle 
+       alter column observations_generales set data type TEXT
+2025-12-04T15:49:33.529Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists fiches_prestation 
+       alter column commentaire set data type TEXT
+Hibernate: 
+    alter table if exists fiches_prestation 
+       alter column commentaire set data type TEXT
+2025-12-04T15:49:33.533Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists fiches_prestation 
+       alter column fichiers_contrat set data type TEXT
+Hibernate: 
+    alter table if exists fiches_prestation 
+       alter column fichiers_contrat set data type TEXT
+2025-12-04T15:49:33.536Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists fiches_prestation 
+       alter column items_couverts set data type TEXT
+Hibernate: 
+    alter table if exists fiches_prestation 
+       alter column items_couverts set data type TEXT
+2025-12-04T15:49:33.539Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists notifications 
+       alter column message set data type TEXT
+Hibernate: 
+    alter table if exists notifications 
+       alter column message set data type TEXT
+2025-12-04T15:49:33.543Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists prestations 
+       alter column description set data type TEXT
+Hibernate: 
+    alter table if exists prestations 
+       alter column description set data type TEXT
+2025-12-04T15:49:33.546Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations set data type TEXT
+2025-12-04T15:49:33.549Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations_contrats set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations_contrats set data type TEXT
+2025-12-04T15:49:33.552Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations_generales set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations_generales set data type TEXT
+2025-12-04T15:49:33.556Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations_items set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations_items set data type TEXT
+2025-12-04T15:49:33.559Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations_ordres set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations_ordres set data type TEXT
+2025-12-04T15:49:33.562Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations_prestations set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations_prestations set data type TEXT
+2025-12-04T15:49:33.566Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations_structures set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations_structures set data type TEXT
+2025-12-04T15:49:33.914Z  INFO 169766 --- [dgsi-maintenance] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-12-04T15:49:34.355Z  INFO 169766 --- [dgsi-maintenance] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-12-04T15:49:36.138Z  INFO 169766 --- [dgsi-maintenance] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-12-04T15:49:36.568Z  INFO 169766 --- [dgsi-maintenance] [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@66b09935, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@5981b51, org.springframework.security.web.context.SecurityContextHolderFilter@6d81522b, org.springframework.security.web.header.HeaderWriterFilter@7c0182ee, org.springframework.web.filter.CorsFilter@39894485, org.springframework.security.web.authentication.logout.LogoutFilter@412de677, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@467c785d, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@51406cdd, com.dgsi.maintenance.security.WebSecurityConfig$1@b1caa00, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6987f367, org.springframework.security.web.session.SessionManagementFilter@3bc1ed53, org.springframework.security.web.access.ExceptionTranslationFilter@5944fbf0, org.springframework.security.web.access.intercept.AuthorizationFilter@76795a95]
+2025-12-04T15:49:36.927Z  INFO 169766 --- [dgsi-maintenance] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8085 (http) with context path '/'
+2025-12-04T15:49:36.938Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.maintenance.MaintenanceApplication   : Started MaintenanceApplication in 9.27 seconds (process running for 9.833)
+2025-12-04T15:49:36.942Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.maintenance.config.DataInitializer   : Data initialization started
+2025-12-04T15:49:37.019Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        type_items ti1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        type_items ti1_0
+2025-12-04T15:49:37.029Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        users u1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        users u1_0
+2025-12-04T15:49:37.031Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.maintenance.config.DataInitializer   : Users already exist, skipping sample user creation
+2025-12-04T15:49:37.031Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.m.config.ContratDataInitializer      : Initializing Contrat data...
+2025-12-04T15:49:37.033Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        contrats c1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        contrats c1_0
+2025-12-04T15:49:37.035Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.m.config.ContratDataInitializer      : Contracts already exist, skipping sample data creation
+2025-12-04T15:49:37.035Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.m.config.ContratDataInitializer      : Contrat data initialized
+2025-12-04T15:49:37.035Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.m.config.ItemDataInitializer         : Initializing Item data...
+2025-12-04T15:49:37.037Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        items i1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        items i1_0
+2025-12-04T15:49:37.039Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.m.config.ItemDataInitializer         : Items already exist, skipping sample data creation
+2025-12-04T15:49:37.039Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.m.config.ItemDataInitializer         : Item data initialized
+2025-12-04T15:49:37.039Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.m.c.StructureMefpDataInitializer     : Structure MEFP data initialization started
+2025-12-04T15:49:37.041Z DEBUG 169766 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        structures_mefp sm1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        structures_mefp sm1_0
+2025-12-04T15:49:37.043Z  INFO 169766 --- [dgsi-maintenance] [           main] c.d.m.c.StructureMefpDataInitializer     : StructureMefp data already exists, skipping initialization
+2025-12-04T15:49:48.133Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-12-04T15:49:48.133Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-12-04T15:49:48.135Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-12-04T15:49:48.161Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/ordres-commande/trimestre/4/lots
+🔧 DEV FILTER: Setting authentication for request: /api/ordres-commande/trimestre/4/lots
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:49:48.181Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/ordres-commande/trimestre/4/lots
+2025-12-04T15:49:48.221Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-1] c.d.m.c.OrdreCommandeController          : 📊 Récupération des lots pour le trimestre: 4
+2025-12-04T15:49:48.258Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+2025-12-04T15:49:48.287Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-1] c.d.m.c.OrdreCommandeController          : 🔍 Prestations trouvées pour T4: 2
+2025-12-04T15:49:48.290Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0
+2025-12-04T15:49:48.304Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] org.hibernate.SQL                        : 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+Hibernate: 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+2025-12-04T15:49:48.312Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-1] c.d.m.c.OrdreCommandeController          : ✅ Lot créé: Lot 9 - 2 fiches, 20000.0 FCFA
+2025-12-04T15:49:48.313Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-1] c.d.m.c.OrdreCommandeController          : ✅ Retour de 1 lots pour T4
+2025-12-04T15:50:20.194Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/notifications/stream/admin@gmail.com
+🔧 DEV FILTER: Setting authentication for request: /api/notifications/stream/admin%40gmail.com
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:50:20.196Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/notifications/stream/admin@gmail.com
+2025-12-04T15:50:20.309Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] org.hibernate.SQL                        : 
+    select
+        n1_0.id,
+        n1_0.date_creation,
+        n1_0.destinataire,
+        n1_0.lu,
+        n1_0.message,
+        n1_0.prestation_id,
+        n1_0.titre,
+        n1_0.type 
+    from
+        notifications n1_0 
+    where
+        n1_0.destinataire=? 
+    order by
+        n1_0.date_creation desc
+Hibernate: 
+    select
+        n1_0.id,
+        n1_0.date_creation,
+        n1_0.destinataire,
+        n1_0.lu,
+        n1_0.message,
+        n1_0.prestation_id,
+        n1_0.titre,
+        n1_0.type 
+    from
+        notifications n1_0 
+    where
+        n1_0.destinataire=? 
+    order by
+        n1_0.date_creation desc
+2025-12-04T15:50:20.360Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/notifications/stream/admin@gmail.com
+🔧 DEV FILTER: Setting authentication for request: /api/notifications/stream/admin%40gmail.com
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:50:20.361Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] .s.ChangeSessionIdAuthenticationStrategy : Changed session id from 3880FB199ABFC5298A91E414A389BDC3
+2025-12-04T15:50:20.362Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/notifications/stream/admin@gmail.com
+2025-12-04T15:50:20.366Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] org.hibernate.SQL                        : 
+    select
+        n1_0.id,
+        n1_0.date_creation,
+        n1_0.destinataire,
+        n1_0.lu,
+        n1_0.message,
+        n1_0.prestation_id,
+        n1_0.titre,
+        n1_0.type 
+    from
+        notifications n1_0 
+    where
+        n1_0.destinataire=? 
+    order by
+        n1_0.date_creation desc
+Hibernate: 
+    select
+        n1_0.id,
+        n1_0.date_creation,
+        n1_0.destinataire,
+        n1_0.lu,
+        n1_0.message,
+        n1_0.prestation_id,
+        n1_0.titre,
+        n1_0.type 
+    from
+        notifications n1_0 
+    where
+        n1_0.destinataire=? 
+    order by
+        n1_0.date_creation desc
+2025-12-04T15:50:26.092Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/ordres-commande/trimestre/4/lot/9/fiches
+🔧 DEV FILTER: Setting authentication for request: /api/ordres-commande/trimestre/4/lot/9/fiches
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:50:26.128Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/ordres-commande/trimestre/4/lot/9/fiches
+2025-12-04T15:50:26.131Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-4] c.d.m.c.OrdreCommandeController          : 📄 Récupération des fiches pour lot 9 - T4
+2025-12-04T15:50:26.137Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0
+2025-12-04T15:50:26.163Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-4] c.d.m.c.OrdreCommandeController          : 🔍 Prestataires trouvés pour le lot Lot 9: [SoftLink Technologies, TechServe SARL, IT Solutions Burkina, CyberTech SARL, Digital Solutions]
+2025-12-04T15:50:26.172Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+2025-12-04T15:50:26.182Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-4] c.d.m.c.OrdreCommandeController          : 🔍 Prestations T4 pour prestataires [SoftLink Technologies, TechServe SARL, IT Solutions Burkina, CyberTech SARL, Digital Solutions]: 2
+2025-12-04T15:50:26.188Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] org.hibernate.SQL                        : 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+Hibernate: 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+2025-12-04T15:50:26.198Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-4] c.d.m.c.OrdreCommandeController          : 🔍 Fiches trouvées pour le lot Lot 9 - T4: 2
+2025-12-04T15:50:26.199Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-4] c.d.m.c.OrdreCommandeController          : ✅ Retour de 2 fiches pour lot 9 - T4 (5 prestataires)
+2025-12-04T15:52:06.027Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/ordres-commande/trimestre/4/lot/9/fiches
+🔧 DEV FILTER: Setting authentication for request: /api/ordres-commande/trimestre/4/lot/9/fiches
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:52:06.033Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/ordres-commande/trimestre/4/lot/9/fiches
+2025-12-04T15:52:06.036Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-6] c.d.m.c.OrdreCommandeController          : 📄 Récupération des fiches pour lot 9 - T4
+2025-12-04T15:52:06.044Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0
+2025-12-04T15:52:06.061Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-6] c.d.m.c.OrdreCommandeController          : 🔍 Prestataires trouvés pour le lot Lot 9: [SoftLink Technologies, TechServe SARL, IT Solutions Burkina, CyberTech SARL, Digital Solutions]
+2025-12-04T15:52:06.068Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+2025-12-04T15:52:06.082Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-6] c.d.m.c.OrdreCommandeController          : 🔍 Prestations T4 pour prestataires [SoftLink Technologies, TechServe SARL, IT Solutions Burkina, CyberTech SARL, Digital Solutions]: 2
+2025-12-04T15:52:06.088Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] org.hibernate.SQL                        : 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+Hibernate: 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+2025-12-04T15:52:06.096Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-6] c.d.m.c.OrdreCommandeController          : 🔍 Fiches trouvées pour le lot Lot 9 - T4: 2
+2025-12-04T15:52:06.097Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-6] c.d.m.c.OrdreCommandeController          : ✅ Retour de 2 fiches pour lot 9 - T4 (5 prestataires)
+2025-12-04T15:52:09.781Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/users
+🔧 DEV FILTER: Setting authentication for request: /api/users
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:52:09.783Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/users
+2025-12-04T15:52:09.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:52:09.794Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/contrats
+2025-12-04T15:52:09.794Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/evaluations
+🔧 DEV FILTER: Setting authentication for request: /api/evaluations
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:52:09.796Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/fiches-prestation
+2025-12-04T15:52:09.797Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/evaluations
+🔧 DEV FILTER: Setting authentication for request: /api/fiches-prestation
+🔧 DEV FILTER: Setting authentication for request: /api/contrats
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:52:09.801Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/fiches-prestation
+2025-12-04T15:52:09.802Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] org.hibernate.SQL                        : 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+Hibernate: 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+2025-12-04T15:52:09.804Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public java.util.List com.dgsi.maintenance.controller.FichePrestationController.getAllFiches(); target is of class [com.dgsi.maintenance.controller.FichePrestationController]
+2025-12-04T15:52:09.804Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/contrats
+2025-12-04T15:52:09.806Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:52:09.838Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/notifications/stream/admin@gmail.com
+🔧 DEV FILTER: Setting authentication for request: /api/notifications/stream/admin%40gmail.com
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:52:09.839Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] .s.ChangeSessionIdAuthenticationStrategy : Changed session id from D0892BC5A63809B800446CD3221920B7
+2025-12-04T15:52:09.840Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/notifications/stream/admin@gmail.com
+2025-12-04T15:52:09.843Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] org.hibernate.SQL                        : 
+    select
+        n1_0.id,
+        n1_0.date_creation,
+        n1_0.destinataire,
+        n1_0.lu,
+        n1_0.message,
+        n1_0.prestation_id,
+        n1_0.titre,
+        n1_0.type 
+    from
+        notifications n1_0 
+    where
+        n1_0.destinataire=? 
+    order by
+        n1_0.date_creation desc
+Hibernate: 
+    select
+        n1_0.id,
+        n1_0.date_creation,
+        n1_0.destinataire,
+        n1_0.lu,
+        n1_0.message,
+        n1_0.prestation_id,
+        n1_0.titre,
+        n1_0.type 
+    from
+        notifications n1_0 
+    where
+        n1_0.destinataire=? 
+    order by
+        n1_0.date_creation desc
+2025-12-04T15:52:09.854Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:52:09.854Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public java.util.List com.dgsi.maintenance.controller.FichePrestationController.getAllFiches(); target is of class [com.dgsi.maintenance.controller.FichePrestationController]
+2025-12-04T15:52:09.854Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:52:09.854Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-8] c.d.m.controller.ContratController       : Récupération des contrats pour l'utilisateur: admin@gmail.com
+2025-12-04T15:52:09.857Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] org.hibernate.SQL                        : 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+Hibernate: 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+2025-12-04T15:52:09.860Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+2025-12-04T15:52:09.867Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+2025-12-04T15:52:39.787Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/evaluations
+2025-12-04T15:52:39.787Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/contrats
+2025-12-04T15:52:39.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/users
+🔧 DEV FILTER: Setting authentication for request: /api/evaluations
+🔧 DEV FILTER: Setting authentication for request: /api/contrats
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+🔧 DEV FILTER: Setting authentication for request: /api/users
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:52:39.792Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/evaluations
+2025-12-04T15:52:39.792Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/contrats
+2025-12-04T15:52:39.792Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/users
+2025-12-04T15:52:39.794Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:52:39.794Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:52:39.795Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:52:39.795Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:52:39.795Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-3] c.d.m.controller.ContratController       : Récupération des contrats pour l'utilisateur: admin@gmail.com
+2025-12-04T15:52:39.801Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+2025-12-04T15:52:39.803Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+2025-12-04T15:52:39.802Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] org.hibernate.SQL                        : 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+Hibernate: 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+2025-12-04T15:53:09.788Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/contrats
+2025-12-04T15:53:09.788Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/users
+2025-12-04T15:53:09.788Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/evaluations
+🔧 DEV FILTER: Setting authentication for request: /api/contrats
+🔧 DEV FILTER: Setting authentication for request: /api/users
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+🔧 DEV FILTER: Setting authentication for request: /api/evaluations
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:53:09.792Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/contrats
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:53:09.792Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/users
+2025-12-04T15:53:09.793Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/evaluations
+2025-12-04T15:53:09.793Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:53:09.794Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:53:09.794Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:53:09.794Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-6] c.d.m.controller.ContratController       : Récupération des contrats pour l'utilisateur: admin@gmail.com
+2025-12-04T15:53:09.794Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:53:09.797Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+2025-12-04T15:53:09.801Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+2025-12-04T15:53:09.802Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] org.hibernate.SQL                        : 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+Hibernate: 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+2025-12-04T15:53:39.787Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/users
+2025-12-04T15:53:39.787Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/contrats
+2025-12-04T15:53:39.787Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/evaluations
+🔧 DEV FILTER: Setting authentication for request: /api/contrats
+🔧 DEV FILTER: Setting authentication for request: /api/users
+🔧 DEV FILTER: Setting authentication for request: /api/evaluations
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:53:39.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/contrats
+2025-12-04T15:53:39.790Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/users
+2025-12-04T15:53:39.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/evaluations
+2025-12-04T15:53:39.792Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:53:39.792Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:53:39.793Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:53:39.793Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:53:39.793Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-7] c.d.m.controller.ContratController       : Récupération des contrats pour l'utilisateur: admin@gmail.com
+2025-12-04T15:53:39.796Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+2025-12-04T15:53:39.800Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+2025-12-04T15:53:39.800Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] org.hibernate.SQL                        : 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+Hibernate: 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+2025-12-04T15:54:09.785Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/users
+2025-12-04T15:54:09.785Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/contrats
+2025-12-04T15:54:09.785Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/evaluations
+🔧 DEV FILTER: Setting authentication for request: /api/users
+🔧 DEV FILTER: Setting authentication for request: /api/contrats
+🔧 DEV FILTER: Setting authentication for request: /api/evaluations
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:54:09.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/contrats
+2025-12-04T15:54:09.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/users
+2025-12-04T15:54:09.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/evaluations
+2025-12-04T15:54:09.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:54:09.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:54:09.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:54:09.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:54:09.794Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-2] c.d.m.controller.ContratController       : Récupération des contrats pour l'utilisateur: admin@gmail.com
+2025-12-04T15:54:09.797Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+2025-12-04T15:54:09.799Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+2025-12-04T15:54:09.801Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] org.hibernate.SQL                        : 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+Hibernate: 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+2025-12-04T15:54:39.786Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/contrats
+2025-12-04T15:54:39.786Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/users
+2025-12-04T15:54:39.786Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/evaluations
+🔧 DEV FILTER: Setting authentication for request: /api/users
+🔧 DEV FILTER: Setting authentication for request: /api/evaluations
+🔧 DEV FILTER: Setting authentication for request: /api/contrats
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:54:39.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/evaluations
+2025-12-04T15:54:39.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/contrats
+2025-12-04T15:54:39.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/users
+2025-12-04T15:54:39.793Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:54:39.793Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:54:39.794Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:54:39.794Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:54:39.794Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-5] c.d.m.controller.ContratController       : Récupération des contrats pour l'utilisateur: admin@gmail.com
+2025-12-04T15:54:39.797Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+2025-12-04T15:54:39.799Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] org.hibernate.SQL                        : 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+Hibernate: 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+2025-12-04T15:54:39.803Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+2025-12-04T15:55:09.785Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/users
+2025-12-04T15:55:09.785Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/contrats
+2025-12-04T15:55:09.786Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/evaluations
+🔧 DEV FILTER: Setting authentication for request: /api/contrats
+🔧 DEV FILTER: Setting authentication for request: /api/users
+🔧 DEV FILTER: Setting authentication for request: /api/evaluations
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:55:09.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/contrats
+2025-12-04T15:55:09.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/users
+2025-12-04T15:55:09.789Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/evaluations
+2025-12-04T15:55:09.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:55:09.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:55:09.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:55:09.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:55:09.792Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-8] c.d.m.controller.ContratController       : Récupération des contrats pour l'utilisateur: admin@gmail.com
+2025-12-04T15:55:09.795Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+2025-12-04T15:55:09.797Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+2025-12-04T15:55:09.798Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] org.hibernate.SQL                        : 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+Hibernate: 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+2025-12-04T15:55:39.785Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/users
+2025-12-04T15:55:39.786Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/evaluations
+2025-12-04T15:55:39.786Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/contrats
+🔧 DEV FILTER: Setting authentication for request: /api/users
+🔧 DEV FILTER: Setting authentication for request: /api/contrats
+🔧 DEV FILTER: Setting authentication for request: /api/evaluations
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:55:39.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/users
+2025-12-04T15:55:39.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/evaluations
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:55:39.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:55:39.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/contrats
+2025-12-04T15:55:39.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:55:39.793Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:55:39.794Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:55:39.794Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-3] c.d.m.controller.ContratController       : Récupération des contrats pour l'utilisateur: admin@gmail.com
+2025-12-04T15:55:39.797Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] org.hibernate.SQL                        : 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+Hibernate: 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+2025-12-04T15:55:39.798Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+2025-12-04T15:55:39.797Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+2025-12-04T15:56:09.785Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/evaluations
+2025-12-04T15:56:09.785Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/users
+2025-12-04T15:56:09.785Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/contrats
+🔧 DEV FILTER: Setting authentication for request: /api/contrats
+🔧 DEV FILTER: Setting authentication for request: /api/evaluations
+🔧 DEV FILTER: Setting authentication for request: /api/users
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:56:09.788Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/contrats
+2025-12-04T15:56:09.788Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/evaluations
+2025-12-04T15:56:09.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/users
+2025-12-04T15:56:09.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:56:09.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:56:09.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:56:09.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:56:09.791Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-6] c.d.m.controller.ContratController       : Récupération des contrats pour l'utilisateur: admin@gmail.com
+2025-12-04T15:56:09.794Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+2025-12-04T15:56:09.796Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] org.hibernate.SQL                        : 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+Hibernate: 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+2025-12-04T15:56:09.799Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+2025-12-04T15:56:39.784Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/users
+2025-12-04T15:56:39.785Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/contrats
+2025-12-04T15:56:39.785Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/evaluations
+🔧 DEV FILTER: Setting authentication for request: /api/contrats
+🔧 DEV FILTER: Setting authentication for request: /api/users
+🔧 DEV FILTER: Setting authentication for request: /api/evaluations
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:56:39.788Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/contrats
+2025-12-04T15:56:39.788Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/users
+2025-12-04T15:56:39.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/evaluations
+2025-12-04T15:56:39.790Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:56:39.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:56:39.791Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:56:39.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:56:39.791Z  INFO 169766 --- [dgsi-maintenance] [io-8085-exec-10] c.d.m.controller.ContratController       : Récupération des contrats pour l'utilisateur: admin@gmail.com
+2025-12-04T15:56:39.793Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+2025-12-04T15:56:39.797Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+2025-12-04T15:56:39.798Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] org.hibernate.SQL                        : 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+Hibernate: 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+2025-12-04T15:57:09.785Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/users
+2025-12-04T15:57:09.786Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/contrats
+2025-12-04T15:57:09.786Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/evaluations
+🔧 DEV FILTER: Setting authentication for request: /api/users
+🔧 DEV FILTER: Setting authentication for request: /api/contrats
+🔧 DEV FILTER: Setting authentication for request: /api/evaluations
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:57:09.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/users
+2025-12-04T15:57:09.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/evaluations
+2025-12-04T15:57:09.789Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/contrats
+2025-12-04T15:57:09.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:57:09.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:57:09.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.ContratController.getAllContrats(); target is of class [com.dgsi.maintenance.controller.ContratController]
+2025-12-04T15:57:09.791Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.UserController.getAllUsers(); target is of class [com.dgsi.maintenance.controller.UserController]
+2025-12-04T15:57:09.791Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-4] c.d.m.controller.ContratController       : Récupération des contrats pour l'utilisateur: admin@gmail.com
+2025-12-04T15:57:09.794Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        i1_0.contrat_id,
+        i1_1.id,
+        i1_1.description,
+        i1_1.id_item,
+        i1_1.lot,
+        i1_1.nom_item,
+        i1_1.ordre_commande_id,
+        i1_1.prix,
+        i1_1.quantite_max_trimestre,
+        i1_1.quantite_min_trimestre,
+        i1_1.quantite_utilisee,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    left join
+        contrat_items i1_0 
+            on c1_0.id=i1_0.contrat_id 
+    left join
+        items i1_1 
+            on i1_1.id=i1_0.item_id
+2025-12-04T15:57:09.796Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] org.hibernate.SQL                        : 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+Hibernate: 
+    select
+        et1_0.id,
+        et1_0.appreciation_representant,
+        et1_0.correspondant_id,
+        et1_0.date_creation,
+        et1_0.date_evaluation,
+        et1_0.date_modification,
+        et1_0.delai_intervention_respecte,
+        et1_0.delai_reaction_respecte,
+        et1_0.evaluateur_nom,
+        et1_0.fichier_pdf,
+        et1_0.horaires_respectes,
+        et1_0.instances_non_resolues,
+        et1_0.lot,
+        et1_0.note_finale,
+        et1_0.obs_delai_intervention,
+        et1_0.obs_delai_reaction,
+        et1_0.obs_horaires,
+        et1_0.obs_rapport,
+        et1_0.obs_registre,
+        et1_0.obs_techniciens,
+        et1_0.obs_tenue,
+        et1_0.obs_vehicule,
+        et1_0.observations_generales,
+        et1_0.penalites_calcul,
+        et1_0.prestataire_declasse,
+        et1_0.prestataire_nom,
+        et1_0.prestations_verifiees,
+        et1_0.preuves,
+        et1_0.rapport_intervention_transmis,
+        et1_0.recommandation,
+        et1_0.registre_rempli,
+        et1_0.score_global,
+        et1_0.session_id,
+        et1_0.signature_evaluateur,
+        et1_0.signature_representant,
+        et1_0.statut,
+        et1_0.techniciens_certifies,
+        et1_0.techniciens_liste,
+        et1_0.tenue_disponible,
+        et1_0.trimestre,
+        et1_0.utilisateur_creation,
+        et1_0.utilisateur_modification,
+        et1_0.vehicule_disponible 
+    from
+        evaluation_trimestrielle et1_0
+2025-12-04T15:57:09.797Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id
+2025-12-04T15:57:39.799Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/ordres-commande/trimestre/1/lot/9/fiches
+🔧 DEV FILTER: Setting authentication for request: /api/ordres-commande/trimestre/1/lot/9/fiches
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:57:39.802Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/ordres-commande/trimestre/1/lot/9/fiches
+2025-12-04T15:57:39.805Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-3] c.d.m.c.OrdreCommandeController          : 📄 Récupération des fiches pour lot 9 - T1
+2025-12-04T15:57:39.813Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0
+2025-12-04T15:57:39.833Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-3] c.d.m.c.OrdreCommandeController          : 🔍 Prestataires trouvés pour le lot Lot 9: [SoftLink Technologies, TechServe SARL, IT Solutions Burkina, CyberTech SARL, Digital Solutions]
+2025-12-04T15:57:39.837Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+2025-12-04T15:57:39.845Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-3] c.d.m.c.OrdreCommandeController          : 🔍 Prestations T1 pour prestataires [SoftLink Technologies, TechServe SARL, IT Solutions Burkina, CyberTech SARL, Digital Solutions]: 0
+2025-12-04T15:57:39.846Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-3] c.d.m.c.OrdreCommandeController          : 🔍 Fiches trouvées pour le lot Lot 9 - T1: 0
+2025-12-04T15:57:39.846Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-3] c.d.m.c.OrdreCommandeController          : ✅ Retour de 0 fiches pour lot 9 - T1 (5 prestataires)
+2025-12-04T15:57:48.787Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] o.s.security.web.FilterChainProxy        : Securing GET /api/prestations/dev?secret=dev-secret-please-change&page=0&size=12
+2025-12-04T15:57:48.787Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] o.s.security.web.FilterChainProxy        : Securing GET /api/fiches-prestation
+2025-12-04T15:57:48.787Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] o.s.security.web.FilterChainProxy        : Securing GET /api/items
+🔧 DEV FILTER: Setting authentication for request: /api/fiches-prestation
+🔧 DEV FILTER: Setting authentication for request: /api/items
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:57:48.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] o.s.security.web.FilterChainProxy        : Secured GET /api/fiches-prestation
+2025-12-04T15:57:48.790Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] o.s.security.web.FilterChainProxy        : Secured GET /api/items
+2025-12-04T15:57:48.792Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public java.util.List com.dgsi.maintenance.controller.FichePrestationController.getAllFiches(); target is of class [com.dgsi.maintenance.controller.FichePrestationController]
+2025-12-04T15:57:48.792Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public java.util.List com.dgsi.maintenance.controller.FichePrestationController.getAllFiches(); target is of class [com.dgsi.maintenance.controller.FichePrestationController]
+🔧 DEV FILTER: Setting authentication for request: /api/prestations/dev
+2025-12-04T15:57:48.793Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public java.util.List com.dgsi.maintenance.controller.ItemController.getAllItems(); target is of class [com.dgsi.maintenance.controller.ItemController]
+2025-12-04T15:57:48.795Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public java.util.List com.dgsi.maintenance.controller.ItemController.getAllItems(); target is of class [com.dgsi.maintenance.controller.ItemController]
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:57:48.798Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] o.s.security.web.FilterChainProxy        : Secured GET /api/prestations/dev?secret=dev-secret-please-change&page=0&size=12
+2025-12-04T15:57:48.800Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-6] org.hibernate.SQL                        : 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+Hibernate: 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+2025-12-04T15:57:48.803Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-2] org.hibernate.SQL                        : 
+    select
+        i1_0.id,
+        i1_0.description,
+        i1_0.id_item,
+        i1_0.lot,
+        i1_0.nom_item,
+        i1_0.ordre_commande_id,
+        i1_0.prix,
+        i1_0.quantite_max_trimestre,
+        i1_0.quantite_min_trimestre,
+        i1_0.quantite_utilisee 
+    from
+        items i1_0
+Hibernate: 
+    select
+        i1_0.id,
+        i1_0.description,
+        i1_0.id_item,
+        i1_0.lot,
+        i1_0.nom_item,
+        i1_0.ordre_commande_id,
+        i1_0.prix,
+        i1_0.quantite_max_trimestre,
+        i1_0.quantite_min_trimestre,
+        i1_0.quantite_utilisee 
+    from
+        items i1_0
+2025-12-04T15:57:48.808Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-9] c.d.m.controller.PrestationController    : [DEV] getAllPrestationsDev - Returning all prestations without authentication
+2025-12-04T15:57:48.811Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-9] c.d.m.service.PrestationService          : Fetching all prestations from database
+2025-12-04T15:57:48.817Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-9] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+2025-12-04T15:57:48.830Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-9] c.d.m.service.PrestationService          : Found 2 prestations in database
+2025-12-04T15:57:48.833Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-9] c.d.m.controller.PrestationController    : [DEV] Found 2 prestations
+2025-12-04T15:57:57.661Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/prestations/dev?secret=dev-secret-please-change&page=0&size=12
+🔧 DEV FILTER: Setting authentication for request: /api/prestations/dev
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:57:57.664Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] o.s.security.web.FilterChainProxy        : Securing GET /api/items
+2025-12-04T15:57:57.665Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/prestations/dev?secret=dev-secret-please-change&page=0&size=12
+🔧 DEV FILTER: Setting authentication for request: /api/items
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:57:57.668Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] o.s.security.web.FilterChainProxy        : Secured GET /api/items
+2025-12-04T15:57:57.670Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public java.util.List com.dgsi.maintenance.controller.ItemController.getAllItems(); target is of class [com.dgsi.maintenance.controller.ItemController]
+2025-12-04T15:57:57.671Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public java.util.List com.dgsi.maintenance.controller.ItemController.getAllItems(); target is of class [com.dgsi.maintenance.controller.ItemController]
+2025-12-04T15:57:57.672Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-1] c.d.m.controller.PrestationController    : [DEV] getAllPrestationsDev - Returning all prestations without authentication
+2025-12-04T15:57:57.674Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-1] c.d.m.service.PrestationService          : Fetching all prestations from database
+2025-12-04T15:57:57.679Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-5] org.hibernate.SQL                        : 
+    select
+        i1_0.id,
+        i1_0.description,
+        i1_0.id_item,
+        i1_0.lot,
+        i1_0.nom_item,
+        i1_0.ordre_commande_id,
+        i1_0.prix,
+        i1_0.quantite_max_trimestre,
+        i1_0.quantite_min_trimestre,
+        i1_0.quantite_utilisee 
+    from
+        items i1_0
+Hibernate: 
+    select
+        i1_0.id,
+        i1_0.description,
+        i1_0.id_item,
+        i1_0.lot,
+        i1_0.nom_item,
+        i1_0.ordre_commande_id,
+        i1_0.prix,
+        i1_0.quantite_max_trimestre,
+        i1_0.quantite_min_trimestre,
+        i1_0.quantite_utilisee 
+    from
+        items i1_0
+2025-12-04T15:57:57.682Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-1] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+2025-12-04T15:57:57.690Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-1] c.d.m.service.PrestationService          : Found 2 prestations in database
+2025-12-04T15:57:57.692Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-1] c.d.m.controller.PrestationController    : [DEV] Found 2 prestations
+2025-12-04T15:58:04.331Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] o.s.security.web.FilterChainProxy        : Securing GET /api/prestations/9
+🔧 DEV FILTER: Setting authentication for request: /api/prestations/9
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:58:04.341Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] o.s.security.web.FilterChainProxy        : Secured GET /api/prestations/9
+2025-12-04T15:58:04.345Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.PrestationController.getPrestationById(java.lang.Long); target is of class [com.dgsi.maintenance.controller.PrestationController]
+2025-12-04T15:58:04.347Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.PrestationController.getPrestationById(java.lang.Long); target is of class [com.dgsi.maintenance.controller.PrestationController]
+2025-12-04T15:58:04.369Z DEBUG 169766 --- [dgsi-maintenance] [io-8085-exec-10] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        iu1_0.prestation_id,
+        iu1_1.id,
+        iu1_1.description,
+        iu1_1.id_item,
+        iu1_1.lot,
+        iu1_1.nom_item,
+        iu1_1.ordre_commande_id,
+        iu1_1.prix,
+        iu1_1.quantite_max_trimestre,
+        iu1_1.quantite_min_trimestre,
+        iu1_1.quantite_utilisee,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0 
+    left join
+        prestation_item iu1_0 
+            on p1_0.id=iu1_0.prestation_id 
+    left join
+        items iu1_1 
+            on iu1_1.id=iu1_0.item_id 
+    where
+        p1_0.id=?
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        iu1_0.prestation_id,
+        iu1_1.id,
+        iu1_1.description,
+        iu1_1.id_item,
+        iu1_1.lot,
+        iu1_1.nom_item,
+        iu1_1.ordre_commande_id,
+        iu1_1.prix,
+        iu1_1.quantite_max_trimestre,
+        iu1_1.quantite_min_trimestre,
+        iu1_1.quantite_utilisee,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0 
+    left join
+        prestation_item iu1_0 
+            on p1_0.id=iu1_0.prestation_id 
+    left join
+        items iu1_1 
+            on iu1_1.id=iu1_0.item_id 
+    where
+        p1_0.id=?
+2025-12-04T15:58:10.918Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] o.s.security.web.FilterChainProxy        : Securing GET /api/prestations/dev?secret=dev-secret-please-change&page=0&size=12
+2025-12-04T15:58:10.919Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] o.s.security.web.FilterChainProxy        : Securing GET /api/items
+🔧 DEV FILTER: Setting authentication for request: /api/prestations/dev
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+🔧 DEV FILTER: Setting authentication for request: /api/items
+2025-12-04T15:58:10.921Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] o.s.security.web.FilterChainProxy        : Secured GET /api/prestations/dev?secret=dev-secret-please-change&page=0&size=12
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:58:10.922Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] o.s.security.web.FilterChainProxy        : Secured GET /api/items
+2025-12-04T15:58:10.923Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-7] c.d.m.controller.PrestationController    : [DEV] getAllPrestationsDev - Returning all prestations without authentication
+2025-12-04T15:58:10.924Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public java.util.List com.dgsi.maintenance.controller.ItemController.getAllItems(); target is of class [com.dgsi.maintenance.controller.ItemController]
+2025-12-04T15:58:10.925Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public java.util.List com.dgsi.maintenance.controller.ItemController.getAllItems(); target is of class [com.dgsi.maintenance.controller.ItemController]
+2025-12-04T15:58:10.926Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-7] c.d.m.service.PrestationService          : Fetching all prestations from database
+2025-12-04T15:58:10.931Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-7] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+2025-12-04T15:58:10.931Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-8] org.hibernate.SQL                        : 
+    select
+        i1_0.id,
+        i1_0.description,
+        i1_0.id_item,
+        i1_0.lot,
+        i1_0.nom_item,
+        i1_0.ordre_commande_id,
+        i1_0.prix,
+        i1_0.quantite_max_trimestre,
+        i1_0.quantite_min_trimestre,
+        i1_0.quantite_utilisee 
+    from
+        items i1_0
+Hibernate: 
+    select
+        i1_0.id,
+        i1_0.description,
+        i1_0.id_item,
+        i1_0.lot,
+        i1_0.nom_item,
+        i1_0.ordre_commande_id,
+        i1_0.prix,
+        i1_0.quantite_max_trimestre,
+        i1_0.quantite_min_trimestre,
+        i1_0.quantite_utilisee 
+    from
+        items i1_0
+2025-12-04T15:58:10.938Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-7] c.d.m.service.PrestationService          : Found 2 prestations in database
+2025-12-04T15:58:10.940Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-7] c.d.m.controller.PrestationController    : [DEV] Found 2 prestations
+2025-12-04T15:58:18.068Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] o.s.security.web.FilterChainProxy        : Securing GET /api/ordres-commande/trimestre/4/lot/9/fiches
+🔧 DEV FILTER: Setting authentication for request: /api/ordres-commande/trimestre/4/lot/9/fiches
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:58:18.073Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] o.s.security.web.FilterChainProxy        : Secured GET /api/ordres-commande/trimestre/4/lot/9/fiches
+2025-12-04T15:58:18.076Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-4] c.d.m.c.OrdreCommandeController          : 📄 Récupération des fiches pour lot 9 - T4
+2025-12-04T15:58:18.087Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot,
+        c1_0.montant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0
+2025-12-04T15:58:18.099Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-4] c.d.m.c.OrdreCommandeController          : 🔍 Prestataires trouvés pour le lot Lot 9: [SoftLink Technologies, TechServe SARL, IT Solutions Burkina, CyberTech SARL, Digital Solutions]
+2025-12-04T15:58:18.105Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0
+2025-12-04T15:58:18.113Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-4] c.d.m.c.OrdreCommandeController          : 🔍 Prestations T4 pour prestataires [SoftLink Technologies, TechServe SARL, IT Solutions Burkina, CyberTech SARL, Digital Solutions]: 2
+2025-12-04T15:58:18.138Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-4] org.hibernate.SQL                        : 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+Hibernate: 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+2025-12-04T15:58:18.144Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-4] c.d.m.c.OrdreCommandeController          : 🔍 Fiches trouvées pour le lot Lot 9 - T4: 2
+2025-12-04T15:58:18.144Z  INFO 169766 --- [dgsi-maintenance] [nio-8085-exec-4] c.d.m.c.OrdreCommandeController          : ✅ Retour de 2 fiches pour lot 9 - T4 (5 prestataires)
+2025-12-04T15:58:27.916Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] o.s.security.web.FilterChainProxy        : Securing GET /api/fiches-prestation/lots/9/fiche-globale/2025/4
+🔧 DEV FILTER: Setting authentication for request: /api/fiches-prestation/lots/9/fiche-globale/2025/4
+✅ DEV FILTER: Authentication set for user: admin (admin@gmail.com) with roles: [ROLE_ADMINISTRATEUR, ROLE_PRESTATAIRE, ROLE_AGENT_DGSI]
+2025-12-04T15:58:27.917Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] o.s.security.web.FilterChainProxy        : Secured GET /api/fiches-prestation/lots/9/fiche-globale/2025/4
+2025-12-04T15:58:27.920Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] horizationManagerBeforeMethodInterceptor : Authorizing method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.FichePrestationController.generateGlobalServiceSheetPdf(java.lang.String,int,int); target is of class [com.dgsi.maintenance.controller.FichePrestationController]
+2025-12-04T15:58:27.921Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] horizationManagerBeforeMethodInterceptor : Authorized method invocation ReflectiveMethodInvocation: public org.springframework.http.ResponseEntity com.dgsi.maintenance.controller.FichePrestationController.generateGlobalServiceSheetPdf(java.lang.String,int,int); target is of class [com.dgsi.maintenance.controller.FichePrestationController]
+2025-12-04T15:58:27.924Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] org.hibernate.SQL                        : 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+Hibernate: 
+    select
+        fp1_0.id,
+        fp1_0.commentaire,
+        fp1_0.date_realisation,
+        fp1_0.fichiers_contrat,
+        fp1_0.id_prestation,
+        fp1_0.items_couverts,
+        fp1_0.nom_item,
+        fp1_0.nom_prestataire,
+        fp1_0.prestataire_id,
+        fp1_0.quantite,
+        fp1_0.statut,
+        fp1_0.statut_intervention 
+    from
+        fiches_prestation fp1_0
+2025-12-04T15:58:27.932Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0 
+    where
+        p1_0.id=?
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0 
+    where
+        p1_0.id=?
+2025-12-04T15:58:27.934Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0 
+    where
+        p1_0.id=?
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0 
+    where
+        p1_0.id=?
+2025-12-04T15:58:27.937Z DEBUG 169766 --- [dgsi-maintenance] [nio-8085-exec-3] org.hibernate.SQL                        : 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0 
+    where
+        p1_0.id=?
+Hibernate: 
+    select
+        p1_0.id,
+        p1_0.adresse_structure,
+        p1_0.contact_ci,
+        p1_0.contact_prestataire,
+        p1_0.contact_structure,
+        p1_0.date_debut,
+        p1_0.date_fin,
+        p1_0.date_heure_debut,
+        p1_0.date_heure_fin,
+        p1_0.deleted,
+        p1_0.description,
+        p1_0.direction_prestataire,
+        p1_0.fonction_ci,
+        p1_0.fonction_structure,
+        p1_0.montant_intervention,
+        p1_0.montant_prest,
+        p1_0.nb_prest_realise,
+        p1_0.nom_ci,
+        p1_0.nom_prestataire,
+        p1_0.nom_prestation,
+        p1_0.nom_structure,
+        p1_0.ordre_commande_id,
+        p1_0.prenom_ci,
+        p1_0.prenom_structure,
+        p1_0.prestataire_id,
+        p1_0.qualification_prestataire,
+        p1_0.role_prestataire,
+        p1_0.service_prestataire,
+        p1_0.service_structure,
+        p1_0.statut,
+        p1_0.statut_intervention,
+        p1_0.statut_validation,
+        p1_0.structure_prestataire,
+        p1_0.trimestre 
+    from
+        prestations p1_0 
+    where
+        p1_0.id=?
+2025-12-04T16:07:49.831Z  INFO 169766 --- [dgsi-maintenance] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-12-04T16:07:49.833Z  INFO 169766 --- [dgsi-maintenance] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-12-04T16:07:49.846Z  INFO 169766 --- [dgsi-maintenance] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

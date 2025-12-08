@@ -1,0 +1,783 @@
+<div class="modal-overlay" *ngIf="showForm">
+  <div class="modal-content form-modal wizard-modal large-modal" (click)="$event.stopPropagation()">
+    <form [formGroup]="prestationForm" (ngSubmit)="onSubmit()" class="prestation-form">
+      <!-- Step Indicator -->
+      <div class="step-indicator">
+        <div class="step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+          <span class="step-number">1</span>
+          <span class="step-label">Prestataire</span>
+        </div>
+        <div class="step-connector" [class.active]="currentStep > 1"></div>
+        <div class="step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
+          <span class="step-number">2</span>
+          <span class="step-label">Structure</span>
+        </div>
+        <div class="step-connector" [class.active]="currentStep > 2"></div>
+        <div class="step" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3">
+          <span class="step-number">3</span>
+          <span class="step-label">Intervention</span>
+        </div>
+        <div class="step-connector" [class.active]="currentStep > 3"></div>
+        <div class="step" [class.active]="currentStep >= 4">
+          <span class="step-number">4</span>
+          <span class="step-label">Récapitulatif</span>
+        </div>
+      </div>
+
+      <h2 class="form-title">{{ stepTitles[currentStep - 1] }}</h2>
+      <!-- Step 1: Informations du Prestataire -->
+      <div *ngIf="currentStep === 1" class="step-content">
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Informations du Prestataire</h3>
+            <div class="section-divider"></div>
+          </div>
+
+          <!-- Prestataire selection for non-prestataire users -->
+          <div class="form-group" *ngIf="!isCurrentUserPrestataire">
+            <label for="prestataireSelection">Sélectionner un prestataire</label>
+            <select
+              id="prestataireSelection"
+              formControlName="prestataireSelection"
+              class="line-input"
+              [class.error]="prestationForm.get('prestataireSelection')?.invalid && prestationForm.get('prestataireSelection')?.touched"
+            >
+              <option value="">-- Choisir un prestataire --</option>
+              <option *ngFor="let prestataire of prestataires" [value]="prestataire.id">
+                {{ prestataire.nom }} ({{ prestataire.email }})
+              </option>
+            </select>
+            <div class="input-line" [class.error]="prestationForm.get('prestataireSelection')?.invalid && prestationForm.get('prestataireSelection')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('prestataireSelection')?.invalid && prestationForm.get('prestataireSelection')?.touched">
+              <span *ngIf="prestationForm.get('prestataireSelection')?.errors?.['required']">La sélection d'un prestataire est requise</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="nomPrestataire">Nom du prestataire</label>
+            <input
+              type="text"
+              id="nomPrestataire"
+              formControlName="nomPrestataire"
+              placeholder="Entrez le nom du prestataire"
+              class="line-input"
+              [class.error]="prestationForm.get('nomPrestataire')?.invalid && prestationForm.get('nomPrestataire')?.touched"
+              [readonly]="isCurrentUserPrestataire && !!prestationForm.get('nomPrestataire')?.value"
+            />
+            <div class="input-line" [class.error]="prestationForm.get('nomPrestataire')?.invalid && prestationForm.get('nomPrestataire')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('nomPrestataire')?.invalid && prestationForm.get('nomPrestataire')?.touched">
+              <span *ngIf="prestationForm.get('nomPrestataire')?.errors?.['required']">Le nom du prestataire est requis</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="contactPrestataire">Contact</label>
+            <input
+              type="text"
+              id="contactPrestataire"
+              formControlName="contactPrestataire"
+              placeholder="Numéro de téléphone ou email"
+              class="line-input"
+              [class.error]="prestationForm.get('contactPrestataire')?.invalid && prestationForm.get('contactPrestataire')?.touched"
+              [readonly]="isCurrentUserPrestataire && prefilledFields['contactPrestataire']"
+            />
+            <div class="input-line" [class.error]="prestationForm.get('contactPrestataire')?.invalid && prestationForm.get('contactPrestataire')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('contactPrestataire')?.invalid && prestationForm.get('contactPrestataire')?.touched">
+              <span *ngIf="prestationForm.get('contactPrestataire')?.errors?.['required']">Le contact est requis</span>
+            </div>
+            <small class="info-text" *ngIf="isCurrentUserPrestataire && !prestationForm.get('contactPrestataire')?.value">Veuillez saisir votre contact</small>
+          </div>
+
+          <div class="form-group">
+            <label for="structurePrestataire">Structure</label>
+            <input
+              type="text"
+              id="structurePrestataire"
+              formControlName="structurePrestataire"
+              placeholder="Nom de la structure"
+              class="line-input"
+              [class.error]="prestationForm.get('structurePrestataire')?.invalid && prestationForm.get('structurePrestataire')?.touched"
+              [readonly]="isCurrentUserPrestataire && prefilledFields['structurePrestataire']"
+            />
+            <div class="input-line" [class.error]="prestationForm.get('structurePrestataire')?.invalid && prestationForm.get('structurePrestataire')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('structurePrestataire')?.invalid && prestationForm.get('structurePrestataire')?.touched">
+              <span *ngIf="prestationForm.get('structurePrestataire')?.errors?.['required']">La structure est requise</span>
+            </div>
+            <small class="info-text" *ngIf="isCurrentUserPrestataire && !prestationForm.get('structurePrestataire')?.value">Veuillez saisir votre structure</small>
+          </div>
+
+          <div class="form-group">
+            <label for="directionPrestataire">Direction</label>
+            <input
+              type="text"
+              id="directionPrestataire"
+              formControlName="directionPrestataire"
+              placeholder="Direction dans laquelle le prestataire travaille"
+              class="line-input"
+              [class.error]="prestationForm.get('directionPrestataire')?.invalid && prestationForm.get('directionPrestataire')?.touched"
+              [readonly]="isCurrentUserPrestataire && prefilledFields['directionPrestataire']"
+            />
+            <div class="input-line" [class.error]="prestationForm.get('directionPrestataire')?.invalid && prestationForm.get('directionPrestataire')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('directionPrestataire')?.invalid && prestationForm.get('directionPrestataire')?.touched">
+              <span *ngIf="prestationForm.get('directionPrestataire')?.errors?.['required']">La direction est requise</span>
+            </div>
+            <small class="info-text" *ngIf="isCurrentUserPrestataire && !prestationForm.get('directionPrestataire')?.value">Veuillez saisir votre direction</small>
+          </div>
+
+          <div class="form-group">
+            <label for="qualificationPrestataire">Qualification</label>
+            <input
+              type="text"
+              id="qualificationPrestataire"
+              formControlName="qualificationPrestataire"
+              placeholder="Qualification du prestataire"
+              class="line-input"
+              [class.error]="prestationForm.get('qualificationPrestataire')?.invalid && prestationForm.get('qualificationPrestataire')?.touched"
+              [readonly]="isCurrentUserPrestataire && prefilledFields['qualificationPrestataire']"
+            />
+            <div class="input-line" [class.error]="prestationForm.get('qualificationPrestataire')?.invalid && prestationForm.get('qualificationPrestataire')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('qualificationPrestataire')?.invalid && prestationForm.get('qualificationPrestataire')?.touched">
+              <span *ngIf="prestationForm.get('qualificationPrestataire')?.errors?.['required']">La qualification est requise</span>
+            </div>
+            <small class="info-text" *ngIf="isCurrentUserPrestataire && !prestationForm.get('qualificationPrestataire')?.value">Veuillez saisir votre qualification</small>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Step 2: Informations de la Structure -->
+      <div *ngIf="currentStep === 2" class="step-content">
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Informations de la Structure</h3>
+            <div class="section-divider"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="structureSelection">Sélectionner une structure existante</label>
+            <select
+              id="structureSelection"
+              formControlName="structureSelection"
+              class="line-input"
+            >
+              <option value="">-- Choisir une structure --</option>
+              <option *ngFor="let structure of structuresMefp" [value]="structure.id">
+                {{ structure.nom }} ({{ structure.ville }})
+              </option>
+              <option value="new">-- Nouvelle structure --</option>
+            </select>
+            <div class="input-line"></div>
+          </div>
+
+          <div class="form-group" *ngIf="isNewStructure || !selectedStructure">
+            <label for="nomStructure">Nom de la structure</label>
+            <input
+              type="text"
+              id="nomStructure"
+              formControlName="nomStructure"
+              placeholder="Entrez le nom de la structure"
+              class="line-input"
+              [class.error]="prestationForm.get('nomStructure')?.invalid && prestationForm.get('nomStructure')?.touched"
+              [readonly]="structureFieldsPrefilled"
+            />
+            <div class="input-line" [class.error]="prestationForm.get('nomStructure')?.invalid && prestationForm.get('nomStructure')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('nomStructure')?.invalid && prestationForm.get('nomStructure')?.touched">
+              <span *ngIf="prestationForm.get('nomStructure')?.errors?.['required']">Le nom de la structure est requis</span>
+            </div>
+          </div>
+
+          <div class="form-group" *ngIf="isNewStructure || !selectedStructure">
+            <label for="adresseStructure">Adresse de la structure</label>
+            <input
+              type="text"
+              id="adresseStructure"
+              formControlName="adresseStructure"
+              placeholder="Adresse complète"
+              class="line-input"
+              [class.error]="prestationForm.get('adresseStructure')?.invalid && prestationForm.get('adresseStructure')?.touched"
+              [readonly]="structureFieldsPrefilled"
+            />
+            <div class="input-line" [class.error]="prestationForm.get('adresseStructure')?.invalid && prestationForm.get('adresseStructure')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('adresseStructure')?.invalid && prestationForm.get('adresseStructure')?.touched">
+              <span *ngIf="prestationForm.get('adresseStructure')?.errors?.['required']">L'adresse est requise</span>
+            </div>
+          </div>
+
+          <div class="form-group" *ngIf="isNewStructure || !selectedStructure">
+            <label for="emailStructure">Email de la structure</label>
+            <input
+              type="email"
+              id="emailStructure"
+              formControlName="emailStructure"
+              placeholder="email@structure.com"
+              class="line-input"
+              [class.error]="prestationForm.get('emailStructure')?.invalid && prestationForm.get('emailStructure')?.touched"
+              [readonly]="structureFieldsPrefilled"
+            />
+            <div class="input-line" [class.error]="prestationForm.get('emailStructure')?.invalid && prestationForm.get('emailStructure')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('emailStructure')?.invalid && prestationForm.get('emailStructure')?.touched">
+              <span *ngIf="prestationForm.get('emailStructure')?.errors?.['required']">L'email de la structure est requis</span>
+              <span *ngIf="prestationForm.get('emailStructure')?.errors?.['email']">Format d'email invalide</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="nomCI">Nom du correspondant informatique (CI)</label>
+            <input
+              type="text"
+              id="nomCI"
+              formControlName="nomCI"
+              placeholder="Nom du CI"
+              class="line-input"
+              [class.error]="prestationForm.get('nomCI')?.invalid && prestationForm.get('nomCI')?.touched"
+            />
+            <div class="input-line" [class.error]="prestationForm.get('nomCI')?.invalid && prestationForm.get('nomCI')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('nomCI')?.invalid && prestationForm.get('nomCI')?.touched">
+              <span *ngIf="prestationForm.get('nomCI')?.errors?.['required']">Le nom du CI est requis</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="prenomCI">Prénom du correspondant informatique (CI)</label>
+            <input
+              type="text"
+              id="prenomCI"
+              formControlName="prenomCI"
+              placeholder="Prénom du CI"
+              class="line-input"
+              [class.error]="prestationForm.get('prenomCI')?.invalid && prestationForm.get('prenomCI')?.touched"
+            />
+            <div class="input-line" [class.error]="prestationForm.get('prenomCI')?.invalid && prestationForm.get('prenomCI')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('prenomCI')?.invalid && prestationForm.get('prenomCI')?.touched">
+              <span *ngIf="prestationForm.get('prenomCI')?.errors?.['required']">Le prénom du CI est requis</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="contactCI">Contact du correspondant informatique (CI)</label>
+            <input
+              type="text"
+              id="contactCI"
+              formControlName="contactCI"
+              placeholder="Numéro de téléphone ou email du CI"
+              class="line-input"
+              [class.error]="prestationForm.get('contactCI')?.invalid && prestationForm.get('contactCI')?.touched"
+            />
+            <div class="input-line" [class.error]="prestationForm.get('contactCI')?.invalid && prestationForm.get('contactCI')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('contactCI')?.invalid && prestationForm.get('contactCI')?.touched">
+              <span *ngIf="prestationForm.get('contactCI')?.errors?.['required']">Le contact du CI est requis</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="fonctionCI">Fonction du correspondant informatique (CI)</label>
+            <input
+              type="text"
+              id="fonctionCI"
+              formControlName="fonctionCI"
+              placeholder="Fonction du CI"
+              class="line-input"
+              [class.error]="prestationForm.get('fonctionCI')?.invalid && prestationForm.get('fonctionCI')?.touched"
+            />
+            <div class="input-line" [class.error]="prestationForm.get('fonctionCI')?.invalid && prestationForm.get('fonctionCI')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('fonctionCI')?.invalid && prestationForm.get('fonctionCI')?.touched">
+              <span *ngIf="prestationForm.get('fonctionCI')?.errors?.['required']">La fonction du CI est requise</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Step 3: Détails de l'Intervention -->
+      <div *ngIf="currentStep === 3" class="step-content">
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Détails de l'Intervention</h3>
+            <div class="section-divider"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Items couverts par l'intervention</label>
+            <button type="button" class="btn btn-primary" (click)="openItemSelectionPopup()">
+              Sélectionner les items ({{ selectedItems.length }} sélectionnés)
+            </button>
+            <div class="selected-items-preview" *ngIf="selectedItems.length > 0">
+              <table class="preview-table">
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Qté</th>
+                    <th>Montant</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of selectedItems">
+                    <td>{{ item.nomItem }}</td>
+                    <td>{{ getItemQuantity(item) }}</td>
+                    <td>{{ calculateItemAmount(item) }} FCFA</td>
+                  </tr>
+                  <tr class="preview-total">
+                    <td colspan="2"><strong>Total:</strong></td>
+                    <td><strong>{{ calculateTotalAmount() }} FCFA</strong></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="error-message" *ngIf="prestationForm.get('itemsCouverts')?.invalid && prestationForm.get('itemsCouverts')?.touched">
+              <span *ngIf="prestationForm.get('itemsCouverts')?.errors?.['required']">Au moins un item doit être sélectionné</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label for="dateDebut">Date de début</label>
+              <input
+                type="date"
+                id="dateDebut"
+                formControlName="dateDebut"
+                class="line-input"
+                [class.error]="prestationForm.get('dateDebut')?.invalid && prestationForm.get('dateDebut')?.touched"
+              />
+              <div class="input-line" [class.error]="prestationForm.get('dateDebut')?.invalid && prestationForm.get('dateDebut')?.touched"></div>
+              <div class="error-message" *ngIf="prestationForm.get('dateDebut')?.invalid && prestationForm.get('dateDebut')?.touched">
+                <span *ngIf="prestationForm.get('dateDebut')?.errors?.['required']">La date de début est requise</span>
+              </div>
+            </div>
+
+            <div class="form-group half">
+              <label for="heureDebut">Heure de début</label>
+              <input
+                type="time"
+                id="heureDebut"
+                formControlName="heureDebut"
+                class="line-input"
+                [class.error]="prestationForm.get('heureDebut')?.invalid && prestationForm.get('heureDebut')?.touched"
+              />
+              <div class="input-line" [class.error]="prestationForm.get('heureDebut')?.invalid && prestationForm.get('heureDebut')?.touched"></div>
+              <div class="error-message" *ngIf="prestationForm.get('heureDebut')?.invalid && prestationForm.get('heureDebut')?.touched">
+                <span *ngIf="prestationForm.get('heureDebut')?.errors?.['required']">L'heure de début est requise</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label for="dateFin">Date de fin</label>
+              <input
+                type="date"
+                id="dateFin"
+                formControlName="dateFin"
+                class="line-input"
+                [class.error]="prestationForm.get('dateFin')?.invalid && prestationForm.get('dateFin')?.touched"
+              />
+              <div class="input-line" [class.error]="prestationForm.get('dateFin')?.invalid && prestationForm.get('dateFin')?.touched"></div>
+              <div class="error-message" *ngIf="prestationForm.get('dateFin')?.invalid && prestationForm.get('dateFin')?.touched">
+                <span *ngIf="prestationForm.get('dateFin')?.errors?.['required']">La date de fin est requise</span>
+              </div>
+            </div>
+
+            <div class="form-group half">
+              <label for="heureFin">Heure de fin</label>
+              <input
+                type="time"
+                id="heureFin"
+                formControlName="heureFin"
+                class="line-input"
+                [class.error]="prestationForm.get('heureFin')?.invalid && prestationForm.get('heureFin')?.touched"
+              />
+              <div class="input-line" [class.error]="prestationForm.get('heureFin')?.invalid && prestationForm.get('heureFin')?.touched"></div>
+              <div class="error-message" *ngIf="prestationForm.get('heureFin')?.invalid && prestationForm.get('heureFin')?.touched">
+                <span *ngIf="prestationForm.get('heureFin')?.errors?.['required']">L'heure de fin est requise</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="trimestre">Trimestre</label>
+            <select
+              id="trimestre"
+              formControlName="trimestre"
+              class="line-input"
+              [class.error]="prestationForm.get('trimestre')?.invalid && prestationForm.get('trimestre')?.touched"
+              readonly
+            >
+              <option value="" disabled>Détecté automatiquement...</option>
+              <option *ngFor="let trimestre of trimestreOptions" [value]="trimestre.value">
+                {{ trimestre.label }}
+              </option>
+            </select>
+            <div class="input-line" [class.error]="prestationForm.get('trimestre')?.invalid && prestationForm.get('trimestre')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('trimestre')?.invalid && prestationForm.get('trimestre')?.touched">
+              <span *ngIf="prestationForm.get('trimestre')?.errors?.['required']">Le trimestre est requis</span>
+            </div>
+            <small class="info-text">Le trimestre est détecté automatiquement selon la date de début</small>
+          </div>
+
+          <div class="form-group">
+            <label for="montantIntervention">Montant total de l'intervention</label>
+            <input
+              type="number"
+              id="montantIntervention"
+              formControlName="montantIntervention"
+              placeholder="0"
+              class="line-input"
+              readonly
+              [value]="calculateTotalAmount()"
+            />
+            <div class="input-line"></div>
+            <small class="info-text">Calculé automatiquement à partir des items sélectionnés</small>
+          </div>
+
+          <!-- Item Selection Popup -->
+          <div class="modal-overlay" *ngIf="showItemSelectionPopup" (click)="closeItemSelectionPopup()">
+            <div class="modal-content large-popup" (click)="$event.stopPropagation()">
+              <div class="popup-header">
+                <h3>Sélection des Items</h3>
+                <button type="button" class="close-btn" (click)="closeItemSelectionPopup()">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Search Bar -->
+              <div class="search-bar">
+                <div class="search-input-container">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="search-icon">
+                    <path d="M21 21L16.5 16.5M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="Rechercher un item..."
+                    class="search-input"
+                    (input)="onSearchChange($event)"
+                    [value]="searchTerm"
+                  />
+                </div>
+              </div>
+
+              <div class="items-grid">
+                <div *ngFor="let item of filteredItems"
+                     class="item-card"
+                     [class.selected]="isItemSelected(item)"
+                     [class.budget-exhausted]="isItemBudgetExhausted(item)"
+                     [class.max-reached]="isItemMaxReached(item)"
+                     (click)="onItemCardClick(item)">
+                  <div class="item-header">
+                    <div class="item-number">{{ item.id }}</div>
+                    <div class="item-checkbox">
+                      <input
+                        type="checkbox"
+                        [id]="'popup-item-' + item.id"
+                        [checked]="isItemSelected(item)"
+                        (change)="onItemSelectionChange(item, $event)"
+                        (click)="$event.stopPropagation()"
+                        [disabled]="isItemBudgetExhausted(item)"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="item-details">
+                    <h4>{{ item.nomItem }}</h4>
+                    <p class="item-description">{{ item.description || 'Aucune description' }}</p>
+                    <div class="item-pricing">
+                      <span class="unit-price">Prix unitaire: {{ item.prix || 0 }} FCFA</span>
+                    </div>
+                    <div class="budget-status" *ngIf="isItemBudgetExhausted(item)">
+                      <span class="budget-exhausted-badge">Budget épuisé</span>
+                    </div>
+                    <div class="budget-status" *ngIf="!isItemBudgetExhausted(item) && isItemMaxReached(item)">
+                      <span class="max-reached-badge">Maximum atteint</span>
+                    </div>
+                    <div class="budget-info" *ngIf="!isItemBudgetExhausted(item)">
+                      <small class="text-muted">Budget restant: {{ item.quantiteMaxTrimestre || 0 }} unités</small>
+                      <div class="prestations-counter" *ngIf="item.quantiteMaxTrimestre && item.quantiteMaxTrimestre > 0">
+                        <small class="prestations-info">Prestations: <span class="counter-display">{{ getItemPrestationsCount(item) }}/{{ item.quantiteMaxTrimestre }}</span></small>
+                        <div class="progress-bar">
+                          <div class="progress-fill" [style.width.%]="getItemProgressPercentage(item)"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="item-quantity" *ngIf="isItemSelected(item)">
+                    <label>Quantité utilisée:</label>
+                    <input
+                      type="number"
+                      min="1"
+                      [max]="item.quantiteMaxTrimestre || 1"
+                      [value]="getItemQuantity(item)"
+                      (input)="updateItemQuantity(item, $event)"
+                      (click)="$event.stopPropagation()"
+                      class="quantity-input"
+                    />
+                    <div class="item-amount">
+                      Montant: {{ calculateItemAmount(item) }} FCFA
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="popup-footer">
+                <div class="total-summary">
+                  <strong>Total: {{ calculateTotalAmount() }} FCFA</strong>
+                </div>
+                <div class="popup-actions">
+                  <button type="button" class="btn btn-outline" (click)="closeItemSelectionPopup()">Annuler</button>
+                  <button type="button" class="btn btn-primary" (click)="validateItemSelection()">Valider la sélection</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Validation Popup -->
+          <div class="modal-overlay" *ngIf="showValidationPopup" (click)="closeValidationPopup()">
+            <div class="modal-content validation-popup" (click)="$event.stopPropagation()">
+              <div class="popup-header">
+                <h3>Validation des Items Sélectionnés</h3>
+                <button type="button" class="close-btn" (click)="closeValidationPopup()">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="selected-items-table">
+                <table class="items-table">
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Quantité utilisée</th>
+                      <th>Montant de l'item</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of selectedItems" class="table-row">
+                      <td>{{ item.nomItem }}</td>
+                      <td>{{ getItemQuantity(item) }}</td>
+                      <td>{{ calculateItemAmount(item) }} FCFA</td>
+                    </tr>
+                    <tr class="total-row">
+                      <td colspan="2"><strong>Montant total de l'intervention</strong></td>
+                      <td><strong>{{ calculateTotalAmount() }} FCFA</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="popup-actions">
+                <button type="button" class="btn btn-outline" (click)="backToItemSelection()">Modifier</button>
+                <button type="button" class="btn btn-success" (click)="confirmValidation()">Confirmer</button>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="form-group">
+            <label for="statutIntervention">Statut de l'intervention</label>
+            <select
+              id="statutIntervention"
+              formControlName="statutIntervention"
+              class="line-input"
+              [class.error]="prestationForm.get('statutIntervention')?.invalid && prestationForm.get('statutIntervention')?.touched"
+            >
+              <option value="" disabled>Sélectionnez un statut</option>
+              <ng-container *ngIf="!isCurrentUserPrestataire">
+                <option *ngFor="let statut of statutOptions" [value]="statut.value">
+                  {{ statut.label }}
+                </option>
+              </ng-container>
+              <ng-container *ngIf="isCurrentUserPrestataire">
+                <option value="réussie">Réussie</option>
+                <option value="nécessite autres interventions">Nécessite autres interventions</option>
+              </ng-container>
+            </select>
+            <div class="input-line" [class.error]="prestationForm.get('statutIntervention')?.invalid && prestationForm.get('statutIntervention')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('statutIntervention')?.invalid && prestationForm.get('statutIntervention')?.touched">
+              <span *ngIf="prestationForm.get('statutIntervention')?.errors?.['required']">Le statut est requis</span>
+            </div>
+            <small class="info-text" *ngIf="isCurrentUserPrestataire">Choisissez le statut de votre intervention</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Récapitulatif -->
+      <div *ngIf="currentStep === 4" class="step-content">
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Récapitulatif de la Prestation</h3>
+            <div class="section-divider"></div>
+          </div>
+
+          <!-- Récapitulatif en tableau -->
+          <div class="summary-table-container">
+            <h4>📋 Récapitulatif de la Prestation</h4>
+            <table class="summary-table">
+              <tr>
+                <td class="label-cell">Nom:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('nomPrestataire') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Contact:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('contactPrestataire') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Structure:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('structurePrestataire') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Direction:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('directionPrestataire') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Qualification:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('qualificationPrestataire') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Structure bénéficiaire:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('nomStructure') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Adresse:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('adresseStructure') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Email:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('emailStructure') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">CI:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('prenomCI') }} {{ getFormValue('nomCI') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Contact CI:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('contactCI') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Fonction CI:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('fonctionCI') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Date de début:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('dateDebut') }} à {{ getFormValue('heureDebut') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Date de fin:</td>
+                <td class="value-cell rtl-value">{{ getFormValue('dateFin') }} à {{ getFormValue('heureFin') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Trimestre:</td>
+                <td class="value-cell rtl-value highlight">{{ getTrimestreLabel() }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Statut:</td>
+                <td class="value-cell rtl-value status">{{ getStatutLabel() }}</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Facture Proforma en bas -->
+          <div class="proforma-section">
+            <div class="proforma-header">
+              <h4>📋 Facture Proforma</h4>
+              <button type="button" class="btn btn-outline export-pdf-btn" (click)="exportProformaPDF()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Exporter PDF
+              </button>
+            </div>
+            
+            <div class="proforma-invoice">
+              <div class="invoice-table">
+                <table class="proforma-table">
+                  <thead>
+                    <tr>
+                      <th class="item-col">Item</th>
+                      <th class="price-col">Prix unitaire</th>
+                      <th class="qty-col">Quantité</th>
+                      <th class="amount-col">Montant</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of selectedItems" class="invoice-row">
+                      <td class="item-desc">{{ item.nomItem }}</td>
+                      <td class="price-value">{{ item.prix | number:'1.0-0' }} FCFA</td>
+                      <td class="qty-value">{{ getItemQuantity(item) }}</td>
+                      <td class="amount-value">{{ calculateItemAmount(item) | number:'1.0-0' }} FCFA</td>
+                    </tr>
+                  </tbody>
+                </table>
+                
+                <div class="invoice-summary">
+                  <div class="summary-line">
+                    <span class="summary-label">Nombre d'items:</span>
+                    <span class="summary-value">{{ selectedItems.length }}</span>
+                  </div>
+                  <div class="summary-line total-line">
+                    <span class="summary-label">Montant total:</span>
+                    <span class="summary-value total-amount">{{ calculateTotalAmount() | number:'1.0-0' }} FCFA</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation Actions -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-outline" (click)="onCancel()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Annuler
+        </button>
+
+        <div class="navigation-buttons">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="previousStep()"
+            [disabled]="currentStep === 1"
+            *ngIf="currentStep > 1"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Précédent
+          </button>
+
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="nextStep()"
+            [disabled]="!canProceedToNext()"
+            *ngIf="currentStep < totalSteps"
+          >
+            Suivant
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-success"
+            [disabled]="!prestationForm.valid"
+            *ngIf="currentStep === totalSteps"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 5v14m7-7H5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Créer
+          </button>
+        </div>
+      </div>
+  </form>
+  </div>
+</div>

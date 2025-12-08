@@ -1,0 +1,9 @@
+  exportDashboardPdf(): void {
+      type: 'info',
+      title: 'Fonctionnalité en développement',
+      title: 'Fonctionnalité en développement',
+      message: 'L\'export PDF du tableau de bord sera bientôt disponible'
+    });
+  }
+
+}

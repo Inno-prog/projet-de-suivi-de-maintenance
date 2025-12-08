@@ -1,0 +1,19 @@
+Updating the configuration and installing your custom providers, if any. Please wait.
+2025-11-20 17:25:15,268 INFO  [io.quarkus.deployment.QuarkusAugmentor] (main) Quarkus augmentation completed in 8870ms
+2025-11-20 17:25:17,866 INFO  [org.keycloak.quarkus.runtime.hostname.DefaultHostnameProvider] (main) Hostname settings: Base URL: <unset>, Hostname: <request>, Strict HTTPS: false, Path: <request>, Strict BackChannel: false, Admin URL: <unset>, Admin: <request>, Port: -1, Proxied: false
+2025-11-20 17:25:20,457 WARN  [io.quarkus.agroal.runtime.DataSources] (main) Datasource <default> enables XA but transaction recovery is not enabled. Please enable transaction recovery by setting quarkus.transaction-manager.enable-recovery=true, otherwise data may be lost if the application is terminated abruptly
+2025-11-20 17:25:21,425 WARN  [org.infinispan.PERSISTENCE] (keycloak-cache-init) ISPN000554: jboss-marshalling is deprecated and planned for removal
+2025-11-20 17:25:21,517 WARN  [org.infinispan.CONFIG] (keycloak-cache-init) ISPN000569: Unable to persist Infinispan internal caches as no global state enabled
+2025-11-20 17:25:21,652 INFO  [org.infinispan.CONTAINER] (keycloak-cache-init) ISPN000556: Starting user marshaller 'org.infinispan.jboss.marshalling.core.JBossUserMarshaller'
+2025-11-20 17:25:22,127 INFO  [org.keycloak.broker.provider.AbstractIdentityProviderMapper] (main) Registering class org.keycloak.broker.provider.mappersync.ConfigSyncEventListener
+2025-11-20 17:25:22,624 INFO  [org.keycloak.connections.infinispan.DefaultInfinispanConnectionProviderFactory] (main) Node name: node_418426, Site name: null
+2025-11-20 17:25:24,157 INFO  [org.keycloak.exportimport.singlefile.SingleFileImportProvider] (main) Full importing from file /home/inno/Images/projet-de-suivi-de-prestations-de-maintenance/keycloak/bin/../data/import/realm-export.json
+2025-11-20 17:25:24,552 INFO  [org.keycloak.exportimport.util.ImportUtils] (main) Realm 'Maintenance-DGSI' already exists. Import skipped
+2025-11-20 17:25:24,571 INFO  [org.keycloak.exportimport.dir.DirImportProvider] (main) Importing from directory /home/inno/Images/projet-de-suivi-de-prestations-de-maintenance/keycloak/bin/../data/import
+2025-11-20 17:25:24,571 INFO  [org.keycloak.services] (main) KC-SERVICES0030: Full model import requested. Strategy: IGNORE_EXISTING
+2025-11-20 17:25:24,572 INFO  [org.keycloak.services] (main) KC-SERVICES0032: Import finished successfully
+2025-11-20 17:25:24,793 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) ERROR: Failed to start server in (development) mode
+2025-11-20 17:25:24,793 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) ERROR: Unable to start HTTP server
+2025-11-20 17:25:24,793 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) ERROR: io.quarkus.runtime.QuarkusBindException: Port(s) already bound: 8080: Adresse déjà utilisée
+2025-11-20 17:25:24,793 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) ERROR: Port(s) already bound: 8080: Adresse déjà utilisée
+2025-11-20 17:25:24,794 ERROR [org.keycloak.quarkus.runtime.cli.ExecutionExceptionHandler] (main) For more details run the same command passing the '--verbose' option. Also you can use '--help' to see the details about the usage of the particular command.
