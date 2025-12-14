@@ -88,44 +88,73 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
               </div>
             </div>
 
-            <div class="features-section" style="margin-top: 80px; margin-bottom: 75px; display: flex; flex-wrap: wrap; gap: 3rem; justify-content: center; padding: 0 2rem;">
-              <div class="feature-card animate" routerLink="/login" style="animation-delay: 0.2s">
-                <div class="feature-icon">
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 8H17V6C17 4.9 16.1 4 15 4H9C7.9 4 7 4.9 7 6V8H4C2.9 8 2 8.9 2 10V19C2 20.1 2.9 21 4 21H20C21.1 21 22 20.1 22 19V10C22 8.9 21.1 8 20 8ZM9 6H15V8H9V6ZM20 19H4V10H8V12H16V10H20V19Z" fill="#F97316"/>
-                  </svg>
-                </div>
-                <h3>Gestion Prestations</h3>
-                <p>Création et gestion complète des prestataires avec leurs items associés</p>
-                <div class="card-glow"></div>
-              </div>
+            <div class="bg-[#f4f7fb] py-16">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
-              <div class="feature-card animate" routerLink="/login" style="animation-delay: 0.4s">
-                <div class="feature-icon">
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1ZM10 17L6 13L7.41 11.59L10 14.17L16.59 7.58L18 9L10 17Z" fill="#F97316"/>
-                  </svg>
-                </div>
-                <h3>Suivi Sécurisé</h3>
-                <p>Suivi rigoureux de l'exécution des prestations de maintenance</p>
-                <div class="card-glow"></div>
-              </div>
+      <!-- Carte 1 -->
+      <div class="bg-white rounded-2xl shadow-md px-8 py-10 text-center">
+        <div class="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-xl bg-orange-50">
+          <!-- Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6M7 4h10a2 2 0 012 2v14l-4-2-4 2-4-2-4 2V6a2 2 0 012-2z" />
+          </svg>
+        </div>
 
-              <div class="feature-card animate" routerLink="/login" style="animation-delay: 0.6s">
-                <div class="feature-icon">
-                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V7H5V3H13V7C13 8.1 13.9 9 15 9H21ZM7 10C5.9 10 5 10.9 5 12V20C5 21.1 5.9 22 7 22H17C18.1 22 19 21.1 19 20V12C19 10.9 18.1 10 17 10H7ZM12 18.5C10.29 18.5 8.93 17.14 8.93 15.43C8.93 13.72 10.29 12.36 12 12.36C13.71 12.36 15.07 13.72 15.07 15.43C15.07 17.14 13.71 18.5 12 18.5Z" fill="#F97316"/>
-                  </svg>
-                </div>
-                <h3>Ordres de commandes</h3>
-                <p>Des ordres de commandes selon les clauses du contrat</p>
-                <div class="card-glow"></div>
-              </div>
-            </div>
+        <h3 class="text-lg font-semibold text-gray-900 mb-3">
+          Gestion Prestations
+        </h3>
+        <p class="text-sm text-gray-500 leading-relaxed">
+          Création et gestion complète des prestations avec leurs items associés.
+        </p>
+      </div>
+
+      <!-- Carte 2 -->
+      <div class="bg-white rounded-2xl shadow-md px-8 py-10 text-center">
+        <div class="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-xl bg-orange-50">
+          <!-- Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 11c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 11a5 5 0 11-10 0 5 5 0 0110 0z" />
+          </svg>
+        </div>
+
+        <h3 class="text-lg font-semibold text-gray-900 mb-3">
+          Suivi Sécurisé
+        </h3>
+        <p class="text-sm text-gray-500 leading-relaxed">
+          Suivi rigoureux de l’exécution des prestations de maintenance.
+        </p>
+      </div>
+
+      <!-- Carte 3 -->
+      <div class="bg-white rounded-2xl shadow-md px-8 py-10 text-center">
+        <div class="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-xl bg-orange-50">
+          <!-- Icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 17v-6a2 2 0 012-2h2a2 2 0 012 2v6M7 7h10M7 7a2 2 0 012-2h6a2 2 0 012 2" />
+          </svg>
+        </div>
+
+        <h3 class="text-lg font-semibold text-gray-900 mb-3">
+          Ordres de commandes
+        </h3>
+        <p class="text-sm text-gray-500 leading-relaxed">
+          Des ordres de commandes selon les clauses du contrat        </p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
           </div>
         </main>
 
-        <div class="footer text-white px-6 pt-2 pb-8" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+        <div class="footer text-white px-6 pt-2 pb-8" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); position: relative; top: -70px;">
           <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
             <!-- Newsletter -->
             <div class="max-w-xs">
@@ -209,12 +238,10 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     <ng-container *ngIf="isAuthenticated">
       <div class="dashboard-container">
         <!-- Welcome Section for Authenticated Users -->
-        <div class="welcome-palette" *ngIf="isAuthenticated">
-          <div class="welcome-card">
+        <div class="welcome-palette" *ngIf="isAuthenticated" style="margin-bottom: 1rem;">
+           <div class="welcome-card">
             <div class="welcome-icon">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V7H5V3H13V7C13 8.1 13.9 9 15 9H21ZM7 10C5.9 10 5 10.9 5 12V20C5 21.1 5.9 22 7 22H17C18.1 22 19 21.1 19 20V12C19 10.9 18.1 10 17 10H7Z" fill="#F97316"/>
-              </svg>
+              <span class="material-symbols-outlined">work</span>
             </div>
             <div class="welcome-content">
               <h2 class="welcome-title">Bienvenue sur <span class="brand-highlight">MainTrack Pro</span></h2>
@@ -238,45 +265,28 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-sticker">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="12" cy="8" r="4" fill="#F97316" stroke="#F97316" stroke-width="2"/>
-                  <path d="M20 20c0-4.4-4.4-8-8-8s-8 3.6-8 8" stroke="#F97316" stroke-width="2" stroke-linecap="round"/>
-                  <circle cx="12" cy="8" r="6" fill="none" stroke="#F97316" stroke-width="1" opacity="0.3"/>
-                </svg>
+                <span class="material-symbols-outlined">group</span>
               </div>
               <div class="stat-number">{{ stats.totalUsers }}</div>
               <div class="stat-label">Utilisateurs</div>
             </div>
             <div class="stat-card">
               <div class="stat-sticker">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M14.7 6.3a1 1 0 0 0-1.4 0l-4 4a1 1 0 0 0 0 1.4l4 4a1 1 0 0 0 1.4-1.4L11.42 12l3.28-3.3a1 1 0 0 0 0-1.4z" fill="#F97316"/>
-                  <path d="M9.3 6.3a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1 0 1.4l-4 4a1 1 0 0 1-1.4-1.4L12.58 12 9.3 9.7a1 1 0 0 1 0-1.4z" fill="#F97316"/>
-                  <rect x="2" y="2" width="20" height="20" rx="3" fill="none" stroke="#F97316" stroke-width="2"/>
-                </svg>
+                <span class="material-symbols-outlined">assignment</span>
               </div>
               <div class="stat-number">{{ stats.totalPrestations }}</div>
               <div class="stat-label">Prestations</div>
             </div>
             <div class="stat-card">
               <div class="stat-sticker">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="4" width="18" height="16" rx="2" fill="#F97316" stroke="#F97316" stroke-width="2"/>
-                  <path d="M7 8h10M7 12h10M7 16h6" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
+                <span class="material-symbols-outlined">receipt</span>
               </div>
               <div class="stat-number">{{ stats.totalOrdres }}</div>
               <div class="stat-label">Ordres de commande</div>
             </div>
             <div class="stat-card">
               <div class="stat-sticker">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="#F97316" stroke="#F97316" stroke-width="2"/>
-                  <polyline points="14,2 14,8 20,8" fill="#F97316" stroke="#F97316" stroke-width="2"/>
-                  <line x1="16" y1="13" x2="8" y2="13" stroke="white" stroke-width="1.5"/>
-                  <line x1="16" y1="17" x2="8" y2="17" stroke="white" stroke-width="1.5"/>
-                  <polyline points="10,9 9,9 8,9" stroke="white" stroke-width="1.5"/>
-                </svg>
+                <span class="material-symbols-outlined">description</span>
               </div>
               <div class="stat-number">{{ stats.totalContrats }}</div>
               <div class="stat-label">Contrats</div>
@@ -760,13 +770,13 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
 
     .hero-section {
       position: relative;
-      min-height: 50vh;
+      min-height: 35vh;
       background: linear-gradient(135deg, #0a192f 0%, #0d1b2a 100%);
       color: #f8fafc;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 3rem 2rem;
+      padding: 2rem 2rem;
       margin: 2rem auto;
       max-width: 85%;
       border-radius: 20px;
@@ -819,8 +829,8 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     }
 
     .hero-cta {
-      font-size: 1.2rem;
-      padding: 1.2rem 3rem;
+      font-size: 1rem;
+      padding: 0.8rem 2rem;
       background: #f97316;
       border: 2px solid #f97316;
       border-radius: 12px;
@@ -900,19 +910,19 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     .welcome-palette {
       display: flex;
       justify-content: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
     }
 
     .welcome-card {
       background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
       border-radius: 16px;
-      padding: 2rem;
+      padding: 1.2rem;
       box-shadow: 0 10px 40px rgba(249, 115, 22, 0.15), 0 4px 20px rgba(0, 0, 0, 0.08);
       border: 2px solid rgba(249, 115, 22, 0.1);
       display: flex;
       align-items: center;
-      gap: 1.5rem;
-      max-width: 600px;
+      gap: 1.2rem;
+      max-width: 450px;
       width: 100%;
       position: relative;
       overflow: hidden;
@@ -934,13 +944,19 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     }
 
     .welcome-icon {
-      flex-shrink: 0;
-      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-      border-radius: 50%;
-      padding: 1rem;
-      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
-      border: 2px solid rgba(249, 115, 22, 0.2);
-    }
+       flex-shrink: 0;
+       background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+       border-radius: 50%;
+       padding: 1rem;
+       box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+       border: 2px solid rgba(249, 115, 22, 0.2);
+     }
+
+    .welcome-icon .material-symbols-outlined {
+       font-size: 48px;
+       color: #F97316;
+       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+     }
 
     .welcome-content {
       flex: 1;
@@ -1034,8 +1050,8 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     }
 
     .cta-section .btn {
-      font-size: 1.125rem;
-      padding: 1rem 2rem;
+      font-size: 0.9rem;
+      padding: 0.6rem 1.2rem;
       background-color: var(--primary);
       border: none;
     }
@@ -1176,8 +1192,6 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       text-align: center;
       transition: transform 240ms cubic-bezier(.2,.8,.2,1), box-shadow 240ms cubic-bezier(.2,.8,.2,1);
       border: 1px solid rgba(249, 115, 22, 0.2);
-      width: 280px;
-      height: 280px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -1323,16 +1337,17 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     }
 
     .feature-icon {
-      margin-bottom: 1rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+       margin-bottom: 1rem;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+     }
 
-    .feature-icon svg {
-      width: 48px;
-      height: 48px;
-    }
+    .feature-icon .material-symbols-outlined {
+       font-size: 64px;
+       color: #F97316;
+       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+     }
 
     .feature-card h3 {
       font-size: 1rem;
@@ -1348,7 +1363,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     }
 
     .stats-section {
-      margin-bottom: 3rem;
+      margin-bottom: 1.5rem;
     }
 
     .stats-header {
@@ -1390,39 +1405,42 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
 
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
     }
 
     .stat-card {
-       background: white;
-       padding: 2rem;
-       border-radius: 12px;
-       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
-       text-align: center;
-       position: relative;
-       transition: all 0.3s ease;
-       border: 1px solid rgba(249, 115, 22, 0.1);
-     }
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        position: relative;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(249, 115, 22, 0.1);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
 
-     .stat-card:hover {
-       transform: translateY(-6px);
-       box-shadow: 0 20px 60px rgba(249, 115, 22, 0.15), 0 8px 24px rgba(0, 0, 0, 0.1);
-       border-color: rgba(249, 115, 22, 0.3);
-     }
+      .stat-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 60px rgba(249, 115, 22, 0.15), 0 8px 24px rgba(0, 0, 0, 0.1);
+        border-color: rgba(249, 115, 22, 0.3);
+      }
 
     .stat-sticker {
-       margin-bottom: 1rem;
+       margin-bottom: 0.75rem;
        display: flex;
        justify-content: center;
        align-items: center;
-       width: 60px;
-       height: 60px;
-       background: linear-gradient(135deg, #fefefe 0%, #f1f5f9 100%);
+       width: 56px;
+       height: 56px;
+       background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
        border-radius: 50%;
-       box-shadow: 0 4px 12px rgba(249, 115, 22, 0.15);
-       border: 2px solid rgba(249, 115, 22, 0.2);
-       margin: 0 auto 1rem auto;
+       box-shadow: 0 8px 24px rgba(249, 115, 22, 0.25), 0 4px 12px rgba(249, 115, 22, 0.15);
+       border: 3px solid rgba(249, 115, 22, 0.3);
        position: relative;
        overflow: hidden;
      }
@@ -1434,8 +1452,8 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
        left: -50%;
        width: 200%;
        height: 200%;
-       background: linear-gradient(45deg, transparent, rgba(249, 115, 22, 0.1), transparent);
-       animation: rotate 3s linear infinite;
+       background: linear-gradient(45deg, transparent, rgba(249, 115, 22, 0.15), transparent);
+       animation: rotate 4s linear infinite;
      }
 
      @keyframes rotate {
@@ -1443,9 +1461,10 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
        100% { transform: rotate(360deg); }
      }
 
-    .stat-sticker svg {
-      width: 32px;
-      height: 32px;
+    .stat-sticker .material-symbols-outlined {
+      font-size: 48px;
+      color: #F97316;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
     }
 
     .stat-number {
@@ -1613,6 +1632,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       transform: translateY(20px);
       animation: fadeInUp 0.6s ease forwards;
       box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+      padding-top: 40px;
     }
 
     @keyframes fadeInUp {
@@ -1625,7 +1645,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     .footer-container {
       max-width: 80%;
       margin: 0 auto;
-      padding: 50px 20px 30px;
+      padding: 80px 20px 30px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 40px;
