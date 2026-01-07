@@ -20,7 +20,12 @@ export class AuthGuard implements CanActivate {
     // Check if user is authenticated
     if (!this.authService.isAuthenticated()) {
       console.log('AuthGuard: User not authenticated, initiating Keycloak login');
-      this.authService.login();
+      
+      // Éviter les boucles de login si on vient de se déconnecter
+      const justLoggedOut = sessionStorage.getItem('justLoggedOut') === 'true';
+      if (!justLoggedOut) {
+        this.authService.login();
+      }
       return false;
     }
 

@@ -92,16 +92,17 @@ public class PrestationPdfService {
         ));
         table.addCell(left);
 
-        // --- LOGO CENTRAL (réduit à 60 px) ---
-        Cell center = new Cell().setBorder(null).setTextAlignment(TextAlignment.CENTER);
-        try {
-            ClassPathResource logo = new ClassPathResource("static/assets/logoFinal.png");
-            ImageData imgData = ImageDataFactory.create(logo.getURL());
-            Image img = new Image(imgData).setWidth(20).setAutoScale(true);
-            center.add(img);
-        } catch (Exception e) {
-            center.add(new Paragraph("LOGO"));
-        }
+                // --- LOGO CENTRAL (réduit pour la fiche individuelle) ---
+                Cell center = new Cell().setBorder(null).setTextAlignment(TextAlignment.CENTER);
+                try {
+                        ClassPathResource logo = new ClassPathResource("static/assets/logoFinal.png");
+                        ImageData imgData = ImageDataFactory.create(logo.getURL());
+                        // smaller, but visible — keep aspect ratio
+                        Image img = new Image(imgData).setWidth(40).setAutoScale(true);
+                        center.add(img);
+                } catch (Exception e) {
+                        center.add(new Paragraph("LOGO"));
+                }
         table.addCell(center);
 
         // --- BLOC DROIT ---
@@ -112,21 +113,20 @@ public class PrestationPdfService {
                 .setFont(normal).setFontSize(10).setTextAlignment(TextAlignment.CENTER));
         right.add(new Paragraph("------------------------")
                 .setFont(normal).setFontSize(10).setTextAlignment(TextAlignment.CENTER));
+
+        // Date de génération — placé sous la devise / séparateur comme demandé
+        String currentDate = java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+        DeviceRgb darkGrayLocal = new DeviceRgb(64, 64, 64);
+        right.add(new Paragraph("Généré à Ouaga le " + currentDate)
+                .setFont(normal)
+                .setFontSize(10)
+                .setFontColor(darkGrayLocal)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setMarginTop(4));
+
         table.addCell(right);
 
         document.add(table);
-
-        // 🔵 Ligne "Généré à [Adresse] le ..."
-        Paragraph location = new Paragraph(
-                "Généré à " + (prestation.getAdresseStructure() != null ? prestation.getAdresseStructure() : "Adresse non spécifiée") + " le " +
-                java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-        )
-                .setFont(normal)
-                .setTextAlignment(TextAlignment.LEFT)
-                .setMarginBottom(20)
-                .setFontSize(11);
-
-        document.add(location);
     }
 
     private Paragraph createHeaderText(PdfFont bold, PdfFont normal, String... lines) {
@@ -175,11 +175,32 @@ public class PrestationPdfService {
                 .setWidth(UnitValue.createPercentValue(100))
                 .setMarginBottom(15);
 
-        addStyledInfoRow(table, "Nom du prestataire", prestation.getNomPrestataire(), font, textColor, bgColor);
-        addStyledInfoRow(table, "Contact", prestation.getContactPrestataire(), font, textColor, bgColor);
-        addStyledInfoRow(table, "Structure", prestation.getStructurePrestataire(), font, textColor, bgColor);
-        addStyledInfoRow(table, "Service", prestation.getServicePrestataire(), font, textColor, bgColor);
-        addStyledInfoRow(table, "Qualification", prestation.getQualificationPrestataire(), font, textColor, bgColor);
+                // Always show prestataire name if present
+                if (prestation.getNomPrestataire() != null && !prestation.getNomPrestataire().isBlank()) {
+                        addStyledInfoRow(table, "Nom du prestataire", prestation.getNomPrestataire(), font, textColor, bgColor);
+                }
+
+                // Show responsable contact details when available (must be displayed as requested)
+                if (prestation.getNomResponsablePrestation() != null && !prestation.getNomResponsablePrestation().isBlank()) {
+                        addStyledInfoRow(table, "Nom du responsable de la prestation", prestation.getNomResponsablePrestation(), font, textColor, bgColor);
+                }
+                if (prestation.getContactResponsablePrestation() != null && !prestation.getContactResponsablePrestation().isBlank()) {
+                        addStyledInfoRow(table, "Contact responsable de la prestation", prestation.getContactResponsablePrestation(), font, textColor, bgColor);
+                }
+                if (prestation.getQualificationResponsablePrestation() != null && !prestation.getQualificationResponsablePrestation().isBlank()) {
+                        addStyledInfoRow(table, "Qualification responsable de la prestation", prestation.getQualificationResponsablePrestation(), font, textColor, bgColor);
+                }
+
+                // Only include structure/service/qualification if they have values — avoid 'Non spécifié' placeholders
+                if (prestation.getStructurePrestataire() != null && !prestation.getStructurePrestataire().isBlank()) {
+                        addStyledInfoRow(table, "Structure", prestation.getStructurePrestataire(), font, textColor, bgColor);
+                }
+                if (prestation.getServicePrestataire() != null && !prestation.getServicePrestataire().isBlank()) {
+                        addStyledInfoRow(table, "Service", prestation.getServicePrestataire(), font, textColor, bgColor);
+                }
+                if (prestation.getQualificationPrestataire() != null && !prestation.getQualificationPrestataire().isBlank()) {
+                        addStyledInfoRow(table, "Qualification", prestation.getQualificationPrestataire(), font, textColor, bgColor);
+                }
 
         document.add(table);
     }

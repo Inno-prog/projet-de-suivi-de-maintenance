@@ -65,6 +65,28 @@ public class StructureMefpController {
         }
     }
 
+    @GetMapping("/by-lot/{lotId}")
+    @PreAuthorize("#profile != 'production' or isAuthenticated()")
+    public ResponseEntity<List<StructureMefp>> getStructuresByLotId(@PathVariable String lotId) {
+        logger.info("GET /api/structures-mefp/by-lot/" + lotId + " - Fetching structures by lot ID");
+        
+        // Handle the case where lotId is "null"
+        if ("null".equals(lotId)) {
+            logger.warning("lotId parameter is 'null', returning empty list");
+            return ResponseEntity.ok(java.util.Collections.emptyList());
+        }
+        
+        try {
+            Long parsedLotId = Long.parseLong(lotId);
+            List<StructureMefp> structures = structureMefpService.getStructuresByLotId(parsedLotId);
+            logger.info("Returning " + structures.size() + " structures for lot ID: " + parsedLotId);
+            return ResponseEntity.ok(structures);
+        } catch (NumberFormatException e) {
+            logger.warning("Invalid lotId format: " + lotId + ", returning empty list");
+            return ResponseEntity.ok(java.util.Collections.emptyList());
+        }
+    }
+
     @PostMapping
     @PreAuthorize("#profile != 'production' or hasRole('ROLE_ADMINISTRATEUR')")
     public StructureMefp createStructure(@RequestBody StructureMefp structure) {

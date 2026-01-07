@@ -1,0 +1,193 @@
+/* Corrections globales pour le positionnement des formulaires et modals */
+
+/* Pas de padding-top pour le contenu principal - élimination de l'espace blanc */
+.main-content {
+  padding-top: 0 !important;
+}
+
+.content {
+  padding-top: 0 !important;
+}
+
+/* Corrections pour tous les types de modals et formulaires */
+.modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+  /* Use runtime variables so the overlay respects the real navbar height
+     and a configurable gap. This adapts on resize and different navbar sizes. */
+  padding-top: calc(var(--app-navbar-height, 64px) + var(--app-overlay-gap, 32px)) !important;
+  padding-bottom: 20px !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+  overflow-y: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Styles pour les modals de profil et paramètres */
+.modal {
+  background: white !important;
+  border: 2px solid #1e293b !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+  max-width: 500px !important;
+  width: 100% !important;
+  /* Make modal max-height respect the navbar + overlay gap so the full
+     wizard/form can be scrolled into view below the header. */
+  max-height: calc(100vh - (var(--app-navbar-height, 64px) + var(--app-overlay-gap, 32px) + 16px)) !important;
+  overflow-y: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 10000 !important;
+  margin: 0 !important;
+}
+
+/* Styles pour les formulaires de prestation */
+.form-modal {
+  background: white !important;
+  border-radius: 16px !important;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25) !important;
+  max-width: 95vw !important;
+  width: 95vw !important;
+  max-height: calc(100vh - (var(--app-navbar-height, 64px) + var(--app-overlay-gap, 32px) + 16px)) !important;
+  overflow-y: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  margin: 0 !important;
+}
+
+.wizard-modal {
+  max-width: 90vw !important;
+  width: 90vw !important;
+}
+
+.large-modal {
+  max-width: 95vw !important;
+  width: 95vw !important;
+}
+
+/* Popups spécifiques */
+.large-popup {
+  max-width: 90vw !important;
+  width: 90vw !important;
+  max-height: calc(100vh - (var(--app-navbar-height, 64px) + var(--app-overlay-gap, 32px) + 16px)) !important;
+  overflow-y: auto !important;
+}
+
+.validation-popup {
+  max-width: 600px !important;
+  width: 90% !important;
+}
+
+/* Force la visibilité de tous les éléments dans les modals */
+.modal *,
+.modal-content *,
+.form-modal *,
+.large-popup *,
+.validation-popup * {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Headers, body et footer des modals */
+.modal-header,
+.modal-body,
+.modal-footer,
+.popup-header,
+.popup-footer {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* Corrections pour Angular Material */
+.mat-dialog-container {
+  margin-top: calc(var(--app-navbar-height, 64px) + var(--app-overlay-gap, 32px)) !important;
+  max-height: calc(100vh - (var(--app-navbar-height, 64px) + var(--app-overlay-gap, 32px) + 16px)) !important;
+}
+
+.cdk-overlay-container {
+  z-index: 9999 !important;
+}
+
+.cdk-overlay-pane {
+  margin-top: calc(var(--app-navbar-height, 64px) + var(--app-overlay-gap, 32px)) !important;
+}
+
+.cdk-global-overlay-wrapper {
+  align-items: flex-start !important;
+  padding-top: calc(var(--app-navbar-height, 64px) + var(--app-overlay-gap, 32px)) !important;
+}
+
+/* Corrections pour les step indicators et titres de formulaires */
+.step-indicator {
+  margin-top: 0 !important;
+  padding-top: 20px !important;
+}
+
+.form-title {
+  margin-top: 0 !important;
+  padding-top: 10px !important;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding-top: 80px !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+  
+  .modal {
+    max-width: 95% !important;
+    width: 95% !important;
+  }
+  
+  .form-modal,
+  .large-modal {
+    max-width: 98% !important;
+    width: 98% !important;
+  }
+  
+  .main-content {
+    padding-top: 0 !important;
+  }
+}
+
+/* Corrections spécifiques pour éviter les conflits avec d'autres styles */
+body .modal-overlay {
+  position: fixed !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+body .modal,
+body .modal-content,
+body .form-modal {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* Assurer que les boutons et inputs dans les modals sont visibles */
+body .modal button,
+body .modal input,
+body .modal select,
+body .modal textarea,
+body .modal-content button,
+body .modal-content input,
+body .modal-content select,
+body .modal-content textarea {
+  visibility: visible !important;
+  opacity: 1 !important;
+}

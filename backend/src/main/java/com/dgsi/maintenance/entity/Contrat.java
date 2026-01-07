@@ -2,11 +2,10 @@ package com.dgsi.maintenance.entity;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,8 +16,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -56,13 +53,17 @@ public class Contrat {
     @Column(name = "montant_restant")
     private Double montantRestant;
 
-    @NotBlank
-    @Column(name = "lot")
-    private String lot;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "lot_id")
+    @JsonIgnore
+    private Lot lot;
 
     @NotBlank
     @Column(name = "ville")
     private String ville;
+
+    @Column(name = "lot_name")
+    private String lotName;
 
     @Column(name = "type_contrat")
     private String typeContrat;
@@ -82,19 +83,11 @@ public class Contrat {
     @OneToMany(mappedBy = "contrat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrdreCommande> ordresCommande = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "contrat_items",
-        joinColumns = @JoinColumn(name = "contrat_id"),
-        inverseJoinColumns = @JoinColumn(name = "item_id")
-    )
-    private Set<Item> items = new HashSet<>();
-
     // Constructors
     public Contrat() {}
 
     public Contrat(String idContrat, LocalDate dateDebut, LocalDate dateFin, String nomPrestataire,
-                   Double montant, String lot, String ville) {
+                   Double montant, Lot lot, String ville) {
         this.idContrat = idContrat;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
@@ -124,7 +117,7 @@ public class Contrat {
 
     public LocalDate getDateDebut() {
         return dateDebut;
-    }
+    } 
 
     public void setDateDebut(LocalDate dateDebut) {
         this.dateDebut = dateDebut;
@@ -166,12 +159,23 @@ public class Contrat {
         this.montantRestant = montantRestant;
     }
 
+    @JsonProperty("lot")
     public String getLot() {
+        return lotName;
+    }
+
+    public void setLot(String lotName) {
+        this.lotName = lotName;
+    }
+
+    @JsonIgnore
+    public Lot getLotEntity() {
         return lot;
     }
 
-    public void setLot(String lot) {
+    public void setLotEntity(Lot lot) {
         this.lot = lot;
+        this.lotName = lot != null ? lot.getNomLot() : null;
     }
 
     public String getVille() {
@@ -222,11 +226,21 @@ public class Contrat {
         this.ordresCommande = ordresCommande;
     }
 
-    public Set<Item> getItems() {
-        return items;
+    @JsonIgnore
+    public List<Item> getItems() {
+        if (ordresCommande == null) {
+            return new ArrayList<>();
+        }
+        return ordresCommande.stream()
+            .filter(oc -> oc.getItems() != null)
+            .flatMap(oc -> oc.getItems().stream())
+            .distinct()
+            .collect(java.util.stream.Collectors.toList());
     }
 
-    public void setItems(Set<Item> items) {
-        this.items = items;
+    public void setItems(java.util.Set<Item> items) {
+        // Direct item association with contracts has been removed
+        // Items are now associated via OrdreCommande entities
+        // This method is kept for backward compatibility but does nothing
     }
 }

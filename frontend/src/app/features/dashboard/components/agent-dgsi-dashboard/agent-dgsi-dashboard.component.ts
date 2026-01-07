@@ -5,15 +5,16 @@ import { Subscription } from 'rxjs';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { ContratService } from '../../../../core/services/contrat.service';
-import { OrdreCommandeService } from '../../../../core/services/ordre-commande.service';
-import { EvaluationService } from '../../../../core/services/evaluation.service';
+import { ItemService } from '../../../../core/services/item.service';
+import { StructureMefpService } from '../../../../core/services/structure-mefp.service';
+
 import { FichePrestationService } from '../../../../core/services/fiche-prestation.service';
 import { PrestationService } from '../../../../core/services/prestation.service';
 
 interface Stats {
   totalPrestations: number;
-  totalOrdres: number;
-  totalEvaluations: number;
+  totalItems: number;
+  totalStructuresMefp: number;
 }
 
 @Component({
@@ -27,9 +28,9 @@ interface Stats {
       *ngIf="authService.isAuthenticated()"
     >
       <!-- En-tête -->
-      <div class="flex items-center justify-between mb-10">
+      <div class="flex items-center justify-between mb-10 ">
         <div>
-          <h1 class="text-3xl font-bold text-orange-400">Espace Agent DGSI</h1>
+          <h1 class="text-3xl font-bold text-orange-400" style="margin-left: 0px;">Espace Agent DGSI</h1>
         </div>
         <div class="flex items-center gap-4">
           <button
@@ -62,10 +63,10 @@ interface Stats {
               <span class="text-orange-400">{{
                 authService.getCurrentUser()?.nom
               }}</span>
-              👋
+              
             </h2>
             <p class="text-gray-300">
-              Heureux de vous revoir sur votre tableau de bord professionnel.
+               Bienvenue sur le tableau de bord agent DGSI.
             </p>
           </div>
           <div class="hidden md:block">
@@ -93,23 +94,23 @@ interface Stats {
         >
           <div class="text-orange-400 text-4xl mb-3">📋</div>
           <div class="text-3xl font-bold">{{ stats.totalPrestations }}</div>
-          <p class="text-gray-400 text-sm mt-1">Prestations enregistrées</p>
+          <p class="text-gray-400 text-sm mt-1">Prestations</p>
         </div>
 
         <div
           class="bg-[#1e293b] hover:bg-[#27364b] transition-all rounded-xl p-6 flex flex-col items-start border border-[#1e3a8a]/20"
         >
-          <div class="text-blue-400 text-4xl mb-3">🧾</div>
-          <div class="text-3xl font-bold">{{ stats.totalOrdres }}</div>
-          <p class="text-gray-400 text-sm mt-1">Ordres en cours</p>
+          <div class="text-blue-400 text-4xl mb-3">🧰</div>
+          <div class="text-3xl font-bold">{{ stats.totalItems }}</div>
+          <p class="text-gray-400 text-sm mt-1">Items</p>
         </div>
 
         <div
           class="bg-[#1e293b] hover:bg-[#27364b] transition-all rounded-xl p-6 flex flex-col items-start border border-[#1e3a8a]/20"
         >
-          <div class="text-yellow-400 text-4xl mb-3">⭐</div>
-          <div class="text-3xl font-bold">{{ stats.totalEvaluations }}</div>
-          <p class="text-gray-400 text-sm mt-1">Évaluations reçues</p>
+          <div class="text-green-400 text-4xl mb-3">🏢</div>
+          <div class="text-3xl font-bold">{{ stats.totalStructuresMefp }}</div>
+          <p class="text-gray-400 text-sm mt-1">Structures du MEFP</p>
         </div>
       </div>
 
@@ -130,35 +131,35 @@ interface Stats {
           >
             <div class="text-center">
               <div class="text-2xl mb-2">🧰</div>
-              <h4 class="text-sm font-medium text-blue-300 mb-1">Items</h4>
+              <h4 class="text-sm font-medium text-blue-300 mb-1">Items et Lots</h4>
               <p class="text-gray-400 text-xs">
-                Gérer les items
+                Gestion complète des items et lots de maintenance
               </p>
             </div>
           </div>
 
           <div
             class="bg-[#0f172a] hover:bg-[#1e293b] rounded-lg p-4 border border-[#1e3a8a]/20 cursor-pointer transition-all duration-200 hover:border-orange-400/50 hover:shadow-lg"
-            (click)="navigateTo('ordres-commande')"
+            (click)="navigateTo('équipements')"
           >
             <div class="text-center">
-              <div class="text-2xl mb-2">📦</div>
-              <h4 class="text-sm font-medium text-blue-300 mb-1">Ordres</h4>
+              <div class="text-2xl mb-2">🛠️</div>
+              <h4 class="text-sm font-medium text-blue-300 mb-1">Équipements</h4>
               <p class="text-gray-400 text-xs">
-                Superviser les commandes
+                Gestion complète des équipements informatiques
               </p>
             </div>
           </div>
 
           <div
             class="bg-[#0f172a] hover:bg-[#1e293b] rounded-lg p-4 border border-[#1e3a8a]/20 cursor-pointer transition-all duration-200 hover:border-orange-400/50 hover:shadow-lg"
-            (click)="navigateTo('rapports-suivi')"
+            (click)="navigateTo('structures-mefp')"
           >
             <div class="text-center">
-              <div class="text-2xl mb-2">📊</div>
-              <h4 class="text-sm font-medium text-blue-300 mb-1">Rapports</h4>
+              <div class="text-2xl mb-2">🏢</div>
+              <h4 class="text-sm font-medium text-blue-300 mb-1">Structures du MEFP</h4>
               <p class="text-gray-400 text-xs">
-                Consulter les rapports
+                Gestion des structures du Ministère de l'Économie, des Finances et de la Prospective
               </p>
             </div>
           </div>
@@ -168,10 +169,10 @@ interface Stats {
             (click)="navigateTo('statistiques')"
           >
             <div class="text-center">
-              <div class="text-2xl mb-2">📉</div>
+              <div class="text-2xl mb-2">📊</div>
               <h4 class="text-sm font-medium text-blue-300 mb-1">Statistiques</h4>
               <p class="text-gray-400 text-xs">
-                Voir les statistiques
+                Consulter les tableaux de bord et statistiques détaillées
               </p>
             </div>
           </div>
@@ -181,27 +182,8 @@ interface Stats {
     </div>
   `,
   styles: [`
-    .min-h-screen {
-      min-height: 100vh;
-    }
+  
 
-    .bg-\\[\\#0f172a\\] {
-      background-color: #0f172a;
-    }
-
-    .text-white {
-      color: white;
-    }
-
-    .px-8 {
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-
-    .py-10 {
-      padding-top: 2.5rem;
-      padding-bottom: 2.5rem;
-    }
 
     .font-sans {
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -562,40 +544,30 @@ interface Stats {
 export class AgentDgsiDashboardComponent implements OnInit, OnDestroy {
   stats: Stats = {
     totalPrestations: 0,
-    totalOrdres: 0,
-    totalEvaluations: 0
+    totalItems: 0,
+    totalStructuresMefp: 0
   };
 
-  private refreshInterval: any;
   private userSub?: Subscription;
 
   constructor(
     public authService: AuthService,
     private contratService: ContratService,
-    private ordreCommandeService: OrdreCommandeService,
-    private evaluationService: EvaluationService,
+    private itemService: ItemService,
+    private structureMefpService: StructureMefpService,
     private fichePrestationService: FichePrestationService,
     private prestationService: PrestationService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    console.log('AgentDgsiDashboardComponent: Initializing dashboard');
-    console.log('AgentDgsiDashboardComponent: Current user:', this.authService.getCurrentUser());
-    console.log('AgentDgsiDashboardComponent: Is authenticated:', this.authService.isAuthenticated());
-
     if (this.authService.isAgentDGSI()) {
-      console.log('AgentDgsiDashboardComponent: User is Agent DGSI, loading stats');
       this.loadStats();
-      this.startAutoRefresh();
     }
 
     this.userSub = this.authService.currentUser$.subscribe(user => {
-      console.log('AgentDgsiDashboardComponent: User subscription triggered', user);
       if (user && this.authService.isAgentDGSI()) {
-        console.log('AgentDgsiDashboardComponent: User authenticated as Agent DGSI, loading stats');
         this.loadStats();
-        this.startAutoRefresh();
       }
     });
   }
@@ -610,31 +582,22 @@ export class AgentDgsiDashboardComponent implements OnInit, OnDestroy {
 
     prestationPromise?.then(prestationResponse => {
       let prestations: any[] = [];
-      
-      console.log('🔍 Dashboard Admin - Response brute:', prestationResponse);
-      
+
       if (prestationResponse && typeof prestationResponse === 'object' && 'content' in prestationResponse) {
         prestations = prestationResponse.content || [];
       } else {
         prestations = prestationResponse || [];
       }
 
-      console.log('🔍 Dashboard Admin - Prestations avant filtrage:', prestations.length);
-      console.log('🔍 Dashboard Admin - User role:', currentUser?.role);
-      console.log('🔍 Dashboard Admin - Is prestataire:', isPrestataire);
-
       if (isPrestataire && currentUser) {
-        console.log('🔍 Dashboard Admin - Filtrage pour prestataire:', currentUser.nom);
         prestations = prestations.filter(p => {
           const matchNom = p.nomPrestataire === currentUser.nom;
           const matchEmail = p.contactPrestataire === currentUser.email;
           const matchId = p.prestataireId === currentUser.id?.toString();
-          console.log('🔍 Dashboard Admin - Prestation:', p.nomPrestataire, 'Match:', matchNom || matchEmail || matchId);
           return matchNom || matchEmail || matchId;
         });
       }
 
-      console.log('🔍 Dashboard Admin - Prestations après filtrage:', prestations.length);
       this.stats.totalPrestations = prestations.length;
     }).catch(error => {
       if (error.status !== 401) {
@@ -643,27 +606,29 @@ export class AgentDgsiDashboardComponent implements OnInit, OnDestroy {
       this.stats.totalPrestations = 0;
     });
 
-    // Charger les statistiques des ordres de commande
-    this.ordreCommandeService.getAllOrdresCommande().subscribe({
-      next: (ordres) => {
-        this.stats.totalOrdres = ordres.length;
+    // Charger les statistiques des items
+    this.itemService.getAllItems().subscribe({
+      next: (items) => {
+        this.stats.totalItems = items.length;
       },
       error: (error) => {
         if (error.status !== 401) {
-          console.error('Erreur lors du chargement des ordres:', error);
+          console.error('Erreur lors du chargement des items:', error);
         }
+        this.stats.totalItems = 0;
       }
     });
 
-    // Charger les statistiques des évaluations
-    this.evaluationService.getAllEvaluations().subscribe({
-      next: (evaluations) => {
-        this.stats.totalEvaluations = evaluations.length;
+    // Charger les statistiques des structures MEFP
+    this.structureMefpService.getAllStructures().subscribe({
+      next: (structures) => {
+        this.stats.totalStructuresMefp = structures.length;
       },
       error: (error) => {
         if (error.status !== 401) {
-          console.error('Erreur lors du chargement des évaluations:', error);
+          console.error('Erreur lors du chargement des structures MEFP:', error);
         }
+        this.stats.totalStructuresMefp = 0;
       }
     });
   }
@@ -689,29 +654,15 @@ export class AgentDgsiDashboardComponent implements OnInit, OnDestroy {
   }
 
   refreshStats(): void {
-    console.log('🔄 Dashboard Admin - refreshStats called');
     if (this.authService.isAgentDGSI()) {
-      console.log('🔄 Dashboard Admin - User is Agent DGSI, loading stats');
       this.loadStats();
-    } else {
-      console.log('🔄 Dashboard Admin - User is not Agent DGSI');
     }
-  }
-
-  startAutoRefresh(): void {
-    // Actualiser les statistiques toutes les 30 secondes
-    this.refreshInterval = setInterval(() => {
-      console.log('🔄 Dashboard Admin - Auto-refresh triggered');
-      this.refreshStats();
-    }, 30000);
   }
 
   ngOnDestroy(): void {
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-    }
     if (this.userSub) {
       this.userSub.unsubscribe();
     }
   }
 }
+

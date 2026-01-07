@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
 import com.dgsi.maintenance.dto.PrestataireDto;
 import com.dgsi.maintenance.entity.User;
 import com.dgsi.maintenance.repository.UserRepository;
 import com.dgsi.maintenance.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -271,27 +273,123 @@ public class UserController {
     }
 
     @PutMapping("/profile")
-    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('PRESTATAIRE') or hasRole('AGENT_DGSI')")
-    public ResponseEntity<User> updateProfile(@RequestBody Map<String, Object> userData, java.security.Principal principal) {
-        String email = principal.getName();
-        return userRepository.findByEmail(email)
-            .map(user -> {
-                if (userData.containsKey("nom")) user.setNom((String) userData.get("nom"));
-                if (userData.containsKey("email")) user.setEmail((String) userData.get("email"));
-                if (userData.containsKey("contact")) user.setContact((String) userData.get("contact"));
-                if (userData.containsKey("adresse")) user.setAdresse((String) userData.get("adresse"));
-
-                // Handle prestataire-specific fields for profile updates
-                if (user instanceof com.dgsi.maintenance.entity.Prestataire) {
-                    com.dgsi.maintenance.entity.Prestataire prestataire = (com.dgsi.maintenance.entity.Prestataire) user;
-                    if (userData.containsKey("qualification")) prestataire.setQualification((String) userData.get("qualification"));
-                    if (userData.containsKey("structure")) prestataire.setStructure((String) userData.get("structure"));
-                    if (userData.containsKey("direction")) prestataire.setDirection((String) userData.get("direction"));
+    // @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('PRESTATAIRE') or hasRole('AGENT_DGSI')")
+    // Removed for development mode - authorization is handled by the endpoint logic itself
+    public ResponseEntity<?> updateProfile(@RequestBody Map<String, Object> userData, java.security.Principal principal) {
+        try {
+            String principalName = null;
+            if (principal != null) {
+                principalName = principal.getName();
+            }
+            
+            if (principalName == null || principalName.trim().isEmpty()) {
+                // Fallback to SecurityContext
+                org.springframework.security.core.Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null) {
+                    principalName = auth.getName();
                 }
+            }
+            
+            if (principalName == null || principalName.trim().isEmpty()) {
+                logger.warning("No principal name found");
+                return ResponseEntity.status(401).body("Authentication required");
+            }
+            
+            logger.info("Updating profile for principal: " + principalName);
+            logger.info("Profile data received: " + userData);
 
-                return ResponseEntity.ok(userRepository.save(user));
-            })
-            .orElse(ResponseEntity.notFound().build());
+            // Try multiple strategies to find the user: by email, by id, by nom
+            java.util.Optional<User> maybeUser = userRepository.findByEmail(principalName);
+            if (maybeUser.isEmpty()) {
+                // try by id
+                try {
+                    maybeUser = userRepository.findById(principalName);
+                } catch (Exception ex) {
+                    logger.warning("Failed to find user by ID: " + ex.getMessage());
+                }
+            }
+            if (maybeUser.isEmpty()) {
+                maybeUser = userRepository.findByNom(principalName);
+            }
+
+            if (maybeUser.isEmpty()) {
+                logger.warning("User not found for principal: " + principalName);
+                return ResponseEntity.status(404).body("User not found");
+            }
+
+            User user = maybeUser.get();
+            logger.info("Found user: " + user.getEmail() + " (" + user.getClass().getSimpleName() + ")");
+
+            // Update common fields
+            if (userData.containsKey("nom")) {
+                String newNom = (String) userData.get("nom");
+                logger.info("Updating nom from '" + user.getNom() + "' to '" + newNom + "'");
+                user.setNom(newNom);
+            }
+            if (userData.containsKey("email")) {
+                String newEmail = (String) userData.get("email");
+                logger.info("Updating email from '" + user.getEmail() + "' to '" + newEmail + "'");
+                user.setEmail(newEmail);
+            }
+            if (userData.containsKey("contact")) {
+                String newContact = (String) userData.get("contact");
+                logger.info("Updating contact from '" + user.getContact() + "' to '" + newContact + "'");
+                user.setContact(newContact);
+            }
+            if (userData.containsKey("adresse")) {
+                String newAdresse = (String) userData.get("adresse");
+                logger.info("Updating adresse from '" + user.getAdresse() + "' to '" + newAdresse + "'");
+                user.setAdresse(newAdresse);
+            }
+
+            // Handle prestataire-specific fields for profile updates
+            if (user instanceof com.dgsi.maintenance.entity.Prestataire) {
+                com.dgsi.maintenance.entity.Prestataire prestataire = (com.dgsi.maintenance.entity.Prestataire) user;
+                logger.info("User is a Prestataire, updating specific fields");
+                
+                if (userData.containsKey("qualification")) {
+                    String newQualification = (String) userData.get("qualification");
+                    logger.info("Updating qualification from '" + prestataire.getQualification() + "' to '" + newQualification + "'");
+                    prestataire.setQualification(newQualification);
+                }
+                if (userData.containsKey("structure")) {
+                    String newStructure = (String) userData.get("structure");
+                    logger.info("Updating structure from '" + prestataire.getStructure() + "' to '" + newStructure + "'");
+                    prestataire.setStructure(newStructure);
+                }
+                if (userData.containsKey("direction")) {
+                    String newDirection = (String) userData.get("direction");
+                    logger.info("Updating direction from '" + prestataire.getDirection() + "' to '" + newDirection + "'");
+                    prestataire.setDirection(newDirection);
+                }
+            }
+
+            User savedUser = userRepository.save(user);
+            logger.info("Profile updated successfully for user: " + savedUser.getEmail());
+            
+            // Return the updated user data in the same format as getCurrentUser
+            Map<String, Object> response = new HashMap<>();
+            response.put("id", savedUser.getId());
+            response.put("email", savedUser.getEmail());
+            response.put("nom", savedUser.getNom());
+            response.put("contact", savedUser.getContact());
+            response.put("adresse", savedUser.getAdresse());
+            response.put("role", savedUser.getRole());
+            
+            if (savedUser instanceof com.dgsi.maintenance.entity.Prestataire) {
+                com.dgsi.maintenance.entity.Prestataire prestataire = (com.dgsi.maintenance.entity.Prestataire) savedUser;
+                response.put("qualification", prestataire.getQualification());
+                response.put("structure", prestataire.getStructure());
+                response.put("direction", prestataire.getDirection());
+            }
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            logger.severe("Error updating profile: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error updating profile: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

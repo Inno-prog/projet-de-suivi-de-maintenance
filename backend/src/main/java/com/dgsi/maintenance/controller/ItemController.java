@@ -1,9 +1,10 @@
-
 package com.dgsi.maintenance.controller;
 
 import java.util.List;
+
 import com.dgsi.maintenance.entity.Item;
 import com.dgsi.maintenance.repository.ItemRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +29,9 @@ public class ItemController {
 
     @Autowired
     private com.dgsi.maintenance.repository.ContratRepository contratRepository;
+
+    @Autowired
+    private com.dgsi.maintenance.repository.UserRepository userRepository;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('PRESTATAIRE')")
@@ -83,13 +87,16 @@ public class ItemController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
     public Item createItem(@RequestBody Item item) {
         // Auto-generate idItem if not provided
         if (item.getIdItem() == null) {
             // Find the maximum idItem and increment by 1
+            // Use filter to handle null values safely
             Integer maxIdItem = itemRepository.findAll().stream()
-                .mapToInt(Item::getIdItem)
+                .map(Item::getIdItem)
+                .filter(java.util.Objects::nonNull)
+                .mapToInt(Integer::intValue)
                 .max()
                 .orElse(0);
             item.setIdItem(maxIdItem + 1);
@@ -98,7 +105,7 @@ public class ItemController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
     public ResponseEntity<Item> updateItem(@PathVariable Long id, @RequestBody Item item) {
         return itemRepository.findById(id)
             .map(existingItem -> {
@@ -109,7 +116,7 @@ public class ItemController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
     public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
         return itemRepository.findById(id)
             .map(item -> {
@@ -171,23 +178,124 @@ public class ItemController {
         }
     }
 
+    @GetMapping("/by-prestataire/{prestataireId}")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or (hasRole('PRESTATAIRE') and #prestataireId == authentication.principal.id)")
+    public List<Item> getItemsByPrestataire(@PathVariable String prestataireId) {
+        System.out.println("🔍 Getting items for prestataire: " + prestataireId);
+
+        // Get contracts for this prestataire with items loaded
+        List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findByPrestataireIdWithItems(prestataireId);
+        System.out.println("📄 Found " + contrats.size() + " contracts for prestataire " + prestataireId);
+
+        // Collect items directly from contracts (more reliable than lot-based lookup)
+        java.util.Set<Item> itemsFromContracts = new java.util.HashSet<>();
+        for (com.dgsi.maintenance.entity.Contrat contrat : contrats) {
+            List<Item> items = contrat.getItems();
+            System.out.println("📄 Contract " + contrat.getId() + " - items from getItems(): " + (items != null ? items.size() : 0));
+            
+            if (items != null && !items.isEmpty()) {
+                itemsFromContracts.addAll(items);
+                for (Item item : items) {
+                    System.out.println("📦 Item from contract: " + item.getIdItem() + " - " + item.getNomItem() + " (Lot: " + item.getLot() + ")");
+                }
+            }
+        }
+
+        // Fallback: lot-based lookup if no items found from contracts
+        java.util.Set<Item> itemsFromLots = new java.util.HashSet<>();
+        if (itemsFromContracts.isEmpty()) {
+            System.out.println("⚠️ No items found from contracts, trying lot-based lookup...");
+            
+            // Collect unique lot names from contracts
+            java.util.Set<String> lotNames = new java.util.HashSet<>();
+            for (com.dgsi.maintenance.entity.Contrat contrat : contrats) {
+                String lotName = null;
+                try {
+                    lotName = contrat.getLot(); // this returns lotName (getter in Contrat)
+                } catch (Exception e) {
+                    // ignore
+                }
+                if (lotName == null || lotName.trim().isEmpty()) {
+                    // Try to get the Lot entity name if available
+                    try {
+                        com.dgsi.maintenance.entity.Lot lotEntity = contrat.getLotEntity();
+                        if (lotEntity != null && lotEntity.getNomLot() != null) {
+                            lotName = lotEntity.getNomLot();
+                        }
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                }
+
+                if (lotName != null && !lotName.trim().isEmpty()) {
+                    // If lotName contains a display suffix like "lot3 (ville1, ville2)", strip the suffix to get raw lot name
+                    String resolvedLot = lotName.trim();
+                    int parenIndex = resolvedLot.indexOf("(");
+                    if (parenIndex > 0) {
+                        resolvedLot = resolvedLot.substring(0, parenIndex).trim();
+                        System.out.println("ℹ️ Stripped display suffix for lot: '" + lotName + "' -> '" + resolvedLot + "'");
+                    }
+                    lotNames.add(resolvedLot);
+                    System.out.println("📄 Contract " + contrat.getId() + " - resolved lot: " + resolvedLot);
+                }
+            }
+
+            System.out.println("🏷️ Found " + lotNames.size() + " unique lots: " + lotNames);
+
+            // Get all items that belong to these lots with fallbacks
+            for (String lotName : lotNames) {
+                List<Item> itemsForLot = itemRepository.findByLot(lotName);
+                System.out.println("📦 Lot '" + lotName + "' has " + itemsForLot.size() + " items (exact match)");
+
+                if (itemsForLot == null || itemsForLot.isEmpty()) {
+                    // Fallback: try contains ignore case (new repository method)
+                    try {
+                        itemsForLot = itemRepository.findByLotContainingIgnoreCase(lotName);
+                        System.out.println("📦 Fallback containsIgnoreCase for '" + lotName + "' returned " + (itemsForLot != null ? itemsForLot.size() : 0));
+                    } catch (Exception e) {
+                        System.out.println("⚠️ Erreur fallback recherche items pour lot '" + lotName + "': " + e.getMessage());
+                    }
+                }
+
+                if (itemsForLot != null && !itemsForLot.isEmpty()) {
+                    itemsFromLots.addAll(itemsForLot);
+                }
+            }
+        }
+
+        // Combine results
+        java.util.Set<Item> allItems = new java.util.HashSet<>();
+        allItems.addAll(itemsFromContracts);
+        allItems.addAll(itemsFromLots);
+
+        List<Item> items = new java.util.ArrayList<>(allItems);
+        System.out.println("📊 Total unique items for prestataire: " + items.size());
+
+        // Log each item found
+        for (Item item : items) {
+            System.out.println("📦 Final item: " + item.getIdItem() + " - " + item.getNomItem() + " (Lot: " + item.getLot() + ")");
+        }
+
+        return items;
+    }
+
     @GetMapping("/debug-prestations")
     @PreAuthorize("hasRole('ADMINISTRATEUR')")
     public ResponseEntity<?> debugPrestations() {
         try {
             List<com.dgsi.maintenance.entity.Prestation> prestations = prestationRepository.findAll();
             System.out.println("🔍 Total prestations: " + prestations.size());
-            
+
             java.util.Map<String, Object> debug = new java.util.HashMap<>();
             debug.put("totalPrestations", prestations.size());
-            
+
             java.util.List<java.util.Map<String, Object>> prestationDetails = new java.util.ArrayList<>();
             for (com.dgsi.maintenance.entity.Prestation prestation : prestations) {
                 java.util.Map<String, Object> detail = new java.util.HashMap<>();
                 detail.put("id", prestation.getId());
                 detail.put("nomPrestataire", prestation.getNomPrestataire());
                 detail.put("itemsCount", prestation.getItemsUtilises() != null ? prestation.getItemsUtilises().size() : 0);
-                
+
                 if (prestation.getItemsUtilises() != null) {
                     java.util.List<String> itemNames = new java.util.ArrayList<>();
                     for (Item item : prestation.getItemsUtilises()) {
@@ -195,12 +303,181 @@ public class ItemController {
                     }
                     detail.put("items", itemNames);
                 }
-                
+
                 prestationDetails.add(detail);
                 System.out.println("📊 Prestation " + prestation.getId() + " - Items: " + (prestation.getItemsUtilises() != null ? prestation.getItemsUtilises().size() : 0));
             }
-            
+
             debug.put("prestations", prestationDetails);
+            return ResponseEntity.ok(debug);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Erreur: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/debug/all-prestataires")
+    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    public ResponseEntity<?> debugPrestataires() {
+        try {
+            System.out.println("🔍 Debugging all prestataires...");
+            
+            // Get all prestataires using the repository
+            List<com.dgsi.maintenance.entity.User> prestataires = userRepository.findByRole("PRESTATAIRE");
+            
+            System.out.println("📄 Found " + prestataires.size() + " prestataires");
+            
+            java.util.Map<String, Object> debug = new java.util.HashMap<>();
+            debug.put("totalPrestataires", prestataires.size());
+            
+            java.util.List<java.util.Map<String, Object>> prestataireDetails = new java.util.ArrayList<>();
+            for (com.dgsi.maintenance.entity.User user : prestataires) {
+                com.dgsi.maintenance.entity.Prestataire prestataire = (com.dgsi.maintenance.entity.Prestataire) user;
+                java.util.Map<String, Object> detail = new java.util.HashMap<>();
+                detail.put("id", prestataire.getId());
+                detail.put("nom", prestataire.getNom());
+                detail.put("email", prestataire.getEmail());
+                detail.put("structure", prestataire.getStructure());
+
+                prestataireDetails.add(detail);
+            }
+            
+            debug.put("prestataires", prestataireDetails);
+            return ResponseEntity.ok(debug);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Erreur: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/debug-prestataire-contracts/{prestataireId}")
+    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    public ResponseEntity<?> debugPrestataireContracts(@PathVariable String prestataireId) {
+        try {
+            System.out.println("🔍 Debugging contracts for prestataire ID: " + prestataireId);
+            
+            // Test different ways to find contracts
+            List<com.dgsi.maintenance.entity.Contrat> contrats1 = contratRepository.findByPrestataireId(prestataireId);
+            List<com.dgsi.maintenance.entity.Contrat> contrats2 = contratRepository.findByPrestataireIdWithItems(prestataireId);
+            
+            System.out.println("📄 Method 1 (findByPrestataireId): " + contrats1.size() + " contracts");
+            System.out.println("📄 Method 2 (findByPrestataireIdWithItems): " + contrats2.size() + " contracts");
+            
+            java.util.Map<String, Object> debug = new java.util.HashMap<>();
+            debug.put("prestataireId", prestataireId);
+            debug.put("contractsMethod1", contrats1.size());
+            debug.put("contractsMethod2", contrats2.size());
+            
+            java.util.List<java.util.Map<String, Object>> contractDetails = new java.util.ArrayList<>();
+            for (com.dgsi.maintenance.entity.Contrat contrat : contrats2) {
+                java.util.Map<String, Object> detail = new java.util.HashMap<>();
+                detail.put("id", contrat.getId());
+                detail.put("nomPrestataire", contrat.getNomPrestataire());
+                detail.put("statut", contrat.getStatut());
+                detail.put("ordresCommandeCount", contrat.getOrdresCommande() != null ? contrat.getOrdresCommande().size() : 0);
+                detail.put("itemsCount", contrat.getItems() != null ? contrat.getItems().size() : 0);
+                
+                contractDetails.add(detail);
+            }
+            
+            debug.put("contracts", contractDetails);
+            return ResponseEntity.ok(debug);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Erreur: " + e.getMessage());
+        }
+    }
+    
+    @GetMapping("/debug-prestataire-items/{prestataireId}")
+    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    public ResponseEntity<?> debugPrestataireItems(@PathVariable String prestataireId) {
+            try {
+                System.out.println("🔍 Debugging items for prestataire: " + prestataireId);
+                
+                // Get contracts
+                List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findByPrestataireIdWithItems(prestataireId);
+                System.out.println("📄 Found " + contrats.size() + " contracts");
+                
+                java.util.Map<String, Object> debug = new java.util.HashMap<>();
+                debug.put("prestataireId", prestataireId);
+                debug.put("contractsCount", contrats.size());
+                
+                java.util.List<java.util.Map<String, Object>> contractDetails = new java.util.ArrayList<>();
+                for (com.dgsi.maintenance.entity.Contrat contrat : contrats) {
+                    java.util.Map<String, Object> detail = new java.util.HashMap<>();
+                    detail.put("id", contrat.getId());
+                    detail.put("idContrat", contrat.getIdContrat());
+                    detail.put("nomPrestataire", contrat.getNomPrestataire());
+                    detail.put("lot", contrat.getLot());
+                    detail.put("ordresCommandeCount", contrat.getOrdresCommande() != null ? contrat.getOrdresCommande().size() : 0);
+                    
+                    // Get items from contract
+                    List<Item> items = contrat.getItems();
+                    detail.put("itemsCount", items != null ? items.size() : 0);
+                    
+                    if (items != null && !items.isEmpty()) {
+                        java.util.List<java.util.Map<String, Object>> itemDetails = new java.util.ArrayList<>();
+                        for (Item item : items) {
+                            java.util.Map<String, Object> itemDetail = new java.util.HashMap<>();
+                            itemDetail.put("id", item.getId());
+                            itemDetail.put("idItem", item.getIdItem());
+                            itemDetail.put("nomItem", item.getNomItem());
+                            itemDetail.put("lot", item.getLot());
+                            itemDetails.add(itemDetail);
+                        }
+                        detail.put("items", itemDetails);
+                    }
+                    
+                    contractDetails.add(detail);
+                }
+                
+                debug.put("contracts", contractDetails);
+                
+                // Get items via the API method
+                List<Item> itemsViaApi = getItemsByPrestataire(prestataireId);
+                debug.put("itemsViaApiCount", itemsViaApi.size());
+                
+                return ResponseEntity.ok(debug);
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().body("Erreur: " + e.getMessage());
+            }
+        }
+
+    @GetMapping("/debug/all-contracts")
+    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    public ResponseEntity<?> debugAllContracts() {
+        try {
+            System.out.println("🔍 Debugging all contracts...");
+            
+            // Get all contracts with their prestataire relationships
+            List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findAll();
+            
+            System.out.println("📄 Found " + contrats.size() + " contracts");
+            
+            java.util.Map<String, Object> debug = new java.util.HashMap<>();
+            debug.put("totalContracts", contrats.size());
+            
+            java.util.List<java.util.Map<String, Object>> contractDetails = new java.util.ArrayList<>();
+            for (com.dgsi.maintenance.entity.Contrat contrat : contrats) {
+                java.util.Map<String, Object> detail = new java.util.HashMap<>();
+                detail.put("id", contrat.getId());
+                detail.put("idContrat", contrat.getIdContrat());
+                detail.put("nomPrestataire", contrat.getNomPrestataire());
+                detail.put("lot", contrat.getLot());
+                detail.put("ville", contrat.getVille());
+                detail.put("statut", contrat.getStatut());
+                
+                // Try to get prestataire info
+                if (contrat.getPrestataire() != null) {
+                    detail.put("prestataireId", contrat.getPrestataire().getId());
+                    detail.put("prestataireEmail", contrat.getPrestataire().getEmail());
+                    detail.put("prestataireNom", contrat.getPrestataire().getNom());
+                } else {
+                    detail.put("prestataireId", null);
+                    detail.put("prestataireError", "Prestataire relationship is null");
+                }
+                
+                contractDetails.add(detail);
+            }
+            
+            debug.put("contracts", contractDetails);
             return ResponseEntity.ok(debug);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Erreur: " + e.getMessage());

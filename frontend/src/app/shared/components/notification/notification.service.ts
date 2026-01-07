@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { NotificationService as CoreNotificationService } from '../../../core/services/notification.service';
+import { environment } from '../../../../environments/environment';
 
 export interface AppNotification {
   id: string;
@@ -21,6 +22,7 @@ export class NotificationService {
   }
 
   private eventSource?: EventSource | null = null;
+  private currentDestinataire: string | null = null;
 
   /**
    * Connect to backend SSE stream for the given destinataire (usually user email).
@@ -28,15 +30,23 @@ export class NotificationService {
    */
   connectSse(destinataire: string) {
     try {
-      if (this.eventSource) {
-        this.eventSource.close();
-        this.eventSource = null;
+      // If we're already connected to the same destinataire and the connection is open, do nothing.
+      if (this.eventSource && this.currentDestinataire === destinataire && this.eventSource.readyState === 1) {
+        console.log('NotificationService: SSE already connected to', destinataire);
+        return;
       }
 
-      const url = `/api/notifications/stream/${encodeURIComponent(destinataire)}`;
-      this.eventSource = new EventSource(url);
+      // If there's an existing connection for a different destinataire or closed, close it first.
+      if (this.eventSource) {
+        try { this.eventSource.close(); } catch (_) {}
+        this.eventSource = null;
+        this.currentDestinataire = null;
+      }
 
+      const url = `${environment.apiUrl}/notifications/stream/${encodeURIComponent(destinataire)}`;
       console.log('NotificationService: SSE connecting to', url);
+      this.eventSource = new EventSource(url);
+      this.currentDestinataire = destinataire;
 
       this.eventSource.onopen = () => {
         console.log('NotificationService: SSE connection opened');
@@ -76,9 +86,10 @@ export class NotificationService {
 
       this.eventSource.onerror = (err) => {
         console.error('SSE error', err);
-        // Try to reconnect after short delay
-        this.eventSource?.close();
+        // Close existing connection and attempt a reconnect after a short delay.
+        try { this.eventSource?.close(); } catch (_) {}
         this.eventSource = null;
+        this.currentDestinataire = null;
         setTimeout(() => this.connectSse(destinataire), 3000);
       };
 

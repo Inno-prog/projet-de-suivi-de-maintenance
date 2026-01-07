@@ -55,6 +55,7 @@ import { Router } from '@angular/router';
               </div>
             </div>
           </div>
+
           <div class="bg-white rounded-lg shadow-sm p-6">
             <div class="flex items-center">
               <div class="p-3 rounded-full bg-orange-100">
@@ -72,7 +73,6 @@ import { Router } from '@angular/router';
         <div class="bg-white rounded-lg shadow-sm p-6">
           <h2 class="text-xl font-bold text-gray-900 mb-6">Actions Rapides</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-
             <a [routerLink]="['/user', currentUser?.id, 'contrats']" class="bg-green-50 hover:bg-green-100 p-4 rounded-lg text-center transition">
               <i class="fas fa-file-contract text-green-600 text-2xl mb-2"></i>
               <p class="font-medium text-gray-900">Mes Contrats</p>
@@ -88,18 +88,16 @@ import { Router } from '@angular/router';
               <p class="font-medium text-gray-900">Mes Rapports</p>
             </a>
 
-            <a routerLink="/prestations" class="bg-purple-50 hover:bg-purple-100 p-4 rounded-lg text-center transition">
-              <i class="fas fa-plus text-purple-600 text-2xl mb-2"></i>
-              <p class="font-medium text-gray-900">Nouvelle Prestation</p>
+            <a routerLink="/my-items" class="bg-purple-50 hover:bg-purple-100 p-4 rounded-lg text-center transition">
+              <i class="fas fa-boxes-stacked text-purple-600 text-2xl mb-2"></i>
+              <p class="font-medium text-gray-900">Mes Items</p>
             </a>
           </div>
         </div>
       </div>
     </div>
   `,
-  styles: [`
-    /* Styles spécifiques au dashboard prestataire */
-  `]
+  styles: []
 })
 export class PrestataireDashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

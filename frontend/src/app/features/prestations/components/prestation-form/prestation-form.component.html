@@ -1,5 +1,5 @@
 <div class="modal-overlay" *ngIf="showForm">
-  <div class="modal-content form-modal wizard-modal large-modal" (click)="$event.stopPropagation()">
+  <div class="modal-content form-modal wizard-modal large-modal" (click)="$event.stopPropagation()" style="margin-top: 80px; ">
     <form [formGroup]="prestationForm" (ngSubmit)="onSubmit()" class="prestation-form">
       <!-- Step Indicator -->
       <div class="step-indicator">
@@ -71,102 +71,108 @@
           </div>
 
           <div class="form-group">
-            <label for="contactPrestataire">Contact</label>
+            <label for="nomResponsablePrestation">Nom du responsable de la prestation</label>
             <input
               type="text"
-              id="contactPrestataire"
-              formControlName="contactPrestataire"
-              placeholder="Numéro de téléphone ou email"
+              id="nomResponsablePrestation"
+              formControlName="nomResponsablePrestation"
+              placeholder="Entrez le nom du responsable"
               class="line-input"
-              [class.error]="prestationForm.get('contactPrestataire')?.invalid && prestationForm.get('contactPrestataire')?.touched"
-              [readonly]="isCurrentUserPrestataire && prefilledFields['contactPrestataire']"
+              [class.error]="prestationForm.get('nomResponsablePrestation')?.invalid && prestationForm.get('nomResponsablePrestation')?.touched"
             />
-            <div class="input-line" [class.error]="prestationForm.get('contactPrestataire')?.invalid && prestationForm.get('contactPrestataire')?.touched"></div>
-            <div class="error-message" *ngIf="prestationForm.get('contactPrestataire')?.invalid && prestationForm.get('contactPrestataire')?.touched">
-              <span *ngIf="prestationForm.get('contactPrestataire')?.errors?.['required']">Le contact est requis</span>
+            <div class="input-line" [class.error]="prestationForm.get('nomResponsablePrestation')?.invalid && prestationForm.get('nomResponsablePrestation')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('nomResponsablePrestation')?.invalid && prestationForm.get('nomResponsablePrestation')?.touched">
+              <span *ngIf="prestationForm.get('nomResponsablePrestation')?.errors?.['required']">Le nom du responsable est requis</span>
             </div>
-            <small class="info-text" *ngIf="isCurrentUserPrestataire && !prestationForm.get('contactPrestataire')?.value">Veuillez saisir votre contact</small>
           </div>
 
           <div class="form-group">
-            <label for="structurePrestataire">Structure</label>
+            <label for="contactResponsablePrestation">Contact du responsable</label>
             <input
               type="text"
-              id="structurePrestataire"
-              formControlName="structurePrestataire"
-              placeholder="Nom de la structure"
+              id="contactResponsablePrestation"
+              formControlName="contactResponsablePrestation"
+              placeholder="Numéro de téléphone ou email du responsable"
               class="line-input"
-              [class.error]="prestationForm.get('structurePrestataire')?.invalid && prestationForm.get('structurePrestataire')?.touched"
-              [readonly]="isCurrentUserPrestataire && prefilledFields['structurePrestataire']"
+              [class.error]="prestationForm.get('contactResponsablePrestation')?.invalid && prestationForm.get('contactResponsablePrestation')?.touched"
             />
-            <div class="input-line" [class.error]="prestationForm.get('structurePrestataire')?.invalid && prestationForm.get('structurePrestataire')?.touched"></div>
-            <div class="error-message" *ngIf="prestationForm.get('structurePrestataire')?.invalid && prestationForm.get('structurePrestataire')?.touched">
-              <span *ngIf="prestationForm.get('structurePrestataire')?.errors?.['required']">La structure est requise</span>
+            <div class="input-line" [class.error]="prestationForm.get('contactResponsablePrestation')?.invalid && prestationForm.get('contactResponsablePrestation')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('contactResponsablePrestation')?.invalid && prestationForm.get('contactResponsablePrestation')?.touched">
+              <span *ngIf="prestationForm.get('contactResponsablePrestation')?.errors?.['required']">Le contact du responsable est requis</span>
             </div>
-            <small class="info-text" *ngIf="isCurrentUserPrestataire && !prestationForm.get('structurePrestataire')?.value">Veuillez saisir votre structure</small>
           </div>
 
           <div class="form-group">
-            <label for="directionPrestataire">Direction</label>
+            <label for="qualificationResponsablePrestation">Qualification du responsable</label>
             <input
               type="text"
-              id="directionPrestataire"
-              formControlName="directionPrestataire"
-              placeholder="Direction dans laquelle le prestataire travaille"
+              id="qualificationResponsablePrestation"
+              formControlName="qualificationResponsablePrestation"
+              placeholder="Qualification du responsable"
               class="line-input"
-              [class.error]="prestationForm.get('directionPrestataire')?.invalid && prestationForm.get('directionPrestataire')?.touched"
-              [readonly]="isCurrentUserPrestataire && prefilledFields['directionPrestataire']"
+              [class.error]="prestationForm.get('qualificationResponsablePrestation')?.invalid && prestationForm.get('qualificationResponsablePrestation')?.touched"
             />
-            <div class="input-line" [class.error]="prestationForm.get('directionPrestataire')?.invalid && prestationForm.get('directionPrestataire')?.touched"></div>
-            <div class="error-message" *ngIf="prestationForm.get('directionPrestataire')?.invalid && prestationForm.get('directionPrestataire')?.touched">
-              <span *ngIf="prestationForm.get('directionPrestataire')?.errors?.['required']">La direction est requise</span>
+            <div class="input-line" [class.error]="prestationForm.get('qualificationResponsablePrestation')?.invalid && prestationForm.get('qualificationResponsablePrestation')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('qualificationResponsablePrestation')?.invalid && prestationForm.get('qualificationResponsablePrestation')?.touched">
+              <span *ngIf="prestationForm.get('qualificationResponsablePrestation')?.errors?.['required']">La qualification du responsable est requise</span>
             </div>
-            <small class="info-text" *ngIf="isCurrentUserPrestataire && !prestationForm.get('directionPrestataire')?.value">Veuillez saisir votre direction</small>
-          </div>
-
-          <div class="form-group">
-            <label for="qualificationPrestataire">Qualification</label>
-            <input
-              type="text"
-              id="qualificationPrestataire"
-              formControlName="qualificationPrestataire"
-              placeholder="Qualification du prestataire"
-              class="line-input"
-              [class.error]="prestationForm.get('qualificationPrestataire')?.invalid && prestationForm.get('qualificationPrestataire')?.touched"
-              [readonly]="isCurrentUserPrestataire && prefilledFields['qualificationPrestataire']"
-            />
-            <div class="input-line" [class.error]="prestationForm.get('qualificationPrestataire')?.invalid && prestationForm.get('qualificationPrestataire')?.touched"></div>
-            <div class="error-message" *ngIf="prestationForm.get('qualificationPrestataire')?.invalid && prestationForm.get('qualificationPrestataire')?.touched">
-              <span *ngIf="prestationForm.get('qualificationPrestataire')?.errors?.['required']">La qualification est requise</span>
-            </div>
-            <small class="info-text" *ngIf="isCurrentUserPrestataire && !prestationForm.get('qualificationPrestataire')?.value">Veuillez saisir votre qualification</small>
           </div>
 
         </div>
       </div>
 
-      <!-- Step 2: Informations de la Structure -->
+      <!-- Step 2: Lot et Structure -->
       <div *ngIf="currentStep === 2" class="step-content">
         <div class="form-section">
           <div class="section-header">
-            <h3>Informations de la Structure</h3>
+            <h3>Sélection du Lot et de la Structure</h3>
             <div class="section-divider"></div>
           </div>
 
+          <!-- Lot Selection -->
           <div class="form-group">
-            <label for="structureSelection">Sélectionner une structure existante</label>
+            <label for="lotSelection">Sélectionner un lot</label>
+            <select
+              id="lotSelection"
+              formControlName="lotSelection"
+              class="line-input"
+              [class.error]="prestationForm.get('lotSelection')?.invalid && prestationForm.get('lotSelection')?.touched"
+              (change)="onLotChange()"
+            >
+              <option value="">-- Choisir un lot --</option>
+              <option *ngFor="let lot of availableLots" [value]="lot">
+                {{ lot }}
+              </option>
+            </select>
+            <div class="input-line" [class.error]="prestationForm.get('lotSelection')?.invalid && prestationForm.get('lotSelection')?.touched"></div>
+            <div class="error-message" *ngIf="prestationForm.get('lotSelection')?.invalid && prestationForm.get('lotSelection')?.touched">
+              <span *ngIf="prestationForm.get('lotSelection')?.errors?.['required']">La sélection d'un lot est requise</span>
+            </div>
+            <small class="info-text">Sélectionnez d'abord un lot pour charger les structures associées</small>
+          </div>
+
+          <!-- Structure Selection (filtered by lot) -->
+          <div class="form-group" *ngIf="prestationForm.get('lotSelection')?.value">
+            <label for="structureSelection">Sélectionner une structure du lot choisi</label>
             <select
               id="structureSelection"
               formControlName="structureSelection"
               class="line-input"
+              [disabled]="!selectedLotId"
             >
               <option value="">-- Choisir une structure --</option>
               <option *ngFor="let structure of structuresMefp" [value]="structure.id">
-                {{ structure.nom }} ({{ structure.ville }})
+                {{ structure.nom }} ({{ structure.ville || structure.adresseStructure }})
               </option>
               <option value="new">-- Nouvelle structure --</option>
             </select>
             <div class="input-line"></div>
+            <small class="info-text" *ngIf="structuresMefp.length === 0 && selectedLotId">
+              Aucune structure trouvée pour ce lot. Vous pouvez créer une nouvelle structure.
+            </small>
+            <small class="info-text" *ngIf="structuresMefp.length > 0">
+              {{ structuresMefp.length }} structure(s) disponible(s) pour ce lot
+            </small>
           </div>
 
           <div class="form-group" *ngIf="isNewStructure || !selectedStructure">
@@ -296,32 +302,197 @@
             <div class="section-divider"></div>
           </div>
 
+          <!-- Display selected lot and structure info -->
+          <div class="form-group" *ngIf="prestationForm.get('lotSelection')?.value">
+            <div class="selection-summary">
+              <div class="summary-card">
+                <h4>📦 Lot sélectionné</h4>
+                <p class="summary-value">{{ prestationForm.get('lotSelection')?.value }}</p>
+              </div>
+              <div class="summary-card" *ngIf="selectedStructure">
+                <h4>🏢 Structure sélectionnée</h4>
+                <p class="summary-value">{{ selectedStructure.nom }}</p>
+                <p class="summary-detail">{{ selectedStructure.ville || selectedStructure.adresseStructure }}</p>
+              </div>
+            </div>
+          </div>
+
           <div class="form-group">
             <label>Items couverts par l'intervention</label>
-            <button type="button" class="btn btn-primary" (click)="openItemSelectionPopup()">
+            <button type="button" class="btn btn-primary" (click)="openItemSelectionPopup()" [disabled]="!prestationForm.get('lotSelection')?.value">
               Sélectionner les items ({{ selectedItems.length }} sélectionnés)
             </button>
             <div class="selected-items-preview" *ngIf="selectedItems.length > 0">
               <table class="preview-table">
-                <thead>
-                  <tr>
-                    <th>Item</th>
-                    <th>Qté</th>
-                    <th>Montant</th>
-                  </tr>
-                </thead>
                 <tbody>
+                  <tr class="header-row">
+                    <td>Item</td>
+                    <td>Qté</td>
+                    <td>Montant</td>
+                  </tr>
                   <tr *ngFor="let item of selectedItems">
                     <td>{{ item.nomItem }}</td>
                     <td>{{ getItemQuantity(item) }}</td>
                     <td>{{ calculateItemAmount(item) }} FCFA</td>
                   </tr>
-                  <tr class="preview-total">
-                    <td colspan="2"><strong>Total:</strong></td>
-                    <td><strong>{{ calculateTotalAmount() }} FCFA</strong></td>
+                  <tr class="total-row">
+                    <td colspan="2">Total:</td>
+                    <td>{{ calculateTotalAmount() }} FCFA</td>
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            <!-- Item Selection Popup -->
+            <div class="modal-overlay" *ngIf="showItemSelectionPopup" (click)="closeItemSelectionPopup()">
+              <div class="modal-content large-popup" (click)="$event.stopPropagation()">
+                <div class="popup-header">
+                  <h3>Sélection des Items du Lot</h3>
+                  <button type="button" class="close-btn" (click)="closeItemSelectionPopup()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="search-bar">
+                  <div class="search-input-container">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="search-icon">
+                      <path d="M21 21L16.5 16.5M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <input
+                      type="text"
+                      placeholder="Rechercher un item..."
+                      class="search-input"
+                      (input)="onSearchChange($event)"
+                      [value]="searchTerm"
+                    />
+                  </div>
+                </div>
+
+                <div class="items-grid" *ngIf="filteredItems.length > 0; else noItemsMessage">
+                  <div *ngFor="let item of filteredItems"
+                      class="item-card"
+                      [class.selected]="isItemSelected(item)"
+                      [class.budget-exhausted]="isItemBudgetExhausted(item)"
+                      [class.max-reached]="isItemMaxReached(item)"
+                      (click)="onItemCardClick(item)">
+                    <div class="item-header">
+                      <div class="item-number">{{ item.id }}</div>
+                      <div class="item-checkbox">
+                        <input
+                          type="checkbox"
+                          [id]="'popup-item-' + item.id"
+                          [checked]="isItemSelected(item)"
+                          (change)="onItemSelectionChange(item, $event)"
+                          (click)="$event.stopPropagation()"
+                          [disabled]="isItemBudgetExhausted(item)"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="item-details">
+                      <h4>{{ item.nomItem }}</h4>
+                      <p class="item-description">{{ item.description || 'Aucune description' }}</p>
+                      <div class="item-pricing">
+                        <span class="unit-price">Prix unitaire: {{ item.prix || 0 }} FCFA</span>
+                      </div>
+                      <div class="budget-status" *ngIf="isItemBudgetExhausted(item)">
+                        <span class="budget-exhausted-badge">Budget épuisé</span>
+                      </div>
+                      <div class="budget-status" *ngIf="!isItemBudgetExhausted(item) && isItemMaxReached(item)">
+                        <span class="max-reached-badge">Maximum atteint</span>
+                      </div>
+                      <div class="budget-info" *ngIf="!isItemBudgetExhausted(item)">
+                        <small class="text-muted">Budget restant: {{ item.quantiteMaxTrimestre || 0 }} unités</small>
+                        <div class="prestations-counter" *ngIf="item.quantiteMaxTrimestre && item.quantiteMaxTrimestre > 0">
+                          <small class="prestations-info">Prestations: <span class="counter-display">{{ getItemPrestationsCount(item) }}/{{ item.quantiteMaxTrimestre }}</span></small>
+                          <div class="progress-bar">
+                            <div class="progress-fill" [style.width.%]="getItemProgressPercentage(item)"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="item-quantity" *ngIf="isItemSelected(item)">
+                      <label>Quantité utilisée:</label>
+                      <input
+                        type="number"
+                        min="1"
+                        [max]="item.quantiteMaxTrimestre || 1"
+                        [value]="getItemQuantity(item)"
+                        (input)="updateItemQuantity(item, $event)"
+                        (click)="$event.stopPropagation()"
+                        class="quantity-input"
+                      />
+                      <div class="item-amount">
+                        Montant: {{ calculateItemAmount(item) }} FCFA
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <ng-template #noItemsMessage>
+                  <div class="no-items-message" style="text-align: center; padding: 40px; color: #666;">
+                    <h4>Aucun item trouvé</h4>
+                    <p>Vérifiez que vous avez sélectionné un lot valide.</p>
+                    <p><small>Debug: Total items: {{ items.length || 0 }}, Filtered: {{ filteredItems.length || 0 }}, Selected Lot ID: {{ selectedLotId }}</small></p>
+                  </div>
+                </ng-template>
+
+                <div class="popup-footer">
+                  <div class="total-summary">
+                    <strong>Total: {{ calculateTotalAmount() }} FCFA</strong>
+                  </div>
+                  <div class="popup-actions">
+                    <button type="button" class="btn btn-outline" (click)="closeItemSelectionPopup()">Annuler</button>
+                    <button type="button" class="btn btn-primary" (click)="validateItemSelection()">Valider la sélection</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Validation Popup -->
+            <div class="modal-overlay" *ngIf="showValidationPopup" (click)="closeValidationPopup()">
+              <div class="modal-content validation-popup" (click)="$event.stopPropagation()">
+                <div class="popup-header">
+                  <h3>Validation des Items Sélectionnés</h3>
+                  <button type="button" class="close-btn" (click)="closeValidationPopup()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="selected-items-table">
+                  <table class="items-table">
+                    <thead>
+                      <tr>
+                        <th>Item</th>
+                        <th>Quantité utilisée</th>
+                        <th>Montant de l'item</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of selectedItems" class="table-row">
+                        <td>{{ item.nomItem }}</td>
+                        <td>{{ getItemQuantity(item) }}</td>
+                        <td>{{ calculateItemAmount(item) }} FCFA</td>
+                      </tr>
+                      <tr class="total-row">
+                        <td colspan="2"><strong>Montant total de l'intervention</strong></td>
+                        <td><strong>{{ calculateTotalAmount() }} FCFA</strong></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="popup-actions">
+                  <button type="button" class="btn btn-outline" (click)="backToItemSelection()">Modifier</button>
+                  <button type="button" class="btn btn-success" (click)="confirmValidation()">Confirmer</button>
+                </div>
+              </div>
             </div>
             <div class="error-message" *ngIf="prestationForm.get('itemsCouverts')?.invalid && prestationForm.get('itemsCouverts')?.touched">
               <span *ngIf="prestationForm.get('itemsCouverts')?.errors?.['required']">Au moins un item doit être sélectionné</span>
@@ -394,22 +565,14 @@
 
           <div class="form-group">
             <label for="trimestre">Trimestre</label>
-            <select
+            <input
+              type="text"
               id="trimestre"
-              formControlName="trimestre"
+              [value]="getTrimestreLabel()"
               class="line-input"
-              [class.error]="prestationForm.get('trimestre')?.invalid && prestationForm.get('trimestre')?.touched"
               readonly
-            >
-              <option value="" disabled>Détecté automatiquement...</option>
-              <option *ngFor="let trimestre of trimestreOptions" [value]="trimestre.value">
-                {{ trimestre.label }}
-              </option>
-            </select>
-            <div class="input-line" [class.error]="prestationForm.get('trimestre')?.invalid && prestationForm.get('trimestre')?.touched"></div>
-            <div class="error-message" *ngIf="prestationForm.get('trimestre')?.invalid && prestationForm.get('trimestre')?.touched">
-              <span *ngIf="prestationForm.get('trimestre')?.errors?.['required']">Le trimestre est requis</span>
-            </div>
+            />
+            <div class="input-line"></div>
             <small class="info-text">Le trimestre est détecté automatiquement selon la date de début</small>
           </div>
 
@@ -422,155 +585,11 @@
               placeholder="0"
               class="line-input"
               readonly
-              [value]="calculateTotalAmount()"
             />
             <div class="input-line"></div>
             <small class="info-text">Calculé automatiquement à partir des items sélectionnés</small>
           </div>
 
-          <!-- Item Selection Popup -->
-          <div class="modal-overlay" *ngIf="showItemSelectionPopup" (click)="closeItemSelectionPopup()">
-            <div class="modal-content large-popup" (click)="$event.stopPropagation()">
-              <div class="popup-header">
-                <h3>Sélection des Items</h3>
-                <button type="button" class="close-btn" (click)="closeItemSelectionPopup()">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </button>
-              </div>
-
-              <!-- Search Bar -->
-              <div class="search-bar">
-                <div class="search-input-container">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="search-icon">
-                    <path d="M21 21L16.5 16.5M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  <input
-                    type="text"
-                    placeholder="Rechercher un item..."
-                    class="search-input"
-                    (input)="onSearchChange($event)"
-                    [value]="searchTerm"
-                  />
-                </div>
-              </div>
-
-              <div class="items-grid">
-                <div *ngFor="let item of filteredItems"
-                     class="item-card"
-                     [class.selected]="isItemSelected(item)"
-                     [class.budget-exhausted]="isItemBudgetExhausted(item)"
-                     [class.max-reached]="isItemMaxReached(item)"
-                     (click)="onItemCardClick(item)">
-                  <div class="item-header">
-                    <div class="item-number">{{ item.id }}</div>
-                    <div class="item-checkbox">
-                      <input
-                        type="checkbox"
-                        [id]="'popup-item-' + item.id"
-                        [checked]="isItemSelected(item)"
-                        (change)="onItemSelectionChange(item, $event)"
-                        (click)="$event.stopPropagation()"
-                        [disabled]="isItemBudgetExhausted(item)"
-                      />
-                    </div>
-                  </div>
-
-                  <div class="item-details">
-                    <h4>{{ item.nomItem }}</h4>
-                    <p class="item-description">{{ item.description || 'Aucune description' }}</p>
-                    <div class="item-pricing">
-                      <span class="unit-price">Prix unitaire: {{ item.prix || 0 }} FCFA</span>
-                    </div>
-                    <div class="budget-status" *ngIf="isItemBudgetExhausted(item)">
-                      <span class="budget-exhausted-badge">Budget épuisé</span>
-                    </div>
-                    <div class="budget-status" *ngIf="!isItemBudgetExhausted(item) && isItemMaxReached(item)">
-                      <span class="max-reached-badge">Maximum atteint</span>
-                    </div>
-                    <div class="budget-info" *ngIf="!isItemBudgetExhausted(item)">
-                      <small class="text-muted">Budget restant: {{ item.quantiteMaxTrimestre || 0 }} unités</small>
-                      <div class="prestations-counter" *ngIf="item.quantiteMaxTrimestre && item.quantiteMaxTrimestre > 0">
-                        <small class="prestations-info">Prestations: <span class="counter-display">{{ getItemPrestationsCount(item) }}/{{ item.quantiteMaxTrimestre }}</span></small>
-                        <div class="progress-bar">
-                          <div class="progress-fill" [style.width.%]="getItemProgressPercentage(item)"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="item-quantity" *ngIf="isItemSelected(item)">
-                    <label>Quantité utilisée:</label>
-                    <input
-                      type="number"
-                      min="1"
-                      [max]="item.quantiteMaxTrimestre || 1"
-                      [value]="getItemQuantity(item)"
-                      (input)="updateItemQuantity(item, $event)"
-                      (click)="$event.stopPropagation()"
-                      class="quantity-input"
-                    />
-                    <div class="item-amount">
-                      Montant: {{ calculateItemAmount(item) }} FCFA
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="popup-footer">
-                <div class="total-summary">
-                  <strong>Total: {{ calculateTotalAmount() }} FCFA</strong>
-                </div>
-                <div class="popup-actions">
-                  <button type="button" class="btn btn-outline" (click)="closeItemSelectionPopup()">Annuler</button>
-                  <button type="button" class="btn btn-primary" (click)="validateItemSelection()">Valider la sélection</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Validation Popup -->
-          <div class="modal-overlay" *ngIf="showValidationPopup" (click)="closeValidationPopup()">
-            <div class="modal-content validation-popup" (click)="$event.stopPropagation()">
-              <div class="popup-header">
-                <h3>Validation des Items Sélectionnés</h3>
-                <button type="button" class="close-btn" (click)="closeValidationPopup()">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </button>
-              </div>
-
-              <div class="selected-items-table">
-                <table class="items-table">
-                  <thead>
-                    <tr>
-                      <th>Item</th>
-                      <th>Quantité utilisée</th>
-                      <th>Montant de l'item</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let item of selectedItems" class="table-row">
-                      <td>{{ item.nomItem }}</td>
-                      <td>{{ getItemQuantity(item) }}</td>
-                      <td>{{ calculateItemAmount(item) }} FCFA</td>
-                    </tr>
-                    <tr class="total-row">
-                      <td colspan="2"><strong>Montant total de l'intervention</strong></td>
-                      <td><strong>{{ calculateTotalAmount() }} FCFA</strong></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <div class="popup-actions">
-                <button type="button" class="btn btn-outline" (click)="backToItemSelection()">Modifier</button>
-                <button type="button" class="btn btn-success" (click)="confirmValidation()">Confirmer</button>
-              </div>
-            </div>
-          </div>
 
 
           <div class="form-group">
@@ -609,69 +628,91 @@
             <div class="section-divider"></div>
           </div>
 
-          <!-- Récapitulatif en tableau -->
-          <div class="summary-table-container">
-            <h4>📋 Récapitulatif de la Prestation</h4>
+          <!-- Section 1: Informations du Prestataire et du Responsable -->
+          <div class="summary-section">
+            <h4>👤 Informations du Prestataire et du Responsable de la Prestation</h4>
             <table class="summary-table">
               <tr>
-                <td class="label-cell">Nom:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('nomPrestataire') }}</td>
+                <td class="label-cell">Nom du prestataire:</td>
+                <td class="value-cell">{{ getFormValue('nomPrestataire') }}</td>
               </tr>
               <tr>
-                <td class="label-cell">Contact:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('contactPrestataire') }}</td>
+                <td class="label-cell">Nom du responsable:</td>
+                <td class="value-cell">{{ getFormValue('nomResponsablePrestation') }}</td>
               </tr>
               <tr>
-                <td class="label-cell">Structure:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('structurePrestataire') }}</td>
+                <td class="label-cell">Contact du responsable:</td>
+                <td class="value-cell">{{ getFormValue('contactResponsablePrestation') }}</td>
               </tr>
               <tr>
-                <td class="label-cell">Direction:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('directionPrestataire') }}</td>
+                <td class="label-cell">Qualification du responsable:</td>
+                <td class="value-cell">{{ getFormValue('qualificationResponsablePrestation') }}</td>
               </tr>
+            </table>
+          </div>
+
+          <!-- Section 2: Informations de la Structure Bénéficiaire -->
+          <div class="summary-section">
+            <h4>🏢 Informations de la Structure Bénéficiaire</h4>
+            <table class="summary-table">
               <tr>
-                <td class="label-cell">Qualification:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('qualificationPrestataire') }}</td>
-              </tr>
-              <tr>
-                <td class="label-cell">Structure bénéficiaire:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('nomStructure') }}</td>
+                <td class="label-cell">Nom de la structure:</td>
+                <td class="value-cell">{{ getFormValue('nomStructure') }}</td>
               </tr>
               <tr>
                 <td class="label-cell">Adresse:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('adresseStructure') }}</td>
+                <td class="value-cell">{{ getFormValue('adresseStructure') }}</td>
               </tr>
               <tr>
                 <td class="label-cell">Email:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('emailStructure') }}</td>
+                <td class="value-cell">{{ getFormValue('emailStructure') }}</td>
               </tr>
               <tr>
-                <td class="label-cell">CI:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('prenomCI') }} {{ getFormValue('nomCI') }}</td>
+                <td class="label-cell">Nom du CI:</td>
+                <td class="value-cell">{{ getFormValue('prenomCI') }} {{ getFormValue('nomCI') }}</td>
               </tr>
               <tr>
-                <td class="label-cell">Contact CI:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('contactCI') }}</td>
+                <td class="label-cell">Contact du CI:</td>
+                <td class="value-cell">{{ getFormValue('contactCI') }}</td>
               </tr>
               <tr>
-                <td class="label-cell">Fonction CI:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('fonctionCI') }}</td>
+                <td class="label-cell">Fonction du CI:</td>
+                <td class="value-cell">{{ getFormValue('fonctionCI') }}</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Section 3: Informations sur l'Intervention -->
+          <div class="summary-section">
+            <h4>🔧 Informations sur l'Intervention</h4>
+            <table class="summary-table">
+              <tr>
+                <td class="label-cell">Lot sélectionné:</td>
+                <td class="value-cell">{{ getFormValue('lotSelection') }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Items couverts:</td>
+                <td class="value-cell">{{ getSelectedItemsNames() }}</td>
               </tr>
               <tr>
                 <td class="label-cell">Date de début:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('dateDebut') }} à {{ getFormValue('heureDebut') }}</td>
+                <td class="value-cell">{{ getFormValue('dateDebut') }} à {{ getFormValue('heureDebut') }}</td>
               </tr>
               <tr>
                 <td class="label-cell">Date de fin:</td>
-                <td class="value-cell rtl-value">{{ getFormValue('dateFin') }} à {{ getFormValue('heureFin') }}</td>
+                <td class="value-cell">{{ getFormValue('dateFin') }} à {{ getFormValue('heureFin') }}</td>
               </tr>
               <tr>
                 <td class="label-cell">Trimestre:</td>
-                <td class="value-cell rtl-value highlight">{{ getTrimestreLabel() }}</td>
+                <td class="value-cell highlight">{{ getTrimestreLabel() }}</td>
               </tr>
               <tr>
                 <td class="label-cell">Statut:</td>
-                <td class="value-cell rtl-value status">{{ getStatutLabel() }}</td>
+                <td class="value-cell status">{{ getStatutLabel() }}</td>
+              </tr>
+              <tr>
+                <td class="label-cell">Montant total:</td>
+                <td class="value-cell highlight">{{ calculateTotalAmount() | number:'1.0-0' }} FCFA</td>
               </tr>
             </table>
           </div>

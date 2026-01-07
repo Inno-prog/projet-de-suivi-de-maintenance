@@ -1,9 +1,8 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:8085/api',
-  // Enable mock auth for development when Keycloak isn't available
-  useMockAuth: true,
-  devAuthBypass: true
+  // useMockAuth: false, // Disabled to use real Keycloak authentication
+  devAuthBypass: false // Disabled to use real authentication
 };
 
 // Configuration de l'environnement de production

@@ -14,6 +14,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/components/dashboard/dashboard.component').then(m => m.DashboardComponent)
   },
 
+  // Login redirect - handles post-authentication routing
+  {
+    path: 'login',
+    loadComponent: () => import('./features/dashboard/components/dashboard-redirect/dashboard-redirect.component').then(m => m.DashboardRedirectComponent)
+  },
+
   // Ordres de commande main page (shows quarters)
   {
     path: 'ordres-commande',
@@ -110,7 +116,7 @@ export const routes: Routes = [
     path: 'structures-mefp',
     loadComponent: () => import('./features/structures-mefp/components/structures-mefp-list/structures-mefp-list.component').then(m => m.StructuresMefpListComponent),
     canActivate: [AuthGuard],
-    data: { role: 'ADMINISTRATEUR' }
+    data: { role: ['ADMINISTRATEUR', 'AGENT_DGSI'] }
   },
   {
     path: 'contrats',
@@ -139,6 +145,12 @@ export const routes: Routes = [
   {
     path: 'prestataire-prestation-list',
     loadComponent: () => import('./features/prestations/components/prestataire-prestation-list/prestataire-prestation-list.component').then(m => m.PrestatairePrestationListComponent),
+    canActivate: [AuthGuard],
+    data: { role: 'PRESTATAIRE' }
+  },
+  {
+    path: 'my-items',
+    loadComponent: () => import('./features/items/components/my-items/my-items.component').then(m => m.MyItemsComponent),
     canActivate: [AuthGuard],
     data: { role: 'PRESTATAIRE' }
   },
@@ -176,31 +188,31 @@ export const routes: Routes = [
     path: 'équipements',
     loadComponent: () => import('./features/equipements/components/equipement-dashboard/equipement-dashboard.component').then(m => m.EquipementDashboardComponent),
     canActivate: [AuthGuard],
-    data: { role: 'ADMINISTRATEUR' }
+    data: { role: ['ADMINISTRATEUR', 'AGENT_DGSI'] }
   },
   {
     path: 'equipements/list',
     loadComponent: () => import('./features/equipements/components/equipement-list/equipement-list.component').then(m => m.EquipementListComponent),
     canActivate: [AuthGuard],
-    data: { role: 'ADMINISTRATEUR' }
+    data: { role: ['ADMINISTRATEUR', 'AGENT_DGSI'] }
   },
   {
     path: 'equipements/new',
     loadComponent: () => import('./features/equipements/components/equipement-form/equipement-form.component').then(m => m.EquipementFormComponent),
     canActivate: [AuthGuard],
-    data: { role: 'ADMINISTRATEUR' }
+    data: { role: ['ADMINISTRATEUR', 'AGENT_DGSI'] }
   },
   {
     path: 'equipements/:id',
     loadComponent: () => import('./features/equipements/components/equipement-form/equipement-form.component').then(m => m.EquipementFormComponent),
     canActivate: [AuthGuard],
-    data: { role: 'ADMINISTRATEUR' }
+    data: { role: ['ADMINISTRATEUR', 'AGENT_DGSI'] }
   },
   {
     path: 'equipements/:id/edit',
     loadComponent: () => import('./features/equipements/components/equipement-form/equipement-form.component').then(m => m.EquipementFormComponent),
     canActivate: [AuthGuard],
-    data: { role: 'ADMINISTRATEUR' }
+    data: { role: ['ADMINISTRATEUR', 'AGENT_DGSI'] }
   },
 
   // Default redirect

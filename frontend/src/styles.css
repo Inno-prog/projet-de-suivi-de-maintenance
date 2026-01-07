@@ -1,4 +1,5 @@
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
+@import './modal-positioning-fix.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,6 +11,131 @@
   box-sizing: border-box;
 }
 
+/* Ensure the document and root app element fill the viewport */
+html, body, app-root {
+  height: 100%;
+  min-height: 100%;
+  overflow: auto;
+}
+
+
+/* RÉDUCTION : Espace entre sidebar et contenu - CORRIGÉ */
+.app-layout.stable-layout {
+  display: flex !important;
+}
+
+.app-layout.stable-layout app-sidebar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  height: 100vh !important;
+  width: 240px !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 1100 !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
+
+.app-layout.stable-layout .main-content {
+  margin-left: -10px !important;
+  width: calc(100% - 0px) !important;
+}
+
+/* Navbar fixé */
+.app-layout.stable-layout .navbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 240px !important;
+  width: calc(100% - 240px) !important;
+  z-index: 1000 !important;
+  height: 64px !important;
+}
+
+/* SUPPRESSION : Container prend toute la largeur disponible sans marge */
+.app-layout.stable-layout .content .container {
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+/* Prevent layout shifts */
+.app-layout {
+  display: flex !important;
+  height: 100vh !important;
+  position: relative !important;
+}
+
+/* Stable-layout helper */
+.app-layout.stable-layout {
+  position: relative !important;
+}
+
+/* On small screens */
+@media (max-width: 768px) {
+  .app-layout.stable-layout .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+    padding-top: 64px !important;
+  }
+  .app-layout.stable-layout app-sidebar {
+    transform: translateX(-100%) !important;
+  }
+  .app-layout.stable-layout .navbar {
+    left: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* Mobile responsive layout */
+@media (max-width: 768px) {
+  .app-layout {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .app-layout app-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 1100 !important;
+    transform: translateX(-100%) !important;
+    transition: transform 0.3s ease !important;
+  }
+
+  .app-layout app-sidebar.mobile-open {
+    transform: translateX(0) !important;
+  }
+
+  .app-layout .main-content {
+    grid-column: 1 !important;
+    width: 100% !important;
+  }
+}
+
+/* Ensure modal dialogs */
+.app-layout.stable-layout .modal-overlay {
+   align-items: flex-start !important;
+   padding-top: calc(var(--app-navbar-height, 64px) + var(--app-overlay-gap, 16px)) !important;
+   z-index: 2200 !important;
+   overflow-y: auto !important;
+  }
+
+.app-layout.stable-layout .modal {
+    margin-top: 0 !important;
+    max-height: calc(100vh - var(--app-navbar-height, 64px) - 32px) !important;
+   }
+
+/* Angular Material dialogs */
+.app-layout.stable-layout .cdk-global-overlay-wrapper {
+  align-items: flex-start !important;
+  padding-top: calc(var(--app-navbar-height, 64px) + var(--app-overlay-gap, 16px)) !important;
+  z-index: 2300 !important;
+  overflow-y: auto !important;
+   }
+
+.app-layout.stable-layout .cdk-overlay-pane {
+  margin-top: 0 !important;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   line-height: 1.5;
@@ -19,6 +145,8 @@ body {
 
 /* CSS Variables */
 :root {
+  --app-navbar-height: 64px;
+  --app-overlay-gap: 32px;
   --primary: #f97316;
   --primary-dark: #ea580c;
   --secondary: #475569;
@@ -137,7 +265,7 @@ p {
   background-color: #dc2626;
 }
 
-/* Form Styles - Subtils et modernes */
+/* Form Styles */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -244,7 +372,7 @@ p {
   border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-/* Card Styles - Subtils et modernes */
+/* Card Styles */
 .card {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
@@ -280,7 +408,7 @@ p {
   margin: 0;
 }
 
-/* Table Styles - Subtils et modernes */
+/* Table Styles */
 .table-container {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
@@ -321,7 +449,7 @@ th, td {
   white-space: nowrap;
 }
 
-/* Elegant, subtle table headers */
+/* Table headers */
 table thead th {
   background: linear-gradient(180deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.95) 100%);
   color: var(--text-secondary);
@@ -335,18 +463,15 @@ table thead th {
   backdrop-filter: blur(4px);
 }
 
-/* Rounded top corners for the header row (applies when table is not stacked) */
 table thead th:first-child { border-top-left-radius: 12px; }
 table thead th:last-child { border-top-right-radius: 12px; }
 
-/* Make headers subtly sticky so they remain visible when the table body scrolls */
 table thead th {
   position: sticky;
   top: 0;
   z-index: 3;
 }
 
-/* Apply the same subtle header style to known component-specific tables (higher specificity) */
 .table-container table thead th,
 .prestation-table thead th,
 table thead th {
@@ -362,11 +487,9 @@ table thead th {
   backdrop-filter: blur(4px);
 }
 
-/* Ensure rounded corners are applied when table is inside .table-container */
 .table-container table thead th:first-child { border-top-left-radius: 12px; }
 .table-container table thead th:last-child { border-top-right-radius: 12px; }
 
-/* Stronger override to beat component-scoped table header styles (use sparingly) */
 body .table-container table thead th,
 body .prestation-table thead th,
 body table thead th {
@@ -381,24 +504,20 @@ body table thead th {
   box-shadow: inset 0 -1px 0 rgba(0,0,0,0.03) !important;
 }
 
-/* Accentise les titres des entêtes : couleur primaire et barre d'accent à gauche */
 body .table-container table thead th,
 body .prestation-table thead th,
 body table thead th {
-  /* remove left accent bar and rely on generous whitespace for delimitation */
   color: var(--bg-dark) !important;
-  padding: 1.1rem 1.6rem !important; /* larger horizontal padding for clear separation */
+  padding: 1.1rem 1.6rem !important;
   text-align: left !important;
 }
 
-/* Slightly darker hover for header to indicate interactiveness (if sorting will be added later) */
 body .table-container table thead th:hover,
 body .prestation-table thead th:hover,
 body table thead th:hover {
   background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(243,244,246,1) 100%) !important;
 }
 
-/* Make header titles subtly stand out when inside .table-header container */
 body .table-container .table-header h3 {
   margin: 0; color: #0f172a; font-weight: 700; letter-spacing: 0.02em;
 }
@@ -407,7 +526,6 @@ tr:hover {
   background-color: #f1f5f9;
 }
 
-/* Permettre le retour à la ligne pour certaines colonnes */
 th:last-child, td:last-child {
   white-space: normal;
   min-width: 150px;
@@ -447,7 +565,8 @@ th:last-child, td:last-child {
 .container {
   max-width: 98%;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 0.5rem;
+  height: 100% !important;
 }
 
 .flex {
@@ -510,40 +629,114 @@ th:last-child, td:last-child {
 }
 
 /* Responsive Design */
-/* Modal overlay pour formulaires */
+/* Modal overlay */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(6px);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  animation: fadeIn 0.3s ease-out;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(6px) !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 2rem !important;
+  animation: fadeIn 0.3s ease-out !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .modal-content {
-  background: rgba(255, 255, 255, 0.98);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 24px !important;
   box-shadow: 
     0 25px 80px rgba(0, 0, 0, 0.25),
     0 12px 32px rgba(0, 0, 0, 0.15),
     0 4px 12px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.02);
-  max-width: 900px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
+    inset 0 -1px 0 rgba(0, 0, 0, 0.02) !important;
+  max-width: 600px !important;
+  width: 50% !important;
+  max-height: 70vh !important;
+  overflow-y: auto !important;
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  position: relative !important;
+  margin-top: 80px !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.modal {
+  background: white !important;
+  border: 2px solid #1e293b !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+  max-width: 400px !important;
+  width: 40% !important;
+  max-height: 80vh !important;
+  min-height: 300px !important;
+  overflow-y: auto !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 10000 !important;
+  margin-top: 80px !important;
+}
+
+.modal *,
+.modal-content * {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.modal-header,
+.modal-body,
+.modal-footer {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+.form-modal {
+  margin-top: 80px !important;
+  max-height: calc(100vh - 160px) !important;
+}
+
+.wizard-modal {
+  margin-top: 80px !important;
+}
+
+.large-modal {
+  max-width: 65vw !important;
+  width: 65vw !important;
+}
+
+.content {
+  padding-top: 0 !important;
+}
+
+.large-popup {
+  margin-top: 80px !important;
+  max-height: calc(100vh - 160px) !important;
+}
+
+.validation-popup {
+  margin-top: 80px !important;
+}
+
+.mat-dialog-container {
+  margin-top: 80px !important;
+}
+
+.cdk-overlay-container {
+  z-index: 9999 !important;
+}
+
+.cdk-overlay-pane {
+  margin-top: 80px !important;
 }
 
 .modal-content::before {
@@ -624,9 +817,11 @@ th:last-child, td:last-child {
   align-items: center;
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
   .container {
     padding: 0 0.5rem;
+    height: 100% !important;
   }
   
   h1 { font-size: 1.875rem; }
@@ -645,3 +840,25 @@ th:last-child, td:last-child {
     border-radius: 20px;
   }
 }
+
+/* Styles pour la page d'accueil publique */
+.public-layout {
+  min-height: 100vh !important;
+  overflow-y: auto !important;
+}
+
+.public-layout .main-content {
+  overflow-y: visible !important;
+  height: auto !important;
+}
+
+/* Correction de l'espace entre sidebar et contenu */
+.app-layout .main-content {
+  margin-left: 240px !important;
+  width: calc(100% - 240px) !important;
+}
+
+.app-layout .content {
+  margin-left: 0 !important;
+}
+

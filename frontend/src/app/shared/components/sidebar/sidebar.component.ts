@@ -10,14 +10,14 @@ import { User } from '../../../core/models/auth.models';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="sidebar" [class.open]="isOpen" [class.collapsed]="!isOpen">
+    <div class="sidebar" [class.open]="isOpen" [class.collapsed]="!isOpen" [class.mobile-open]="isOpen">
 
 
       <!-- Header -->
       <div class="sidebar-header">
         <!-- Logo at the top -->
         <div class="logo-container">
-          <img src="/assets/logoFinal.png" alt="DGSI Logo" class="logo-img-top" />
+          <img src="assets/logoFinal.png" alt="DGSI Logo" class="logo-img-top" />
         </div>
 
         <!-- App title and role -->
@@ -25,13 +25,6 @@ import { User } from '../../../core/models/auth.models';
           <h3>MainTrack Pro</h3>
           <small *ngIf="currentUser$ | async as user">{{ getRoleLabel(user.role) }}</small>
         </div>
-
-        <!-- Hamburger menu at intersection - disabled to prevent sidebar from closing -->
-        <!-- <button class="sidebar-toggle-intersection" (click)="toggleSidebar()">
-          <div class="hamburger">
-            <span></span><span></span><span></span>
-          </div>
-        </button> -->
       </div>
 
       <!-- Navigation -->
@@ -51,6 +44,7 @@ import { User } from '../../../core/models/auth.models';
           </div>
           <div class="sub-nav" [class.expanded]="sections['prestataire']">
             <a routerLink="/prestataire-prestation-list" routerLinkActive="active" class="nav-item">📋 Mes fiches de prestations</a>
+            <a routerLink="/my-items" routerLinkActive="active" class="nav-item">🧰 Mes items</a>
             <a [routerLink]="['/user', getCurrentUserId(), 'contrats']" routerLinkActive="active" class="nav-item">📝 Mes contrats</a>
             <a [routerLink]="['/user', getCurrentUserId(), 'rapports-suivi']" routerLinkActive="active" class="nav-item">📊 Rapports de suivi</a>
           </div>
@@ -70,7 +64,7 @@ import { User } from '../../../core/models/auth.models';
             <a routerLink="/items" routerLinkActive="active" class="nav-item">🧰 Gestion des Items</a>
             <a routerLink="/prestations" routerLinkActive="active" class="nav-item">📋 Prestations & Validation</a>
             <a routerLink="/ordres-commande" routerLinkActive="active" class="nav-item">📦 Ordres de Commande</a>
-            <a routerLink="/structures-mefp" routerLinkActive="active" class="nav-item">🏢 Gestion des structures du MEFP</a>
+            <a routerLink="/structures-mefp" routerLinkActive="active" class="nav-item structure-mefp-item">🏢 Gestion des structures du MEFP</a>
           </div>
         </div>
 
@@ -98,10 +92,9 @@ import { User } from '../../../core/models/auth.models';
             </svg>
           </div>
           <div class="sub-nav" [class.expanded]="sections['agent-dgsi']">
-            <a routerLink="/items" routerLinkActive="active" class="nav-item">🧰 Items</a>
-            <a routerLink="/ordres-commande" routerLinkActive="active" class="nav-item">📦 Ordres de Commande</a>
-            <a routerLink="/contrats" routerLinkActive="active" class="nav-item">📋 Contrats</a>
-            <a routerLink="/équipements" routerLinkActive="active" class="nav-item">🛠️ Équipements</a>
+            <a routerLink="/items" routerLinkActive="active" class="nav-item">🧰 Items et Lots</a>
+            <a routerLink="/équipements" routerLinkActive="active" class="nav-item">�️ Équipements</a>
+            <a routerLink="/structures-mefp" routerLinkActive="active" class="nav-item">🏢 Structures du MEFP</a>
             <a routerLink="/statistiques" routerLinkActive="active" class="nav-item">📊 Statistiques</a>
           </div>
         </div>
@@ -116,17 +109,17 @@ import { User } from '../../../core/models/auth.models';
       top: 0;
       left: 0;
       height: 100vh;
-      width: 270px;
+      width: 260px;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: #e2e8f0;
       transition: all 0.3s ease;
-      z-index: 1000;
+      z-index: 1100;
       overflow-y: auto;
       box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     }
 
     .sidebar.collapsed {
-      width: 270px; /* Keep full width even when "collapsed" */
+      width: 240px; /* Keep full width even when "collapsed" */
       overflow: visible;
     }
 
@@ -150,21 +143,22 @@ import { User } from '../../../core/models/auth.models';
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.5rem;
-      position: relative;
+      gap: 0.75rem;
     }
 
     .logo-container {
       display: flex;
       justify-content: center;
-      margin-bottom: 0.5rem;
+      align-items: center;
+      width: 100%;
+      padding: 0.5rem 0;
     }
 
     .logo-img-top {
-      width: 3rem;
-      height: 3rem;
-      border-radius: 8px;
+      width: 60px;
+      height: 60px;
       object-fit: contain;
+      display: block;
     }
 
     .app-info {
@@ -226,6 +220,9 @@ import { User } from '../../../core/models/auth.models';
       text-decoration: none;
       transition: all 0.2s ease;
       border-left: 3px solid transparent;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .nav-item:hover {
@@ -294,6 +291,18 @@ import { User } from '../../../core/models/auth.models';
     .sub-nav .nav-item {
       padding-left: 3rem;
       font-size: 0.875rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .structure-mefp-item {
+      white-space: normal !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      line-height: 1.3 !important;
+      height: auto !important;
+      min-height: 44px !important;
     }
 
     /* Development User Switcher Styles */
@@ -361,11 +370,11 @@ import { User } from '../../../core/models/auth.models';
 
     @media (max-width: 768px) {
       .sidebar {
-        transform: translateX(0); /* Always visible on mobile */
+        transform: translateX(-100%); /* Hidden by default on mobile */
       }
 
-      .sidebar.open {
-        transform: translateX(0);
+      .sidebar.mobile-open {
+        transform: translateX(0); /* Show when mobile-open class is applied */
       }
     }
   `]

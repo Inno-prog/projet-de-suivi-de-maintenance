@@ -28,20 +28,8 @@ import { ToastService } from '../../../../core/services/toast.service';
               <span>{{ prestation.nomPrestataire || 'N/A' }}</span>
             </div>
             <div class="info-item">
-              <label>Contact:</label>
-              <span>{{ prestation.contactPrestataire || 'N/A' }}</span>
-            </div>
-            <div class="info-item">
-              <label>Structure:</label>
-              <span>{{ prestation.structurePrestataire || 'N/A' }}</span>
-            </div>
-            <div class="info-item">
-              <label>Service:</label>
-              <span>{{ prestation.servicePrestataire || 'N/A' }}</span>
-            </div>
-            <div class="info-item">
-              <label>Qualification:</label>
-              <span>{{ prestation.qualificationPrestataire || 'N/A' }}</span>
+              <label>Lot:</label>
+              <span>{{ prestation.lot || 'Non spécifié' }}</span>
             </div>
           </div>
         </div>

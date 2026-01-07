@@ -9,4 +9,7 @@ public interface OrdreCommandeRepository extends JpaRepository<OrdreCommande, Lo
 
     // Custom query methods can be added here as needed
     java.util.Optional<com.dgsi.maintenance.entity.OrdreCommande> findByPrestataireItemAndTrimestre(String prestataireItem, Integer trimestre);
+
+    @org.springframework.data.jpa.repository.Query("SELECT oc FROM OrdreCommande oc LEFT JOIN FETCH oc.items WHERE oc.id = :id")
+    java.util.Optional<com.dgsi.maintenance.entity.OrdreCommande> findByIdWithItems(Long id);
 }

@@ -3,6 +3,9 @@ import { Subscription, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { ContratService } from '../../../../core/services/contrat.service';
@@ -10,6 +13,7 @@ import { EvaluationService } from '../../../../core/services/evaluation.service'
 import { UserService } from '../../../../core/services/user.service';
 import { FichePrestationService } from '../../../../core/services/fiche-prestation.service';
 import { PrestationPdfService } from '../../../../core/services/prestation-pdf.service';
+
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmationService } from '../../../../core/services/confirmation.service';
 import { Contrat, FichePrestation } from '../../../../core/models/business.models';
@@ -17,7 +21,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MatCardModule, MatIconModule, MatButtonModule],
   template: `
     <!-- Public Layout - shown only when not authenticated and on root path -->
     <ng-container *ngIf="!isAuthenticated && isRootPath()">
@@ -52,10 +56,10 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
             <div class="shape shape-6">🔒</div>
           </div>
           <div class="container">
-            <div class="dashboard-header" style="max-width: 65%; margin: 0 auto; margin-top: 50px; margin-bottom: 30px; padding: 3rem 2rem; background: linear-gradient(135deg, #0a192f 0%, #0d1b2a 100%); border-top: 1px solid #1e293b;">
-              <div class="welcome-section" style="margin-top: -20px;">
+            <div class="dashboard-header" style="max-width: 65%; margin: 0 auto; margin-top: 50px; margin-bottom: -20px; padding: 2rem 2rem; background: linear-gradient(135deg, #0a192f 0%, #0d1b2a 100%); border-top: 1px solid #1e293b;">
+              <div class="welcome-section" style="margin-top: 20px;">
                 <h1 class="animated-title" style="margin-left: 50px;">
-                  <span class="title-text">Bienvenue sur </span><span class="title-text-3d" style="margin-left: 10px;"> MainTrack Pro </span>
+                  <span class="title-text">Bienvenue sur </span><span class="title-text-3d" style="margin-left: 10px;"> MainTrack Pro DGSI</span>
                 </h1>
                 <p class="animated-subtitle">
                   <span class="word" style="animation-delay: 0.8s">Notre</span>
@@ -82,7 +86,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
 
               <div class="cta-section" style="margin-left: 700px;">
                 <a href="https://it.finances.bf/" target="_blank" class="btn btn-primary animated-cta" style="animation-delay: 1.2s">
-                  <span style="margin-bottom: 50px;" class="btn-text">En savoir plus</span>
+                  <span style="margin-bottom: 10px;" class="btn-text">En savoir plus</span>
                   <span class="btn-arrow"></span>
                 </a>
               </div>
@@ -93,7 +97,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
       <!-- Carte 1 -->
-      <div class="bg-white rounded-2xl shadow-md px-8 py-10 text-center">
+      <div class="bg-white rounded-2xl shadow-md px-8 py-6 text-center cursor-pointer" (click)="login()">
         <div class="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-xl bg-orange-50">
           <!-- Icon -->
           <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -111,7 +115,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       </div>
 
       <!-- Carte 2 -->
-      <div class="bg-white rounded-2xl shadow-md px-8 py-10 text-center">
+      <div class="bg-white rounded-2xl shadow-md px-8 py-6 text-center cursor-pointer" (click)="login()">
         <div class="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-xl bg-orange-50">
           <!-- Icon -->
           <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,7 +135,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       </div>
 
       <!-- Carte 3 -->
-      <div class="bg-white rounded-2xl shadow-md px-8 py-10 text-center">
+      <div class="bg-white rounded-2xl shadow-md px-8 py-6 text-center cursor-pointer" (click)="login()">
         <div class="w-14 h-14 mx-auto mb-6 flex items-center justify-center rounded-xl bg-orange-50">
           <!-- Icon -->
           <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -159,7 +163,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
             <!-- Newsletter -->
             <div class="max-w-xs">
               <h3 class="footer-section-title">Newsletter</h3>
-              <div class="flex">
+              <div class="flex" style="margin-top: 40px;">
                 <input
                   type="email"
                   placeholder="Email"
@@ -173,8 +177,8 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
 
             <!-- Logo et Statistiques -->
             <div class="space-y-6">
-              <div class="flex items-center space-x-4" style="margin-left: -500px;">
-                <img src="/assets/logoFinal.png" alt="DGSI Logo" class="w-16 h-16 object-contain rounded-full" />
+              <div class="flex items-center space-x-4" style="margin-left: -600px; margin-top: 60px;">
+                <img src="/assets/logoFinal.png" alt="DGSI Logo" class="w-48 h-48 object-contain rounded-full" />
               </div>
             </div>
 
@@ -182,13 +186,13 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
             <div class="mfp" style="margin-left: -150px;">
               <h3 class="footer-section-title">Structures du MEFP</h3>
               <ul class="space-y-1 text-sm">
-                <li class="text-white hover:text-orange-400 cursor-pointer">Ministère de l'Économie, des Finances et de la Prospective</li>
-                <li class="text-white hover:text-orange-400 cursor-pointer">Direction Générale du Trésor et de la Comptabilité Publique</li>
-                <li class="text-white hover:text-orange-400 cursor-pointer">Direction Générale des Douanes</li>
-                <li class="text-white hover:text-orange-400 cursor-pointer">Direction Générale des Impôts</li>
-                <li class="text-white hover:text-orange-400 cursor-pointer">Direction Générale du Budget</li>
-                <li class="text-white hover:text-orange-400 cursor-pointer">Direction Générale des Affaires Immobilières de l'État</li>
-                <li class="text-white hover:text-orange-400 cursor-pointer">Direction Générale du Contrôle des Marchés Publics et des Engagement Financier</li>
+                <li class="text-white">Ministère de l'Économie, des Finances et de la Prospective</li>
+                <li class="text-white">Direction Générale du Trésor et de la Comptabilité Publique</li>
+                <li class="text-white">Direction Générale des Douanes</li>
+                <li class="text-white">Direction Générale des Impôts</li>
+                <li class="text-white">Direction Générale du Budget</li>
+                <li class="text-white">Direction Générale des Affaires Immobilières de l'État</li>
+                <li class="text-white">Direction Générale du Contrôle des Marchés Publics et des Engagement Financier</li>
               </ul>
             </div>
 
@@ -237,12 +241,10 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     <!-- Authenticated Dashboard Layout -->
     <ng-container *ngIf="isAuthenticated">
       <div class="dashboard-container">
-        <!-- Welcome Section for Authenticated Users -->
-        <div class="welcome-palette" *ngIf="isAuthenticated" style="margin-bottom: 1rem;">
+        <!-- Welcome Section for Authenticated Users (except Agent DGSI) -->
+        <div class="welcome-palette" *ngIf="isAuthenticated && !isAgentDGSI" style="margin-bottom: 10px;">
            <div class="welcome-card">
-            <div class="welcome-icon">
-              <span class="material-symbols-outlined">work</span>
-            </div>
+
             <div class="welcome-content">
               <h2 class="welcome-title">Bienvenue sur <span class="brand-highlight">MainTrack Pro</span></h2>
               <div class="user-info">
@@ -255,156 +257,99 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
         </div>
 
       <!-- Statistics Section for Admins -->
-        <div *ngIf="isAdmin" class="stats-section">
-          <div class="stats-header">
-            <h2>Statistiques du système</h2>
-            <button class="refresh-btn" (click)="refreshStats()" title="Actualiser les statistiques">
-              <span>🔄</span> Actualiser
-            </button>
-          </div>
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-sticker">
-                <span class="material-symbols-outlined">group</span>
-              </div>
-              <div class="stat-number">{{ stats.totalUsers }}</div>
-              <div class="stat-label">Utilisateurs</div>
+        <div *ngIf="isAdmin" class="dashboard-content" style="padding: 0 0.5rem;">
+          <div class="stats-section">
+            <div class="stats-header">
+              <h2>Statistiques du système</h2>
+              <button class="refresh-btn" (click)="refreshStats()" title="Actualiser les statistiques">
+                <span>🔄</span> Actualiser
+              </button>
             </div>
-            <div class="stat-card">
-              <div class="stat-sticker">
-                <span class="material-symbols-outlined">assignment</span>
-              </div>
-              <div class="stat-number">{{ stats.totalPrestations }}</div>
-              <div class="stat-label">Prestations</div>
+            <div class="stats-grid">
+              <mat-card class="stat-card mat-elevation-z3">
+                <div class="stat-card-content">
+                  <div class="stat-icon">
+                    <mat-icon aria-hidden="false" aria-label="users"></mat-icon>
+                  </div>
+                  <div class="stat-meta">
+                    <div class="stat-number">{{ stats.totalUsers }}</div>
+                    <div class="stat-label">Utilisateurs</div>
+                  </div>
+                </div>
+              </mat-card>
+
+              <mat-card class="stat-card mat-elevation-z3">
+                <div class="stat-card-content">
+                  <div class="stat-icon">
+                    <mat-icon></mat-icon>
+                  </div>
+                  <div class="stat-meta">
+                    <div class="stat-number">{{ stats.totalPrestations }}</div>
+                    <div class="stat-label">Prestations</div>
+                  </div>
+                </div>
+              </mat-card>
+
+              <mat-card class="stat-card mat-elevation-z3">
+                <div class="stat-card-content">
+                  <div class="stat-icon">
+                    <mat-icon></mat-icon>
+                  </div>
+                  <div class="stat-meta">
+                    <div class="stat-number">{{ stats.totalOrdres }}</div>
+                    <div class="stat-label">Ordres de commande</div>
+                  </div>
+                </div>
+              </mat-card>
+
+              <mat-card class="stat-card mat-elevation-z3">
+                <div class="stat-card-content">
+                  <div class="stat-icon">
+                    <mat-icon></mat-icon>
+                  </div>
+                  <div class="stat-meta">
+                    <div class="stat-number">{{ stats.totalContrats }}</div>
+                    <div class="stat-label">Contrats</div>
+                  </div>
+                </div>
+              </mat-card>
             </div>
-            <div class="stat-card">
-              <div class="stat-sticker">
-                <span class="material-symbols-outlined">receipt</span>
+
+            <!-- Admin Actions -->
+            <div class="role-actions" *ngIf="isAuthenticated">
+              <h2>Actions rapides</h2>
+              <div class="actions-grid">
+                <!-- Admin actions -->
+                <ng-container *ngIf="isAdmin">
+                  <a routerLink="/prestations" class="action-card">
+                    <div class="action-icon">📋</div>
+                    <h3>Prestations & Validation</h3>
+                    <p>Valider ou rejeter les fiches de prestations</p>
+                  </a>
+                  <a routerLink="/users" class="action-card">
+                    <div class="action-icon">👥</div>
+                    <h3>Gérer les Utilisateurs</h3>
+                    <p>Administrer les comptes utilisateur</p>
+                  </a>
+                  <a routerLink="/contrats" class="action-card">
+                    <div class="action-icon">📄</div>
+                    <h3>Gérer les Contrats</h3>
+                    <p>Visualiser et gérer tous les contrats</p>
+                  </a>
+                  <a routerLink="/ordres-commande" class="action-card">
+                    <div class="action-icon">📋</div>
+                    <h3>Ordres de Commande</h3>
+                    <p>Accéder aux ordres de commande par trimestre</p>
+                  </a>
+                  <a routerLink="/équipements" class="action-card">
+                    <div class="action-icon">🛠️</div>
+                    <h3>Équipements</h3>
+                    <p>Gestion complète des équipements informatiques</p>
+                  </a>
+                </ng-container>
               </div>
-              <div class="stat-number">{{ stats.totalOrdres }}</div>
-              <div class="stat-label">Ordres de commande</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-sticker">
-                <span class="material-symbols-outlined">description</span>
-              </div>
-              <div class="stat-number">{{ stats.totalContrats }}</div>
-              <div class="stat-label">Contrats</div>
-            </div>
-          </div>
- 
-          <!-- Role-specific Actions -->
-          <div class="role-actions" *ngIf="isAuthenticated">
-            <h2>Actions rapides</h2>
-            <div class="actions-grid">
-              <!-- Admin actions -->
-              <ng-container *ngIf="isAdmin">
-                <a routerLink="/prestations" class="action-card">
-                  <div class="action-icon">📋</div>
-                  <h3>Prestations & Validation</h3>
-                  <p>Valider ou rejeter les fiches de prestations</p>
-                </a>
-                <a routerLink="/users" class="action-card">
-                  <div class="action-icon">👥</div>
-                  <h3>Gérer les Utilisateurs</h3>
-                  <p>Administrer les comptes utilisateur</p>
-                </a>
-                <a routerLink="/contrats" class="action-card">
-                  <div class="action-icon">📄</div>
-                  <h3>Gérer les Contrats</h3>
-                  <p>Visualiser et gérer tous les contrats</p>
-                </a>
-                <a routerLink="/ordres-commande" class="action-card">
-                  <div class="action-icon">📋</div>
-                  <h3>Ordres de Commande</h3>
-                  <p>Accéder aux ordres de commande par trimestre</p>
-                </a>
-                <a routerLink="/équipements" class="action-card">
-                  <div class="action-icon">🛠️</div>
-                  <h3>Équipements</h3>
-                  <p>Gestion complète des équipements informatiques</p>
-                </a>
-              </ng-container>
- 
-              <!-- Agent DGSI actions -->
-              <ng-container *ngIf="isAgentDGSI">
-                <!-- Gestion des équipements et items -->
-                <a routerLink="/items" class="action-card">
-                  <div class="action-icon">🛠️</div>
-                  <h3>Gérer les Équipements</h3>
-                  <p>Gestion complète des équipements informatiques</p>
-                </a>
- 
-                <a routerLink="/type-items" class="action-card">
-                  <div class="action-icon">📦</div>
-                  <h3>Gérer les Items</h3>
-                  <p>Administration des types d'items et catégories</p>
-                </a>
- 
-                <!-- Gestion des lots -->
-                <a routerLink="/lots" class="action-card">
-                  <div class="action-icon">🏷️</div>
-                  <h3>Gérer les Lots</h3>
-                  <p>Organisation et gestion des lots de maintenance</p>
-                </a>
- 
-                <!-- Validation et évaluation -->
-                <a routerLink="/fiches-prestation" class="action-card">
-                  <div class="action-icon">📄</div>
-                  <h3>Fiches de Prestation</h3>
-                  <p>Valider les fiches de prestations des prestataires</p>
-                </a>
- 
-                <a routerLink="/evaluations" class="action-card">
-                  <div class="action-icon">⭐</div>
-                  <h3>Évaluations</h3>
-                  <p>Créer et consulter les évaluations des prestataires</p>
-                </a>
- 
-                <!-- Gestion des contrats -->
-                <a routerLink="/contrats" class="action-card">
-                  <div class="action-icon">📋</div>
-                  <h3>Reconduire un Contrat</h3>
-                  <p>Renouveler et gérer les contrats de maintenance</p>
-                </a>
- 
-                <!-- Gestion des rapports de suivi -->
-                <a routerLink="/rapports-suivi" class="action-card">
-                  <div class="action-icon">📋</div>
-                  <h3>Rapports de Suivi</h3>
-                  <p>Gérer et consulter les rapports de suivi des prestations</p>
-                </a>
- 
-                <!-- Génération de rapports -->
-                <button class="action-card" (click)="genererRapportTrimestriel()">
-                  <div class="action-icon">📊</div>
-                  <h3>Rapport Trimestriel</h3>
-                  <p>Générer le rapport de suivi trimestriel</p>
-                </button>
- 
-                <button class="action-card" (click)="genererRapportAnnuel()">
-                  <div class="action-icon">📈</div>
-                  <h3>Rapport Annuel</h3>
-                  <p>Générer le rapport annuel de maintenance</p>
-                </button>
- 
-                <!-- Gestion des équipements -->
-                <a routerLink="/équipements" class="action-card">
-                  <div class="action-icon">🛠️</div>
-                  <h3>Équipements</h3>
-                  <p>Gestion complète des équipements informatiques</p>
-                </a>
- 
-                <!-- Statistiques -->
-                <a routerLink="/statistiques" class="action-card">
-                  <div class="action-icon">📊</div>
-                  <h3>Consulter Statistiques</h3>
-                  <p>Tableaux de bord et statistiques détaillées</p>
-                </a>
-              </ng-container>
             </div>
           </div>
- 
         </div>
 
       </div>
@@ -485,6 +430,35 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       padding: 1.5rem;
       margin: 1rem 0;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      align-items: stretch;
+      margin-top: 1rem;
+    }
+    .stat-card {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
+      height: 100%;
+    }
+    .stat-card-content { display:flex; gap:1rem; align-items:center; }
+    .stat-icon { width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:#f1f5f9; }
+    .stat-icon mat-icon { font-size:28px; color:#0f172a; }
+    .stat-meta { text-align:left; }
+    .stat-number { font-size:1.6rem; font-weight:700; color:#0b5cff; }
+    .stat-label { font-size:0.85rem; color:#6b7280; }
+
+    .role-actions { margin-top: 1.75rem; }
+    .actions-grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap:1rem;
+      margin-top:0.75rem;
     }
     .public-layout {
       min-height: 100vh;
@@ -2067,10 +2041,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
     totalEvaluations: 0,
     totalDemandes: 0,
     demandesEnAttente: 0,
-    totalPrestations: 0
+    totalPrestations: 0,
+    totalItems: 0,
+    totalStructuresMefp: 0
   };
 
   private refreshInterval: any;
+  private visibilityHandler: EventListener | null = null;
   private userSub: Subscription;
   private destroy$ = new Subject<void>();
 
@@ -2145,43 +2122,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Trigger change detection to update the view
     this.cdr.detectChanges();
 
-    // Handle OAuth callback if on login route
-    if (this.router.url.startsWith('/login')) {
-      console.log('DashboardComponent: Handling OAuth callback');
-      this.authService.handleOAuthCallback().then(success => {
-        if (success) {
-          console.log('DashboardComponent: OAuth callback successful, redirecting to appropriate dashboard');
-          const currentUser = this.authService.getCurrentUser();
-          if (currentUser?.role) {
-            this.redirectBasedOnRole(currentUser);
-          } else {
-            this.router.navigate(['/']);
-          }
-        } else {
-          console.error('DashboardComponent: OAuth callback failed');
-        }
-      });
-      return;
-    }
-
-    // If user is authenticated and on generic /dashboard route, redirect to specific dashboard
-    // But don't redirect if already on a specific dashboard route
-    if (this.authService.isAuthenticated() && this.router.url === '/dashboard') {
-      const currentUser = this.authService.getCurrentUser();
-      if (currentUser?.role) {
-        console.log('DashboardComponent: User on generic dashboard, redirecting to specific dashboard');
-        this.redirectBasedOnRole(currentUser);
-        return;
-      }
-    }
-
-    // Load stats for all authenticated users
+    // Load stats for all authenticated users. Start auto-refresh only when
+    // the page is visible to avoid background churn that can trigger layout
+    // work when the tab is hidden.
     if (this.authService.isAuthenticated()) {
       this.loadStats();
-      this.startAutoRefresh();
+      // Register visibility handler so refresh pauses when tab is hidden
+  // create a bound event listener that calls the instance method
+  this.visibilityHandler = (ev: Event) => this.handleVisibilityChangeInternal(ev);
+  document.addEventListener('visibilitychange', this.visibilityHandler);
+      // Start refresh only if visible now
+      if (document.visibilityState === 'visible') {
+        this.startAutoRefresh();
+      }
     }
-
-
   }
 
   private redirectBasedOnRole(user: any): void {
@@ -2207,13 +2161,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private handleRoleBasedRedirection(user: any): void {
-    // Rediriger les prestataires depuis toutes les routes sauf leur dashboard
-    if (user && this.authService.isAuthenticated()) {
-      if (user.role === 'PRESTATAIRE' && !this.router.url.includes('/prestataire-dashboard')) {
-        this.router.navigate(['/prestataire-dashboard']);
-      } else if (user.role !== 'PRESTATAIRE' && this.router.url === '/dashboard') {
-        this.redirectBasedOnRole(user);
-      }
+    // Ne pas rediriger automatiquement, laisser l'utilisateur naviguer
+    if (user && this.authService.isAuthenticated() && this.router.url === '/') {
+      this.redirectBasedOnRole(user);
     }
   }
 
@@ -2279,6 +2229,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+
   }
 
 
@@ -2377,6 +2329,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
     }, 30000);
   }
 
+  private handleVisibilityChangeInternal(_ev: Event): void {
+    if (document.visibilityState === 'hidden') {
+      if (this.refreshInterval) {
+        clearInterval(this.refreshInterval);
+        this.refreshInterval = null;
+      }
+    } else if (document.visibilityState === 'visible') {
+      if (!this.refreshInterval) {
+        this.startAutoRefresh();
+      }
+    }
+  }
+
   refreshStats(): void {
     if (this.authService.isAuthenticated()) {
       this.loadStats();
@@ -2390,9 +2355,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.userSub) {
       this.userSub.unsubscribe();
     }
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+      this.visibilityHandler = null;
+    }
     this.destroy$.next();
     this.destroy$.complete();
   }
+
 
   navigateToQuarterOrders(quarter: number): void {
     this.router.navigate(['/ordres-commande/trimestre', quarter]);

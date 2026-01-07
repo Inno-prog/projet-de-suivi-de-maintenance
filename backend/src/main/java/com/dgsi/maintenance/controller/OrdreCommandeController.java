@@ -11,6 +11,7 @@ import com.dgsi.maintenance.repository.OrdreCommandeRepository;
 import com.dgsi.maintenance.repository.PrestationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,6 +40,46 @@ public class OrdreCommandeController {
     @Autowired(required = false)
     public void setContratRepository(com.dgsi.maintenance.repository.ContratRepository contratRepository) {
         this.contratRepository = contratRepository;
+    }
+
+    @GetMapping
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> getAllOrdresCommande() {
+        try {
+            log.info("📋 Récupération de tous les ordres de commande");
+
+            List<com.dgsi.maintenance.entity.OrdreCommande> ordresCommande = ordreCommandeRepository.findAll();
+
+            // Convert to simple map to avoid lazy loading issues
+            List<Map<String, Object>> result = ordresCommande.stream().map(oc -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("id", oc.getId());
+                map.put("idOC", oc.getIdOC());
+                map.put("numeroOc", oc.getNumeroOc());
+                map.put("prixUnitPrest", oc.getPrixUnitPrest());
+                map.put("montantOC", oc.getMontantOC());
+                map.put("statut", oc.getStatut());
+                map.put("observations", oc.getObservations());
+                map.put("numeroCommande", oc.getNumeroCommande());
+                map.put("nomItem", oc.getNomItem());
+                map.put("trimestre", oc.getTrimestre());
+                map.put("annee", oc.getAnnee());
+                map.put("lot", oc.getLot());
+                map.put("prestataireItem", oc.getPrestataireItem());
+                map.put("montant", oc.getMontant());
+                map.put("dateCreation", oc.getDateCreation());
+                map.put("contratId", oc.getContratId());
+                map.put("penalites", oc.getPenalites());
+                return map;
+            }).collect(Collectors.toList());
+
+            log.info("✅ Retour de {} ordres de commande", result.size());
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            log.error("❌ Erreur lors de la récupération des ordres de commande", e);
+            return ResponseEntity.internalServerError().body("Erreur: " + e.getMessage());
+        }
     }
 
     @GetMapping("/trimestre/{trimestre}/lots")

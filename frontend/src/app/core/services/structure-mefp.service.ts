@@ -44,4 +44,8 @@ export class StructureMefpService {
   deleteStructure(id: string): Observable<any> {
     return this.http.delete(`${this.API_URL}/${id}`, { headers: this.getHeaders() });
   }
+
+  getStructuresByLotId(lotId: number): Observable<StructureMefp[]> {
+    return this.http.get<StructureMefp[]>(`${this.API_URL}/by-lot/${lotId}`, { headers: this.getHeaders() });
+  }
 }

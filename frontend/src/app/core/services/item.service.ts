@@ -49,6 +49,10 @@ export class ItemService {
     return this.http.delete<void>(`${this.API_URL}/${id}`);
   }
 
+  getItemsByPrestataire(prestataireId: string): Observable<Item[]> {
+    return this.http.get<Item[]>(`${this.API_URL}/by-prestataire/${prestataireId}`);
+  }
+
   getItemsStatistiques(): Observable<any[]> {
     return this.http.get<any[]>(`${this.API_URL}/statistiques`);
   }

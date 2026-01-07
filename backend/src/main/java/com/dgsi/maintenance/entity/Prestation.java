@@ -35,21 +35,24 @@ public class Prestation {
     @Column(name = "nom_prestataire")
     private String nomPrestataire;
 
-    @Column(name = "contact_prestataire")
-    private String contactPrestataire;
+    @Column(name = "nom_responsable_prestation")
+    private String nomResponsablePrestation;
+
+    @Column(name = "contact_responsable_prestation")
+    private String contactResponsablePrestation;
+
+    @Column(name = "qualification_responsable_prestation")
+    private String qualificationResponsablePrestation;
 
     @Column(name = "structure_prestataire")
     private String structurePrestataire;
 
-    @NotBlank
     @Column(name = "service_prestataire")
     private String servicePrestataire;
 
-    @NotBlank
     @Column(name = "role_prestataire")
     private String rolePrestataire;
 
-    @NotBlank
     @Column(name = "qualification_prestataire")
     private String qualificationPrestataire;
 
@@ -176,14 +179,13 @@ public class Prestation {
     }
 
     // New constructor for the enhanced prestation form
-    public Prestation(String prestataireId, String nomPrestataire, String contactPrestataire, String structurePrestataire,
+    public Prestation(String prestataireId, String nomPrestataire, String structurePrestataire,
                       String servicePrestataire, String rolePrestataire, String qualificationPrestataire,
                       BigDecimal montantIntervention, Set<Item> itemsCouverts,
                       String trimestre, LocalDateTime dateHeureDebut, LocalDateTime dateHeureFin,
                       String statutIntervention) {
         this.prestataireId = prestataireId;
         this.nomPrestataire = nomPrestataire;
-        this.contactPrestataire = contactPrestataire;
         this.structurePrestataire = structurePrestataire;
         this.servicePrestataire = servicePrestataire;
         this.rolePrestataire = rolePrestataire;
@@ -203,6 +205,15 @@ public class Prestation {
 
     public String getNomPrestataire() { return nomPrestataire; }
     public void setNomPrestataire(String nomPrestataire) { this.nomPrestataire = nomPrestataire; }
+
+    public String getNomResponsablePrestation() { return nomResponsablePrestation; }
+    public void setNomResponsablePrestation(String nomResponsablePrestation) { this.nomResponsablePrestation = nomResponsablePrestation; }
+
+    public String getContactResponsablePrestation() { return contactResponsablePrestation; }
+    public void setContactResponsablePrestation(String contactResponsablePrestation) { this.contactResponsablePrestation = contactResponsablePrestation; }
+
+    public String getQualificationResponsablePrestation() { return qualificationResponsablePrestation; }
+    public void setQualificationResponsablePrestation(String qualificationResponsablePrestation) { this.qualificationResponsablePrestation = qualificationResponsablePrestation; }
 
     public String getNomPrestation() { return nomPrestation; }
     public void setNomPrestation(String nomPrestation) { this.nomPrestation = nomPrestation; }
@@ -239,9 +250,6 @@ public class Prestation {
     // New getters and setters for enhanced fields
     public String getPrestataireId() { return prestataireId; }
     public void setPrestataireId(String prestataireId) { this.prestataireId = prestataireId; }
-
-    public String getContactPrestataire() { return contactPrestataire; }
-    public void setContactPrestataire(String contactPrestataire) { this.contactPrestataire = contactPrestataire; }
 
     public String getStructurePrestataire() { return structurePrestataire; }
     public void setStructurePrestataire(String structurePrestataire) { this.structurePrestataire = structurePrestataire; }

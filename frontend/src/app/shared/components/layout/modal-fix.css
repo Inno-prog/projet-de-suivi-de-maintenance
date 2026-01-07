@@ -1,0 +1,254 @@
+/* Modal Fix CSS - Styles forcés pour les modals profil et paramètres */
+
+.debug-profile-modal,
+.debug-settings-modal {
+  position: fixed !important;
+  top: 0 !important; 
+  left: 0 !important; 
+  width: 100vw !important; 
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.95) !important; 
+  z-index: 999999 !important; 
+  display: flex !important; 
+  align-items: center !important; 
+  justify-content: center !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+}
+
+.debug-profile-modal-content,
+.debug-settings-modal-content {
+  background: white !important;
+  color: #1e293b !important;
+  border: 4px solid #f97316 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 1) !important;
+  max-width: 600px !important;
+  width: 100% !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  position: relative !important;
+  z-index: 1000000 !important;
+  font-family: Arial, sans-serif !important;
+  padding: 0 !important;
+}
+
+/* Header styles */
+.debug-profile-modal-header,
+.debug-settings-modal-header {
+  background: #f97316 !important;
+  color: white !important;
+  padding: 20px !important;
+  border-radius: 16px 16px 0 0 !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.debug-profile-modal-header h2,
+.debug-settings-modal-header h2 {
+  margin: 0 !important;
+  font-size: 1.5rem !important;
+  font-weight: bold !important;
+}
+
+/* Close button */
+.debug-modal-close-btn {
+  background: none !important;
+  border: none !important;
+  color: white !important;
+  font-size: 1.5rem !important;
+  cursor: pointer !important;
+  padding: 5px !important;
+}
+
+.debug-modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 5px !important;
+}
+
+/* Body styles */
+.debug-profile-modal-body,
+.debug-settings-modal-body {
+  padding: 30px !important;
+}
+
+/* Avatar section */
+.debug-profile-avatar {
+  text-align: center !important;
+  margin-bottom: 30px !important;
+}
+
+.debug-profile-avatar-icon {
+  width: 80px !important;
+  height: 80px !important;
+  border-radius: 50% !important;
+  background: white !important;
+  color: #f97316 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 2rem !important;
+  font-weight: bold !important;
+  margin: 0 auto 15px auto !important;
+  border: 3px solid #f97316 !important;
+}
+
+.debug-profile-avatar h3 {
+  margin: 0 0 5px 0 !important;
+  font-size: 1.3rem !important;
+  font-weight: bold !important;
+  color: #1e293b !important;
+}
+
+.debug-profile-avatar p {
+  margin: 0 !important;
+  color: #6b7280 !important;
+}
+
+/* Form styles */
+.debug-profile-form {
+  width: 100% !important;
+}
+
+.debug-form-group {
+  margin-bottom: 20px !important;
+}
+
+.debug-form-label {
+  display: block !important;
+  margin-bottom: 8px !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+}
+
+.debug-form-input {
+  width: 100% !important;
+  padding: 12px !important;
+  border: 2px solid #d1d5db !important;
+  border-radius: 8px !important;
+  font-size: 1rem !important;
+  background: white !important;
+  color: #1e293b !important;
+  box-sizing: border-box !important;
+}
+
+.debug-form-input:focus {
+  outline: none !important;
+  border-color: #f97316 !important;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1) !important;
+}
+
+.debug-form-textarea {
+  width: 100% !important;
+  padding: 12px !important;
+  border: 2px solid #d1d5db !important;
+  border-radius: 8px !important;
+  font-size: 1rem !important;
+  background: white !important;
+  color: #1e293b !important;
+  resize: vertical !important;
+  box-sizing: border-box !important;
+}
+
+/* Footer styles */
+.debug-modal-footer {
+  padding: 20px 0 0 0 !important;
+  border-top: 2px solid #e5e7eb !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 15px !important;
+}
+
+.debug-btn {
+  padding: 12px 24px !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  font-size: 1rem !important;
+}
+
+.debug-btn-secondary {
+  background: #6b7280 !important;
+  color: white !important;
+}
+
+.debug-btn-primary {
+  background: #f97316 !important;
+  color: white !important;
+  opacity: 1 !important;
+}
+
+.debug-btn-primary:hover {
+  background: #ea580c !important;
+}
+
+.debug-btn:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+/* Settings modal specific */
+.debug-settings-content {
+  background: white !important;
+  color: #1e293b !important;
+  border: 4px solid #3b82f6 !important;
+  border-radius: 20px !important;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 1) !important;
+  max-width: 600px !important;
+  width: 100% !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+  position: relative !important;
+  z-index: 1000000 !important;
+  font-family: Arial, sans-serif !important;
+}
+
+.debug-settings-header {
+  background: #3b82f6 !important;
+  color: white !important;
+  padding: 20px !important;
+  border-radius: 16px 16px 0 0 !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.debug-settings-body {
+  padding: 30px !important;
+}
+
+.debug-settings-option {
+  margin-bottom: 20px !important;
+  padding: 15px !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  background: #f9fafb !important;
+}
+
+.debug-settings-option label {
+  display: block !important;
+  font-weight: 600 !important;
+  color: #374151 !important;
+  margin-bottom: 10px !important;
+}
+
+/* Force visibility */
+* {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.debug-profile-modal *,
+.debug-settings-modal * {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+.debug-profile-modal-content *,
+.debug-settings-modal-content * {
+  visibility: visible !important;
+  opacity: 1 !important;
+}

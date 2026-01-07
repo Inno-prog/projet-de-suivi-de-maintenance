@@ -11,7 +11,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { Subscription } from 'rxjs';
 import { ContratService } from '../../../../core/services/contrat.service';
 import { ItemService } from '../../../../core/services/item.service';
-import { Contrat, Item, StatutContrat } from '../../../../core/models/business.models';
+import { LotService } from '../../../../core/services/lot.service';
+import { Contrat, StatutContrat, Item, Lot } from '../../../../core/models/business.models';
 import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
@@ -34,11 +35,12 @@ import { ToastService } from '../../../../core/services/toast.service';
 export class ContratFormComponent implements OnInit, OnDestroy {
   contratForm: FormGroup;
   isEditMode = false;
+  loading = false;
+  selectedFile: File | null = null;
   items: Item[] = [];
   selectedItems: Item[] = [];
   selectedItemIds: number[] = [];
-  loading = false;
-  selectedFile: File | null = null;
+  lots: Lot[] = [];
 
   statutOptions = [
     { value: StatutContrat.ACTIF, label: 'Actif' },
@@ -49,15 +51,7 @@ export class ContratFormComponent implements OnInit, OnDestroy {
 
   // Mapping des lots aux villes
   lotCityMapping: { [key: string]: string } = {
-    'Lot 4': 'Koudougou',
-    'Lot 6': 'Bobo-Dioulasso',
-    'Lot 9': 'Ouagadougou',
-    'Lot 1': 'Banfora',
-    'Lot 2': 'Dédougou',
-    'Lot 3': 'Ouahigouya',
-    'Lot 5': 'Manga',
-    'Lot 7': 'Diébougou',
-    'Lot 8': 'Fada N\'Gourma'
+    
   };
 
 
@@ -68,6 +62,7 @@ export class ContratFormComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private contratService: ContratService,
     private itemService: ItemService,
+    private lotService: LotService,
     private toastService: ToastService,
     public dialogRef: MatDialogRef<ContratFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -79,25 +74,22 @@ export class ContratFormComponent implements OnInit, OnDestroy {
       dateFin: [data?.contrat?.dateFin || '', [Validators.required]],
       nomPrestataire: [data?.contrat?.nomPrestataire || '', [Validators.required]],
       montant: [data?.contrat?.montant || '', [Validators.required, Validators.min(0)]],
-      lot: [data?.contrat?.lot || '', [Validators.required]],
+      lotId: [data?.contrat?.lotEntity?.id || '', [Validators.required]],
       ville: [data?.contrat?.ville || '', [Validators.required]],
       statut: [data?.contrat?.statut || StatutContrat.ACTIF, [Validators.required]],
       fichierContrat: [data?.contrat?.fichierContrat || '', [Validators.required]]
     });
 
-    // Initialize selected items for edit mode
-    if (this.isEditMode && data.contrat.items) {
-      this.selectedItems = [...data.contrat.items];
-      this.selectedItemIds = data.contrat.items.map((item: Item) => item.id!);
-    }
+
   }
 
   ngOnInit(): void {
     this.loadItems();
+    this.loadLots();
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+   this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
   loadItems(): void {
@@ -120,18 +112,38 @@ export class ContratFormComponent implements OnInit, OnDestroy {
     this.subscriptions.push(subscription);
   }
 
+  loadLots(): void {
+    this.loading = true;
+    const subscription = this.lotService.getAllLotEntities().subscribe({
+      next: (lots) => {
+        this.lots = lots;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des lots:', error);
+        this.toastService.show({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Erreur lors du chargement des lots'
+        });
+        this.loading = false;
+      }
+    });
+    this.subscriptions.push(subscription);
+  }
+
   onItemSelectionChange(item: Item, event: Event): void {
     const target = event.target as HTMLInputElement;
     const checked = target.checked;
 
     if (checked) {
-      if (!this.selectedItems.some(selected => selected.id === item.id)) {
+      if (!this.selectedItems.some((selected: Item) => selected.id === item.id)) {
         this.selectedItems.push(item);
         this.selectedItemIds.push(item.id!);
       }
     } else {
-      this.selectedItems = this.selectedItems.filter(selected => selected.id !== item.id);
-      this.selectedItemIds = this.selectedItemIds.filter(id => id !== item.id);
+      this.selectedItems = this.selectedItems.filter((selected: Item) => selected.id !== item.id);
+      this.selectedItemIds = this.selectedItemIds.filter((id: number) => id !== item.id);
     }
   }
 
@@ -236,7 +248,7 @@ export class ContratFormComponent implements OnInit, OnDestroy {
   }
 
   getTotalItemsValue(): number {
-    return this.selectedItems.reduce((total, item) => total + (item.prix || 0), 0);
+    return this.selectedItems.reduce((total: number, item: Item) => total + (item.prix || 0), 0);
   }
 
   onFileSelected(event: Event): void {
@@ -251,10 +263,29 @@ export class ContratFormComponent implements OnInit, OnDestroy {
   }
 
   onLotChange(): void {
-    const selectedLot = this.contratForm.get('lot')?.value;
-    if (selectedLot && this.lotCityMapping[selectedLot]) {
+    const selectedLotId = this.contratForm.get('lotId')?.value;
+    if (selectedLotId) {
+      // Convert to number since HTML select values are strings
+      const lotId = parseInt(selectedLotId, 10);
+      // Find the selected lot
+      const selectedLot = this.lots.find(lot => lot.id === lotId);
+      if (selectedLot) {
+        // Auto-fill ville with first ville from the selected lot's villes list
+        if (selectedLot.villes && selectedLot.villes.length > 0) {
+          this.contratForm.patchValue({
+            ville: selectedLot.villes[0]
+          });
+        } else {
+          // Clear ville if lot has no villes
+          this.contratForm.patchValue({
+            ville: ''
+          });
+        }
+      }
+    } else {
+      // Clear ville if no lot selected
       this.contratForm.patchValue({
-        ville: this.lotCityMapping[selectedLot]
+        ville: ''
       });
     }
   }

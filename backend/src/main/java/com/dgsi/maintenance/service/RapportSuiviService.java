@@ -100,7 +100,7 @@ public class RapportSuiviService {
     @Transactional(readOnly = true)
     public List<RapportSuivi> getAllRapports() {
         log.info("Récupération de tous les rapports de suivi");
-        return rapportSuiviRepository.findAllWithOrdreCommande();
+        return rapportSuiviRepository.findAll();
     }
 
     /**
@@ -109,7 +109,7 @@ public class RapportSuiviService {
     @Transactional(readOnly = true)
     public Optional<RapportSuivi> getRapportById(Long id) {
         log.info("Récupération du rapport de suivi ID: {}", id);
-        return Optional.ofNullable(rapportSuiviRepository.findByIdWithOrdreCommande(id));
+        return rapportSuiviRepository.findById(id);
     }
 
     /**

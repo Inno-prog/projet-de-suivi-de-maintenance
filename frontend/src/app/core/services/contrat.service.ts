@@ -28,7 +28,12 @@ export class ContratService {
       // Ajout des champs obligatoires
       formData.append('idContrat', contrat.idContrat || '');
       formData.append('nomPrestataire', contrat.nomPrestataire || '');
-      formData.append('lot', contrat.lot || '');
+
+      // Send lotId if available
+      if (contrat.lotId) {
+        formData.append('lotId', contrat.lotId.toString());
+      }
+
       formData.append('ville', contrat.ville || '');
       
       // Formatage des dates
@@ -80,7 +85,12 @@ export class ContratService {
     const formData = new FormData();
     formData.append('idContrat', contrat.idContrat || '');
     formData.append('nomPrestataire', contrat.nomPrestataire || '');
-    formData.append('lot', contrat.lot || '');
+
+    // Send lotId if available
+    if (contrat.lotId) {
+      formData.append('lotId', contrat.lotId.toString());
+    }
+
     formData.append('ville', contrat.ville || '');
     formData.append('dateDebut', contrat.dateDebut ? new Date(contrat.dateDebut).toISOString().split('T')[0] : '');
     formData.append('dateFin', contrat.dateFin ? new Date(contrat.dateFin).toISOString().split('T')[0] : '');

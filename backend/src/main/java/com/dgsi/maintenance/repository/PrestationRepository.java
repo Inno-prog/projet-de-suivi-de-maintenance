@@ -22,10 +22,10 @@ public interface PrestationRepository extends JpaRepository<Prestation, Long> {
     List<Prestation> findByNomPrestataire(String nomPrestataire);
     Page<Prestation> findByNomPrestataire(String nomPrestataire, Pageable pageable);
 
-    @Query("SELECT p FROM Prestation p WHERE p.contactPrestataire = :email")
+    @Query("SELECT p FROM Prestation p WHERE p.prestataireId = :email")
     List<Prestation> findByContactPrestataire(@Param("email") String email);
 
-    @Query("SELECT p FROM Prestation p WHERE p.contactPrestataire = :email")
+    @Query("SELECT p FROM Prestation p WHERE p.prestataireId = :email")
     Page<Prestation> findByContactPrestataire(@Param("email") String email, Pageable pageable);
 
     @Query("SELECT p FROM Prestation p WHERE p.prestataireId = :prestataireId")
@@ -63,4 +63,7 @@ public interface PrestationRepository extends JpaRepository<Prestation, Long> {
 
     @Query("SELECT COUNT(p) FROM Prestation p JOIN p.itemsUtilises i WHERE i.id = :itemId")
     Long countPrestationsByItemId(@Param("itemId") Long itemId);
+
+    @Query("SELECT p FROM Prestation p WHERE p.ordreCommande IS NULL AND (p.deleted IS NULL OR p.deleted = false)")
+    List<Prestation> findPrestationsWithoutOrdreCommande();
 }

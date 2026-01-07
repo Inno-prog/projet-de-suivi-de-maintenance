@@ -62,6 +62,7 @@ public class StructureMefpService {
                 structure.setAdresseStructure(structureDetails.getAdresseStructure());
                 structure.setDescription(structureDetails.getDescription());
                 structure.setCategorie(structureDetails.getCategorie());
+                structure.setLot(structureDetails.getLot());
                 // Update CI fields
                 structure.setNomCI(structureDetails.getNomCI());
                 structure.setPrenomCI(structureDetails.getPrenomCI());
@@ -86,6 +87,13 @@ public class StructureMefpService {
                 logger.warning("Structure not found for deletion with ID: " + id);
                 return false;
             });
+    }
+
+    public List<StructureMefp> getStructuresByLotId(Long lotId) {
+        logger.info("Fetching structures for lot ID: " + lotId);
+        List<StructureMefp> structures = structureMefpRepository.findByLotId(lotId);
+        logger.info("Found " + structures.size() + " structures for lot ID: " + lotId);
+        return structures;
     }
 
 }

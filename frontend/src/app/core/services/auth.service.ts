@@ -20,12 +20,11 @@ export class AuthService {
     private http: HttpClient,
     private oauthService: OAuthService
   ) {
-    this.configureOAuth();
     this.initializeOAuth();
     this.loadCurrentUser();
   }
 
-  private configureOAuth(): void {
+  private initializeOAuth(): void {
     // Configuration pour client public - pas d'initialisation automatique
     const isProduction = window.location.protocol === 'https:';
     const authConfig: AuthConfig = {
@@ -75,15 +74,6 @@ export class AuthService {
     // Certaines versions de bibliothèque peuvent ne pas exposer setStorage ; ignorer si non disponible
     console.warn('oauthService.setStorage not available, falling back to default storage', e);
   }
-
-    // Supprimer tous les event listeners automatiques pour éviter les erreurs
-    // L'OAuth ne sera utilisé que de manière explicite
-  }
-
-  private initializeOAuth(): void {
-    console.log('Initialisation du service OAuth...');
-    console.log('URL de l\'émetteur:', 'http://localhost:8080/realms/Maintenance-DGSI');
-    console.log('ID client:', 'maintenance-app');
     console.log('Environnement production:', environment.production);
 
     // Utiliser uniquement Keycloak en temps réel
@@ -278,23 +268,96 @@ export class AuthService {
     this.currentUserSubject.next(null);
     console.log('Utilisateur actuel effacé');
 
-    // 3. Obtenir l'id_token avant de nettoyer
-    const idToken = this.oauthService.getIdToken();
+    // 3. Obtenir l'id_token avant de nettoyer (fallback depuis localStorage si nécessaire)
+    let idToken: string | null = this.oauthService.getIdToken() || null;
+    if (!idToken) {
+      try {
+        idToken = localStorage.getItem('id_token') || null;
+      } catch (e) {
+        idToken = null;
+      }
+    }
     console.log('ID Token pour logout:', idToken ? 'présent' : 'absent');
 
-    // 4. Nettoyer les tokens locaux
-    this.manualTokenCleanup();
+    // Helper: vérifier si un id_token JWT est encore valide (exp > now)
+    const isJwtValid = (token: string | null): boolean => {
+      if (!token) return false;
+      try {
+        const parts = token.split('.');
+        if (parts.length < 2) return false;
+        const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+        if (!payload.exp) return false;
+        const now = Math.floor(Date.now() / 1000);
+        return payload.exp > now + 5; // small leeway
+      } catch (e) {
+        return false;
+      }
+    };
 
-    // 5. Déconnexion Keycloak avec id_token_hint
-    console.log('Démarrage de la déconnexion Keycloak...');
-    if (idToken) {
-      // Construire l'URL de logout manuellement avec id_token_hint
-      const logoutUrl = `${this.oauthService.logoutUrl}?id_token_hint=${encodeURIComponent(idToken)}&post_logout_redirect_uri=${encodeURIComponent(window.location.origin + '/dashboard')}&client_id=${encodeURIComponent(this.oauthService.clientId || 'maintenance-app')}`;
+    const performLogoutRequest = (tokenHint: string | null) => {
+      const logoutBase = (this.oauthService as any)._config?.logoutUrl ||
+        'http://localhost:8080/realms/Maintenance-DGSI/protocol/openid-connect/logout';
+      const redirectUri = window.location.origin;
+
+      const params = new URLSearchParams();
+      // Use post_logout_redirect_uri (configured in Keycloak) and include id_token_hint only if available
+      params.set('post_logout_redirect_uri', redirectUri);
+      if (tokenHint) params.set('id_token_hint', tokenHint);
+      params.set('client_id', this.oauthService.clientId || 'maintenance-app');
+
+      const logoutUrl = logoutBase + '?' + params.toString();
       console.log('URL de logout:', logoutUrl);
+
+      // Nettoyage manuel des tokens locaux en dernier, après avoir capturé id_token
+      this.manualTokenCleanup();
       window.location.href = logoutUrl;
-    } else {
-      // Fallback sans id_token_hint
-      this.oauthService.logOut();
+    };
+
+    console.log('Démarrage de la déconnexion Keycloak...');
+
+    if (idToken && isJwtValid(idToken)) {
+      // Token présent et valide
+      performLogoutRequest(idToken);
+      return;
+    }
+
+    // Si token absent ou expiré, tenter un refresh si possible
+    const refreshFn: (() => Promise<any>) | undefined = (this.oauthService as any).refreshToken?.bind(this.oauthService);
+    if (refreshFn) {
+      try {
+        console.log('Tentative de refresh du token avant logout...');
+        (refreshFn() as Promise<any>).then(() => {
+          // Après refresh, récupérer id_token et exécuter logout
+          const newId = this.oauthService.getIdToken() || localStorage.getItem('id_token') || null;
+          if (newId && isJwtValid(newId)) {
+            performLogoutRequest(newId);
+          } else {
+            // Si refresh n'a pas fourni de id_token valide, fallback sans id_token_hint
+            console.warn('Refresh n\'a pas fourni d\'id_token valide, logout sans id_token_hint');
+            performLogoutRequest(null);
+          }
+        }).catch((err: any) => {
+          console.warn('Refresh token failed, falling back to logout without id_token_hint', err);
+          performLogoutRequest(null);
+        });
+        return;
+      } catch (e) {
+        console.warn('Erreur lors de l\'appel de refreshToken:', e);
+      }
+    }
+
+    // Dernier fallback : exécuter logout sans id_token_hint
+    console.warn('Pas d\'id_token valide et refresh non disponible. Déconnexion sans id_token_hint');
+    try {
+      performLogoutRequest(null);
+    } catch (err) {
+      console.warn('Échec du logout manuel, utilisation du logout de la librairie', err);
+      try {
+        this.oauthService.logOut();
+      } catch (e) {
+        console.warn('Fallback oauthService.logOut() failed, redirecting locally', e);
+        window.location.href = window.location.origin;
+      }
     }
   }
 
@@ -494,12 +557,21 @@ export class AuthService {
     return this.isAdmin() || this.isPrestataire();
   }
 
-  updateUserProfile(user: User): Observable<User> {
-    return this.http.put<User>(`${environment.apiUrl}/users/profile`, user).pipe(
+  updateUserProfile(profileData: any): Observable<any> {
+    console.log('AuthService: Updating profile with data:', profileData);
+    const currentUser = this.getCurrentUser();
+    if (!currentUser) {
+      throw new Error('Aucun utilisateur connecté');
+    }
+    
+    return this.http.put<any>(`${environment.apiUrl}/users/${currentUser.id}`, profileData).pipe(
       map(updatedUser => {
-        this.currentUserSubject.next(updatedUser);
-        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-        return updatedUser;
+        console.log('AuthService: Profile updated successfully:', updatedUser);
+        // Fusionner les données mises à jour avec l'utilisateur actuel
+        const mergedUser = { ...currentUser, ...updatedUser };
+        this.currentUserSubject.next(mergedUser);
+        localStorage.setItem('currentUser', JSON.stringify(mergedUser));
+        return mergedUser;
       })
     );
   }

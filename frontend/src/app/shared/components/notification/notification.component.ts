@@ -1,5 +1,6 @@
 import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { NotificationService, AppNotification } from './notification.service';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
@@ -8,7 +9,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-notification-bell',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   template: `
   <div class="relative" (keydown.escape)="close()" tabindex="0">
     <!-- Bell button -->
@@ -19,11 +20,8 @@ import { Subscription } from 'rxjs';
       class="relative inline-flex items-center justify-center p-2 rounded-full hover:bg-yellow-100/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition text-yellow-500 hover:text-yellow-600 shadow-lg hover:shadow-xl"
       title="Notifications"
     >
-      <!-- Bell SVG -->
-      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M15 17H9a3 3 0 01-3-3V10a6 6 0 1112 0v4a3 3 0 01-3 3z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M13.5 21a1.5 1.5 0 01-3 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <!-- Material bell icon -->
+      <mat-icon class="bell-icon" aria-hidden="true">notifications</mat-icon>
 
       <!-- Badge -->
       <span *ngIf="(unread$ | async) as uCount" 
@@ -55,7 +53,7 @@ import { Subscription } from 'rxjs';
             <a (click)="openNotification(n)" class="flex gap-3 items-start cursor-pointer">
               <div class="flex-shrink-0">
                 <span class="inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-slate-100 text-sm">
-                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M12 2v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  <mat-icon>notifications</mat-icon>
                 </span>
               </div>
               <div class="flex-1 min-w-0">

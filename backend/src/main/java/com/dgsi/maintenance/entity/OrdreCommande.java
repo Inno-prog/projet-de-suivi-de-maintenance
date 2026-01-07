@@ -2,6 +2,7 @@ package com.dgsi.maintenance.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +22,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "ordres_commande")
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"prestations"})
 public class OrdreCommande {
 
     @Id
@@ -54,14 +56,17 @@ public class OrdreCommande {
 
     // Relations
     @OneToMany(mappedBy = "ordreCommande", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Prestation> prestations;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id")
+    @JsonIgnore
     private Item item;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contrat_id", insertable = false, updatable = false)
+    @JsonIgnore
     private Contrat contrat;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -70,6 +75,7 @@ public class OrdreCommande {
         joinColumns = @JoinColumn(name = "ordre_commande_id"),
         inverseJoinColumns = @JoinColumn(name = "item_id")
     )
+    @JsonIgnore
     private List<Item> items;
 
     // Optional helpers and legacy fields

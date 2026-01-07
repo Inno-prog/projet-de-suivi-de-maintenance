@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StructureMefpService } from '../../../../core/services/structure-mefp.service';
-import { StructureMefp } from '../../../../core/models/business.models';
+import { LotService } from '../../../../core/services/lot.service';
+import { StructureMefp, Lot } from '../../../../core/models/business.models';
 import { ConfirmationService } from '../../../../core/services/confirmation.service';
 import { ToastService } from '../../../../core/services/toast.service';
 
@@ -40,16 +41,24 @@ interface Page<T> {
         <div class="table-container">
           <div class="table-header">
             <h2>Liste des Structures du MEFP</h2>
-            <div class="search-bar">
-              <input type="text" placeholder="Rechercher par nom, email, contact, ville, description, catégorie..." [(ngModel)]="searchTerm" (input)="filterStructures()" class="search-input">
-              <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <button *ngIf="searchTerm" class="clear-btn" (click)="clearSearch()" title="Effacer la recherche">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <div class="filters-bar">
+              <div class="search-bar">
+                <input type="text" placeholder="Rechercher par nom, email, contact, ville, description, catégorie..." [(ngModel)]="searchTerm" (input)="filterStructures()" class="search-input">
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-              </button>
+                <button *ngIf="searchTerm" class="clear-btn" (click)="clearSearch()" title="Effacer la recherche">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="lot-filter">
+                <select [(ngModel)]="selectedLotFilter" (change)="onLotFilterChange()" class="lot-select">
+                  <option [value]="null">Tous les lots</option>
+                  <option *ngFor="let lot of lots" [value]="lot.id">{{ lot.nomLot }}</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -115,6 +124,14 @@ interface Page<T> {
                       <span class="info-value description-text">{{ structure.description || 'Aucune description' }}</span>
                     </div>
                   </div>
+
+                  <div class="info-row" *ngIf="structure.lot">
+                    <div class="info-item">
+                      <i class="fas fa-tags info-icon"></i>
+                      <span class="info-label">Lot:</span>
+                      <span class="info-value">{{ structure.lot.nomLot }}</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="card-actions">
@@ -142,9 +159,10 @@ interface Page<T> {
           </div>
 
           <!-- Pagination -->
-          <div class="pagination-container" *ngIf="totalPages > 1">
+          <div class="pagination-container" *ngIf="totalPages > 1 && !selectedLotFilter">
             <div class="pagination-info">
-              <span>Affichage de {{ (currentPage * pageSize) + 1 }} à {{ getEndIndex() }} sur {{ totalElements }} structures</span>
+              <span *ngIf="!selectedLotFilter">Affichage de {{ (currentPage * pageSize) + 1 }} à {{ getEndIndex() }} sur {{ totalElements }} structures</span>
+              <span *ngIf="selectedLotFilter">{{ totalElements }} structure(s) trouvée(s) pour ce lot</span>
             </div>
             <div class="pagination-controls">
               <button
@@ -294,6 +312,21 @@ interface Page<T> {
               <div class="error-message" *ngIf="structureForm.get('categorie')?.invalid && structureForm.get('categorie')?.touched">
                 La catégorie est requise
               </div>
+            </div>
+
+            <div class="form-group">
+              <label for="lotId">Lot</label>
+              <select
+                id="lotId"
+                formControlName="lotId"
+                class="line-input"
+              >
+                <option value="">Sélectionner un lot (optionnel)</option>
+                <option *ngFor="let lot of lots" [value]="lot.id">
+                  {{ lot.nomLot }}
+                </option>
+              </select>
+              <div class="input-line"></div>
             </div>
 
             <!-- Section Correspondant Informatique -->
@@ -643,6 +676,33 @@ interface Page<T> {
       color: #6b7280;
     }
 
+    .filters-bar {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .lot-filter {
+      display: flex;
+      align-items: center;
+    }
+
+    .lot-select {
+      padding: 0.5rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+      font-size: 0.875rem;
+      color: #374151;
+      min-width: 200px;
+    }
+
+    .lot-select:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
     .table-header {
       background: #f9fafb;
       padding: 1.5rem;
@@ -954,7 +1014,9 @@ interface Page<T> {
 export class StructuresMefpListComponent implements OnInit {
   structures: StructureMefp[] = [];
   filteredStructures: StructureMefp[] = [];
+  lots: Lot[] = [];
   searchTerm = '';
+  selectedLotFilter: number | null = null;
   loading = false;
   showStructureModal = false;
   isEditing = false;
@@ -971,6 +1033,7 @@ export class StructuresMefpListComponent implements OnInit {
 
   constructor(
     private structureMefpService: StructureMefpService,
+    private lotService: LotService,
     private confirmationService: ConfirmationService,
     private toastService: ToastService,
     private formBuilder: FormBuilder
@@ -983,6 +1046,7 @@ export class StructuresMefpListComponent implements OnInit {
       adresseStructure: [''],
       description: [''],
       categorie: ['', Validators.required],
+      lotId: [null],
       // Champs du Correspondant Informatique (CI)
       nomCI: [''],
       prenomCI: [''],
@@ -1001,35 +1065,81 @@ export class StructuresMefpListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStructures();
+    this.loadLots();
   }
 
   loadStructures(): void {
     this.loading = true;
     console.log('Loading structures from:', this.structureMefpService['API_URL']);
-    this.structureMefpService.getAllStructuresPaginated(this.currentPage, this.pageSize).subscribe({
-      next: (page: Page<StructureMefp>) => {
-        console.log('Successfully loaded structures:', page);
-        this.paginatedStructures = page;
-        this.structures = page.content;
-        this.totalElements = page.totalElements;
-        this.totalPages = page.totalPages;
-        this.filterStructures();
-        this.loading = false;
+
+    if (this.selectedLotFilter) {
+      // Load structures by lot
+      console.log('Loading structures for lot ID:', this.selectedLotFilter);
+      this.structureMefpService.getStructuresByLotId(this.selectedLotFilter).subscribe({
+        next: (structures: StructureMefp[]) => {
+          console.log('Successfully loaded structures by lot:', structures);
+          console.log('Number of structures found:', structures.length);
+          this.structures = structures;
+          this.paginatedStructures = null; // Reset pagination for filtered results
+          this.totalElements = structures.length;
+          this.totalPages = 1; // No pagination for filtered results
+          this.filterStructures();
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error loading structures by lot:', error);
+          this.toastService.show({
+            type: 'error',
+            title: 'Erreur de chargement',
+            message: 'Impossible de charger les structures du lot sélectionné.'
+          });
+          this.loading = false;
+        }
+      });
+    } else {
+      // Load all structures with pagination
+      this.structureMefpService.getAllStructuresPaginated(this.currentPage, this.pageSize).subscribe({
+        next: (page: Page<StructureMefp>) => {
+          console.log('Successfully loaded structures:', page);
+          this.paginatedStructures = page;
+          this.structures = page.content;
+          this.totalElements = page.totalElements;
+          this.totalPages = page.totalPages;
+          this.filterStructures();
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Error loading structures:', error);
+          console.error('Error details:', {
+            status: error.status,
+            statusText: error.statusText,
+            url: error.url,
+            message: error.message
+          });
+          this.toastService.show({
+            type: 'error',
+            title: 'Erreur de chargement',
+            message: 'Impossible de charger les structures. Vérifiez la connexion réseau.'
+          });
+          this.loading = false;
+        }
+      });
+    }
+  }
+
+  loadLots(): void {
+    this.lotService.getAllLotEntities().subscribe({
+      next: (lots: Lot[]) => {
+        console.log('Successfully loaded lots:', lots);
+        this.lots = lots;
       },
       error: (error) => {
-        console.error('Error loading structures:', error);
-        console.error('Error details:', {
-          status: error.status,
-          statusText: error.statusText,
-          url: error.url,
-          message: error.message
-        });
+        console.error('Error loading lots:', error);
         this.toastService.show({
           type: 'error',
           title: 'Erreur de chargement',
-          message: 'Impossible de charger les structures. Vérifiez la connexion réseau.'
+          message: 'Impossible de charger les lots.'
         });
-        this.loading = false;
       }
     });
   }
@@ -1057,6 +1167,10 @@ export class StructuresMefpListComponent implements OnInit {
     this.filterStructures();
   }
 
+  onLotFilterChange(): void {
+    this.loadStructures();
+  }
+
   formatDate(dateStr?: string): string {
     if (!dateStr) return '-';
     return new Date(dateStr).toLocaleDateString('fr-FR');
@@ -1073,6 +1187,7 @@ export class StructuresMefpListComponent implements OnInit {
       adresseStructure: '',
       description: '',
       categorie: '',
+      lotId: null,
       nomCI: '',
       prenomCI: '',
       contactCI: '',
@@ -1093,6 +1208,7 @@ export class StructuresMefpListComponent implements OnInit {
       adresseStructure: structure.adresseStructure,
       description: structure.description,
       categorie: structure.categorie,
+      lotId: structure.lot?.id || null,
       nomCI: structure.nomCI,
       prenomCI: structure.prenomCI,
       contactCI: structure.contactCI,
@@ -1114,6 +1230,7 @@ export class StructuresMefpListComponent implements OnInit {
       adresseStructure: '',
       description: '',
       categorie: '',
+      lotId: null,
       nomCI: '',
       prenomCI: '',
       contactCI: '',
@@ -1151,7 +1268,23 @@ export class StructuresMefpListComponent implements OnInit {
   }
 
   private performStructureSave(): void {
-    const structureData = this.structureForm.value;
+    const structureData = { ...this.structureForm.value };
+
+    // Handle lot: construct lot object or null
+    if (structureData.lotId) {
+      const lotId = parseInt(structureData.lotId, 10);
+      const selectedLot = this.lots.find(lot => lot.id === lotId);
+      if (selectedLot) {
+        structureData.lot = {
+          id: selectedLot.id,
+          nomLot: selectedLot.nomLot,
+          codeLot: selectedLot.codeLot
+        };
+      }
+    }
+    // Remove lotId from the data sent to backend
+    delete structureData.lotId;
+
     console.log('Structure data to save:', structureData);
 
     if (this.isEditing && this.currentStructure) {
@@ -1260,6 +1393,7 @@ export class StructuresMefpListComponent implements OnInit {
       adresseStructure: structure.adresseStructure,
       description: structure.description,
       categorie: structure.categorie,
+      lotId: structure.lot?.id || null,
       nomCI: structure.nomCI,
       prenomCI: structure.prenomCI,
       contactCI: structure.contactCI,

@@ -34,6 +34,9 @@ public class FichePrestation {
     @Column(name = "nom_item")
     private String nomItem;
 
+    @Column(name = "nom_structure")
+    private String nomStructure;
+
     @Column(name = "items_couverts", columnDefinition = "TEXT")
     private String itemsCouverts;
 
@@ -85,7 +88,6 @@ public class FichePrestation {
         }
     }
 
-
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -98,6 +100,9 @@ public class FichePrestation {
 
     public String getNomItem() { return nomItem; }
     public void setNomItem(String nomItem) { this.nomItem = nomItem; }
+
+    public String getNomStructure() { return nomStructure; }
+    public void setNomStructure(String nomStructure) { this.nomStructure = nomStructure; }
 
     public String getItemsCouverts() { return itemsCouverts; }
     public void setItemsCouverts(String itemsCouverts) { this.itemsCouverts = itemsCouverts; }

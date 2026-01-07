@@ -50,7 +50,8 @@
       ],
       "postLogoutRedirectUris": [
         "http://localhost:4200",
-        "http://localhost:4200/*"
+        "http://localhost:4200/*",
+        "http://localhost:4200/dashboard"
       ],
       "protocolMappers": [
         {
@@ -340,6 +341,25 @@
       "firstName": "Agent",
       "lastName": "DGSI",
       "email": "agent@gmail.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "agent123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "AGENT_DGSI"
+      ],
+      "groups": []
+    },
+    {
+      "username": "agrnt_dgsi",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Agent",
+      "lastName": "DGSI",
+      "email": "agrnt_dgsi@gmail.com",
       "credentials": [
         {
           "type": "password",

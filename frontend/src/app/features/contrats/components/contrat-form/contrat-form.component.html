@@ -123,19 +123,22 @@
           </div>
 
           <div class="form-group half">
-            <label for="lot">Lot *</label>
-            <input
-              type="text"
-              id="lot"
-              formControlName="lot"
-              placeholder="Ex: Lot A, Lot B"
+            <label for="lotId">Lot *</label>
+            <select
+              id="lotId"
+              formControlName="lotId"
               class="line-input"
-              [class.error]="contratForm.get('lot')?.invalid && contratForm.get('lot')?.touched"
-              (input)="onLotChange()"
-            />
-            <div class="input-line" [class.error]="contratForm.get('lot')?.invalid && contratForm.get('lot')?.touched"></div>
-            <div class="error-message" *ngIf="contratForm.get('lot')?.invalid && contratForm.get('lot')?.touched">
-              <span *ngIf="contratForm.get('lot')?.errors?.['required']">Le lot est requis</span>
+              [class.error]="contratForm.get('lotId')?.invalid && contratForm.get('lotId')?.touched"
+              (change)="onLotChange()"
+            >
+              <option value="">-- Sélectionner un lot --</option>
+              <option *ngFor="let lot of lots" [value]="lot.id">
+                {{ lot.nomLot }}
+              </option>
+            </select>
+            <div class="input-line" [class.error]="contratForm.get('lotId')?.invalid && contratForm.get('lotId')?.touched"></div>
+            <div class="error-message" *ngIf="contratForm.get('lotId')?.invalid && contratForm.get('lotId')?.touched">
+              <span *ngIf="contratForm.get('lotId')?.errors?.['required']">Le lot est requis</span>
             </div>
           </div>
         </div>
@@ -175,57 +178,7 @@
         </div>
       </div>
 
-      <!-- Sélection des items -->
-      <div class="form-section">
-        <div class="section-header">
-          <h3>Items associés au contrat</h3>
-          <div class="section-divider"></div>
-        </div>
 
-        <div class="items-selection-summary">
-          <div class="summary-item">
-            <span class="label">Items sélectionnés:</span>
-            <span class="value">{{ getSelectedItemsCount() }}</span>
-          </div>
-        </div>
-
-        <div class="items-grid" *ngIf="filteredItems.length > 0">
-          <div *ngFor="let item of filteredItems"
-               class="item-card"
-               [class.selected]="isItemSelected(item)">
-            <div class="item-header">
-              <div class="item-checkbox">
-                <input
-                  type="checkbox"
-                  [id]="'item-' + item.id"
-                  [checked]="isItemSelected(item)"
-                  (change)="onItemSelectionChange(item, $event)"
-                />
-              </div>
-              <div class="item-number">{{ item.id }}</div>
-            </div>
-
-            <div class="item-details">
-              <h4>{{ item.nomItem }}</h4>
-              <p class="item-description">{{ item.description || 'Aucune description' }}</p>
-              <div class="item-pricing">
-                <span class="unit-price">Prix: {{ item.prix || 0 }} FCFA</span>
-              </div>
-              <div class="item-capacity">
-                <small>Capacité max trimestre: {{ item.quantiteMaxTrimestre }}</small>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="no-items-message" *ngIf="filteredItems.length === 0 && !loading">
-          <p>Aucun item disponible.</p>
-        </div>
-
-        <div class="loading-message" *ngIf="loading">
-          <p>Chargement des items...</p>
-        </div>
-      </div>
 
       <!-- Actions -->
       <div class="form-actions">

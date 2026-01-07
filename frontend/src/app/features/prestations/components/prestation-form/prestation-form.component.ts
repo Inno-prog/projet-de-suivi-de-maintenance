@@ -50,6 +50,10 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   showForm = false;
   loading = false;
   selectedLotId: number | null = null; // ID du lot sélectionné pour le filtrage
+  
+  // Protection contre les soumissions multiples
+  isSubmitting = false;
+  isCreating = false;
 
   // Multi-step wizard properties
   currentStep = 1;
@@ -140,10 +144,12 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   ) {
     this.isEditMode = !!data?.prestation;
     this.prestationForm = this.fb.group({
-      // Step 1: Responsable de la prestation (only these fields for prestataires)
-      nomResponsablePrestation: [data?.prestation?.nomResponsablePrestation || ''],
-      contactResponsablePrestation: [data?.prestation?.contactResponsablePrestation || ''],
-      qualificationResponsablePrestation: [data?.prestation?.qualificationResponsablePrestation || ''],
+      // Step 1: Informations du Prestataire
+      nomPrestataire: [data?.prestation?.nomPrestataire || '', Validators.required],
+      contactPrestataire: [data?.prestation?.contactPrestataire || ''], // Champ manquant
+      nomResponsablePrestation: [data?.prestation?.nomResponsablePrestation || '', Validators.required],
+      contactResponsablePrestation: [data?.prestation?.contactResponsablePrestation || '', Validators.required],
+      qualificationResponsablePrestation: [data?.prestation?.qualificationResponsablePrestation || '', Validators.required],
 
       // Step 2: Structure info
       structureSelection: [data?.prestation?.structureSelection || ''],
@@ -158,7 +164,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       // Step 3: Intervention details
       lotSelection: [data?.prestation?.lotSelection || '', Validators.required],
       itemsCouverts: [data?.prestation?.itemsCouverts || [], []],
-          montantIntervention: [data?.prestation?.montantIntervention || 0, [Validators.min(0)]],
+      montantIntervention: [data?.prestation?.montantIntervention || 0, [Validators.min(0)]],
       trimestre: [data?.prestation?.trimestre || '', Validators.required],
       dateDebut: [data?.prestation?.dateDebut || '', Validators.required],
       heureDebut: [data?.prestation?.heureDebut || '', Validators.required],
@@ -169,6 +175,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    console.log('🚀 PrestationFormComponent ngOnInit called');
     this.showForm = true;
 
     // Subscribe to user changes to update form when user data is loaded
@@ -223,8 +230,9 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     });
 
     this.loadItems(); // Load items initially
+    console.log('📋 Calling loadAvailableLots...');
     this.loadAvailableLots();
-    this.loadStructuresMefp();
+    // Removed: this.loadStructuresMefp(); // Now loaded based on lot selection
     this.loadEquipements();
     this.loadPrestataires();
     this.loadItemPrestationsCounters(); // Load item counters for max validation
@@ -256,7 +264,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
         this.items = (items || []).map(item => ({
           ...item,
           lotId: item.lot ? lotMap.get(item.lot) || 0 : 0
-        }));
+        })) as any[];
 
         this.allItems = [...this.items];
         console.log('📦 Items chargés avec IDs de lots:', this.items);
@@ -277,19 +285,21 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   }
 
   loadAvailableLots(): void {
+    console.log('🔄 Loading available lots...');
     this.lotService.getAllLotEntities().subscribe({
       next: (lots) => {
+        console.log('📦 Lots loaded from API:', lots);
         this.lotEntities = lots; // Store full lot entities for mapping
         // S'assurer que le format est cohérent
         this.availableLots = lots.map(lot => lot.nomLot)
           .filter(Boolean)
           .sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
-        
-        console.log('📦 Lots disponibles:', this.availableLots);
-        console.log('📦 Lot entities:', this.lotEntities);
+
+        console.log('📦 Lots disponibles (processed):', this.availableLots);
+        console.log('📦 Lot entities (stored):', this.lotEntities);
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des lots:', error);
+        console.error('❌ Erreur lors du chargement des lots:', error);
         this.toastService.show({ type: 'error', title: 'Erreur', message: 'Erreur lors du chargement des lots' });
       }
     });
@@ -303,18 +313,18 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     console.log('🔄 Chargement des compteurs de quantités utilisées pour validation côté client');
 
     // Utiliser la même logique que le backend : compter dynamiquement depuis les prestations validées
-    // Pour chaque item, charger la somme des quantités utilisées
+    // Pour chaque item, charger le nombre de prestations utilisant cet item
     this.items.forEach(item => {
       if (item.nomItem) {
-        // Utiliser exactement le même appel que le backend
-        this.prestationService.getSumQuantitiesByItem(item.nomItem).subscribe({
-          next: (sum: number) => {
-            // Stocker exactement comme le backend le calcule
-            this.itemPrestationsCount[item.nomItem] = sum;
-            console.log(`📊 Quantité utilisée chargée pour "${item.nomItem}": ${sum}/${item.quantiteMaxTrimestre || 0}`);
+        // Utiliser l'appel count-by-item qui existe sur le backend
+        this.prestationService.getCountByItem(item.nomItem).subscribe({
+          next: (count: number) => {
+            // Stocker le nombre de prestations utilisant cet item
+            this.itemPrestationsCount[item.nomItem] = count;
+            console.log(`📊 Nombre de prestations chargées pour "${item.nomItem}": ${count}/${item.quantiteMaxTrimestre || 0}`);
           },
           error: (error) => {
-            console.error(`❌ Erreur chargement quantité pour "${item.nomItem}":`, error);
+            console.error(`❌ Erreur chargement compteur pour "${item.nomItem}":`, error);
             this.itemPrestationsCount[item.nomItem] = 0;
           }
         });
@@ -357,6 +367,52 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
           console.error('Erreur lors du chargement des structures MEFP:', error);
           this.toastService.show({ type: 'error', title: 'Erreur', message: 'Erreur lors du chargement des structures MEFP' });
         }
+      }
+    });
+  }
+
+  loadStructuresByLot(lotId: number): void {
+    console.log('🏢 loadStructuresByLot called with lotId:', lotId);
+    if (!lotId) {
+      console.log('🏢 No lotId provided, clearing structures');
+      this.structuresMefp = [];
+      return;
+    }
+
+    console.log('🏢 Chargement des structures pour le lot ID:', lotId);
+    this.structureMefpService.getStructuresByLotId(lotId).subscribe({
+      next: (structures) => {
+        console.log('🏢 API Response - structures loaded:', structures);
+        this.structuresMefp = structures;
+        console.log(`🏢 ${structures.length} structures chargées pour le lot ${lotId}`);
+
+        // Reset structure selection if current selection is not in the filtered list
+        if (this.selectedStructure && !structures.find(s => s.id === this.selectedStructure!.id)) {
+          console.log('🏢 Resetting structure selection as current selection is not in filtered list');
+          this.selectedStructure = null;
+          this.prestationForm.patchValue({
+            structureSelection: '',
+            nomStructure: '',
+            adresseStructure: '',
+            emailStructure: '',
+            nomCI: '',
+            prenomCI: '',
+            contactCI: '',
+            fonctionCI: ''
+          });
+        }
+      },
+      error: (error) => {
+        console.error('🏢 Error loading structures by lot:', error);
+        if (error.status !== 401) {
+          console.error('Erreur lors du chargement des structures par lot:', error);
+          this.toastService.show({
+            type: 'error',
+            title: 'Erreur',
+            message: 'Erreur lors du chargement des structures pour ce lot'
+          });
+        }
+        this.structuresMefp = [];
       }
     });
   }
@@ -439,9 +495,20 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   }
 
   openItemSelectionPopup(): void {
+    console.log('🔄 Opening item selection popup...');
+    console.log('📊 Current state:', {
+      selectedLotId: this.selectedLotId,
+      selectedLotName: this.selectedLotName,
+      totalItems: this.items.length,
+      filteredItemsCount: this.filteredItemsList.length,
+      filteredItems: this.filteredItemsList
+    });
+    
     // Recharger les compteurs d'utilisation en temps réel avant d'ouvrir le popup
     this.loadItemPrestationsCounters();
     this.showItemSelectionPopup = true;
+    
+    console.log('✅ Item selection popup opened, showItemSelectionPopup:', this.showItemSelectionPopup);
   }
 
   closeItemSelectionPopup(): void {
@@ -449,6 +516,31 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   }
 
   validateItemSelection(): void {
+    // Vérifier d'abord les limites côté client avant d'envoyer au backend
+    const invalidItems: string[] = [];
+    let hasMaxReachedItems = false;
+
+    this.selectedItems.forEach(item => {
+      const quantity = this.getItemQuantity(item);
+      const currentCount = this.getItemPrestationsCount(item);
+      const maxAllowed = item.quantiteMaxTrimestre || 0;
+      
+      if (currentCount + quantity > maxAllowed && maxAllowed > 0) {
+        invalidItems.push(`${item.nomItem} (${currentCount + quantity}/${maxAllowed})`);
+        hasMaxReachedItems = true;
+      }
+    });
+
+    // Si des items dépassent les limites, empêcher la validation
+    if (hasMaxReachedItems) {
+      this.toastService.show({
+        type: 'error',
+        title: 'Limite d\'utilisation dépassée',
+        message: `Les items suivants dépassent leur limite d'utilisation :\n• ${invalidItems.join('\n• ')}\n\nVeuillez ajuster les quantités ou retirer ces items.`
+      });
+      return;
+    }
+
     // Préparer les données pour validation backend
     const itemQuantities: { [key: string]: number } = {};
     this.selectedItems.forEach(item => {
@@ -542,7 +634,10 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   }
 
   updateFilteredItems(): void {
+    console.log('🔄 updateFilteredItems called');
+    
     if (!this.items || !this.items.length) {
+      console.log('⚠️ No items available, clearing filtered list');
       this.filteredItemsList = [];
       return;
     }
@@ -553,19 +648,17 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     // Afficher tous les items avec leurs lots pour le débogage
     console.log('📋 Tous les items avec leurs lots:');
     this.items.forEach((item, index) => {
-      console.log(`  ${index + 1}. "${item.nomItem}" - Lot: ${item.lot} (ID: ${item.lot})`);
+      console.log(`  ${index + 1}. "${item.nomItem}" - Lot: ${item.lot} (ID: ${(item as any).lotId})`);
     });
 
     let filtered = this.items;
 
-    // Filtrer par lot si un lot est sélectionné (utiliser l'ID du lot comme dans item-list.component.ts)
+    // Filtrer par lot si un lot est sélectionné
     if (this.selectedLotId !== null) {
       console.log('🔍 Filtrage par lot ID:', this.selectedLotId);
 
       filtered = filtered.filter(item => {
-        if (!item.lot) return false;
-
-        const itemLotId = parseInt(item.lot);
+        const itemLotId = (item as any).lotId || 0;
         const matches = itemLotId === this.selectedLotId;
 
         if (matches) {
@@ -578,10 +671,13 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
         }
         return matches;
       });
+    } else {
+      console.log('⚠️ No lot selected, showing all items');
     }
 
     this.filteredItemsList = filtered;
     console.log('📊 Résultat du filtrage:', this.filteredItemsList.length, 'items sur', this.items.length);
+    console.log('📋 Filtered items:', this.filteredItemsList.map(item => item.nomItem));
   }
 
   // Méthode pour normaliser les noms de lots (gardée pour compatibilité si nécessaire)
@@ -597,14 +693,17 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   }
 
   get filteredItems(): Item[] {
+    console.log('🔍 filteredItems getter called, returning:', this.filteredItemsList.length, 'items');
     return this.filteredItemsList;
   }
 
   onLotChange(): void {
+    console.log('🎯 onLotChange called - change event fired');
     const selectedValue = this.prestationForm.get('lotSelection')?.value;
     console.log('🎯 Sélection de lot (brut):', selectedValue);
 
     if (selectedValue) {
+      console.log('🎯 Lot value is truthy, looking up lot entity');
       // Récupérer l'entité lot complète
       const selectedLot = this.lotEntities.find(lot =>
         lot.nomLot === selectedValue ||
@@ -615,65 +714,91 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
         this.selectedLotName = selectedLot.nomLot;
         this.selectedLotId = selectedLot.id;
         console.log('🎯 Lot sélectionné:', this.selectedLotName, 'ID:', this.selectedLotId);
+
+        // Load structures for this lot
+        console.log('🎯 Calling loadStructuresByLot with ID:', selectedLot.id);
+        this.loadStructuresByLot(selectedLot.id);
       } else {
         console.warn('⚠️ Lot non trouvé dans la liste des entités:', selectedValue);
+        console.log('Available lot entities:', this.lotEntities);
         this.selectedLotName = '';
         this.selectedLotId = null;
+        // Clear selected items and structures if lot is not found
+        this.selectedItems = [];
+        this.itemQuantities = {};
+        this.structuresMefp = [];
+        this.selectedStructure = null;
+        this.prestationForm.patchValue({
+          itemsCouverts: [],
+          structureSelection: '',
+          nomStructure: '',
+          adresseStructure: '',
+          emailStructure: '',
+          nomCI: '',
+          prenomCI: '',
+          contactCI: '',
+          fonctionCI: ''
+        });
+        this.updateTotalAmount();
       }
     } else {
+      console.log('🎯 No lot selected, clearing everything');
       this.selectedLotName = '';
       this.selectedLotId = null;
+      // Clear selected items and structures if no lot is selected
+      this.selectedItems = [];
+      this.itemQuantities = {};
+      this.structuresMefp = [];
+      this.selectedStructure = null;
+      this.prestationForm.patchValue({
+        itemsCouverts: [],
+        structureSelection: '',
+        nomStructure: '',
+        adresseStructure: '',
+        emailStructure: '',
+        nomCI: '',
+        prenomCI: '',
+        contactCI: '',
+        fonctionCI: ''
+      });
+      this.updateTotalAmount();
     }
 
     this.updateFilteredItems();
   }
 
-  getUniqueLots(): string[] {
-    const lots = new Set<string>();
-    this.items.forEach(item => {
-      if (item.lot) {
-        lots.add(item.lot);
-      }
+  private autoLoadItemsFromLot(lotId: number): void {
+    console.log('🔄 Chargement automatique des items pour le lot ID:', lotId);
+
+    // Filter items that belong to the selected lot
+    const lotItems = this.items.filter(item => {
+      const itemLotId = parseInt(item.lot || '0');
+      return itemLotId === lotId;
     });
-    return Array.from(lots).sort();
-  }
 
-  private loadItemsByLot(lotName: string): void {
-    console.log('🔄 Chargement des items pour le lot:', lotName);
+    console.log(`📦 ${lotItems.length} items trouvés pour le lot ${lotId}`);
 
-    this.itemService.getItemsByLot(lotName).subscribe({
-      next: (items) => {
-        console.log(`📦 ${items.length} items chargés pour le lot ${lotName}`);
-        this.items = items;
-        this.filteredItemsList = [...items];
-      },
-      error: (error) => {
-        console.error('❌ Erreur lors du chargement des items par lot:', error);
-        this.toastService.show({
-          type: 'error',
-          title: 'Erreur',
-          message: 'Erreur lors du chargement des items du lot sélectionné'
-        });
-      }
+    // Clear previous selections
+    this.selectedItems = [];
+    this.itemQuantities = {};
+
+    // Auto-select all items from the lot with default quantity of 1
+    lotItems.forEach(item => {
+      this.selectedItems.push(item);
+      this.itemQuantities[item.id!.toString()] = 1; // Default quantity
     });
+
+    // Update form
+    this.prestationForm.patchValue({ itemsCouverts: this.selectedItems.map(i => i.id) });
+    this.updateTotalAmount();
+
+    console.log('✅ Items chargés automatiquement:', this.selectedItems.map(i => i.nomItem));
   }
 
-  onSearchChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    this.searchTerm = target.value;
-    this.updateFilteredItems();
-  }
-
-  nextStep(): void {
-    if (this.currentStep < this.totalSteps) {
-      this.currentStep++;
-    }
-  }
-
-  previousStep(): void {
-    if (this.currentStep > 1) {
-      this.currentStep--;
-    }
+  removeItem(item: Item): void {
+    console.log('🗑️ Suppression de l\'item:', item.nomItem);
+    this.selectedItems = this.selectedItems.filter(i => i.id !== item.id);
+    delete this.itemQuantities[item.id!.toString()];
   }
 
   canProceedToNext(): boolean {
@@ -767,11 +892,9 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   }
 
   async onCreate(): Promise<void> {
-    if (this.canCreate()) {
+    if (this.canCreate() && !this.isCreating) {
+      this.isCreating = true;
       console.log('🔄 Création de la prestation...');
-
-
-
 
       try {
         // Créer une prestation avec statut BROUILLON (pas EN_ATTENTE)
@@ -820,6 +943,8 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
           title: errorTitle,
           message: errorMessage
         });
+      } finally {
+        this.isCreating = false;
       }
     } else {
       console.warn('⚠️ Formulaire incomplet pour la création');
@@ -1012,15 +1137,36 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
         const selectedLotEntity = this.lotEntities.find(lot => lot.nomLot === this.selectedLotName);
         this.selectedLotId = selectedLotEntity ? selectedLotEntity.id : null;
         console.log('🎯 Lot sélectionné via listener:', this.selectedLotName, 'ID:', this.selectedLotId);
+        
+        // Load structures for the selected lot
+        if (this.selectedLotId) {
+          this.loadStructuresByLot(this.selectedLotId);
+        } else {
+          this.structuresMefp = [];
+        }
       } else {
         this.selectedLotName = '';
         this.selectedLotId = null;
+        // Clear structures when no lot is selected
+        this.structuresMefp = [];
+        this.selectedStructure = null;
       }
 
       // Réinitialiser les sélections
       this.selectedItems = [];
       this.itemQuantities = {};
-      this.prestationForm.patchValue({ itemsCouverts: [] });
+      this.selectedStructure = null;
+      this.prestationForm.patchValue({
+        itemsCouverts: [],
+        structureSelection: '',
+        nomStructure: '',
+        adresseStructure: '',
+        emailStructure: '',
+        nomCI: '',
+        prenomCI: '',
+        contactCI: '',
+        fonctionCI: ''
+      });
       this.updateTotalAmount();
       this.updateFilteredItems();
     });
@@ -1166,6 +1312,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
 
     const data = {
       prestataireId: prestataireId,
+      nomPrestataire: formValue.nomPrestataire,
       nomPrestation: this.getSelectedItemsNames(),
       nomResponsablePrestation: formValue.nomResponsablePrestation,
       contactResponsablePrestation: formValue.contactResponsablePrestation,
@@ -1252,7 +1399,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   private generateProformaHTML(): string {
     const formValue = this.prestationForm.getRawValue();
     const currentDate = new Date().toLocaleDateString('fr-FR');
-    
+
     return `
       <!DOCTYPE html>
       <html>
@@ -1354,28 +1501,28 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
           <p>Date d'émission: ${currentDate}</p>
           <p>Prestation de maintenance informatique</p>
         </div>
-        
+
         <div class="info-section">
           <div class="info-block">
-            <h3>Prestataire</h3>
+            <h3>Prestataire et Responsable</h3>
             <div class="info-item">
-              <span class="info-label">Nom:</span>
+              <span class="info-label">Nom prestataire:</span>
               ${formValue.nomPrestataire || 'N/A'}
             </div>
             <div class="info-item">
+              <span class="info-label">Responsable:</span>
+              ${formValue.nomResponsablePrestation || 'N/A'}
+            </div>
+            <div class="info-item">
               <span class="info-label">Contact:</span>
-              ${formValue.contactPrestataire || 'N/A'}
+              ${formValue.contactResponsablePrestation || 'N/A'}
             </div>
             <div class="info-item">
-              <span class="info-label">Structure:</span>
-              ${formValue.structurePrestataire || 'N/A'}
-            </div>
-            <div class="info-item">
-              <span class="info-label">Direction:</span>
-              ${formValue.directionPrestataire || 'N/A'}
+              <span class="info-label">Qualification:</span>
+              ${formValue.qualificationResponsablePrestation || 'N/A'}
             </div>
           </div>
-          
+
           <div class="info-block">
             <h3>Structure Bénéficiaire</h3>
             <div class="info-item">
@@ -1394,9 +1541,17 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
               <span class="info-label">CI:</span>
               ${formValue.prenomCI || ''} ${formValue.nomCI || ''}
             </div>
+            <div class="info-item">
+              <span class="info-label">Contact CI:</span>
+              ${formValue.contactCI || 'N/A'}
+            </div>
+            <div class="info-item">
+              <span class="info-label">Fonction CI:</span>
+              ${formValue.fonctionCI || 'N/A'}
+            </div>
           </div>
         </div>
-        
+
         <div class="table-container">
           <h3>Détails de l'intervention</h3>
           <table>
@@ -1424,10 +1579,14 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
             </tbody>
           </table>
         </div>
-        
+
         <div class="info-section">
           <div class="info-block">
-            <h3>Informations de l'intervention</h3>
+            <h3>Informations sur l'intervention</h3>
+            <div class="info-item">
+              <span class="info-label">Lot:</span>
+              ${formValue.lotSelection || 'N/A'}
+            </div>
             <div class="info-item">
               <span class="info-label">Date début:</span>
               ${formValue.dateDebut || 'N/A'} à ${formValue.heureDebut || 'N/A'}
@@ -1446,7 +1605,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
             </div>
           </div>
         </div>
-        
+
         <div class="footer">
           <p>Cette facture proforma est générée automatiquement par le système de gestion des prestations de maintenance.</p>
           <p>Document généré le ${currentDate}</p>
@@ -1466,8 +1625,28 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     });
   }
 
+
+
+  nextStep(): void {
+    if (this.currentStep < this.totalSteps && this.canProceedToNext()) {
+      this.currentStep++;
+    }
+  }
+
+  previousStep(): void {
+    if (this.currentStep > 1) {
+      this.currentStep--;
+    }
+  }
+
   onCancel(): void {
     this.showForm = false;
     this.dialogRef.close();
+  }
+
+  onSearchChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.searchTerm = target.value;
+    this.updateFilteredItems();
   }
 }

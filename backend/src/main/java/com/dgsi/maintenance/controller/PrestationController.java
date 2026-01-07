@@ -51,6 +51,9 @@ public class PrestationController {
     private NotificationService notificationService;
 
     @Autowired
+    private com.dgsi.maintenance.service.ContratItemService contratItemService;
+
+    @Autowired
     public PrestationController(PrestationService prestationService, PrestationPdfService prestationPdfService, ItemRepository itemRepository) {
         this.prestationService = prestationService;
         this.prestationPdfService = prestationPdfService;
@@ -61,8 +64,10 @@ public class PrestationController {
     public static class PrestationCreateRequest {
         private String prestataireId;
         private String nomPrestataire;
+        private String nomResponsablePrestation;
+        private String contactResponsablePrestation;
+        private String qualificationResponsablePrestation;
         private String nomPrestation;
-        private String contactPrestataire;
         private String structurePrestataire;
         private String directionPrestataire;
         private String servicePrestataire;
@@ -92,11 +97,17 @@ public class PrestationController {
         public String getNomPrestataire() { return nomPrestataire; }
         public void setNomPrestataire(String nomPrestataire) { this.nomPrestataire = nomPrestataire; }
 
+        public String getNomResponsablePrestation() { return nomResponsablePrestation; }
+        public void setNomResponsablePrestation(String nomResponsablePrestation) { this.nomResponsablePrestation = nomResponsablePrestation; }
+
+        public String getContactResponsablePrestation() { return contactResponsablePrestation; }
+        public void setContactResponsablePrestation(String contactResponsablePrestation) { this.contactResponsablePrestation = contactResponsablePrestation; }
+
+        public String getQualificationResponsablePrestation() { return qualificationResponsablePrestation; }
+        public void setQualificationResponsablePrestation(String qualificationResponsablePrestation) { this.qualificationResponsablePrestation = qualificationResponsablePrestation; }
+
         public String getNomPrestation() { return nomPrestation; }
         public void setNomPrestation(String nomPrestation) { this.nomPrestation = nomPrestation; }
-
-        public String getContactPrestataire() { return contactPrestataire; }
-        public void setContactPrestataire(String contactPrestataire) { this.contactPrestataire = contactPrestataire; }
 
         public String getStructurePrestataire() { return structurePrestataire; }
         public void setStructurePrestataire(String structurePrestataire) { this.structurePrestataire = structurePrestataire; }
@@ -178,18 +189,18 @@ public class PrestationController {
             }
 
             // Vérifier la disponibilité du budget au niveau item
-            if (request.getContactPrestataire() != null) {
+            if (request.getNomPrestataire() != null) {
                 // Déterminer le lot à partir du premier item
                 Optional<com.dgsi.maintenance.entity.Item> firstItem = itemRepository.findById(request.getItemIds().get(0));
                 if (firstItem.isPresent()) {
                     String lot = firstItem.get().getLot();
-                    prestationService.checkBudgetAvailability(request.getContactPrestataire(), lot, request.getItemQuantities());
+                    prestationService.checkBudgetAvailability(request.getNomPrestataire(), lot, request.getItemQuantities());
                 }
             }
 
             // Vérifier la disponibilité du budget au niveau contrat
-            if (request.getContactPrestataire() != null && request.getMontantIntervention() != null) {
-                prestationService.checkContractBudgetAvailability(request.getContactPrestataire(), request.getMontantIntervention());
+            if (request.getNomPrestataire() != null && request.getMontantIntervention() != null) {
+                prestationService.checkContractBudgetAvailability(request.getNomPrestataire(), request.getMontantIntervention());
             }
         }
     }
@@ -482,13 +493,8 @@ public class PrestationController {
 
                         // Vérifier si le prestataire est propriétaire (multiple vérifications comme dans findByPrestataireUsername)
                         boolean isOwner = false;
-
-                        // 1. Vérifier contactPrestataire (email)
-                        if (prestation.getContactPrestataire() != null && prestation.getContactPrestataire().equals(currentUsername)) {
-                            isOwner = true;
-                        }
-                        // 2. Vérifier prestataireId
-                        else if (prestation.getPrestataireId() != null && prestation.getPrestataireId().equals(currentUsername)) {
+                        // 1. Vérifier prestataireId
+                        if (prestation.getPrestataireId() != null && prestation.getPrestataireId().equals(currentUsername)) {
                             isOwner = true;
                         }
                         // 3. Vérifier nomPrestataire (au cas où)
@@ -498,8 +504,7 @@ public class PrestationController {
 
                         if (!isOwner) {
                             return ResponseEntity.status(403).body("Vous ne pouvez supprimer que vos propres prestations. Utilisateur: " + currentUsername +
-                                                                  ", Contact: " + prestation.getContactPrestataire() +
-                                                                  ", PrestataireId: " + prestation.getPrestataireId());
+                                    ", PrestataireId: " + prestation.getPrestataireId());
                         }
                     }
                 }
@@ -513,9 +518,7 @@ public class PrestationController {
             }
         } catch (Exception e) {
             log.error("❌ Erreur lors de la suppression de la prestation ID: {}", id, e);
-            return ResponseEntity.internalServerError().body(
-                new ErrorResponse("DELETE_ERROR", "Erreur lors de la suppression")
-            );
+            return ResponseEntity.internalServerError().body(new ErrorResponse("DELETE_ERROR", "Erreur lors de la suppression"));
         }
     }
 
@@ -640,6 +643,7 @@ public class PrestationController {
         fiche.setIdPrestation(prestationId);
         fiche.setNomPrestataire(prestation.getNomPrestataire());
         fiche.setNomItem(prestation.getNomPrestation());
+        fiche.setNomStructure(prestation.getNomStructure());
 
         // Collecter les items utilisés
         if (prestation.getItemsUtilises() != null && !prestation.getItemsUtilises().isEmpty()) {
@@ -782,6 +786,115 @@ public class PrestationController {
             log.error("❌ Erreur lors du rejet direct de la prestation ID: {}", id, e);
             return ResponseEntity.internalServerError().body(
                 new ErrorResponse("REJECTION_ERROR", "Erreur lors du rejet: " + e.getMessage())
+            );
+        }
+    }
+
+    /**
+     * Valider la sélection d'items avant création de prestation
+     */
+    @PostMapping("/validate-item-selection")
+    @PreAuthorize("hasRole('PRESTATAIRE')")
+    public ResponseEntity<?> validateItemSelection(@RequestBody java.util.Map<String, Integer> itemQuantities) {
+        log.info("🔍 Validation de la sélection d'items: {}", itemQuantities);
+
+        try {
+            // DTO de réponse pour la validation
+            class ValidationResponse {
+                private boolean valid;
+                private java.util.List<String> invalidItems;
+                private boolean budgetExhausted;
+
+                public ValidationResponse(boolean valid, java.util.List<String> invalidItems, boolean budgetExhausted) {
+                    this.valid = valid;
+                    this.invalidItems = invalidItems;
+                    this.budgetExhausted = budgetExhausted;
+                }
+
+                // Getters
+                public boolean isValid() { return valid; }
+                public java.util.List<String> getInvalidItems() { return invalidItems; }
+                public boolean isBudgetExhausted() { return budgetExhausted; }
+            }
+
+            java.util.List<String> invalidItems = new java.util.ArrayList<>();
+            boolean budgetExhausted = false;
+
+            // Construire une map id->quantité pour la vérification contractuelle
+            java.util.Map<Long, Integer> itemQuantitiesById = new java.util.HashMap<>();
+            String lotForCheck = null;
+
+            // Pour chaque item dans la sélection
+            for (java.util.Map.Entry<String, Integer> entry : itemQuantities.entrySet()) {
+                String itemName = entry.getKey();
+                Integer quantity = entry.getValue();
+
+                // Trouver l'item par nom (décoder au cas où le client envoie des noms encodés)
+                String decodedName = itemName;
+                try {
+                    decodedName = java.net.URLDecoder.decode(itemName, java.nio.charset.StandardCharsets.UTF_8);
+                } catch (Exception ex) {
+                    // si decode échoue, continuer avec la valeur originale
+                }
+                Optional<com.dgsi.maintenance.entity.Item> itemOpt = itemRepository.findFirstByNomItem(decodedName);
+                com.dgsi.maintenance.entity.Item item = null;
+                if (itemOpt.isPresent()) {
+                    item = itemOpt.get();
+                } else {
+                    // Fallbacks: try original key, then partial case-insensitive search
+                    itemOpt = itemRepository.findFirstByNomItem(itemName);
+                    if (itemOpt.isPresent()) {
+                        item = itemOpt.get();
+                    } else {
+                        java.util.List<com.dgsi.maintenance.entity.Item> matches = itemRepository.findByNomItemContainingIgnoreCase(decodedName);
+                        if (!matches.isEmpty()) {
+                            item = matches.get(0);
+                            log.info("🔎 Item '{}' résolu par correspondance partielle -> '{}'", itemName, item.getNomItem());
+                        }
+                    }
+                }
+
+                if (item != null) {
+                    // Recueillir pour la vérification contractuelle (logique par contrat uniquement)
+                    itemQuantitiesById.put(item.getId(), quantity != null ? quantity : 0);
+                    if (lotForCheck == null) lotForCheck = item.getLot();
+                } else {
+                    invalidItems.add(itemName + " (item non trouvé)");
+                }
+            }
+
+            // Si pas d'items invalides jusqu'ici, effectuer la vérification contractuelle robuste
+            if (invalidItems.isEmpty() && !itemQuantitiesById.isEmpty()) {
+                // Récupérer le nom du prestataire connecté si présent
+                String nomPrestataire = null;
+                try {
+                    var auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+                    if (auth != null && auth.isAuthenticated() && !(auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)) {
+                        nomPrestataire = auth.getName();
+                    }
+                } catch (Exception ex) {
+                    // ignore - on fera la vérification sans nom si non disponible
+                }
+
+                try {
+                    contratItemService.verifierDisponibiliteItems(nomPrestataire, lotForCheck, itemQuantitiesById);
+                } catch (IllegalArgumentException iae) {
+                    invalidItems.add(iae.getMessage());
+                }
+            }
+
+            boolean isValid = invalidItems.isEmpty();
+            ValidationResponse response = new ValidationResponse(isValid, invalidItems, budgetExhausted);
+
+            log.info("✅ Validation terminée: valid={}, invalidItems={}, budgetExhausted={}",
+                    isValid, invalidItems.size(), budgetExhausted);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("❌ Erreur lors de la validation de la sélection d'items", e);
+            return ResponseEntity.internalServerError().body(
+                new ErrorResponse("VALIDATION_ERROR", "Erreur lors de la validation: " + e.getMessage())
             );
         }
     }

@@ -286,29 +286,37 @@ export class PrestationListComponent implements OnInit {
       this.items = items || [];
       this.fiches = fiches || [];
 
-      // Build fiche map for efficient lookup
+      // Build fiche map for efficient lookup (normalize keys to string to avoid number/string mismatch)
       this.ficheMap.clear();
       this.fiches.forEach(fiche => {
-        if (fiche.idPrestation) {
-          this.ficheMap.set(fiche.idPrestation, fiche);
+        if (fiche.idPrestation !== undefined && fiche.idPrestation !== null) {
+          this.ficheMap.set(String(fiche.idPrestation), fiche);
         }
       });
 
       // Filter prestations based on user role
       if (isPrestataire && currentUser) {
         // Prestataires see only their own prestations
-        // Double filtrage côté client pour sécurité
+        // Amélioration du filtrage côté client pour être plus flexible
         console.log('🔍 Filtrage prestataire - User:', currentUser.nom, 'Email:', currentUser.email);
         console.log('🔍 Prestations avant filtrage:', this.prestations.length);
         
         this.displayItems = this.prestations.filter(p => {
-          const matchNom = p.nomPrestataire === currentUser.nom;
-          const matchEmail = p.contactPrestataire === currentUser.email;
+          // Correspondance par nom (insensible à la casse)
+          const matchNom = p.nomPrestataire?.toLowerCase() === currentUser.nom?.toLowerCase();
+          
+          // Correspondance par email (insensible à la casse)
+          const matchEmail = p.contactPrestataire?.toLowerCase() === currentUser.email?.toLowerCase();
+          
+          // Correspondance par ID prestataire
           const matchId = p.prestataireId === currentUser.id?.toString();
           
-          console.log('🔍 Prestation:', p.nomPrestataire, 'Match nom:', matchNom, 'Match email:', matchEmail, 'Match ID:', matchId);
+          // Correspondance par ID de l'utilisateur dans le champ id (si la prestation a un champ id d'utilisateur)
+          const matchUserId = p.id && currentUser.id && p.id.toString() === currentUser.id.toString();
           
-          return matchNom || matchEmail || matchId;
+          console.log('🔍 Prestation:', p.nomPrestataire, 'Match nom:', matchNom, 'Match email:', matchEmail, 'Match ID:', matchId, 'Match User ID:', matchUserId);
+          
+          return matchNom || matchEmail || matchId || matchUserId;
         });
         
         console.log('🔍 Prestations après filtrage:', this.displayItems.length);
@@ -640,14 +648,12 @@ export class PrestationListComponent implements OnInit {
   getPrestationCardDescription(prestation: Prestation): string {
     const prestataire = prestation.nomPrestataire || 'Prestataire non spécifié';
     const structure = prestation.nomStructure || 'Structure non spécifiée';
-    const service = (prestation as any).servicePrestataire || 'Service Maintenance';
+    const lot = prestation.lot || 'Lot non spécifié';
     const montant = prestation.montantIntervention ? `${prestation.montantIntervention} FCFA` : '0 FCFA';
     const statutIntervention = prestation.statutIntervention || 'En attente';
     const statutValidation = (prestation as any).statutValidation || 'BROUILLON';
-    const contact = prestation.contactPrestataire || 'Contact non spécifié';
-    const qualification = (prestation as any).qualificationPrestataire || 'Qualification non spécifiée';
 
-    return `Prestataire: ${prestataire}\nStructure: ${structure}\nService: ${service}\nContact: ${contact}\nQualification: ${qualification}\nMontant intervention: ${montant}\nStatut intervention: ${statutIntervention}\nStatut validation: ${statutValidation}`;
+    return `Prestataire: ${prestataire}\nStructure: ${structure}\nLot: ${lot}\nMontant intervention: ${montant}\nStatut intervention: ${statutIntervention}\nStatut validation: ${statutValidation}`;
   }
 
   getPrestationPdfUrl(prestation: Prestation): string | undefined {
@@ -661,7 +667,20 @@ export class PrestationListComponent implements OnInit {
     }
 
     const pIdStr = prestation.id.toString();
-    return this.ficheMap.get(pIdStr);
+    // Try map lookup first (keys normalized to strings)
+    let fiche = this.ficheMap.get(pIdStr);
+    if (fiche) return fiche;
+
+    // Fallback: try to find in the fiches array with tolerant comparisons
+    fiche = this.fiches.find(f => {
+      const idPrestationKey = f.idPrestation !== undefined && f.idPrestation !== null ? String(f.idPrestation) : undefined;
+      const matchById = idPrestationKey === pIdStr;
+      const matchByNames = (f.nomPrestataire || '').toLowerCase() === (prestation.nomPrestataire || '').toLowerCase()
+                        && (f.nomItem || '').toLowerCase() === (prestation.nomPrestation || '').toLowerCase();
+      return matchById || matchByNames;
+    });
+
+    return fiche;
   }
 
   // Helper methods for FichePrestation display
@@ -740,20 +759,37 @@ export class PrestationListComponent implements OnInit {
   async onValidateClicked(prestationId: string): Promise<void> {
     console.log('Validation de la prestation ID:', prestationId);
 
-    // Trouver la fiche correspondant à la prestation
-    let fiche = this.fiches.find(f => f.idPrestation === prestationId);
+    // Trouver la prestation correspondante
+    const prestation = this.prestations.find(p => p.id?.toString() === prestationId);
+    if (!prestation) {
+      console.error('Prestation non trouvée pour l\'ID:', prestationId);
+      this.toastService.show({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Prestation introuvable'
+      });
+      return;
+    }
 
-    // Si pas trouvée par idPrestation, essayer de trouver via getFicheForPrestation
+    // Trouver la fiche correspondant à la prestation avec plusieurs critères de correspondance
+    let fiche = this.fiches.find(f => {
+      // Correspondance par idPrestation (convertir en string pour comparaison)
+      const matchById = f.idPrestation?.toString() === prestationId;
+      
+      // Correspondance par nomPrestataire et nomItem
+      const matchByNames = f.nomPrestataire === prestation.nomPrestataire &&
+                          f.nomItem === prestation.nomPrestation;
+      
+      return matchById || matchByNames;
+    });
+
+    // Si pas trouvée, essayer via getFicheForPrestation (Map)
     if (!fiche) {
-      const prestation = this.prestations.find(p => p.id?.toString() === prestationId);
-      if (prestation) {
-        fiche = this.getFicheForPrestation(prestation);
-      }
+      fiche = this.getFicheForPrestation(prestation);
     }
 
     if (!fiche) {
       console.error('Aucune fiche trouvée pour la prestation ID:', prestationId);
-      console.log('Fiches disponibles:', this.fiches.map(f => ({ id: f.id, idPrestation: f.idPrestation, nomItem: f.nomItem })));
       this.toastService.show({
         type: 'error',
         title: 'Erreur',
@@ -761,8 +797,6 @@ export class PrestationListComponent implements OnInit {
       });
       return;
     }
-
-    console.log('Fiche trouvée pour validation:', fiche);
 
     // Vérifier que l'ID de la fiche est valide
     if (!fiche.id) {
@@ -786,42 +820,25 @@ export class PrestationListComponent implements OnInit {
 
     if (!confirmed) return;
 
-    console.log('Appel du service pour valider la fiche ID:', fiche.id);
-
     this.fichePrestationService.validerFiche(fiche.id).subscribe({
       next: (response) => {
-        console.log('Réponse de validation:', response);
         this.toastService.show({
           type: 'success',
           title: 'Validation réussie',
           message: 'La fiche de prestation a été validée avec succès'
         });
         // Update fiche status in map
-        fiche.statut = StatutFiche.VALIDE;
-        this.ficheMap.set(fiche.idPrestation!, fiche);
+        fiche!.statut = StatutFiche.VALIDE;
+        this.ficheMap.set(fiche!.idPrestation!, fiche!);
         // Recharger les données pour mettre à jour l'interface
         this.loadPrestations();
       },
       error: (error) => {
         console.error('Erreur lors de la validation de la fiche:', error);
-        let errorMessage = 'Une erreur est survenue lors de la validation';
-
-        if (error.error && error.error.message) {
-          errorMessage = error.error.message;
-        } else if (error.status === 0) {
-          errorMessage = 'Impossible de se connecter au serveur. Vérifiez votre connexion.';
-        } else if (error.status === 401) {
-          errorMessage = 'Vous n\'êtes pas autorisé à effectuer cette action';
-        } else if (error.status === 404) {
-          errorMessage = 'La fiche de prestation est introuvable';
-        } else if (error.status === 400) {
-          errorMessage = 'Données de validation incorrectes';
-        }
-
         this.toastService.show({
           type: 'error',
           title: 'Erreur de validation',
-          message: errorMessage
+          message: error.error?.message || 'Une erreur est survenue lors de la validation'
         });
       }
     });
@@ -830,20 +847,49 @@ export class PrestationListComponent implements OnInit {
   async onRejectClicked(prestationId: string): Promise<void> {
     console.log('Rejet de la prestation ID:', prestationId);
 
-    // Trouver la fiche correspondant à la prestation
-    let fiche = this.fiches.find(f => f.idPrestation === prestationId);
+    // Trouver la prestation correspondante
+    const prestation = this.prestations.find(p => p.id?.toString() === prestationId);
+    if (!prestation) {
+      console.error('Prestation non trouvée pour l\'ID:', prestationId);
+      this.toastService.show({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Prestation introuvable'
+      });
+      return;
+    }
 
-    // Si pas trouvée par idPrestation, essayer de trouver via getFicheForPrestation
+    // Trouver la fiche correspondant à la prestation avec plusieurs critères de correspondance
+    let fiche = this.fiches.find(f => {
+      // Correspondance par idPrestation (string)
+      const matchById = f.idPrestation === prestationId;
+      
+      // Correspondance par nomPrestataire et nomItem
+      const matchByNames = f.nomPrestataire === prestation.nomPrestataire &&
+                          f.nomItem === prestation.nomPrestation;
+      
+      // Correspondance par nomPrestataire et nomStructure
+      const matchByStructure = f.nomPrestataire === prestation.nomPrestataire &&
+                              f.nomStructure === prestation.nomStructure;
+      
+      return matchById || matchByNames || matchByStructure;
+    });
+
+    // Si pas trouvée, essayer via getFicheForPrestation (Map)
     if (!fiche) {
-      const prestation = this.prestations.find(p => p.id?.toString() === prestationId);
-      if (prestation) {
-        fiche = this.getFicheForPrestation(prestation);
-      }
+      fiche = this.getFicheForPrestation(prestation);
     }
 
     if (!fiche) {
       console.error('Aucune fiche trouvée pour la prestation ID:', prestationId);
-      console.log('Fiches disponibles:', this.fiches.map(f => ({ id: f.id, idPrestation: f.idPrestation, nomItem: f.nomItem })));
+      console.log('Prestation:', prestation);
+      console.log('Fiches disponibles:', this.fiches.map(f => ({
+        id: f.id,
+        idPrestation: f.idPrestation,
+        nomItem: f.nomItem,
+        nomPrestataire: f.nomPrestataire,
+        nomStructure: f.nomStructure
+      })));
       this.toastService.show({
         type: 'error',
         title: 'Erreur',
@@ -851,6 +897,8 @@ export class PrestationListComponent implements OnInit {
       });
       return;
     }
+
+    console.log('Fiche trouvée pour rejet:', fiche);
 
     console.log('Fiche trouvée pour rejet:', fiche);
 

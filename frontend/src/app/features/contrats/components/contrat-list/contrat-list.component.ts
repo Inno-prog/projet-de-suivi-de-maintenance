@@ -104,7 +104,6 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
                   <th>Date de Fin</th>
                   <th>Montant</th>
                   <th>Lot</th>
-                  <th>Items</th>
                   <th>Ville</th>
                   <th>Statut</th>
                   <th>Actions</th>
@@ -118,17 +117,6 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
                   <td>{{ formatDate(contrat.dateFin) }}</td>
                   <td class="text-green-600 font-medium">{{ contrat.montant | number:'1.0-0' }} FCFA</td>
                   <td>{{ contrat.lot }}</td>
-                  <td>
-                    <span class="items-list" [class.empty]="!contrat.items || getItemsCount(contrat) === 0"
-                          [title]="getItemNames(contrat)">
-                      <ng-container *ngIf="contrat.items && getItemsCount(contrat) > 0; else noItems">
-                        {{ getTruncatedItemNames(contrat) }}
-                      </ng-container>
-                      <ng-template #noItems>
-                        Aucun item
-                      </ng-template>
-                    </span>
-                  </td>
                   <td>{{ contrat.ville }}</td>
                   <td>
                     <span class="badge" [class]="getStatutBadgeClass(contrat.statut)">
@@ -462,10 +450,9 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
     th:nth-child(4), td:nth-child(4) { min-width: 100px; } /* Date Fin */
     th:nth-child(5), td:nth-child(5) { min-width: 100px; } /* Montant */
     th:nth-child(6), td:nth-child(6) { min-width: 80px; }  /* Lot */
-    th:nth-child(7), td:nth-child(7) { min-width: 80px; }  /* Items */
-    th:nth-child(8), td:nth-child(8) { min-width: 100px; } /* Ville */
-    th:nth-child(9), td:nth-child(9) { min-width: 100px; } /* Statut */
-    th:nth-child(10), td:nth-child(10) { min-width: 150px; } /* Actions */
+    th:nth-child(7), td:nth-child(7) { min-width: 100px; } /* Ville */
+    th:nth-child(8), td:nth-child(8) { min-width: 100px; } /* Statut */
+    th:nth-child(9), td:nth-child(9) { min-width: 150px; } /* Actions */
 
     /* Elegant, subtle table headers */
     table thead th {
@@ -1179,61 +1166,4 @@ export class ContratListComponent implements OnInit {
     return this.filteredContrats.reduce((total, contrat) => total + (contrat.montant || 0), 0);
   }
 
-  getItemsCount(contrat: Contrat): number {
-    if (!contrat.items) {
-      return 0;
-    }
-    // Handle both Array and Set types
-    return Array.isArray(contrat.items) ? contrat.items.length : (contrat.items as any).size || 0;
-  }
-
-  getItemNames(contrat: Contrat): string {
-    try {
-      if (!contrat.items) {
-        return '';
-      }
-      
-      // Handle both Array and Set types
-      const itemsArray = Array.isArray(contrat.items) ? contrat.items : Array.from(contrat.items as any);
-      
-      if (itemsArray.length === 0) {
-        return '';
-      }
-      
-      return itemsArray.map((item: any) => item?.nomItem || 'Item sans nom').join(', ');
-    } catch (error) {
-      return 'Items non disponibles';
-    }
-  }
-
-  getTruncatedItemNames(contrat: Contrat): string {
-    try {
-      if (!contrat.items) {
-        return '';
-      }
-      
-      // Handle both Array and Set types
-      const itemsArray = Array.isArray(contrat.items) ? contrat.items : Array.from(contrat.items as any);
-      
-      if (itemsArray.length === 0) {
-        return '';
-      }
-
-      const firstItemName = (itemsArray[0] as any)?.nomItem || '';
-      const maxLength = 30;
-
-      if (itemsArray.length === 1) {
-        return firstItemName.length > maxLength
-          ? firstItemName.substring(0, maxLength) + '...'
-          : firstItemName;
-      } else {
-        const truncatedFirst = firstItemName.length > maxLength - 5
-          ? firstItemName.substring(0, maxLength - 5) + '...'
-          : firstItemName;
-        return `${truncatedFirst} (+${itemsArray.length - 1} autres)`;
-      }
-    } catch (error) {
-      return 'Items non disponibles';
-    }
-  }
 }

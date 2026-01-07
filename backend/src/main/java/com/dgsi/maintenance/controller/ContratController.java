@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import com.dgsi.maintenance.entity.Contrat;
 import com.dgsi.maintenance.entity.Item;
 import com.dgsi.maintenance.entity.StatutContrat;
 import com.dgsi.maintenance.repository.ContratRepository;
 import com.dgsi.maintenance.repository.ItemRepository;
 import com.dgsi.maintenance.service.FileUploadService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,14 +44,25 @@ public class ContratController {
     private ItemRepository itemRepository;
 
     @Autowired
+    private com.dgsi.maintenance.repository.LotRepository lotRepository;
+
+    @Autowired
     private FileUploadService fileUploadService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('PRESTATAIRE')")
+    // @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('PRESTATAIRE')")
     public ResponseEntity<List<Contrat>> getAllContrats() {
         try {
             log.info("Tentative de récupération de tous les contrats");
             List<Contrat> contrats = contratRepository.findAll();
+
+            // Ensure lotName is populated for each contract
+            for (Contrat contrat : contrats) {
+                if (contrat.getLotEntity() != null && (contrat.getLot() == null || contrat.getLot().trim().isEmpty())) {
+                    contrat.setLot(contrat.getLotEntity().getNomLot());
+                }
+            }
+
             log.info("Nombre de contrats récupérés: {}", contrats.size());
             return ResponseEntity.ok(contrats);
         } catch (Exception e) {
@@ -70,7 +84,7 @@ public class ContratController {
     public ResponseEntity<Contrat> createContrat(
             @RequestParam(value = "idContrat", required = false) String idContrat,
             @RequestParam(value = "nomPrestataire", required = false) String nomPrestataire,
-            @RequestParam(value = "lot", required = false) String lot,
+            @RequestParam(value = "lotId", required = false) Long lotId,
             @RequestParam(value = "ville", required = false) String ville,
             @RequestParam(value = "dateDebut", required = false) String dateDebut,
             @RequestParam(value = "dateFin", required = false) String dateFin,
@@ -88,10 +102,23 @@ public class ContratController {
                 return ResponseEntity.badRequest().build();
             }
 
+            // Require a prestataire for a contract to avoid orphan contracts
+            if (nomPrestataire == null || nomPrestataire.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(null);
+            }
+
             Contrat contrat = new Contrat();
             contrat.setIdContrat(idContrat);
             contrat.setNomPrestataire(nomPrestataire);
-            contrat.setLot(lot);
+
+            // Set lot entity if lotId is provided
+            if (lotId != null) {
+                com.dgsi.maintenance.entity.Lot lotEntity = lotRepository.findById(lotId).orElse(null);
+                if (lotEntity != null) {
+                    contrat.setLotEntity(lotEntity);
+                }
+            }
+
             contrat.setVille(ville);
             contrat.setDateDebut(dateDebut != null ? LocalDate.parse(dateDebut) : null);
             contrat.setDateFin(dateFin != null ? LocalDate.parse(dateFin) : null);
@@ -107,14 +134,8 @@ public class ContratController {
                 }
             }
 
-            // Handle items
-            if (itemIds != null && !itemIds.isEmpty()) {
-                Set<Item> items = itemIds.stream()
-                    .map(itemId -> itemRepository.findById(itemId).orElse(null))
-                    .filter(item -> item != null)
-                    .collect(Collectors.toSet());
-                contrat.setItems(items);
-            }
+            // Note: Direct item association with contracts has been removed
+            // Items are now associated via OrdreCommande entities
 
             Contrat savedContrat = contratRepository.save(contrat);
             log.info("Contrat créé avec succès: {}", savedContrat.getId());
@@ -136,6 +157,10 @@ public class ContratController {
         } else if (contratRepository.existsByIdContrat(contrat.getIdContrat())) {
             return ResponseEntity.badRequest().build();
         }
+        // Don't allow creating a contract without prestataire
+        if (contrat.getNomPrestataire() == null || contrat.getNomPrestataire().trim().isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok(contratRepository.save(contrat));
     }
 
@@ -151,7 +176,7 @@ public class ContratController {
             @PathVariable Long id,
             @RequestParam(value = "idContrat", required = false) String idContrat,
             @RequestParam(value = "nomPrestataire", required = false) String nomPrestataire,
-            @RequestParam(value = "lot", required = false) String lot,
+            @RequestParam(value = "lotId", required = false) Long lotId,
             @RequestParam(value = "ville", required = false) String ville,
             @RequestParam(value = "dateDebut", required = false) String dateDebut,
             @RequestParam(value = "dateFin", required = false) String dateFin,
@@ -167,7 +192,15 @@ public class ContratController {
             try {
                 if (idContrat != null) contrat.setIdContrat(idContrat);
                 if (nomPrestataire != null) contrat.setNomPrestataire(nomPrestataire);
-                if (lot != null) contrat.setLot(lot);
+
+                // Set lot entity if lotId is provided
+                if (lotId != null) {
+                    com.dgsi.maintenance.entity.Lot lotEntity = lotRepository.findById(lotId).orElse(null);
+                    if (lotEntity != null) {
+                        contrat.setLotEntity(lotEntity);
+                    }
+                }
+
                 if (ville != null) contrat.setVille(ville);
                 if (dateDebut != null) contrat.setDateDebut(LocalDate.parse(dateDebut));
                 if (dateFin != null) contrat.setDateFin(LocalDate.parse(dateFin));

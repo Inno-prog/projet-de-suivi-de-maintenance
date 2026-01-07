@@ -27,6 +27,9 @@ export interface Prestation {
   rolePrestataire?: string;
   qualificationPrestataire?: string;
 
+  // Lot information
+  lot?: string;
+
   // Intervention details
   montantIntervention?: number;
   equipementsUtilises?: string;
@@ -315,6 +318,40 @@ export class PrestationService {
       params = params.set('commentaires', commentaires);
     }
     return this.http.put(`${this.apiUrl}/${id}/rejeter`, null, { params });
+  }
+
+  // Get sum of quantities by item name
+  getSumQuantitiesByItem(nomItem: string): Observable<number> {
+    if (!nomItem || nomItem.trim() === '') {
+      console.warn('⚠️ Nom d\'item vide pour getSumQuantitiesByItem');
+      return of(0);
+    }
+
+    const encodedNomItem = encodeURIComponent(nomItem);
+    const url = `${this.apiUrl}/sum-quantities-by-item`;
+    console.log(`🔍 GET ${url}?nomItem=${encodedNomItem}`);
+
+    return this.http.get<number>(url, { params: new HttpParams().set('nomItem', encodedNomItem) }).pipe(
+      timeout(10000),
+      retry(2),
+      tap(sum => console.log(`✅ Sum received for "${nomItem}": ${sum}`)),
+      catchError(error => {
+        console.error(`❌ Error getting sum for "${nomItem}":`, error);
+        return of(0);
+      })
+    );
+  }
+
+  // Validate item selection
+  validateItemSelection(itemQuantities: { [key: string]: number }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/validate-item-selection`, itemQuantities).pipe(
+      timeout(15000),
+      tap(response => console.log('✅ Item selection validated:', response)),
+      catchError(error => {
+        console.error('❌ Error validating item selection:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   // MÉTHODE SPÉCIFIQUE POUR LES PRESTATAIRES - récupère leurs propres prestations

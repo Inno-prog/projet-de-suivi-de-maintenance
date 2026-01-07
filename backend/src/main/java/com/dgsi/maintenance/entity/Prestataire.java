@@ -31,6 +31,7 @@ public class Prestataire extends User {
     private String direction;
 
     @OneToMany(mappedBy = "prestataire", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Contrat> contrats = new ArrayList<>();
 
     @OneToMany(mappedBy = "prestataire", cascade = CascadeType.ALL, orphanRemoval = true)

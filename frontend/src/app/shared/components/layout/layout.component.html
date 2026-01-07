@@ -1,14 +1,19 @@
 <div class="app-layout">
   <!-- Sidebar -->
-  <app-sidebar #sidebar (toggleChange)="onSidebarToggle($event)"></app-sidebar>
+  <app-sidebar #sidebar (toggleChange)="onSidebarToggle($event)" [isOpen]="sidebarOpen"></app-sidebar>
 
   <!-- Main Content -->
-  <div class="main-content">
+  <div class="main-content" [class.sidebar-open]="sidebarOpen && isMobile">
     <!-- Header -->
     <nav class="navbar">
       <div class="container">
         <div class="nav-brand">
-          <!-- Hamburger menu moved to sidebar intersection -->
+          <!-- Hamburger menu for mobile -->
+          <button *ngIf="isMobile" class="sidebar-toggle-nav" (click)="toggleSidebar()">
+            <div class="hamburger">
+              <span></span><span></span><span></span>
+            </div>
+          </button>
         </div>
 
         <div class="nav-menu">
@@ -77,8 +82,8 @@
   </div>
 
   <!-- Profile Modal -->
-  <div class="modal-overlay" *ngIf="showProfileModal" (click)="closeProfileModal()">
-    <div class="modal profile-modal" (click)="$event.stopPropagation()">
+  <div class="modal-overlay" *ngIf="showProfileModal" (click)="closeProfileModal()" style="display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important;">
+    <div class="modal profile-modal" (click)="$event.stopPropagation()" style="visibility: visible !important; opacity: 1 !important; z-index: 10000 !important;">
       <div class="modal-header">
         <h2>Mon Profil</h2>
         <button class="close-btn" (click)="closeProfileModal()">
@@ -147,6 +152,39 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" *ngIf="showSettingsModal" (click)="closeSettingsModal()" style="display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important;">
+    <div class="modal settings-modal" (click)="$event.stopPropagation()" style="visibility: visible !important; opacity: 1 !important; z-index: 10000 !important;">
+      <div class="modal-header">
+        <h2>Paramètres</h2>
+        <button class="close-btn" (click)="closeSettingsModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-4">Gérez vos préférences utilisateur ici.</p>
+        <!-- Example settings: notification toggle, theme -->
+        <div class="form-group">
+          <label>Notifications en temps réel</label>
+          <div>
+            <button class="btn btn-outline" (click)="showDemoMessage('Paramètre démo', $event)">Modifier</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Thème</label>
+          <div>
+            <button class="btn btn-outline" (click)="showDemoMessage('Changer thème (démo)', $event)">Changer</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeSettingsModal()">Fermer</button>
+      </div>
     </div>
   </div>
 

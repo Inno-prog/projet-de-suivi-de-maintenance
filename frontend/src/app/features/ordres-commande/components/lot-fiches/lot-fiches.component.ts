@@ -1,14 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FichePrestationService } from '../../../../core/services/fiche-prestation.service';
+import { PrestationService } from '../../../../core/services/prestation.service';
 import { FichePrestation } from '../../../../core/models/business.models';
 import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-lot-fiches',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule],
   template: `
     <div class="container">
       <!-- Header -->
@@ -83,10 +86,8 @@ import { ToastService } from '../../../../core/services/toast.service';
             <tr>
               <th>N° Fiche</th>
               <th>Prestataire</th>
-              <th>Item</th>
+              <th>Structure</th>
               <th>Date</th>
-              <th>Quantité</th>
-              <th>Montant</th>
               <th>Statut</th>
               <th>Actions</th>
             </tr>
@@ -94,34 +95,94 @@ import { ToastService } from '../../../../core/services/toast.service';
           <tbody>
             <tr *ngFor="let fiche of fiches" class="fiche-row">
               <td class="fiche-id">{{ fiche.idPrestation }}</td>
-              <td class="prestataire">{{ fiche.nomPrestataire }}</td>
-              <td class="item">{{ fiche.nomItem }}</td>
+              <td class="prestataire">{{ (fiche.nomPrestataire || '').trim() }}</td>
+              <td class="structure">{{ fiche.nomStructure || fiche.nomItem }}</td>
               <td class="date">{{ formatDate(fiche.dateRealisation) }}</td>
-              <td class="quantity">{{ fiche.quantite }}</td>
-              <td class="amount">{{ fiche.quantite || 0 }} unités</td>
               <td class="status">
                 <span class="status-badge" [class]="getStatusClass(fiche.statut)">
                   {{ getStatusLabel(fiche.statut) }}
                 </span>
               </td>
               <td class="actions">
-                <button class="btn-action btn-view" (click)="viewFiche(fiche)" title="Voir détails">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2"/>
-                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
-                  </svg>
+                <button mat-icon-button class="btn-action btn-view" (click)="viewFiche(fiche)" title="Voir">
+                  <mat-icon>visibility</mat-icon>
                 </button>
-                <button class="btn-action btn-edit" (click)="editFiche(fiche)" title="Modifier">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2"/>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2"/>
-                  </svg>
+                <button mat-icon-button class="btn-action btn-print" (click)="printFiche(fiche)" title="Imprimer">
+                  <mat-icon>print</mat-icon>
+                </button>
+                <button mat-icon-button class="btn-action btn-pdf" (click)="downloadFichePdf(fiche)" title="Télécharger PDF">
+                  <mat-icon>download</mat-icon>
+                </button>
+                <button mat-icon-button class="btn-action btn-delete" (click)="deleteFiche(fiche)" title="Supprimer">
+                  <mat-icon>delete</mat-icon>
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <!-- Fiche Details Modal -->
+      <div *ngIf="showFicheModal" class="modal-overlay" (click)="closeFicheModal()">
+  <div class="modal-content" [ngClass]="{ 'fiche-modal': true, 'pdf-modal': !!selectedFichePdfUrl }" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h2>Détails de la Fiche de Prestation</h2>
+            <button class="btn-close" (click)="closeFicheModal()">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- If a PDF URL is available, show it in an iframe for same-page viewing -->
+            <div *ngIf="selectedFichePdfUrl; else detailsTemplate" style="height:80vh;">
+              <iframe src="{{selectedFichePdfUrl}}" style="border:0; width:100%; height:100%;"></iframe>
+            </div>
+
+            <ng-template #detailsTemplate>
+              <div *ngIf="selectedFiche" class="fiche-details">
+                <div class="detail-row">
+                  <label>N° Fiche:</label>
+                  <span>{{ selectedFiche.idPrestation }}</span>
+                </div>
+                <div class="detail-row">
+                  <label>Prestataire:</label>
+                  <span>{{ (selectedFiche.nomPrestataire || '').trim() }}</span>
+                </div>
+                <div class="detail-row">
+                  <label>Structure:</label>
+                  <span>{{ selectedFiche.nomStructure || selectedFiche.nomItem }}</span>
+                </div>
+                <div class="detail-row">
+                  <label>Date de réalisation:</label>
+                  <span>{{ formatDate(selectedFiche.dateRealisation) }}</span>
+                </div>
+                <div class="detail-row">
+                  <label>Statut:</label>
+                  <span class="status-badge" [class]="getStatusClass(selectedFiche.statut)">
+                    {{ getStatusLabel(selectedFiche.statut) }}
+                  </span>
+                </div>
+                <div class="detail-row" *ngIf="selectedFiche.quantite">
+                  <label>Quantité:</label>
+                  <span>{{ selectedFiche.quantite }}</span>
+                </div>
+                <div class="detail-row" *ngIf="selectedFiche.commentaire">
+                  <label>Commentaire:</label>
+                  <span>{{ selectedFiche.commentaire }}</span>
+                </div>
+              </div>
+            </ng-template>
+          </div>
+          <div class="modal-footer">
+            <button class="btn-secondary" (click)="closeFicheModal()">Fermer</button>
+            <button class="btn-primary" (click)="printFiche(selectedFiche)">
+              <mat-icon>print</mat-icon>
+              Imprimer
+            </button>
+          </div>
+        </div>
+      </div>
+
+
     </div>
   `,
   styles: [`
@@ -348,7 +409,7 @@ import { ToastService } from '../../../../core/services/toast.service';
     }
 
     .btn-action {
-      padding: 6px;
+      padding: 4px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
@@ -364,13 +425,18 @@ import { ToastService } from '../../../../core/services/toast.service';
       background: #bbdefb;
     }
 
-    .btn-edit {
-      background: #fff3e0;
-      color: #f57c00;
+    .btn-pdf {
+      background: #dc3545;
+      color: white;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .btn-edit:hover {
-      background: #ffe0b2;
+    .btn-pdf:hover {
+      background: #c82333;
     }
 
     .loading-spinner {
@@ -388,11 +454,211 @@ import { ToastService } from '../../../../core/services/toast.service';
       100% { transform: rotate(360deg); }
     }
 
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .fiche-modal {
+      max-width: 500px;
+    }
+
+    /* When showing PDF, expand modal to near-fullscreen for better viewing */
+    .pdf-modal {
+      max-width: 95vw !important;
+      width: 95vw !important;
+      height: 90vh !important;
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+    }
+
+    .pdf-modal .modal-body {
+      height: calc(100% - 120px); /* leave space for header/footer */
+      padding: 0;
+    }
+
+    .pdf-modal iframe {
+      height: 100% !important;
+      width: 100% !important;
+      border: 0;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+      padding: 4px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-close:hover {
+      background: #f8f9fa;
+      color: #333;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .fiche-details {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .detail-row label {
+      font-weight: 600;
+      color: #555;
+      min-width: 140px;
+      flex-shrink: 0;
+    }
+
+    .detail-row span {
+      color: #333;
+      flex: 1;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 20px;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .btn-primary {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background: #0056b3;
+    }
+
+    .btn-secondary {
+      background: #f8f9fa;
+      color: #495057;
+      border: 1px solid #dee2e6;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #e9ecef;
+    }
+
+    /* Form Styles */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: #555;
+      font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 10px 12px;
+      border: 2px solid #e9ecef;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .form-group input[readonly] {
+      background: #f8f9fa;
+      cursor: not-allowed;
+    }
+
+    .form-group-full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
     @media (max-width: 768px) {
       .stats-grid {
         grid-template-columns: repeat(2, 1fr);
       }
-      
+
       .header {
         flex-direction: column;
         align-items: flex-start;
@@ -418,6 +684,22 @@ import { ToastService } from '../../../../core/services/toast.service';
       .fiches-table td {
         padding: 8px 6px;
       }
+
+      .modal-content {
+        width: 95%;
+        margin: 20px;
+      }
+
+      .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+
+      .detail-row label {
+        min-width: auto;
+        font-size: 14px;
+      }
     }
   `]
 })
@@ -435,11 +717,15 @@ export class LotFichesComponent implements OnInit {
 
   fiches: FichePrestation[] = [];
   loading = false;
-
+  showFicheModal = false;
+  selectedFiche: FichePrestation | null = null;
+  // URL blob du PDF affiché dans la modal (si présent)
+  selectedFichePdfUrl: string | null = null;
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private fichePrestationService: FichePrestationService,
+    private prestationService: PrestationService,
     private toastService: ToastService
   ) {}
 
@@ -533,11 +819,228 @@ export class LotFichesComponent implements OnInit {
   }
 
   viewFiche(fiche: any): void {
-    console.log('Voir fiche:', fiche);
+    // If prestation id exists, try to load and display the PDF directly in the modal
+    if (fiche && fiche.idPrestation) {
+      const prestationId = parseInt(fiche.idPrestation);
+      if (!isNaN(prestationId)) {
+        this.prestationService.exportPrestationPdf(prestationId).subscribe({
+          next: (blob) => {
+            // Cleanup previous URL if any
+            if (this.selectedFichePdfUrl) {
+              try { window.URL.revokeObjectURL(this.selectedFichePdfUrl); } catch(e) {}
+            }
+            const url = window.URL.createObjectURL(blob);
+            this.selectedFichePdfUrl = url;
+            this.showFicheModal = true;
+            // Keep selectedFiche for meta info if needed
+            this.selectedFiche = fiche;
+          },
+          error: (error) => {
+            console.error('Erreur lors du chargement du PDF de la fiche:', error);
+            this.toastService.show({ type: 'error', title: 'Erreur', message: 'Impossible de charger le PDF de la fiche' });
+            // Fallback: load fiche details instead
+            this.loadFicheDetailsFallback(fiche);
+          }
+        });
+        return;
+      }
+    }
+
+    // Fallback: load full fiche details and show modal
+    this.loadFicheDetailsFallback(fiche);
   }
 
-  editFiche(fiche: any): void {
-    console.log('Modifier fiche:', fiche);
+  private loadFicheDetailsFallback(fiche: any) {
+    if (!fiche.id) {
+      this.toastService.show({ type: 'error', title: 'Erreur', message: "Impossible d'afficher cette fiche : ID manquant" });
+      return;
+    }
+
+    this.fichePrestationService.getFicheById(fiche.id).subscribe({
+      next: (fullFiche: FichePrestation) => {
+        this.selectedFiche = fullFiche;
+        this.selectedFichePdfUrl = null;
+        this.showFicheModal = true;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des détails de la fiche:', error);
+        this.toastService.show({ type: 'error', title: 'Erreur', message: 'Impossible de charger les détails de la fiche' });
+      }
+    });
+  }
+
+  closeFicheModal(): void {
+    this.showFicheModal = false;
+    this.selectedFiche = null;
+    if (this.selectedFichePdfUrl) {
+      try { window.URL.revokeObjectURL(this.selectedFichePdfUrl); } catch(e) {}
+      this.selectedFichePdfUrl = null;
+    }
+  }
+
+
+
+  downloadFichePdf(fiche: any): void {
+    console.log('DEBUG downloadFichePdf - fiche object:', fiche);
+    console.log('DEBUG downloadFichePdf - fiche.idPrestation:', fiche.idPrestation);
+
+    // Use the prestation ID to download the official FICHE DE PRESTATION PDF
+    if (!fiche.idPrestation) {
+      this.toastService.show({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Impossible de télécharger le PDF : ID de prestation manquant'
+      });
+      return;
+    }
+
+    // Parse the prestation ID (it might be a string)
+    const prestationId = parseInt(fiche.idPrestation);
+    if (isNaN(prestationId)) {
+      this.toastService.show({
+        type: 'error',
+        title: 'Erreur',
+        message: 'ID de prestation invalide'
+      });
+      return;
+    }
+
+    this.downloadPrestationPdf(prestationId, fiche.idPrestation);
+  }
+
+  private downloadPrestationPdf(prestationId: number, idPrestation: string): void {
+    // Generate official FICHE DE PRESTATION PDF
+    this.prestationService.exportPrestationPdf(prestationId).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Fiche_Prestation_${idPrestation}.pdf`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+
+        this.toastService.show({
+          type: 'success',
+          title: 'Succès',
+          message: 'Fiche de prestation téléchargée avec succès'
+        });
+      },
+      error: (error) => {
+        console.error('Erreur lors du téléchargement du PDF:', error);
+        this.toastService.show({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Impossible de télécharger la fiche de prestation'
+        });
+      }
+    });
+  }
+
+  printFiche(fiche: any): void {
+    console.log('DEBUG printFiche - fiche.idPrestation:', fiche.idPrestation);
+
+    // Use the prestation ID to download the official FICHE DE PRESTATION PDF for printing
+    if (!fiche.idPrestation) {
+      this.toastService.show({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Impossible d\'imprimer cette fiche : ID de prestation manquant'
+      });
+      return;
+    }
+
+    // Parse the prestation ID (it might be a string)
+    const prestationId = parseInt(fiche.idPrestation);
+    if (isNaN(prestationId)) {
+      this.toastService.show({
+        type: 'error',
+        title: 'Erreur',
+        message: 'ID de prestation invalide'
+      });
+      return;
+    }
+
+    // Generate PDF and open a print window (no download)
+    this.prestationService.exportPrestationPdf(prestationId).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+
+        // Open a new window and embed the PDF in an iframe, then trigger print
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+          // Fallback to download if popup blocked
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `Fiche_Prestation_${fiche.idPrestation}_impression.pdf`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+          this.toastService.show({ type: 'warning', title: 'Impression', message: 'Popup bloquée, le PDF a été téléchargé.' });
+          return;
+        }
+
+        printWindow.document.write(`<!doctype html><html><head><title>Impression - Fiche ${fiche.idPrestation}</title></head><body style="margin:0"><iframe id="pdfFrame" src="${url}" style="border:0; width:100%; height:100vh;"></iframe></body></html>`);
+
+        // Wait a bit for document to load, then try to trigger print
+        setTimeout(() => {
+          try {
+            printWindow.focus();
+            printWindow.print();
+          } catch (e) {
+            console.error('Erreur lors du print automatique:', e);
+          }
+        }, 800);
+
+        // Cleanup URL after some time
+        setTimeout(() => {
+          try { window.URL.revokeObjectURL(url); } catch(e) {}
+        }, 30000);
+
+        this.toastService.show({ type: 'success', title: 'Succès', message: 'Fenêtre d\'impression ouverte' });
+      },
+      error: (error) => {
+        console.error('Erreur lors de la préparation du PDF pour impression:', error);
+        this.toastService.show({ type: 'error', title: 'Erreur', message: 'Impossible de préparer la fiche pour impression' });
+      }
+    });
+  }
+
+  deleteFiche(fiche: any): void {
+    if (!fiche.id) {
+      this.toastService.show({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Impossible de supprimer cette fiche : ID manquant'
+      });
+      return;
+    }
+
+    // Show confirmation dialog
+    const confirmed = confirm(`Êtes-vous sûr de vouloir supprimer la fiche ${fiche.idPrestation} ?`);
+    
+    if (!confirmed) {
+      return;
+    }
+
+    this.fichePrestationService.deleteFiche(fiche.id).subscribe({
+      next: () => {
+        // Remove fiche from local list
+        this.fiches = this.fiches.filter(f => f.id !== fiche.id);
+        
+        this.toastService.show({
+          type: 'success',
+          title: 'Succès',
+          message: 'Fiche supprimée avec succès'
+        });
+      },
+      error: (error) => {
+        console.error('Erreur lors de la suppression de la fiche:', error);
+        this.toastService.show({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Impossible de supprimer la fiche'
+        });
+      }
+    });
   }
 
   generateFicheGlobale(): void {
@@ -616,4 +1119,6 @@ export class LotFichesComponent implements OnInit {
       message: `Génération des fiches pour ${prestataires.length} prestataire(s)`
     });
   }
+
+
 }

@@ -1,4 +1,4 @@
-import { Component, ViewChild, HostListener, ElementRef, OnDestroy } from '@angular/core';
+import { Component, ViewChild, HostListener, ElementRef, OnDestroy, AfterViewInit, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
@@ -16,35 +16,65 @@ import { NotificationBellComponent } from '../notification/notification.componen
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, SidebarComponent, ToastComponent, ConfirmationComponent, NotificationBellComponent],
   templateUrl: './layout.component.html',
+  styleUrls: ['./modal-fix.css', './modal-visibility-fix.css'],
   styles: [`
     .app-layout {
-      display: flex;
-      height: 100vh;
-      background: #f8fafc;
+      position: fixed !important;
+      top: -2 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      display: grid !important;
+      grid-template-columns: 290px 1fr !important;
+      grid-template-rows: 3fr !important;
+      grid-gap: 0 !important;
+      gap: 0 !important;
+      margin: 0!important;
+      padding: 0 !important;
+      overflow: hidden !important;
+    }
+
+    app-sidebar {
+      grid-column: 1 !important;
+      grid-row: 1 !important;
+      width: 260px !important;
+      height: 100vh !important;
+      overflow-y: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
 
     .main-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      margin-left: 270px !important; /* Always keep margin for sidebar */
-    }
-
-    /* Prevent any dynamic changes to margin-left on hover or other events */
-    .main-content:hover {
-      margin-left: 270px !important;
-    }
-
-    /* Ensure layout stability */
-    .app-layout .main-content {
-      margin-left: 270px !important;
+      grid-column: 2 !important;
+      grid-row: 1 !important;
+      display: grid !important;
+      grid-template-rows: 64px 1fr !important;
+      grid-gap: 0 !important;
+      gap: 0 !important;
+      height: 100vh !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
 
     .navbar {
-      background: #0f172a;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      z-index: 1000;
+      grid-row: 1 !important;
+      width: 100% !important;
+      height: 64px !important;
+      background: #0f172a !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .content {
+      grid-row: 2 !important;
+      overflow-y: auto !important;
+      padding: 0 !important;
+      height: calc(100vh - 64px) !important;
+      margin: 30px 0 0 0!important;
+      width: 100% !important;
+      min-height: calc(100vh - 64px) !important;
+      background: #f8fafc !important;
     }
 
     .container {
@@ -87,10 +117,26 @@ import { NotificationBellComponent } from '../notification/notification.componen
       padding: 0.5rem;
       border-radius: 4px;
       transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .sidebar-toggle-nav:hover {
       background: rgba(255,255,255,0.1);
+    }
+
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .hamburger span {
+      width: 18px;
+      height: 2px;
+      background: currentColor;
+      transition: all 0.3s ease;
     }
 
     .logo-section {
@@ -186,7 +232,9 @@ import { NotificationBellComponent } from '../notification/notification.componen
     .profile-dropdown {
       position: absolute;
       top: 100%;
-      right: 0;
+      /* Open the profile dropdown to the left side of the avatar to avoid clipping on the right */
+      left: 0;
+      right: auto;
       width: 280px;
       background: white;
       border: 1px solid #e2e8f0;
@@ -294,35 +342,41 @@ import { NotificationBellComponent } from '../notification/notification.componen
       margin: 0.5rem 0;
     }
 
-    .content {
+.content {
       flex: 1;
-      padding: 2rem;
+      /* Suppression complète du padding pour éliminer l'espace blanc */
+      padding: 0;
       overflow-y: auto;
     }
 
     .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      background: rgba(0,0,0,0.5) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 9999 !important;
+      visibility: visible !important;
+      opacity: 1 !important;
     }
 
     .modal {
-      background: white;
-      border: 2px solid #1e293b;
-      border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-      max-width: 500px;
-      width: 90%;
-      max-height: 90vh;
-      min-height: 400px;
-      overflow-y: auto;
+      background: white !important;
+      border: 2px solid #1e293b !important;
+      border-radius: 8px !important;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
+      max-width: 500px !important;
+      width: 90% !important;
+      max-height: 90vh !important;
+      min-height: 400px !important;
+      overflow-y: auto !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      z-index: 10000 !important;
     }
 
     .modal-header {
@@ -460,7 +514,7 @@ import { NotificationBellComponent } from '../notification/notification.componen
 
   `]
 })
-export class LayoutComponent {
+export class LayoutComponent implements AfterViewInit {
   @ViewChild('sidebar') sidebar!: SidebarComponent;
   @ViewChild('toast') toast!: ToastComponent;
   @ViewChild('confirmation') confirmation!: ConfirmationComponent;
@@ -471,16 +525,19 @@ export class LayoutComponent {
   showProfileModal = false;
   showSettingsModal = false;
   profileLoading = false;
+  isMobile = false;
 
-  // Prevent sidebar from being closed
+  // Prevent sidebar from being closed on desktop, allow on mobile
   private preventSidebarClose = true;
 
   profileForm: FormGroup;
 
   private routerEventsSub?: Subscription;
+  private stabilizeInterval?: any;
 
   constructor(private fb: FormBuilder, public authService: AuthService, private confirmationService: ConfirmationService, private toastService: ToastService, private elementRef: ElementRef, private router: Router) {
     this.currentUser = this.authService.getCurrentUser();
+    this.checkScreenSize();
     this.profileForm = this.fb.group({
       nom: [this.currentUser?.nom || ''],
       email: [this.currentUser?.email || ''],
@@ -491,6 +548,9 @@ export class LayoutComponent {
       direction: [''],
       qualification: ['']
     });
+
+  // Stabiliser le layout immédiatement (single pass). Avoid periodic inline style mutations.
+  setTimeout(() => this.stabilizeLayout(), 0);
 
     // Initialize services
     setTimeout(() => {
@@ -510,35 +570,57 @@ export class LayoutComponent {
 
   ngOnDestroy(): void {
     this.routerEventsSub?.unsubscribe();
+    // No periodic stabilization to clear (we avoid continuous inline style mutation)
+  }
+
+  ngAfterViewInit(): void {
+    // Stabiliser le layout immédiatement
+    this.stabilizeLayout();
+  }
+
+  private stabilizeLayout(): void {
+    // Prefer CSS class based stabilization to avoid frequent inline style mutations.
+    // The `.stable-layout` class (defined in styles.css) enforces fixed sidebar/navbar
+    // and correct offsets. We also update navbar-dependent CSS variables.
+    try {
+      const root = document.querySelector('.app-layout');
+      if (root && !root.classList.contains('stable-layout')) {
+        root.classList.add('stable-layout');
+      }
+      // Update CSS variables (navbar height) for accurate layout
+      this.updateNavbarCssVars();
+    } catch (e) {
+      console.warn('stabilizeLayout: failed to apply stable-layout class', e);
+    }
   }
 
 
 
   toggleSidebar() {
-    // Prevent sidebar from being toggled - always keep it open
-    if (this.preventSidebarClose) {
+    if (this.isMobile) {
+      // Allow toggling on mobile
+      this.sidebarOpen = !this.sidebarOpen;
+      if (this.sidebar) {
+        this.sidebar.isOpen = this.sidebarOpen;
+      }
+    } else {
+      // Keep open on desktop
       this.sidebarOpen = true;
       if (this.sidebar) {
         this.sidebar.isOpen = true;
-      }
-    } else {
-      this.sidebarOpen = !this.sidebarOpen;
-      if (this.sidebar) {
-        this.sidebar.toggleSidebar();
       }
     }
   }
 
   onSidebarToggle(isOpen: boolean) {
-    // Prevent sidebar from being closed - always keep it open
-    if (this.preventSidebarClose) {
+    if (this.isMobile) {
+      this.sidebarOpen = isOpen;
+    } else {
+      // Always keep open on desktop
       this.sidebarOpen = true;
-      // Also ensure the sidebar component stays open
       if (this.sidebar && !isOpen) {
         this.sidebar.isOpen = true;
       }
-    } else {
-      this.sidebarOpen = isOpen;
     }
   }
 
@@ -555,12 +637,49 @@ export class LayoutComponent {
     this.profileMenuOpen = false;
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkScreenSize();
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = (event as any).target as Node;
     if (!this.elementRef.nativeElement.contains(target)) {
       // Close profile menu when clicking outside
       this.profileMenuOpen = false;
+    }
+  }
+
+  private checkScreenSize() {
+    this.isMobile = window.innerWidth <= 768;
+    if (this.isMobile) {
+      this.sidebarOpen = false; // Close sidebar on mobile by default
+    } else {
+      this.sidebarOpen = true; // Open sidebar on desktop
+    }
+    // Keep CSS variables up-to-date when screen size changes
+    this.updateNavbarCssVars();
+  }
+
+  /** Measure the actual navbar height and write CSS variables so styles can
+   * adapt (modal offsets, main-content padding, etc.). Called on init and
+   * on resize.
+   */
+  private updateNavbarCssVars(): void {
+    try {
+      const navbar = document.querySelector('.navbar') as HTMLElement | null;
+      const root = document.documentElement;
+      if (navbar && root) {
+        const rect = navbar.getBoundingClientRect();
+        const height = Math.round(rect.height) || 64;
+        root.style.setProperty('--app-navbar-height', `${height}px`);
+        // Provide a reasonable overlay gap; can be adjusted later if needed
+        root.style.setProperty('--app-overlay-gap', `16px`);
+      }
+    } catch (e) {
+      // ignore
+      console.warn('Could not update navbar CSS variables', e);
     }
   }
 
@@ -580,11 +699,17 @@ export class LayoutComponent {
     });
     this.showProfileModal = true;
     this.closeProfileMenu();
+    
+    // Force modal visibility
+    this.forceModalVisibility();
   }
 
   openSettingsModal() {
     this.showSettingsModal = true;
     this.closeProfileMenu();
+    
+    // Force modal visibility
+    this.forceModalVisibility();
   }
 
   logout() {
@@ -635,5 +760,41 @@ export class LayoutComponent {
 
   closeProfileModal() {
     this.showProfileModal = false;
+  }
+
+  closeSettingsModal() {
+    this.showSettingsModal = false;
+  }
+
+  /**
+   * Force la visibilité des modals en cas de problème d'affichage
+   */
+  private forceModalVisibility(): void {
+    setTimeout(() => {
+      const modals = document.querySelectorAll('.modal-overlay, .modal, .modal-content');
+      modals.forEach(modal => {
+        const element = modal as HTMLElement;
+        element.style.display = 'flex';
+        element.style.visibility = 'visible';
+        element.style.opacity = '1';
+        element.style.zIndex = '9999';
+      });
+    }, 50);
+  }
+
+  /**
+   * Public wrapper so the template can trigger toast messages without
+   * accessing the private toastService directly.
+   */
+  showDemoMessage(message: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    try {
+      this.toastService.show({ type: 'info', title: 'Info', message });
+    } catch (e) {
+      // If toast service isn't available yet, ignore silently.
+      console.warn('Toast service unavailable for demo message', e);
+    }
   }
 }

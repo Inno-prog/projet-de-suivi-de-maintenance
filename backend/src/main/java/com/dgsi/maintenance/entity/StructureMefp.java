@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -40,6 +42,10 @@ public class StructureMefp {
     @Size(max = 100)
     @Column(name = "CATEGORIE")
     private String categorie;
+
+    @ManyToOne
+    @JoinColumn(name = "lot_id")
+    private Lot lot;
 
     // Correspondant Informatique (CI) fields
     @Size(max = 100)
@@ -99,6 +105,9 @@ public class StructureMefp {
 
     public String getCategorie() { return categorie; }
     public void setCategorie(String categorie) { this.categorie = categorie; }
+
+    public Lot getLot() { return lot; }
+    public void setLot(Lot lot) { this.lot = lot; }
 
     public String getAdresseStructure() { return adresseStructure; }
     public void setAdresseStructure(String adresseStructure) { this.adresseStructure = adresseStructure; }

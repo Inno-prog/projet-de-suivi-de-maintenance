@@ -2,6 +2,7 @@ package com.dgsi.maintenance.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,6 +36,7 @@ public class RapportSuivi {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ordre_commande_id", insertable = false, updatable = false)
+    @JsonIgnore
     private OrdreCommande ordreCommande;
 
     @Column(name = "date_rapport", nullable = false)

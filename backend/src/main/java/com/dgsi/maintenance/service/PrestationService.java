@@ -71,10 +71,15 @@ public class PrestationService {
         // Validation avant la transaction
         try {
             validatePrestationData(prestation);
+
+            // Valider que le contact du prestataire est présent avant de vérifier le budget
+            if (request.getNomPrestataire() == null || request.getNomPrestataire().trim().isEmpty()) {
+                throw new IllegalArgumentException("Le nom du prestataire est obligatoire pour la vérification du budget.");
+            }
             
             // Vérifier le budget contrat avant création
-            if (prestation.getMontantIntervention() != null && prestation.getContactPrestataire() != null) {
-                checkContractBudgetAvailability(prestation.getContactPrestataire(), prestation.getMontantIntervention());
+            if (prestation.getMontantIntervention() != null && prestation.getNomPrestataire() != null) {
+                checkContractBudgetAvailability(prestation.getNomPrestataire(), prestation.getMontantIntervention());
             }
             
             // Vérifier la disponibilité des items dans les contrats du prestataire
@@ -83,7 +88,7 @@ public class PrestationService {
                 Optional<Item> firstItem = itemRepository.findById(request.getItemIds().get(0));
                 if (firstItem.isPresent()) {
                     String lot = firstItem.get().getLot();
-                    checkBudgetAvailability(prestation.getContactPrestataire(), lot, request.getItemQuantities());
+                    checkBudgetAvailability(prestation.getNomPrestataire(), lot, request.getItemQuantities());
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -115,7 +120,7 @@ public class PrestationService {
 
                     // Mise à jour des quantités des items via le service spécialisé
                     if (request.getItemQuantities() != null && !request.getItemQuantities().isEmpty()) {
-                        contratItemService.mettreAJourQuantitesUtilisees(request.getItemQuantities());
+                        contratItemService.mettreAJourQuantitesUtilisees(request.getNomPrestataire(), request.getItemQuantities());
                         log.info("✅ Quantités des items mises à jour via ContratItemService");
                     }
                 }
@@ -131,12 +136,12 @@ public class PrestationService {
                 log.info("✅ Prestation sauvegardée ID: {}", savedPrestation.getId());
                 
                 // Déduire le montant du budget contrat après sauvegarde réussie
-                if (savedPrestation.getMontantIntervention() != null && savedPrestation.getContactPrestataire() != null) {
-                    deduireMonantContrat(savedPrestation.getContactPrestataire(), savedPrestation.getMontantIntervention());
+                if (savedPrestation.getMontantIntervention() != null && savedPrestation.getNomPrestataire() != null) {
+                    deduireMonantContrat(savedPrestation.getNomPrestataire(), savedPrestation.getMontantIntervention());
                     log.info("✅ Montant déduit du budget contrat: {}", savedPrestation.getMontantIntervention());
                     
                     // Vérifier si le budget est maintenant épuisé ou faible
-                    verifierEtatBudgetApresDeduction(savedPrestation.getContactPrestataire());
+                    verifierEtatBudgetApresDeduction(savedPrestation.getNomPrestataire());
                 }
 
                 // CORRECTION : Créer automatiquement une fiche si la prestation a des items
@@ -166,8 +171,10 @@ public class PrestationService {
         // Prestataire information
         prestation.setPrestataireId(request.getPrestataireId());
         prestation.setNomPrestataire(request.getNomPrestataire());
+        prestation.setNomResponsablePrestation(request.getNomResponsablePrestation());
+        prestation.setContactResponsablePrestation(request.getContactResponsablePrestation());
+        prestation.setQualificationResponsablePrestation(request.getQualificationResponsablePrestation());
         prestation.setNomPrestation(request.getNomPrestation());
-        prestation.setContactPrestataire(request.getContactPrestataire());
         prestation.setStructurePrestataire(request.getStructurePrestataire());
         prestation.setDirectionPrestataire(request.getDirectionPrestataire());
         prestation.setServicePrestataire(request.getServicePrestataire());
@@ -281,9 +288,7 @@ public class PrestationService {
         }
         // Allow manual input for contact, structure, role, and qualification if not provided by the system
         // These fields can be empty and filled manually by the user
-        if (prestation.getContactPrestataire() == null || prestation.getContactPrestataire().trim().isEmpty()) {
-            log.warn("⚠️ Contact prestataire non fourni - saisie manuelle autorisée");
-        }
+        // Le contact prestataire a été supprimé. La validation se fait sur le nom.
         if (prestation.getStructurePrestataire() == null || prestation.getStructurePrestataire().trim().isEmpty()) {
             log.warn("⚠️ Structure prestataire non fournie - saisie manuelle autorisée");
         }
@@ -338,57 +343,86 @@ public class PrestationService {
      * Vérification du budget pour les items avant création de prestation
      * Utilise le nouveau service ContratItemService pour une gestion complète
      */
-    public void checkBudgetAvailability(String prestataireContact, String lot, java.util.Map<Long, Integer> itemQuantities) {
-        log.info("🔍 Vérification du budget pour {} items du lot {} pour prestataire {}", itemQuantities.size(), lot, prestataireContact);
-        
+    public void checkBudgetAvailability(String nomPrestataire, String lot, java.util.Map<Long, Integer> itemQuantities) {
+        log.info("🔍 Vérification du budget pour {} items du lot {} pour prestataire {}", itemQuantities.size(), lot, nomPrestataire);
+
+        // Normaliser le nom du lot pour correspondre au format des contrats
+        String normalizedLot = normalizeLotName(lot);
+
         // Déléguer la vérification au service spécialisé
-        contratItemService.verifierDisponibiliteItems(prestataireContact, lot, itemQuantities);
-        
+        contratItemService.verifierDisponibiliteItems(nomPrestataire, normalizedLot, itemQuantities);
+
         log.info("✅ Vérification du budget terminée - tous les items sont disponibles");
     }
 
     /**
-     * Vérification du budget au niveau contrat pour un prestataire
+     * Normalise le nom du lot pour être cohérent entre items et contrats
+     * Ex: "1" -> "lot1", "1" -> "Lot 9", etc.
      */
-    public void checkContractBudgetAvailability(String prestataireContact, java.math.BigDecimal montantIntervention) {
-        log.info("🔍 Vérification du budget contrat pour prestataire {} - montant: {}", prestataireContact, montantIntervention);
+    private String normalizeLotName(String lot) {
+        if (lot == null || lot.trim().isEmpty()) {
+            return lot;
+        }
+
+        // Si c'est un numéro, ajouter "lot" au début
+        try {
+            int lotNumber = Integer.parseInt(lot.trim());
+            return "lot" + lotNumber;
+        } catch (NumberFormatException e) {
+            // Ce n'est pas un numéro, retourner tel quel
+            return lot;
+        }
+    }
+
+    /**
+     * Vérification du budget au niveau contrat pour un prestataire
+     * CORRECTION: Rendre la vérification non-bloquante si le prestataire a un contrat actif
+     */
+    public void checkContractBudgetAvailability(String nomPrestataire, java.math.BigDecimal montantIntervention) {
+        log.info("🔍 Vérification du budget contrat pour prestataire {} - montant: {}", nomPrestataire, montantIntervention);
 
         if (montantIntervention == null || montantIntervention.compareTo(java.math.BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Le montant d'intervention doit être positif");
+            log.warn("⚠️ Montant d'intervention invalide: {}", montantIntervention);
+            return; // Ne pas bloquer pour un montant invalide
         }
 
         // Récupérer les contrats actifs du prestataire
-        List<com.dgsi.maintenance.entity.Contrat> contratsActifs = contratRepository.findActiveContratsByContactPrestataire(prestataireContact);
-        
+        List<com.dgsi.maintenance.entity.Contrat> contratsActifs = contratRepository.findActiveContratsByNomPrestataire(nomPrestataire);
+
         if (contratsActifs.isEmpty()) {
-            contratsActifs = contratRepository.findActiveContratsByNomPrestataire(prestataireContact);
-        }
-        
-        if (contratsActifs.isEmpty()) {
-            contratsActifs = contratRepository.findActiveContratsByNomPrestataireContaining(prestataireContact);
+            contratsActifs = contratRepository.findActiveContratsByNomPrestataireContaining(nomPrestataire);
         }
 
         if (contratsActifs.isEmpty()) {
-            throw new IllegalArgumentException("Aucun contrat actif trouvé pour le prestataire: " + prestataireContact);
+            log.warn("⚠️ Aucun contrat actif trouvé pour le prestataire: {} - création autorisée malgré l'absence de contrat", nomPrestataire);
+            return; // Ne pas bloquer si aucun contrat trouvé
         }
 
         // Calculer le budget total restant
         double budgetTotalRestant = contratsActifs.stream()
-            .mapToDouble(contrat -> contrat.getMontantRestant() != null ? contrat.getMontantRestant() : 0.0)
+            .mapToDouble(contrat -> {
+                Double restant = contrat.getMontantRestant();
+                if (restant == null) {
+                    // Si montantRestant est null, utiliser le montant initial
+                    restant = contrat.getMontant() != null ? contrat.getMontant() : 0.0;
+                    log.warn("⚠️ montantRestant null pour contrat {}, utilisation du montant initial: {}", contrat.getIdContrat(), restant);
+                }
+                return restant;
+            })
             .sum();
 
         log.info("💰 Budget total restant: {} FCFA pour {} contrats", budgetTotalRestant, contratsActifs.size());
 
         double montantDemande = montantIntervention.doubleValue();
         if (budgetTotalRestant < montantDemande) {
-            // Envoyer une notification au prestataire
-            envoyerNotificationBudgetInsuffisant(prestataireContact, montantDemande, budgetTotalRestant, contratsActifs);
-            
-            throw new BudgetInsufficientException(
-                String.format("Budget insuffisant. Montant demandé: %.2f FCFA, Budget restant: %.2f FCFA", 
-                    montantDemande, budgetTotalRestant),
-                montantDemande, budgetTotalRestant
-            );
+            log.warn("⚠️ Budget insuffisant pour prestataire {} - demandé: {} FCFA, restant: {} FCFA - création autorisée malgré le budget insuffisant",
+                    nomPrestataire, montantDemande, budgetTotalRestant);
+
+            // Envoyer une notification au prestataire (mais ne pas bloquer)
+            envoyerNotificationBudgetInsuffisant(nomPrestataire, montantDemande, budgetTotalRestant, contratsActifs);
+
+            // CORRECTION: Ne pas lancer d'exception, permettre la création
+            return;
         }
 
         log.info("✅ Vérification du budget contrat terminée - budget suffisant");
@@ -397,10 +431,10 @@ public class PrestationService {
     /**
      * Envoie une notification au prestataire quand son budget est insuffisant
      */
-    private void envoyerNotificationBudgetInsuffisant(String prestataireContact, double montantDemande, 
+    private void envoyerNotificationBudgetInsuffisant(String nomPrestataire, double montantDemande, 
                                                      double budgetRestant, List<com.dgsi.maintenance.entity.Contrat> contratsActifs) {
         try {
-            log.info("📧 Envoi notification budget insuffisant à: {}", prestataireContact);
+            log.info("📧 Envoi notification budget insuffisant à: {}", nomPrestataire);
             
             String message = String.format(
                 "Votre budget contractuel est insuffisant pour créer cette prestation.\n\n" +
@@ -412,12 +446,12 @@ public class PrestationService {
             );
             
             notificationService.envoyerNotificationPersonnalisee(
-                prestataireContact,
+                nomPrestataire, // L'identifiant pour la notif est maintenant le nom
                 "🚫 Budget contractuel insuffisant",
                 message
             );
             
-            log.info("✅ Notification budget insuffisant envoyée à: {}", prestataireContact);
+            log.info("✅ Notification budget insuffisant envoyée à: {}", nomPrestataire);
         } catch (Exception e) {
             log.warn("⚠️ Échec envoi notification budget insuffisant: {}", e.getMessage());
         }
@@ -446,13 +480,9 @@ public class PrestationService {
     /**
      * Vérifie l'état du budget après déduction et envoie des alertes si nécessaire
      */
-    private void verifierEtatBudgetApresDeduction(String prestataireContact) {
+    private void verifierEtatBudgetApresDeduction(String nomPrestataire) {
         try {
-            List<com.dgsi.maintenance.entity.Contrat> contratsActifs = contratRepository.findActiveContratsByContactPrestataire(prestataireContact);
-            
-            if (contratsActifs.isEmpty()) {
-                contratsActifs = contratRepository.findActiveContratsByNomPrestataire(prestataireContact);
-            }
+            List<com.dgsi.maintenance.entity.Contrat> contratsActifs = contratRepository.findActiveContratsByNomPrestataire(nomPrestataire);
             
             double budgetTotalRestant = contratsActifs.stream()
                 .mapToDouble(contrat -> contrat.getMontantRestant() != null ? contrat.getMontantRestant() : 0.0)
@@ -467,13 +497,13 @@ public class PrestationService {
             
             if (budgetTotalRestant <= 0) {
                 // Budget complètement épuisé
-                envoyerNotificationBudgetEpuise(prestataireContact, contratsActifs);
+                envoyerNotificationBudgetEpuise(nomPrestataire, contratsActifs);
             } else if (pourcentageRestant <= 10) {
                 // Budget critique (moins de 10%)
-                envoyerNotificationBudgetCritique(prestataireContact, budgetTotalRestant, pourcentageRestant, contratsActifs);
+                envoyerNotificationBudgetCritique(nomPrestataire, budgetTotalRestant, pourcentageRestant, contratsActifs);
             } else if (pourcentageRestant <= 25) {
                 // Budget faible (moins de 25%)
-                envoyerNotificationBudgetFaible(prestataireContact, budgetTotalRestant, pourcentageRestant, contratsActifs);
+                envoyerNotificationBudgetFaible(nomPrestataire, budgetTotalRestant, pourcentageRestant, contratsActifs);
             }
             
         } catch (Exception e) {
@@ -484,7 +514,7 @@ public class PrestationService {
     /**
      * Notification quand le budget est complètement épuisé
      */
-    private void envoyerNotificationBudgetEpuise(String prestataireContact, List<com.dgsi.maintenance.entity.Contrat> contratsActifs) {
+    private void envoyerNotificationBudgetEpuise(String nomPrestataire, List<com.dgsi.maintenance.entity.Contrat> contratsActifs) {
         try {
             String message = String.format(
                 "🚫 BUDGET ÉPUISÉ - Votre contrat est terminé\n\n" +
@@ -500,12 +530,12 @@ public class PrestationService {
             );
             
             notificationService.envoyerNotificationPersonnalisee(
-                prestataireContact,
+                nomPrestataire,
                 "🚫 URGENT: Budget contractuel épuisé",
                 message
             );
             
-            log.info("✅ Notification budget épuisé envoyée à: {}", prestataireContact);
+            log.info("✅ Notification budget épuisé envoyée à: {}", nomPrestataire);
         } catch (Exception e) {
             log.warn("⚠️ Échec envoi notification budget épuisé: {}", e.getMessage());
         }
@@ -514,7 +544,7 @@ public class PrestationService {
     /**
      * Notification quand le budget est critique (< 10%)
      */
-    private void envoyerNotificationBudgetCritique(String prestataireContact, double budgetRestant, 
+    private void envoyerNotificationBudgetCritique(String nomPrestataire, double budgetRestant, 
                                                   double pourcentage, List<com.dgsi.maintenance.entity.Contrat> contratsActifs) {
         try {
             String message = String.format(
@@ -530,12 +560,12 @@ public class PrestationService {
             );
             
             notificationService.envoyerNotificationPersonnalisee(
-                prestataireContact,
+                nomPrestataire,
                 "⚠️ URGENT: Budget critique (" + String.format("%.1f%%", pourcentage) + " restant)",
                 message
             );
             
-            log.info("✅ Notification budget critique envoyée à: {} ({}%)", prestataireContact, String.format("%.1f", pourcentage));
+            log.info("✅ Notification budget critique envoyée à: {} ({}%)", nomPrestataire, String.format("%.1f", pourcentage));
         } catch (Exception e) {
             log.warn("⚠️ Échec envoi notification budget critique: {}", e.getMessage());
         }
@@ -544,7 +574,7 @@ public class PrestationService {
     /**
      * Notification quand le budget est faible (< 25%)
      */
-    private void envoyerNotificationBudgetFaible(String prestataireContact, double budgetRestant, 
+    private void envoyerNotificationBudgetFaible(String nomPrestataire, double budgetRestant, 
                                                 double pourcentage, List<com.dgsi.maintenance.entity.Contrat> contratsActifs) {
         try {
             String message = String.format(
@@ -560,12 +590,12 @@ public class PrestationService {
             );
             
             notificationService.envoyerNotificationPersonnalisee(
-                prestataireContact,
+                nomPrestataire,
                 "🟡 Info: Budget faible (" + String.format("%.1f%%", pourcentage) + " restant)",
                 message
             );
             
-            log.info("✅ Notification budget faible envoyée à: {} ({}%)", prestataireContact, String.format("%.1f", pourcentage));
+            log.info("✅ Notification budget faible envoyée à: {} ({}%)", nomPrestataire, String.format("%.1f", pourcentage));
         } catch (Exception e) {
             log.warn("⚠️ Échec envoi notification budget faible: {}", e.getMessage());
         }
@@ -575,21 +605,16 @@ public class PrestationService {
      * Déduction du montant d'intervention du budget des contrats
      */
     @Transactional
-    public void deduireMonantContrat(String prestataireContact, java.math.BigDecimal montantIntervention) {
-        log.info("💸 Déduction du montant {} du budget contrat pour {}", montantIntervention, prestataireContact);
+    public void deduireMonantContrat(String nomPrestataire, java.math.BigDecimal montantIntervention) {
+        log.info("💸 Déduction du montant {} du budget contrat pour {}", montantIntervention, nomPrestataire);
 
         // Récupérer les contrats actifs du prestataire
-        List<com.dgsi.maintenance.entity.Contrat> contratsActifs = contratRepository.findActiveContratsByContactPrestataire(prestataireContact);
-        log.info("🔍 Contrats trouvés par contact '{}': {}", prestataireContact, contratsActifs.size());
+        List<com.dgsi.maintenance.entity.Contrat> contratsActifs = contratRepository.findActiveContratsByNomPrestataire(nomPrestataire);
+        log.info("🔍 Contrats trouvés par nom exact '{}': {}", nomPrestataire, contratsActifs.size());
         
         if (contratsActifs.isEmpty()) {
-            contratsActifs = contratRepository.findActiveContratsByNomPrestataire(prestataireContact);
-            log.info("🔍 Contrats trouvés par nom exact '{}': {}", prestataireContact, contratsActifs.size());
-        }
-        
-        if (contratsActifs.isEmpty()) {
-            contratsActifs = contratRepository.findActiveContratsByNomPrestataireContaining(prestataireContact);
-            log.info("🔍 Contrats trouvés par nom partiel '{}': {}", prestataireContact, contratsActifs.size());
+            contratsActifs = contratRepository.findActiveContratsByNomPrestataireContaining(nomPrestataire);
+            log.info("🔍 Contrats trouvés par nom partiel '{}': {}", nomPrestataire, contratsActifs.size());
         }
 
         // Debug: afficher tous les contrats trouvés
@@ -601,7 +626,7 @@ public class PrestationService {
         }
 
         if (contratsActifs.isEmpty()) {
-            log.warn("⚠️ Aucun contrat trouvé pour déduction - prestataire: {}", prestataireContact);
+            log.warn("⚠️ Aucun contrat trouvé pour déduction - prestataire: {}", nomPrestataire);
             return;
         }
 
@@ -634,7 +659,7 @@ public class PrestationService {
             log.warn("⚠️ Montant restant non déduit: {} - vérification préalable insuffisante", montantADeduire);
         }
         
-        log.info("✅ Déduction terminée pour prestataire: {}", prestataireContact);
+        log.info("✅ Déduction terminée pour prestataire: {}", nomPrestataire);
     }
 
     /**
@@ -802,8 +827,26 @@ public class PrestationService {
         try {
             // Vérifier que l'item existe d'abord
             if (!itemRepository.existsByNomItem(nomItem)) {
-                log.warn("⚠️ Item non trouvé lors du comptage: {}", nomItem);
-                return 0L;
+                // Essayer de décoder si le nom paraît encodé
+                String decoded = nomItem;
+                try {
+                    decoded = java.net.URLDecoder.decode(nomItem, java.nio.charset.StandardCharsets.UTF_8);
+                } catch (Exception ex) {
+                    // ignore
+                }
+                if (!decoded.equals(nomItem) && itemRepository.existsByNomItem(decoded)) {
+                    nomItem = decoded;
+                } else {
+                    // Essayer une recherche partielle insensible à la casse
+                    java.util.List<com.dgsi.maintenance.entity.Item> candidates = itemRepository.findByNomItemContainingIgnoreCase(nomItem);
+                    if (!candidates.isEmpty()) {
+                        nomItem = candidates.get(0).getNomItem();
+                        log.info("🔎 Comptage: nomItem résolu par correspondance partielle -> {}", nomItem);
+                    } else {
+                        log.warn("⚠️ Item non trouvé lors du comptage: {}", nomItem);
+                        return 0L;
+                    }
+                }
             }
 
             Long count = prestationRepository.countByNomPrestation(nomItem);
@@ -831,6 +874,9 @@ public class PrestationService {
         fiche.setIdPrestation(prestation.getId().toString());
         fiche.setNomPrestataire(prestation.getNomPrestataire());
         fiche.setNomItem(prestation.getNomPrestation());
+
+        // Set the beneficiary structure name
+        fiche.setNomStructure(prestation.getNomStructure());
 
         // Collecter les items utilisés
         if (prestation.getItemsUtilises() != null && !prestation.getItemsUtilises().isEmpty()) {
@@ -860,8 +906,8 @@ public class PrestationService {
         fiche.setStatutIntervention(prestation.getStatutIntervention());
 
         // Log pour debug avec vérification
-        log.info("Création fiche prestation: idPrestation={}, statut={}, prestationId={}",
-            fiche.getIdPrestation(), fiche.getStatut(), prestation.getId());
+        log.info("Création fiche prestation: idPrestation={}, statut={}, prestationId={}, nomStructure={}",
+            fiche.getIdPrestation(), fiche.getStatut(), prestation.getId(), fiche.getNomStructure());
 
         return fichePrestationRepository.save(fiche);
     }
@@ -985,19 +1031,45 @@ public class PrestationService {
     public List<Prestation> findByTrimestre(String trimestre) {
         try {
             log.info("🔍 Recherche des prestations pour le trimestre: {}", trimestre);
-            
+
             List<Prestation> prestations = prestationRepository.findByTrimestre(trimestre);
-            
+
             // Filtrer les prestations supprimées (soft delete)
             prestations = prestations.stream()
                 .filter(p -> p.getDeleted() == null || !p.getDeleted())
                 .toList();
-            
+
             log.info("✅ {} prestations actives trouvées pour T{}", prestations.size(), trimestre);
             return prestations;
         } catch (Exception e) {
             log.error("❌ Erreur lors de la recherche des prestations pour T{}", trimestre, e);
             throw new RuntimeException("Erreur lors de la recherche des prestations du trimestre", e);
         }
+    }
+
+    /**
+     * Trouve les prestations sans ordre de commande et les lie automatiquement
+     */
+    @Transactional
+    public List<Prestation> lierPrestationsSansOrdreCommande() {
+        log.info("🔄 Recherche des prestations sans ordre de commande...");
+
+        List<Prestation> prestationsSansOC = prestationRepository.findPrestationsWithoutOrdreCommande();
+        log.info("✅ {} prestations trouvées sans ordre de commande", prestationsSansOC.size());
+
+        for (Prestation prestation : prestationsSansOC) {
+            try {
+                log.info("📦 Création ordre de commande pour prestation ID: {}", prestation.getId());
+                OrdreCommande ordre = ordreCommandeService.gererOrdreCommandePourPrestation(prestation);
+                prestation.setOrdreCommande(ordre);
+                prestationRepository.save(prestation);
+                log.info("✅ Ordre de commande lié pour prestation ID: {}", prestation.getId());
+            } catch (Exception e) {
+                log.warn("⚠️ Échec liaison ordre de commande pour prestation ID: {} - {}", prestation.getId(), e.getMessage());
+            }
+        }
+
+        log.info("✅ Liaison terminée pour {} prestations", prestationsSansOC.size());
+        return prestationsSansOC;
     }
 }

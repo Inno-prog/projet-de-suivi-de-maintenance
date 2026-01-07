@@ -132,7 +132,7 @@ import { AuthService } from '../../../core/services/auth.service';
       position: fixed;
       left: 0;
       top: 0;
-      width: 270px;
+        width: 240px;
       height: 100vh;
       background: var(--bg);
       color: var(--text);

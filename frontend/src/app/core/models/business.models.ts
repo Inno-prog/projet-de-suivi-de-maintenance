@@ -205,6 +205,7 @@ export interface FichePrestation {
   idPrestation: string;
   nomPrestataire: string;
   nomItem: string;
+  nomStructure?: string;
   itemsCouverts?: string;
   dateRealisation: string;
   statut: StatutFiche;
@@ -245,6 +246,7 @@ export interface Lot {
     id: number;
     nomLot: string;
     codeLot: string;
+    villes?: string[];
 }
 
 export interface Item {
@@ -346,6 +348,12 @@ export interface StructureMefp {
   adresseStructure?: string;
   description?: string;
   categorie?: string;
+  // Lot relationship
+  lot?: {
+    id: number;
+    nomLot: string;
+    codeLot?: string;
+  };
   // Correspondant Informatique (CI) fields
   nomCI?: string;
   prenomCI?: string;

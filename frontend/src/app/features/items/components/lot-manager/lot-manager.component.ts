@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } 
 import { Lot, Item } from '../../../../core/models/business.models';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmationService } from '../../../../core/services/confirmation.service';
+import { LotService } from '../../../../core/services/lot.service';
 
 @Component({
   selector: 'lot-manager',
@@ -25,16 +26,20 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
             <div class="card h-100">
               <div class="card-header d-flex justify-content-between align-items-center">
                 <h6 class="mb-0">{{ lot.nomLot }}</h6>
-                <span class="badge bg-primary">{{ getItemsCountForLot(lot.id) }} items</span>
+                <span class="badge bg-primary">{{ getItemsCountForLot(lot) }} items</span>
               </div>
               <div class="card-body">
                 <p class="text-muted small mb-3">Code: {{ lot.codeLot }}</p>
+                <p class="text-muted small mb-3" *ngIf="lot.villes && lot.villes.length > 0">
+                  <i class="fa-solid fa-map-marker-alt me-1"></i>
+                  Villes: {{ lot.villes.join(', ') }}
+                </p>
 
                 <!-- Items in this lot -->
-                <div class="lot-items mb-3" *ngIf="getItemsForLot(lot.id).length > 0">
+                <div class="lot-items mb-3" *ngIf="getItemsForLot(lot).length > 0">
                   <small class="text-muted d-block mb-2">Items associés:</small>
                   <div class="items-list">
-                    <span class="badge bg-light text-dark me-1 mb-1" *ngFor="let item of getItemsForLot(lot.id)">
+                    <span class="badge bg-light text-dark me-1 mb-1" *ngFor="let item of getItemsForLot(lot)">
                       {{ item.nomItem }}
                       <i class="fa-solid fa-times ms-1" (click)="removeItemFromLot(item, lot)"></i>
                     </span>
@@ -79,6 +84,12 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
                   <label class="form-label">Code du Lot *</label>
                   <input formControlName="codeLot" type="text" class="form-control"
                          placeholder="Ex: LOT-2024-Q1">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Villes couvertes</label>
+                  <input formControlName="villes" type="text" class="form-control"
+                         placeholder="Ex: Ouagadougou, Bobo-Dioulasso">
+                  <div class="form-text">Séparez les villes par des virgules</div>
                 </div>
                 <div class="text-end">
                   <button type="button" class="btn btn-outline-secondary me-2" (click)="cancelEdit()">
@@ -188,7 +199,8 @@ export class LotManagerComponent {
   constructor(
     private fb: FormBuilder,
     private toast: ToastService,
-    private confirm: ConfirmationService
+    private confirm: ConfirmationService,
+    private lotService: LotService
   ) {
     this.initForm();
   }
@@ -196,7 +208,8 @@ export class LotManagerComponent {
   initForm() {
     this.lotForm = this.fb.group({
       nomLot: ['', Validators.required],
-      codeLot: ['', Validators.required]
+      codeLot: ['', Validators.required],
+      villes: ['']
     });
   }
 
@@ -210,7 +223,10 @@ export class LotManagerComponent {
     this.showForm = true;
     this.isEditing = true;
     this.currentLot = lot;
-    this.lotForm.patchValue(lot);
+    this.lotForm.patchValue({
+      ...lot,
+      villes: lot.villes ? lot.villes.join(', ') : ''
+    });
   }
 
   cancelEdit() {
@@ -225,18 +241,55 @@ export class LotManagerComponent {
 
     const lotData = this.lotForm.value;
 
-    if (this.isEditing && this.currentLot) {
-      const updatedLot = { ...this.currentLot, ...lotData };
-      this.lotUpdated.emit(updatedLot);
-    } else {
-      const newLot = {
-        ...lotData,
-        id: Date.now() // Temporary ID generation
-      };
-      this.lotCreated.emit(newLot);
-    }
+    // Convert villes string to array
+    const processedLotData = {
+      ...lotData,
+      villes: lotData.villes ? lotData.villes.split(',').map((v: string) => v.trim()).filter((v: string) => v) : []
+    };
 
-    this.cancelEdit();
+    if (this.isEditing && this.currentLot) {
+      // Update existing lot via API
+      this.lotService.updateLot(this.currentLot.id, processedLotData).subscribe({
+        next: (updatedLot) => {
+          this.toast.show({
+            type: 'success',
+            title: 'Succès',
+            message: 'Lot modifié avec succès'
+          });
+          this.lotUpdated.emit(updatedLot);
+          this.cancelEdit();
+        },
+        error: (error) => {
+          console.error('Erreur lors de la mise à jour du lot:', error);
+          this.toast.show({
+            type: 'error',
+            title: 'Erreur',
+            message: 'Erreur lors de la modification du lot'
+          });
+        }
+      });
+    } else {
+      // Create new lot via API
+      this.lotService.createLot(processedLotData).subscribe({
+        next: (newLot) => {
+          this.toast.show({
+            type: 'success',
+            title: 'Succès',
+            message: 'Lot créé avec succès'
+          });
+          this.lotCreated.emit(newLot);
+          this.cancelEdit();
+        },
+        error: (error) => {
+          console.error('Erreur lors de la création du lot:', error);
+          this.toast.show({
+            type: 'error',
+            title: 'Erreur',
+            message: 'Erreur lors de la création du lot'
+          });
+        }
+      });
+    }
   }
 
   async deleteLot(lot: Lot) {
@@ -249,13 +302,30 @@ export class LotManagerComponent {
     });
 
     if (confirmed) {
-      this.lotDeleted.emit(lot.id);
+      this.lotService.deleteLot(lot.id).subscribe({
+        next: () => {
+          this.toast.show({
+            type: 'success',
+            title: 'Succès',
+            message: 'Lot supprimé avec succès'
+          });
+          this.lotDeleted.emit(lot.id);
+        },
+        error: (error) => {
+          console.error('Erreur lors de la suppression du lot:', error);
+          this.toast.show({
+            type: 'error',
+            title: 'Erreur',
+            message: 'Erreur lors de la suppression du lot'
+          });
+        }
+      });
     }
   }
 
   // Item management methods
-  getItemsForLot(lotId: number): Item[] {
-    return this.items.filter(item => item.lot === lotId.toString());
+  getItemsForLot(lot: Lot): Item[] {
+    return this.items.filter(item => item.lot === lot.nomLot);
   }
 
   addItemToLot(lot: Lot) {
@@ -323,8 +393,8 @@ export class LotManagerComponent {
     });
   }
 
-  getItemsCountForLot(lotId: number): number {
-    return this.items.filter(item => item.lot === lotId.toString()).length;
+  getItemsCountForLot(lot: Lot): number {
+    return this.items.filter(item => item.lot === lot.nomLot).length;
   }
 
 }

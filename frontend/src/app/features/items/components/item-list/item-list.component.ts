@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ItemService } from '../../../../core/services/item.service';
 import { PrestationService } from '../../../../core/services/prestation.service';
-import { Item, Equipement, LotWithContractorDto } from '../../../../core/models/business.models';
+import { Item, Equipement, LotWithContractorDto, Lot } from '../../../../core/models/business.models';
 import { EquipementService } from '../../../../core/services/equipement.service';
 import { LotService } from '../../../../core/services/lot.service';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -89,77 +89,221 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
             </div>
           </div>
           
-          <div class="col-md-3">
-            <label class="form-label fw-semibold">Filtrer par Lot</label>
-            <select class="form-select" [(ngModel)]="selectedLotFilter" (ngModelChange)="onLotFilterChange($event)">
-              <option [ngValue]="null">Tous les lots</option>
-              <option *ngFor="let lot of lots" [ngValue]="lot.contractIds[0]">Lot {{ lot.lot }} ({{ lot.villes.join(', ') }})</option>
-            </select>
-          </div>
-
-
-          <div class="col-md-2">
-            <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
-              <i class="fa-solid fa-rotate-left"></i> Réinitialiser
-            </button>
-          </div>
+        
         </div>
       </div>
     </div>
 
-    <!-- TABLE -->
-    <div class="card shadow-sm border-0 rounded-3" *ngIf="!loading; else loadingTemplate">
-      <div class="table-responsive">
-        <table class="table align-middle table-hover mb-0">
-          <thead class="table-primary text-primary">
-            <tr>
-              <th>ID</th>
-              <th>Nom</th>
-              <th>Description</th>
-              <th>Prix Unitaire</th>
-              <th>Prestations/Max</th>
-              <th>Prix Total</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody *ngIf="filteredItems.length > 0; else noItems">
-            <tr *ngFor="let item of filteredItems" [class.table-warning]="isItemCritical(item)">
-              <td><span class="badge bg-primary-subtle text-primary fw-semibold">{{ item.idItem }}</span></td>
-              <td class="fw-semibold">{{ item.nomItem }}</td>
-              <td class="text-muted">{{ item.description || '-' }}</td>
-              <td><span class="text-success fw-semibold">{{ item.prix | number:'1.0-0' }} FCFA</span></td>
-              <td>
-                <div class="d-flex gap-1">
-                  <span class="badge bg-warning-subtle text-warning">{{ getPrestationsCountForItem(item) }}</span>
-                  <span class="text-muted">/</span>
-                  <span class="badge bg-info-subtle text-info">{{ item.quantiteMaxTrimestre }}</span>
+    <!-- LOT SELECTION VIEW -->
+    <div *ngIf="!selectedLot && !loading; else itemsView">
+      
+
+      <!-- LOTS GRID -->
+      <div *ngIf="lots && lots.length > 0; else noLots" class="row g-4">
+        <div class="col-xl-4 col-lg-6 col-md-6" *ngFor="let lot of lots">
+          <div class="lot-selection-card card h-100 border-0 shadow-sm hover-lift cursor-pointer"
+               (click)="selectLot(lot)">
+            <div class="card-body d-flex flex-column text-center p-4">
+              <!-- LOT ICON -->
+              <div class="lot-icon mx-auto mb-3 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                <i class="fa-solid fa-layer-group fa-xl"></i>
+              </div>
+
+              <!-- LOT NAME -->
+              <h5 class="card-title fw-bold text-primary mb-2">
+                 {{ lot.lot }}
+              </h5>
+
+              <!-- LOT CITIES -->
+              <p class="text-muted small mb-3 flex-grow-1">
+                <i class="fa-solid fa-map-marker-alt me-1"></i>
+                {{ lot.villes.join(', ') }}
+              </p>
+
+              <!-- LOT STATS -->
+              <div class="lot-stats-grid mt-auto">
+                <div class="row g-2">
+                  <div class="col-4">
+                    <div class="stat-box p-2 bg-light rounded text-center">
+                      <div class="fw-bold text-primary">{{ getItemsCountForLot(lot) }}</div>
+                      <small class="text-muted">Items</small>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="stat-box p-2 bg-light rounded text-center">
+                      <div class="fw-bold text-success">{{ getLotTotalValue(getItemsForLot(lot)) | number:'1.0-0' }}</div>
+                      <small class="text-muted">FCFA</small>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <div class="stat-box p-2 bg-light rounded text-center">
+                      <div class="fw-bold text-info">{{ getLotTotalPrestations(getItemsForLot(lot)) }}</div>
+                      <small class="text-muted">Prest.</small>
+                    </div>
+                  </div>
                 </div>
-              </td>
-              <td><span class="text-danger fw-semibold">{{ (item.prix * item.quantiteMaxTrimestre) | number:'1.0-0' }} FCFA</span></td>
-              <td>
-                <div class="d-flex gap-2 justify-content-center">
-                  <button class="btn btn-info btn-action" (click)="viewItem(item)" title="Voir les détails">
-                    <i class="fa-solid fa-eye"></i>
-                  </button>
-                  <button class="btn btn-warning btn-action" (click)="onEdit(item)" title="Modifier l'item">
-                    <i class="fa-solid fa-pen-to-square"></i>
-                  </button>
-                  <button class="btn btn-danger btn-action" (click)="onDelete(item)" title="Supprimer l'item">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </div>
+
+              <!-- CLICK INDICATOR -->
+              <div class="mt-3 text-primary">
+                <small><i class="fa-solid fa-mouse-pointer me-1"></i>Cliquez pour voir les items</small>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <!-- NO LOTS -->
+      <ng-template #noLots>
+        <div class="text-center py-5">
+          <div class="empty-state-icon mb-4">
+            <i class="fa-solid fa-layer-group fa-4x text-muted"></i>
+          </div>
+          <h4 class="text-muted mb-2">Aucun lot disponible</h4>
+          <p class="text-muted">Il n'y a actuellement aucun lot dans le système.</p>
+        </div>
+      </ng-template>
     </div>
 
-    <!-- NO ITEMS -->
-    <ng-template #noItems>
-      <div class="text-center p-5 text-muted">
-        <i class="fa-solid fa-box-open fa-2x mb-3"></i><br>
-        Aucun item trouvé 😕
+    <!-- ITEMS VIEW FOR SELECTED LOT -->
+    <ng-template #itemsView>
+      <div *ngIf="!loading; else loadingTemplate">
+        <!-- BACK BUTTON AND LOT HEADER -->
+        <div class="d-flex align-items-center justify-content-between mb-4">
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-secondary btn-sm" (click)="backToLots()">
+              <i class="fa-solid fa-arrow-left me-2"></i>
+              Retour aux lots
+            </button>
+            <div *ngIf="selectedLot">
+              <h2 class="h4 fw-bold text-primary mb-0">
+                <i class="fa-solid fa-layer-group me-2"></i>
+                Lot {{ selectedLot.lot }}
+              </h2>
+              <p class="text-muted small mb-0">
+                <i class="fa-solid fa-map-marker-alt me-1"></i>
+                {{ selectedLot.villes.join(', ') }}
+              </p>
+            </div>
+          </div>
+          <div class="lot-summary-stats d-flex gap-3">
+            <div class="text-center px-3 py-2 bg-light rounded">
+              <div class="fw-bold text-primary">{{ getItemsForSelectedLot().length }}</div>
+              <small class="text-muted">Items</small>
+            </div>
+            <div class="text-center px-3 py-2 bg-light rounded">
+              <div class="fw-bold text-success">{{ getLotTotalValue(getItemsForSelectedLot()) | number:'1.0-0' }} FCFA</div>
+              <small class="text-muted">Valeur totale</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEARCH FOR ITEMS -->
+        <div class="card shadow-sm border-0 rounded-3 mb-4" *ngIf="getItemsForSelectedLot().length > 0">
+          <div class="card-body">
+            <div class="row g-3 align-items-end">
+              <div class="col-md-4">
+                <label class="form-label fw-semibold">Recherche</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass"></i></span>
+                  <input type="text" class="form-control" placeholder="Nom, description ou lot..."
+                         [(ngModel)]="searchTerm" (input)="applySearch()">
+                </div>
+              </div>
+
+              <div class="col-md-3">
+                <label class="form-label fw-semibold">Filtrer par Lot</label>
+                <select class="form-select" [(ngModel)]="selectedLotFilter" (ngModelChange)="applySearch()">
+                  <option [ngValue]="null">Tous les lots</option>
+                  <option *ngFor="let lot of lots" [ngValue]="lot.lot">Lot {{ lot.lot }} ({{ lot.villes.join(', ') }})</option>
+                </select>
+              </div>
+
+              <div class="col-md-2">
+                <button class="btn btn-outline-secondary w-100" (click)="clearSearch()" [disabled]="!searchTerm && !selectedLotFilter">
+                  <i class="fa-solid fa-rotate-left"></i> Réinitialiser
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ITEMS TABLE -->
+        <div *ngIf="getItemsForSelectedLot().length > 0; else noItemsInLot" class="card shadow-sm border-0 rounded-3">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-primary text-primary">
+                <tr>
+                  <th>N°</th>
+                  <th>Nom</th>
+                  <th >Description</th>
+                  <th>Prix Unitaire</th>
+                  <th>Qté Max</th>
+                  <th>Utilisation</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of getItemsForSelectedLot()" [class.table-warning]="isItemCritical(item)">
+                  <td>
+                    <span class="badge bg-primary-subtle text-primary fw-semibold">
+                      #{{ item.idItem }}
+                    </span>
+                  </td>
+                  <td class="fw-semibold">{{ item.nomItem }}</td>
+                  <td class="text-muted">{{ item.description || '-' }}</td>
+                  <td>
+                    <span class="text-success fw-semibold">{{ item.prix | number:'1.0-0' }} FCFA</span>
+                  <td>
+                    <span class="badge bg-info-subtle text-info">{{ item.quantiteMaxTrimestre }}</span>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <div class="usage-indicator flex-grow-1">
+                        <div class="progress" style="height: 8px;">
+                          <div class="progress-bar" [ngClass]="getUsageProgressClass(item)"
+                               [style.width.%]="getUsagePercentage(item)">
+                          </div>
+                        </div>
+                      </div>->
+                      <small class="fw-semibold text-muted">
+                        {{ getPrestationsCountForItem(item) }}/{{ item.quantiteMaxTrimestre }}
+                      </small>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <div class="d-flex gap-1 justify-content-center">
+                      <button class="btn btn-outline-info btn-sm" (click)="viewItem(item)" title="Voir les détails">
+                        <i class="fa-solid fa-eye"></i>
+                      </button>
+                      <button class="btn btn-outline-warning btn-sm" (click)="onEdit(item)" title="Modifier l'item">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <button class="btn btn-outline-danger btn-sm" (click)="onDelete(item)" title="Supprimer l'item">
+                        <i class="fa-solid fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- NO ITEMS IN LOT -->
+        <ng-template #noItemsInLot>
+          <div class="text-center py-5">
+            <div class="empty-state-icon mb-4">
+              <i class="fa-solid fa-box-open fa-4x text-muted"></i>
+            </div>
+            <h4 class="text-muted mb-2">Aucun item dans ce lot</h4>
+            <p class="text-muted">Ce lot ne contient actuellement aucun item.</p>
+            <button class="btn btn-primary" (click)="onAdd()">
+              <i class="fa-solid fa-plus-circle me-2"></i>
+              Ajouter un item
+            </button>
+          </div>
+        </ng-template>
       </div>
     </ng-template>
 
@@ -199,7 +343,7 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
                     <label class="form-label fw-semibold">Lot d'appartenance</label>
                     <select formControlName="lot" class="form-select">
                       <option value="">Aucun lot</option>
-                      <option *ngFor="let lot of lots" [value]="lot.contractIds[0]">Lot {{ lot.lot }} ({{ lot.villes.join(', ') }})</option>
+                      <option *ngFor="let lot of lots" [value]="lot.lot">Lot {{ lot.lot }} ({{ lot.villes.join(', ') }})</option>
                     </select>
                     <div class="form-text">Associer cet item à un lot géographique</div>
                   </div>
@@ -312,8 +456,9 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
           </div>
           <div class="modal-body">
             <lot-manager
-              [lots]="transformLotsForManager(lots)"
-              [items]="items">
+              [lots]="lotEntities"
+              [items]="items"
+              (lotUpdated)="onLotUpdated($event)">
             </lot-manager>
           </div>
         </div>
@@ -402,51 +547,239 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
       background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     }
 
-    /* Text wrapping for table cells */
-    td:nth-child(2), td:nth-child(3) {
-      max-width: 200px;
-      word-wrap: break-word;
-      white-space: normal;
-      overflow-wrap: break-word;
-      word-break: break-word;
-      line-height: 1.4;
+    /* Lot Selection Cards */
+    .lot-selection-card {
+      transition: all 0.3s ease;
+      border-radius: 1rem;
+      cursor: pointer;
+      overflow: hidden;
     }
 
-    td:nth-child(2) {
+    .lot-selection-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2) !important;
+      border-color: #0d6efd !important;
+    }
+
+    .hover-lift {
+      transition: all 0.3s ease;
+    }
+
+    .hover-lift:hover {
+      transform: translateY(-8px);
+    }
+
+    .cursor-pointer {
+      cursor: pointer;
+    }
+
+    /* Modern Card Styles */
+    .item-card {
+      transition: all 0.3s ease;
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+
+    .item-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+    }
+
+    .hover-shadow-lg {
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .hover-shadow-lg:hover {
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+
+    .lot-header {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-left: 4px solid #0d6efd !important;
+    }
+
+    .lot-icon {
+      background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+    }
+
+    .item-id {
+      font-size: 0.75rem;
       font-weight: 600;
-      color: #374151;
     }
 
-    /* Description column (3rd column) */
-    td:nth-child(3) {
-      color: #6b7280;
-      font-style: italic;
-      max-width: 250px;
-      min-width: 150px;
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
-    /* Qté Utilisée/Max column (5th column) */
-    td:nth-child(5) {
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .usage-indicator .progress {
+      background-color: #e9ecef;
+      border-radius: 3px;
+    }
+
+    .usage-indicator .progress-bar {
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .empty-state-icon {
+      opacity: 0.5;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .lot-stats {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .card-actions {
+        flex-direction: column;
+      }
+
+      .card-actions .btn {
+        width: 100%;
+      }
+    }
+
+    /* Status badges */
+    .badge {
+      font-size: 0.7rem;
+      padding: 0.375rem 0.5rem;
+    }
+
+    /* Individual action buttons */
+    .table .btn {
+      border-radius: 0.375rem !important;
+      transition: all 0.2s ease;
+      min-width: 32px;
+      height: 32px;
+      padding: 0.25rem 0.5rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .table .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Table enhancements */
+    .table th {
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      border-bottom: 2px solid #dee2e6;
+      text-align: left !important;
+    }
+
+    .table th.text-center {
+      text-align: center !important;
+    }
+
+    .table td {
+      vertical-align: middle;
+    }
+
+    /* Column width adjustments - compact layout */
+    .table th:nth-child(1), .table td:nth-child(1) { /* ID */
+      width: 60px;
+      min-width: 60px;
+      max-width: 80px;
+    }
+
+    .table th:nth-child(2), .table td:nth-child(2) { /* Nom */
+      width: 150px;
       min-width: 120px;
+      max-width: 200px;
+    }
+
+    .table th:nth-child(3), .table td:nth-child(3) { /* Description */
+      width: 180px;
+      min-width: 150px;
+      max-width: 250px;
+    }
+
+    .table th:nth-child(4), .table td:nth-child(4) { /* Prix Unitaire */
+      width: 100px;
+      min-width: 100px;
+      max-width: 120px;
+    }
+
+    .table th:nth-child(5), .table td:nth-child(5) { /* Qté Max */
+      width: 80px;
+      min-width: 80px;
+      max-width: 100px;
+    }
+
+    .table th:nth-child(6), .table td:nth-child(6) { /* Utilisation */
+      width: 120px;
+      min-width: 120px;
+      max-width: 140px;
+    }
+
+    .table th:nth-child(7), .table td:nth-child(7) { /* Actions */
+      width: 160px;
+      min-width: 160px;
+    }
+
+    /* Text truncation for compact columns */
+    .table td:nth-child(2) {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .table td:nth-child(3) {
+      max-height: 3em;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    /* Usage indicator in table */
+    .usage-indicator {
+      min-width: 80px;
+    }
+
+    .usage-indicator .progress {
+      background-color: #e9ecef;
+      border-radius: 4px;
     }
   `]
 })
 export class ItemListComponent implements OnInit {
    items: Item[] = [];
-   filteredItems: Item[] = [];
-   lots: LotWithContractorDto[] = [];
-   equipements: Equipement[] = [];
-   searchTerm = '';
-   selectedLotFilter: number | null = null;
-   showForm = false;
-   showLotManagerModal = false;
-   isEditing = false;
-   isViewing = false;
-   loading = false;
-   itemForm!: FormGroup;
-   currentItem: Item | null = null;
-   totalPrestations = 0;
-   prestationsCountByItem: { [itemId: number]: number } = {};
+    filteredItems: Item[] = [];
+    groupedItems: any[] = [];
+    lots: LotWithContractorDto[] = [];
+    lotEntities: Lot[] = []; // Add proper lot entities
+    equipements: Equipement[] = [];
+    searchTerm = '';
+   selectedLotFilter: string | null = null;
+    selectedLot: LotWithContractorDto | null = null; // Currently selected lot for viewing items
+    showForm = false;
+    showLotManagerModal = false;
+    isEditing = false;
+    isViewing = false;
+    loading = false;
+    itemForm!: FormGroup;
+    currentItem: Item | null = null;
+    totalPrestations = 0;
+    prestationsCountByItem: { [itemId: number]: number } = {};
 
   constructor(
     private fb: FormBuilder,
@@ -479,41 +812,44 @@ export class ItemListComponent implements OnInit {
 
 
   loadItems() {
-    this.loading = true;
-    // Charger les items complets ET les statistiques
-    Promise.all([
-      this.itemService.getAllItems().toPromise(),
-      this.itemService.getItemsStatistiques().toPromise()
-    ]).then(([items, itemsStats]) => {
-      // Fusionner les données complètes avec les statistiques
-      this.items = (items || []).map(item => {
-        const stat = (itemsStats || []).find(s => s.id === item.id);
-        return {
-          ...item,
-          quantiteUtilisee: stat ? stat.quantiteUtilisee : 0,
-          quantiteUtiliseeTrimestre: stat ? stat.quantiteUtiliseeTrimestre : 0
-        };
-      });
-      this.filteredItems = [...this.items];
-      this.loading = false;
-    }).catch(() => {
-      this.loading = false;
-      this.toast.show({ type: 'error', title: 'Erreur', message: 'Erreur lors du chargement des données' });
-    });
-  }
+     this.loading = true;
+     // Charger les items complets ET les statistiques
+     Promise.all([
+       this.itemService.getAllItems().toPromise(),
+       this.itemService.getItemsStatistiques().toPromise()
+     ]).then(([items, itemsStats]) => {
+       // Fusionner les données complètes avec les statistiques
+       this.items = (items || []).map(item => {
+         const stat = (itemsStats || []).find(s => s.id === item.id);
+         return {
+           ...item,
+           quantiteUtilisee: stat ? stat.quantiteUtilisee : 0,
+           quantiteUtiliseeTrimestre: stat ? stat.quantiteUtiliseeTrimestre : 0
+         };
+       });
+       this.filteredItems = [...this.items];
+       this.groupItemsByLot();
+       this.loading = false;
+     }).catch(() => {
+       this.loading = false;
+       this.toast.show({ type: 'error', title: 'Erreur', message: 'Erreur lors du chargement des données' });
+     });
+    }
 
   loadLots() {
-    this.lotService.getAllLots().subscribe({
-      next: (lots) => {
-        console.log('Loaded lots:', lots);
-        this.lots = lots;
-      },
-      error: (error) => {
-        console.error('Error loading lots:', error);
-        this.toast.show({ type: 'error', title: 'Erreur', message: 'Erreur lors du chargement des lots' });
-        // Fallback to empty array
-        this.lots = [];
-      }
+    // Load both contract-based lots and lot entities
+    Promise.all([
+      this.lotService.getAllLots().toPromise(),
+      this.lotService.getAllLotEntities().toPromise()
+    ]).then(([lots, lotEntities]) => {
+      this.lots = lots || [];
+      this.lotEntities = lotEntities || [];
+    }).catch((error) => {
+      console.error('Erreur lors du chargement des lots:', error);
+      this.toast.show({ type: 'error', title: 'Erreur', message: 'Erreur lors du chargement des lots' });
+      // Fallback to empty arrays
+      this.lots = [];
+      this.lotEntities = [];
     });
   }
 
@@ -545,28 +881,77 @@ export class ItemListComponent implements OnInit {
   }
 
   applyFilters() {
-    // If no filters are applied, show all items
-    if (!this.searchTerm && !this.selectedLotFilter) {
-      this.filteredItems = [...this.items];
-      return;
+     // If no filters are applied, show all items
+     if (!this.searchTerm && !this.selectedLotFilter) {
+       this.filteredItems = [...this.items];
+       this.groupItemsByLot();
+       return;
+     }
+
+     // Use API calls for better filtering
+     this.loading = true;
+
+     // Filtrer localement pour éviter les rechargements
+     this.filteredItems = this.items.filter(item => {
+       const matchesSearch = !this.searchTerm ||
+         item.nomItem.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+         (item.description && item.description.toLowerCase().includes(this.searchTerm.toLowerCase()));
+
+       const matchesLot = !this.selectedLotFilter ||
+         this.matchesLotFilter(item, this.selectedLotFilter);
+
+       return matchesSearch && matchesLot;
+     });
+
+     this.groupItemsByLot();
+     this.loading = false;
     }
 
-    // Use API calls for better filtering
-    this.loading = true;
+  private matchesLotFilter(item: Item, lotFilter: string): boolean {
+    if (!item.lot) return false;
 
-    // Filtrer localement pour éviter les rechargements
-    this.filteredItems = this.items.filter(item => {
-      const matchesSearch = !this.searchTerm || 
-        item.nomItem.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        (item.description && item.description.toLowerCase().includes(this.searchTerm.toLowerCase()));
-      
-      const matchesLot = !this.selectedLotFilter || 
-        (item.lot && item.lot === this.selectedLotFilter.toString());
-      
-      return matchesSearch && matchesLot;
+    const itemLot = item.lot.toString().trim();
+    const filterValue = lotFilter.toString().trim();
+
+    // Exact match
+    if (itemLot === filterValue) return true;
+
+    // Handle "Lot X" vs "X" format
+    if (itemLot === `Lot ${filterValue}`) return true;
+    if (`Lot ${itemLot}` === filterValue) return true;
+
+    // Handle numeric matches
+    const itemLotNum = itemLot.replace(/\D/g, '');
+    const filterNum = filterValue.replace(/\D/g, '');
+    if (itemLotNum && filterNum && itemLotNum === filterNum) return true;
+
+    return false;
+  }
+
+  groupItemsByLot() {
+    const grouped: { [key: string]: any } = {};
+
+    this.filteredItems.forEach(item => {
+      const lotKey = item.lot || '';
+      const lotInfo = this.lots.find(l => l.lot === lotKey);
+
+      if (!grouped[lotKey]) {
+        grouped[lotKey] = {
+          lotName: lotInfo ? `Lot ${lotInfo.lot}` : (lotKey ? `Lot ${lotKey}` : null),
+          villes: lotInfo ? lotInfo.villes : [],
+          items: []
+        };
+      }
+
+      grouped[lotKey].items.push(item);
     });
-    
-    this.loading = false;
+
+    // Convert to array and sort: items without lot first, then by lot name
+    this.groupedItems = Object.values(grouped).sort((a: any, b: any) => {
+      if (!a.lotName && b.lotName) return -1;
+      if (a.lotName && !b.lotName) return 1;
+      return (a.lotName || '').localeCompare(b.lotName || '');
+    });
   }
 
   onLotFilterChange(event: any) {
@@ -579,9 +964,69 @@ export class ItemListComponent implements OnInit {
   }
 
   clearFilters() {
+     this.searchTerm = '';
+     this.selectedLotFilter = null;
+     this.applyFilters();
+   }
+
+  applySearch() {
+    // For selected lot view, we filter the items for that specific lot
+    // This is a simple implementation - in a real app you might want more sophisticated filtering
+    // For now, we'll just trigger change detection
+    setTimeout(() => {}, 0);
+  }
+
+  clearSearch() {
     this.searchTerm = '';
     this.selectedLotFilter = null;
-    this.applyFilters();
+  }
+
+  selectLot(lot: LotWithContractorDto) {
+    this.selectedLot = lot;
+    this.selectedLotFilter = null; // Don't use filter when lot is selected
+    this.searchTerm = ''; // Clear search when selecting a lot
+    // No need to call applyFilters() here since we're using getItemsForSelectedLot()
+  }
+
+  backToLots() {
+    this.selectedLot = null;
+    this.selectedLotFilter = null;
+    this.searchTerm = '';
+    this.filteredItems = [...this.items]; // Reset to all items
+  }
+
+  getItemsForSelectedLot(): Item[] {
+    if (!this.selectedLot) return [];
+    return this.items.filter(item => this.matchesLot(item, this.selectedLot!));
+  }
+
+  private matchesLot(item: Item, lot: LotWithContractorDto): boolean {
+    if (!item.lot) return false;
+
+    const itemLot = item.lot.toString().trim();
+    const lotIdentifier = lot.lot.toString().trim();
+
+    // Exact match
+    if (itemLot === lotIdentifier) return true;
+
+    // Handle "Lot X" vs "X" format
+    if (itemLot === `Lot ${lotIdentifier}`) return true;
+    if (`Lot ${itemLot}` === lotIdentifier) return true;
+
+    // Handle numeric matches
+    const itemLotNum = itemLot.replace(/\D/g, '');
+    const lotNum = lotIdentifier.replace(/\D/g, '');
+    if (itemLotNum && lotNum && itemLotNum === lotNum) return true;
+
+    return false;
+  }
+
+  getItemsForLot(lot: LotWithContractorDto): Item[] {
+    return this.items.filter(item => this.matchesLot(item, lot));
+  }
+
+  getItemsCountForLot(lot: LotWithContractorDto): number {
+    return this.getItemsForLot(lot).length;
   }
 
   // Méthodes utilitaires
@@ -651,10 +1096,21 @@ export class ItemListComponent implements OnInit {
 
   transformLotsForManager(lots: LotWithContractorDto[]): any[] {
     return lots.map(lot => ({
-      id: lot.contractIds[0] || 0,
+      id: parseInt(lot.contractIds[0]) || 0,
       nomLot: lot.villes.join(', '),
       codeLot: lot.lot
     }));
+  }
+
+  onLotUpdated(updatedLot: Lot) {
+    console.log('Lot updated:', updatedLot);
+    // Refresh the lots data to reflect the changes
+    this.loadLots();
+    this.toast.show({
+      type: 'success',
+      title: 'Succès',
+      message: 'Lot mis à jour avec succès'
+    });
   }
 
   // Note: Les lots sont maintenant en lecture seule car ils sont dérivés des contrats actifs
@@ -700,7 +1156,7 @@ export class ItemListComponent implements OnInit {
     this.isViewing = true;
     const formData = {
       ...item,
-      lot: item.lot ? parseInt(item.lot) : '',
+      lot: item.lot || '',
       equipements: item.equipements || []
     };
     this.itemForm.patchValue(formData);
@@ -807,9 +1263,32 @@ export class ItemListComponent implements OnInit {
   }
 
   isEquipementSelected(equipement: Equipement): boolean {
-    const currentEquipements = this.itemForm.get('equipements')?.value || [];
-    return currentEquipements.some((e: Equipement) => e.id === equipement.id);
+     const currentEquipements = this.itemForm.get('equipements')?.value || [];
+     return currentEquipements.some((e: Equipement) => e.id === equipement.id);
+   }
+
+  // Lot statistics methods
+  getLotTotalValue(items: Item[]): number {
+    return items.reduce((total, item) => total + (item.prix || 0), 0);
+  }
+
+  getLotTotalPrestations(items: Item[]): number {
+    return items.reduce((total, item) => total + this.getPrestationsCountForItem(item), 0);
+  }
+
+  // Usage indicator methods
+  getUsagePercentage(item: Item): number {
+    const used = this.getPrestationsCountForItem(item);
+    const max = item.quantiteMaxTrimestre;
+    return max > 0 ? Math.min((used / max) * 100, 100) : 0;
+  }
+
+  getUsageProgressClass(item: Item): string {
+    const percentage = this.getUsagePercentage(item);
+    if (percentage >= 90) return 'bg-danger';
+    if (percentage >= 70) return 'bg-warning';
+    return 'bg-success';
   }
 
 
-}
+ }

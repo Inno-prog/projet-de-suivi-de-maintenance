@@ -13,4 +13,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     boolean existsByNomItem(String nomItem);
     List<Item> findByLot(String lot);
     List<Item> findByLotAndNomItemContainingIgnoreCase(String lot, String nomItem);
+
+    // Recherche plus tolérante: correspondance partielle insensible à la casse
+    List<Item> findByLotContainingIgnoreCase(String lot);
 }
