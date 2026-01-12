@@ -1072,4 +1072,27 @@ public class PrestationService {
         log.info("✅ Liaison terminée pour {} prestations", prestationsSansOC.size());
         return prestationsSansOC;
     }
+
+    /**
+     * Comptage de toutes les prestations non supprimées (soft delete)
+     */
+    @Transactional(readOnly = true)
+    public Long countAllNonDeleted() {
+        try {
+            log.info("🔢 Comptage de toutes les prestations non supprimées");
+
+            // Compter toutes les prestations qui ne sont pas marquées comme supprimées
+            List<Prestation> allPrestations = prestationRepository.findAll();
+            long count = allPrestations.stream()
+                .filter(p -> p.getDeleted() == null || !p.getDeleted())
+                .count();
+
+            log.info("✅ {} prestations actives trouvées", count);
+            return count;
+
+        } catch (Exception e) {
+            log.error("❌ Erreur lors du comptage des prestations non supprimées", e);
+            return 0L;
+        }
+    }
 }

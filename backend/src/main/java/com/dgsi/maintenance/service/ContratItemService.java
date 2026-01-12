@@ -184,16 +184,18 @@ public class ContratItemService {
                 int totalRemaining = totalMax - totalUsed;
 
                 if (totalRemaining <= 0) {
-                    String msg = String.format("Capacité contractuelle épuisée pour l'item '%s' (utilisé %d/%d)", item.getNomItem(), totalUsed, totalMax);
-                    log.warn("⚠️ {} - création bloquée", msg);
-                    throw new IllegalArgumentException(msg);
+                    String msg = String.format("Capacité contractuelle épuisée pour l'item '%s' (utilisé %d/%d) - création autorisée malgré l'épuisement", item.getNomItem(), totalUsed, totalMax);
+                    log.warn("⚠️ {} - création autorisée malgré l'épuisement", msg);
+                    // CORRECTION: Ne pas bloquer la création, permettre malgré la capacité épuisée
+                    return;
                 }
 
                 if (quantiteDemandee > totalRemaining) {
-                    String msg = String.format("Quantité demandée (%d) supérieure à la capacité contractuelle restante (%d) pour l'item '%s'",
+                    String msg = String.format("Quantité demandée (%d) supérieure à la capacité contractuelle restante (%d) pour l'item '%s' - création autorisée malgré l'insuffisance",
                         quantiteDemandee, totalRemaining, item.getNomItem());
-                    log.warn("⚠️ {} - création bloquée", msg);
-                    throw new IllegalArgumentException(msg);
+                    log.warn("⚠️ {} - création autorisée malgré l'insuffisance", msg);
+                    // CORRECTION: Ne pas bloquer la création, permettre malgré l'insuffisance de capacité
+                    return;
                 }
 
                 log.info("✅ Item {} vérifié contractuellement: demandé={}, restantContractuel={}", item.getNomItem(), quantiteDemandee, totalRemaining);

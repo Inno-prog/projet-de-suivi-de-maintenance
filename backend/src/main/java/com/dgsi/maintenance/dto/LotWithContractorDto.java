@@ -2,8 +2,6 @@ package com.dgsi.maintenance.dto;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LotWithContractorDto {
@@ -44,8 +42,10 @@ public class LotWithContractorDto {
         return this.lot + " (" + String.join(", ", this.villes) + ")";
     }
 
-    // Keep raw lot name accessible internally but ignore in JSON serialization
-    @JsonIgnore
+    /**
+     * Retourne le nom brut du lot pour la navigation
+     */
+    @JsonProperty("lotRaw")
     public String getLotRaw() {
         return this.lot;
     }

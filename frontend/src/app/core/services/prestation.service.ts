@@ -354,6 +354,11 @@ export class PrestationService {
     );
   }
 
+  // Get total count of all prestations (for admin dashboard)
+  getPrestationsCount(): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/count`);
+  }
+
   // MÉTHODE SPÉCIFIQUE POUR LES PRESTATAIRES - récupère leurs propres prestations
   getMyPrestations(page: number = 0, size: number = 12): Observable<PaginationResponse<Prestation>> {
     console.log('🔍 === DEBUG MES PRESTATIONS SERVICE ===');

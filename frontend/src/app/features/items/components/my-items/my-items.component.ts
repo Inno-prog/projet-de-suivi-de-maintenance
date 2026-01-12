@@ -386,18 +386,30 @@ export class MyItemsComponent implements OnInit {
       return;
     }
 
+    console.log('SUCCESS - Loading items for prestataire (dev):', currentUser.id);
     this.itemService.getItemsByPrestataire(currentUser.id).subscribe({
       next: (items) => {
+        console.log('SUCCESS - My items loaded (dev):', items);
         this.items = items || [];
         this.filteredItems = [...this.items];
         this.loading = false;
+        
+        if (this.items.length === 0) {
+          this.toast.show({
+            type: 'info',
+            title: 'Information',
+            message: 'Aucun item trouvé pour vos contrats'
+          });
+        }
       },
       error: (error) => {
         console.error('Erreur lors du chargement des items:', error);
+        this.items = [];
+        this.filteredItems = [];
         this.toast.show({
           type: 'error',
           title: 'Erreur',
-          message: 'Erreur lors du chargement de vos items'
+          message: 'Impossible de charger vos items. Veuillez réessayer.'
         });
         this.loading = false;
       }

@@ -23,9 +23,9 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
 
       <!-- Lots Grid -->
       <div class="lots-grid">
-        <div *ngFor="let lot of lots" 
-             class="lot-card" 
-             (click)="selectLot(lot.numero)">
+        <div *ngFor="let lot of lots"
+             class="lot-card"
+             (click)="selectLot(lot)">
           <div class="lot-header">
             <div class="lot-number">Lot {{ lot.numero }}</div>
             <div class="lot-status" [class]="lot.statusClass">
@@ -265,7 +265,8 @@ export class TrimestreLotsComponent implements OnInit {
     this.lotService.getActiveLots().subscribe({
       next: (lotsData: LotWithContractorDto[]) => {
         this.lots = lotsData.map(lot => ({
-          numero: lot.lot,
+          numero: lot.lot, // Display name like "lot9 (Ouaga2)"
+          rawNumero: (lot as any).lotRaw, // Raw lot name like "lot9"
           ville: lot.villes.join(', '),
           villes: lot.villes,
           contractIds: lot.contractIds,
@@ -286,7 +287,9 @@ export class TrimestreLotsComponent implements OnInit {
     this.router.navigate(['/ordres-commande']);
   }
 
-  selectLot(lotNumber: number): void {
-    this.router.navigate(['/ordres-commande/trimestre', this.selectedTrimestre, 'lot', lotNumber]);
+  selectLot(lot: any): void {
+    // Pass the raw lot name, not the display name
+    const rawLotName = lot.rawNumero || lot.numero.split(' (')[0];
+    this.router.navigate(['/ordres-commande/trimestre', this.selectedTrimestre, 'lot', rawLotName]);
   }
 }

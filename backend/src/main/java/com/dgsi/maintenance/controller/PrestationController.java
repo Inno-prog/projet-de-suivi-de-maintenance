@@ -450,6 +450,22 @@ public class PrestationController {
         }
     }
 
+    @GetMapping("/count")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
+    @Transactional(readOnly = true)
+    public ResponseEntity<Long> countAllPrestations() {
+        log.info("📊 Comptage total des prestations non supprimées");
+
+        try {
+            Long count = prestationService.countAllNonDeleted();
+            log.info("✅ Nombre total de prestations: {}", count);
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            log.error("❌ Erreur lors du comptage total des prestations", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @GetMapping("/trimestre/{trimestre}")
     @PreAuthorize("hasRole('PRESTATAIRE') or hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
     @Transactional(readOnly = true)
@@ -736,6 +752,20 @@ public class PrestationController {
             // Mettre à jour le statut de validation de la prestation
             prestation.setStatutValidation("VALIDE");
             prestationService.updatePrestation(id, prestation);
+
+            // IMPORTANT: Also validate the corresponding fiche if it exists
+            Optional<FichePrestation> ficheOpt = fichePrestationRepository.findByIdPrestation(prestation.getId().toString());
+            if (ficheOpt.isPresent()) {
+                FichePrestation fiche = ficheOpt.get();
+                if (StatutFiche.EN_ATTENTE.equals(fiche.getStatut()) || StatutFiche.REJETE.equals(fiche.getStatut())) {
+                    fiche.setStatut(StatutFiche.VALIDE);
+                    if (commentaires != null && !commentaires.trim().isEmpty()) {
+                        fiche.setCommentaire(commentaires);
+                    }
+                    fichePrestationRepository.save(fiche);
+                    log.info("✅ Fiche ID:{} également validée automatiquement pour la prestation ID:{}", fiche.getId(), id);
+                }
+            }
 
             // Envoyer une notification au prestataire
             notificationService.envoyerNotificationFicheValidee(

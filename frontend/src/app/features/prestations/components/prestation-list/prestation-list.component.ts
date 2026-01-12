@@ -759,60 +759,15 @@ export class PrestationListComponent implements OnInit {
   async onValidateClicked(prestationId: string): Promise<void> {
     console.log('Validation de la prestation ID:', prestationId);
 
-    // Trouver la prestation correspondante
     const prestation = this.prestations.find(p => p.id?.toString() === prestationId);
     if (!prestation) {
-      console.error('Prestation non trouvée pour l\'ID:', prestationId);
-      this.toastService.show({
-        type: 'error',
-        title: 'Erreur',
-        message: 'Prestation introuvable'
-      });
+      this.toastService.show({ type: 'error', title: 'Erreur', message: 'Prestation introuvable' });
       return;
     }
 
-    // Trouver la fiche correspondant à la prestation avec plusieurs critères de correspondance
-    let fiche = this.fiches.find(f => {
-      // Correspondance par idPrestation (convertir en string pour comparaison)
-      const matchById = f.idPrestation?.toString() === prestationId;
-      
-      // Correspondance par nomPrestataire et nomItem
-      const matchByNames = f.nomPrestataire === prestation.nomPrestataire &&
-                          f.nomItem === prestation.nomPrestation;
-      
-      return matchById || matchByNames;
-    });
-
-    // Si pas trouvée, essayer via getFicheForPrestation (Map)
-    if (!fiche) {
-      fiche = this.getFicheForPrestation(prestation);
-    }
-
-    if (!fiche) {
-      console.error('Aucune fiche trouvée pour la prestation ID:', prestationId);
-      this.toastService.show({
-        type: 'error',
-        title: 'Erreur',
-        message: 'Fiche de prestation introuvable pour cette prestation'
-      });
-      return;
-    }
-
-    // Vérifier que l'ID de la fiche est valide
-    if (!fiche.id) {
-      console.error('ID de fiche manquant pour la validation');
-      this.toastService.show({
-        type: 'error',
-        title: 'Erreur',
-        message: 'ID de fiche manquant pour la validation'
-      });
-      return;
-    }
-
-    // Afficher une boîte de dialogue de confirmation
     const confirmed = await this.confirmationService.show({
       title: 'Confirmer la validation',
-      message: 'Êtes-vous sûr de vouloir valider cette fiche de prestation ?',
+      message: 'Êtes-vous sûr de vouloir valider cette prestation ?',
       type: 'warning',
       confirmText: 'Valider',
       cancelText: 'Annuler'
@@ -820,26 +775,14 @@ export class PrestationListComponent implements OnInit {
 
     if (!confirmed) return;
 
-    this.fichePrestationService.validerFiche(fiche.id).subscribe({
-      next: (response) => {
-        this.toastService.show({
-          type: 'success',
-          title: 'Validation réussie',
-          message: 'La fiche de prestation a été validée avec succès'
-        });
-        // Update fiche status in map
-        fiche!.statut = StatutFiche.VALIDE;
-        this.ficheMap.set(fiche!.idPrestation!, fiche!);
-        // Recharger les données pour mettre à jour l'interface
+    this.prestationService.validatePrestation(prestationId).subscribe({
+      next: () => {
+        this.toastService.show({ type: 'success', title: 'Validation réussie', message: 'La prestation a été validée avec succès' });
         this.loadPrestations();
       },
-      error: (error) => {
-        console.error('Erreur lors de la validation de la fiche:', error);
-        this.toastService.show({
-          type: 'error',
-          title: 'Erreur de validation',
-          message: error.error?.message || 'Une erreur est survenue lors de la validation'
-        });
+      error: (error: any) => {
+        console.error('Erreur lors de la validation:', error);
+        this.toastService.show({ type: 'error', title: 'Erreur de validation', message: error.error?.message || 'Une erreur est survenue' });
       }
     });
   }

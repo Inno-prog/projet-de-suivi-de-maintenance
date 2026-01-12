@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FichePrestationService } from '../../../../core/services/fiche-prestation.service';
 import { PrestationService } from '../../../../core/services/prestation.service';
 import { FichePrestation } from '../../../../core/models/business.models';
@@ -133,8 +134,8 @@ import { ToastService } from '../../../../core/services/toast.service';
           </div>
           <div class="modal-body">
             <!-- If a PDF URL is available, show it in an iframe for same-page viewing -->
-            <div *ngIf="selectedFichePdfUrl; else detailsTemplate" style="height:80vh;">
-              <iframe src="{{selectedFichePdfUrl}}" style="border:0; width:100%; height:100%;"></iframe>
+            <div *ngIf="selectedFichePdfUrl; else detailsTemplate" style="height:100%; width:100%;">
+              <iframe [src]="selectedFichePdfUrl" style="border:0; width:100%; height:100%;"></iframe>
             </div>
 
             <ng-template #detailsTemplate>
@@ -484,23 +485,47 @@ import { ToastService } from '../../../../core/services/toast.service';
 
     /* When showing PDF, expand modal to near-fullscreen for better viewing */
     .pdf-modal {
-      max-width: 95vw !important;
-      width: 95vw !important;
-      height: 90vh !important;
+      max-width: none !important;
+      width: auto !important;
+      height: auto !important;
+      max-height: none !important;
       display: flex;
       flex-direction: column;
       padding: 0;
+      overflow: hidden;
+    }
+
+    .pdf-modal .modal-header {
+      flex-shrink: 0;
     }
 
     .pdf-modal .modal-body {
-      height: calc(100% - 120px); /* leave space for header/footer */
+      flex: 1;
+      padding: 0 !important;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      background: #525659;
+    }
+
+    .pdf-modal .modal-body > div {
+      flex: 1;
+      height: auto;
+      min-height: 600px;
+      margin: 0;
       padding: 0;
+      background: #525659;
     }
 
     .pdf-modal iframe {
-      height: 100% !important;
+      height: 800px !important;
       width: 100% !important;
+      min-width: 800px;
       border: 0;
+    }
+
+    .pdf-modal .modal-footer {
+      flex-shrink: 0;
     }
 
     .modal-header {
@@ -656,6 +681,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 
     @media (max-width: 768px) {
       .stats-grid {
+        display: grid;
         grid-template-columns: repeat(2, 1fr);
       }
 
@@ -720,13 +746,15 @@ export class LotFichesComponent implements OnInit {
   showFicheModal = false;
   selectedFiche: FichePrestation | null = null;
   // URL blob du PDF affiché dans la modal (si présent)
-  selectedFichePdfUrl: string | null = null;
+  selectedFichePdfUrl: SafeResourceUrl | null = null;
+  
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private fichePrestationService: FichePrestationService,
     private prestationService: PrestationService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -827,10 +855,13 @@ export class LotFichesComponent implements OnInit {
           next: (blob) => {
             // Cleanup previous URL if any
             if (this.selectedFichePdfUrl) {
-              try { window.URL.revokeObjectURL(this.selectedFichePdfUrl); } catch(e) {}
+              try { 
+                const url = (this.selectedFichePdfUrl as any).changingThisBreaksApplicationSecurity;
+                if (url) window.URL.revokeObjectURL(url); 
+              } catch(e) {}
             }
             const url = window.URL.createObjectURL(blob);
-            this.selectedFichePdfUrl = url;
+            this.selectedFichePdfUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
             this.showFicheModal = true;
             // Keep selectedFiche for meta info if needed
             this.selectedFiche = fiche;
@@ -873,7 +904,10 @@ export class LotFichesComponent implements OnInit {
     this.showFicheModal = false;
     this.selectedFiche = null;
     if (this.selectedFichePdfUrl) {
-      try { window.URL.revokeObjectURL(this.selectedFichePdfUrl); } catch(e) {}
+      try { 
+        const url = (this.selectedFichePdfUrl as any).changingThisBreaksApplicationSecurity;
+        if (url) window.URL.revokeObjectURL(url); 
+      } catch(e) {}
       this.selectedFichePdfUrl = null;
     }
   }

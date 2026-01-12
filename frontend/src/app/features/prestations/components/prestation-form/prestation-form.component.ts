@@ -268,6 +268,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
 
         this.allItems = [...this.items];
         console.log('📦 Items chargés avec IDs de lots:', this.items);
+        console.log('🗺️ Lot map:', Array.from(lotMap.entries()));
         this.testLotMatching();
         this.updateFilteredItems();
         this.loading = false;
@@ -426,6 +427,27 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     const target = event.target as HTMLInputElement;
     const checked = target.checked;
 
+    // VALIDATION CRITIQUE: Vérifier que l'item appartient au lot sélectionné
+    if (checked && this.selectedLotId !== null) {
+      const itemLotId = (item as any).lotId || 0;
+      if (itemLotId !== this.selectedLotId) {
+        console.error('❌ Tentative de sélection d\'un item hors lot:', {
+          item: item.nomItem,
+          itemLot: item.lot,
+          itemLotId: itemLotId,
+          selectedLotId: this.selectedLotId,
+          selectedLotName: this.selectedLotName
+        });
+        this.toastService.show({
+          type: 'error',
+          title: 'Item incompatible',
+          message: `L'item "${item.nomItem}" (lot: ${item.lot}) n'appartient pas au lot sélectionné "${this.selectedLotName}".`
+        });
+        target.checked = false;
+        return;
+      }
+    }
+
     // Check if item has exhausted budget before allowing selection
     if (checked && this.isItemBudgetExhausted(item)) {
       this.toastService.show({
@@ -501,8 +523,30 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       selectedLotName: this.selectedLotName,
       totalItems: this.items.length,
       filteredItemsCount: this.filteredItemsList.length,
-      filteredItems: this.filteredItemsList
+      currentlySelectedItems: this.selectedItems.length
     });
+    
+    // CRITIQUE: Nettoyer les items sélectionnés qui ne sont pas dans la liste filtrée
+    const filteredItemIds = new Set(this.filteredItemsList.map(i => i.id));
+    const validSelectedItems = this.selectedItems.filter(item => filteredItemIds.has(item.id));
+    
+    if (validSelectedItems.length !== this.selectedItems.length) {
+      console.warn('⚠️ Nettoyage des items hors lot:', {
+        avant: this.selectedItems.length,
+        après: validSelectedItems.length,
+        supprimés: this.selectedItems.filter(item => !filteredItemIds.has(item.id)).map(i => i.nomItem)
+      });
+      this.selectedItems = validSelectedItems;
+      // Nettoyer aussi les quantités
+      const validItemIds = new Set(validSelectedItems.map(i => i.id!.toString()));
+      Object.keys(this.itemQuantities).forEach(itemId => {
+        if (!validItemIds.has(itemId)) {
+          delete this.itemQuantities[itemId];
+        }
+      });
+      this.prestationForm.patchValue({ itemsCouverts: this.selectedItems.map(i => i.id) });
+      this.updateTotalAmount();
+    }
     
     // Recharger les compteurs d'utilisation en temps réel avant d'ouvrir le popup
     this.loadItemPrestationsCounters();
@@ -595,8 +639,24 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   }
 
   confirmValidation(): void {
+    // CRITIQUE: Dernière vérification avant de fermer
+    const filteredItemIds = new Set(this.filteredItemsList.map(i => i.id));
+    this.selectedItems = this.selectedItems.filter(item => filteredItemIds.has(item.id));
+    
+    // Nettoyer les quantités des items supprimés
+    const validItemIds = new Set(this.selectedItems.map(i => i.id!.toString()));
+    Object.keys(this.itemQuantities).forEach(itemId => {
+      if (!validItemIds.has(itemId)) {
+        delete this.itemQuantities[itemId];
+      }
+    });
+    
+    this.prestationForm.patchValue({ itemsCouverts: this.selectedItems.map(i => i.id) });
     this.showValidationPopup = false;
     this.updateTotalAmount();
+    
+    console.log('✅ Validation confirmée avec', this.selectedItems.length, 'items:', 
+      this.selectedItems.map(i => `${i.nomItem} (lot: ${i.lot})`))
   }
 
   isItemSelected(item: Item): boolean {
@@ -645,12 +705,6 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     console.log('🔄 Filtrage des items. Total:', this.items.length);
     console.log('🎯 Lot sélectionné:', this.selectedLotName, 'ID:', this.selectedLotId);
 
-    // Afficher tous les items avec leurs lots pour le débogage
-    console.log('📋 Tous les items avec leurs lots:');
-    this.items.forEach((item, index) => {
-      console.log(`  ${index + 1}. "${item.nomItem}" - Lot: ${item.lot} (ID: ${(item as any).lotId})`);
-    });
-
     let filtered = this.items;
 
     // Filtrer par lot si un lot est sélectionné
@@ -660,14 +714,10 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       filtered = filtered.filter(item => {
         const itemLotId = (item as any).lotId || 0;
         const matches = itemLotId === this.selectedLotId;
-
         if (matches) {
-          console.log('✅ Item correspondant:', {
-            item: item.nomItem,
-            itemLot: item.lot,
-            itemLotId: itemLotId,
-            selectedLotId: this.selectedLotId
-          });
+          console.log('✅ Item du lot sélectionné:', item.nomItem, '- lot:', item.lot, '- lotId:', itemLotId);
+        } else {
+          console.log('❌ Item EXCLU:', item.nomItem, '- lot:', item.lot, '- lotId:', itemLotId, '!==', this.selectedLotId);
         }
         return matches;
       });
@@ -677,7 +727,6 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
 
     this.filteredItemsList = filtered;
     console.log('📊 Résultat du filtrage:', this.filteredItemsList.length, 'items sur', this.items.length);
-    console.log('📋 Filtered items:', this.filteredItemsList.map(item => item.nomItem));
   }
 
   // Méthode pour normaliser les noms de lots (gardée pour compatibilité si nécessaire)
@@ -702,6 +751,13 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     const selectedValue = this.prestationForm.get('lotSelection')?.value;
     console.log('🎯 Sélection de lot (brut):', selectedValue);
 
+    // TOUJOURS réinitialiser les items sélectionnés lors du changement de lot
+    // pour éviter de garder des items d'un autre lot
+    this.selectedItems = [];
+    this.itemQuantities = {};
+    this.prestationForm.patchValue({ itemsCouverts: [] });
+    this.updateTotalAmount();
+
     if (selectedValue) {
       console.log('🎯 Lot value is truthy, looking up lot entity');
       // Récupérer l'entité lot complète
@@ -723,13 +779,9 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
         console.log('Available lot entities:', this.lotEntities);
         this.selectedLotName = '';
         this.selectedLotId = null;
-        // Clear selected items and structures if lot is not found
-        this.selectedItems = [];
-        this.itemQuantities = {};
         this.structuresMefp = [];
         this.selectedStructure = null;
         this.prestationForm.patchValue({
-          itemsCouverts: [],
           structureSelection: '',
           nomStructure: '',
           adresseStructure: '',
@@ -739,19 +791,14 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
           contactCI: '',
           fonctionCI: ''
         });
-        this.updateTotalAmount();
       }
     } else {
       console.log('🎯 No lot selected, clearing everything');
       this.selectedLotName = '';
       this.selectedLotId = null;
-      // Clear selected items and structures if no lot is selected
-      this.selectedItems = [];
-      this.itemQuantities = {};
       this.structuresMefp = [];
       this.selectedStructure = null;
       this.prestationForm.patchValue({
-        itemsCouverts: [],
         structureSelection: '',
         nomStructure: '',
         adresseStructure: '',
@@ -761,7 +808,6 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
         contactCI: '',
         fonctionCI: ''
       });
-      this.updateTotalAmount();
     }
 
     this.updateFilteredItems();
@@ -1124,6 +1170,12 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     this.prestationForm.get('lotSelection')?.valueChanges.subscribe(value => {
       console.log('🎯 Lot selection listener triggered with:', value);
 
+      // TOUJOURS réinitialiser les items sélectionnés pour éviter les items d'autres lots
+      this.selectedItems = [];
+      this.itemQuantities = {};
+      this.prestationForm.patchValue({ itemsCouverts: [] });
+      this.updateTotalAmount();
+
       // Normaliser le nom du lot sélectionné
       if (value) {
         this.selectedLotName = typeof value === 'object'
@@ -1147,17 +1199,13 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       } else {
         this.selectedLotName = '';
         this.selectedLotId = null;
-        // Clear structures when no lot is selected
         this.structuresMefp = [];
         this.selectedStructure = null;
       }
 
-      // Réinitialiser les sélections
-      this.selectedItems = [];
-      this.itemQuantities = {};
+      // Réinitialiser la sélection de structure
       this.selectedStructure = null;
       this.prestationForm.patchValue({
-        itemsCouverts: [],
         structureSelection: '',
         nomStructure: '',
         adresseStructure: '',
@@ -1167,7 +1215,6 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
         contactCI: '',
         fonctionCI: ''
       });
-      this.updateTotalAmount();
       this.updateFilteredItems();
     });
   }
@@ -1272,6 +1319,33 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   private preparePrestationData(): any {
     const formValue = this.prestationForm.getRawValue();
     console.log('🔧 Préparation des données:', formValue);
+
+    // VALIDATION CRITIQUE: Vérifier que tous les items appartiennent au lot sélectionné
+    if (this.selectedItems.length > 0 && this.selectedLotId !== null) {
+      console.log('🔍 Validation des items sélectionnés pour le lot ID:', this.selectedLotId);
+      
+      const invalidItems = this.selectedItems.filter(item => {
+        const itemLotId = (item as any).lotId || 0;
+        const isInvalid = itemLotId !== this.selectedLotId;
+        if (isInvalid) {
+          console.error('❌ Item invalide détecté:', {
+            item: item.nomItem,
+            itemLot: item.lot,
+            itemLotId: itemLotId,
+            selectedLotId: this.selectedLotId
+          });
+        }
+        return isInvalid;
+      });
+
+      if (invalidItems.length > 0) {
+        const itemDetails = invalidItems.map(i => `${i.nomItem} (lot: ${i.lot}, lotId: ${(i as any).lotId})`).join(', ');
+        const errorMsg = `Les items suivants n'appartiennent pas au lot sélectionné (ID: ${this.selectedLotId}): ${itemDetails}`;
+        console.error('❌', errorMsg);
+        throw new Error(errorMsg);
+      }
+      console.log('✅ Tous les items appartiennent au lot ID:', this.selectedLotId);
+    }
 
     const formatDateTime = (date: any, time: any) => {
       if (!date || !time) {

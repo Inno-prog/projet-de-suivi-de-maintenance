@@ -173,20 +173,41 @@ public class OrdreCommandeController {
             }
 
             List<FichePrestation> fiches = new ArrayList<>();
-            String tempLotNom = lotId.replaceAll("-", " ");
-            // Si c'est juste un numéro, ajouter "Lot " devant
-            if (tempLotNom.matches("^\\d+$")) {
-                tempLotNom = "Lot " + tempLotNom;
-            }
-            final String lotNom = tempLotNom;
+            final String lotNom = lotId; // Use the lotId directly as passed from frontend
             List<String> prestatairesLot = new ArrayList<>();
 
             try {
+                // Debug: Log all contracts and their lot names
+                if (contratRepository != null) {
+                    List<com.dgsi.maintenance.entity.Contrat> allContrats = contratRepository.findAll();
+                    log.info("🔍 DEBUG - Tous les contrats ({}) :", allContrats.size());
+                    allContrats.forEach(c -> {
+                        String lotName = c.getLot();
+                        if (lotName == null && c.getLotEntity() != null) {
+                            lotName = c.getLotEntity().getNomLot();
+                        }
+                        log.info("  - Contrat: {} - Prestataire: {} - Lot: {} - LotEntity: {}",
+                            c.getIdContrat(), c.getNomPrestataire(), c.getLot(),
+                            c.getLotEntity() != null ? c.getLotEntity().getNomLot() : "null");
+                    });
+                }
+
                 // 1. Trouver tous les prestataires qui ont un contrat pour ce lot
                 if (contratRepository != null) {
                     try {
                         prestatairesLot = contratRepository.findAll().stream()
-                            .filter(c -> lotNom.equals(c.getLot()))
+                            .filter(c -> {
+                                String contractLotName = c.getLot();
+                                if (contractLotName == null && c.getLotEntity() != null) {
+                                    contractLotName = c.getLotEntity().getNomLot();
+                                }
+                                return contractLotName != null && (
+                                    lotNom.equals(contractLotName) ||
+                                    lotNom.equalsIgnoreCase(contractLotName) ||
+                                    ("Lot " + lotNom).equalsIgnoreCase(contractLotName) ||
+                                    lotNom.equalsIgnoreCase("Lot " + contractLotName)
+                                );
+                            })
                             .map(c -> c.getNomPrestataire())
                             .distinct()
                             .collect(Collectors.toList());
@@ -201,23 +222,40 @@ public class OrdreCommandeController {
                 if (!prestatairesLot.isEmpty()) {
                     final List<String> finalPrestatairesLot = prestatairesLot;
                     String trimestreStr = "T" + trimestre;
+
+                    // Debug: Log all prestations
+                    List<com.dgsi.maintenance.entity.Prestation> allPrestations = prestationRepository.findAll();
+                    log.info("🔍 DEBUG - Toutes les prestations ({}) :", allPrestations.size());
+                    allPrestations.forEach(p -> log.info("  - Prestation: {} - Prestataire: {} - Trimestre: {} - Statut: {}", p.getId(), p.getNomPrestataire(), p.getTrimestre(), p.getStatut()));
+
                     List<com.dgsi.maintenance.entity.Prestation> prestationsTrimestre = prestationRepository.findAll().stream()
-                        .filter(p -> trimestreStr.equals(p.getTrimestre()) &&
-                                   finalPrestatairesLot.contains(p.getNomPrestataire()))
+                        .filter(p -> p.getTrimestre() != null && (
+                            trimestreStr.equals(p.getTrimestre()) ||
+                            trimestre.toString().equals(p.getTrimestre()) ||
+                            ("T" + trimestre).equals(p.getTrimestre())
+                        ) && finalPrestatairesLot.contains(p.getNomPrestataire()))
                         .collect(Collectors.toList());
 
-                    log.info("🔍 Prestations T{} pour prestataires {}: {}", trimestre, finalPrestatairesLot, prestationsTrimestre.size());
+                    log.info("🔍 Prestations pour trimestre {} et prestataires {}: {}", trimestreStr, finalPrestatairesLot, prestationsTrimestre.size());
+                    prestationsTrimestre.forEach(p -> log.info("  - Prestation trouvée: {} - Prestataire: {} - Trimestre: {}", p.getId(), p.getNomPrestataire(), p.getTrimestre()));
 
-                    // 3. Récupérer les fiches liées à ces prestations du trimestre
+                    // 3. Récupérer les fiches liées à ces prestations
                     if (!prestationsTrimestre.isEmpty()) {
                         final List<com.dgsi.maintenance.entity.Prestation> finalPrestationsTrimestre = prestationsTrimestre;
+
+                        // Debug: Log all fiches
+                        List<FichePrestation> allFiches = fichePrestationRepository.findAll();
+                        log.info("🔍 DEBUG - Toutes les fiches ({}) :", allFiches.size());
+                        allFiches.forEach(f -> log.info("  - Fiche: {} - IdPrestation: {} - Statut: {}", f.getId(), f.getIdPrestation(), f.getStatut()));
+
                         fiches = fichePrestationRepository.findAll().stream()
                             .filter(f -> f.getIdPrestation() != null && finalPrestationsTrimestre.stream()
-                                .anyMatch(p -> p.getId().toString().equals(f.getIdPrestation())))
+                                .anyMatch(p -> p.getId() != null && p.getId().toString().equals(f.getIdPrestation())))
                             .collect(Collectors.toList());
                     }
 
                     log.info("🔍 Fiches trouvées pour le lot {} - T{}: {}", lotNom, trimestre, fiches.size());
+                    fiches.forEach(f -> log.info("  - Fiche trouvée: {} - IdPrestation: {} - Statut: {}", f.getId(), f.getIdPrestation(), f.getStatut()));
                 } else {
                     log.warn("⚠️ Aucun prestataire trouvé pour le lot {}", lotNom);
                 }

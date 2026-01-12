@@ -180,103 +180,52 @@ public class ItemController {
 
     @GetMapping("/by-prestataire/{prestataireId}")
     @PreAuthorize("hasRole('ADMINISTRATEUR') or (hasRole('PRESTATAIRE') and #prestataireId == authentication.principal.id)")
-    public List<Item> getItemsByPrestataire(@PathVariable String prestataireId) {
-        System.out.println("🔍 Getting items for prestataire: " + prestataireId);
+    public ResponseEntity<List<Item>> getItemsByPrestataire(@PathVariable String prestataireId) {
+        try {
+            System.out.println("🔍 Getting items for prestataire: " + prestataireId);
 
-        // Get contracts for this prestataire with items loaded
-        List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findByPrestataireIdWithItems(prestataireId);
-        System.out.println("📄 Found " + contrats.size() + " contracts for prestataire " + prestataireId);
+            // Get contracts for this prestataire
+            List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findByPrestataireId(prestataireId);
+            System.out.println("📄 Found " + contrats.size() + " contracts");
 
-        // Collect items directly from contracts (more reliable than lot-based lookup)
-        java.util.Set<Item> itemsFromContracts = new java.util.HashSet<>();
-        for (com.dgsi.maintenance.entity.Contrat contrat : contrats) {
-            List<Item> items = contrat.getItems();
-            System.out.println("📄 Contract " + contrat.getId() + " - items from getItems(): " + (items != null ? items.size() : 0));
-            
-            if (items != null && !items.isEmpty()) {
-                itemsFromContracts.addAll(items);
-                for (Item item : items) {
-                    System.out.println("📦 Item from contract: " + item.getIdItem() + " - " + item.getNomItem() + " (Lot: " + item.getLot() + ")");
-                }
-            }
-        }
-
-        // Fallback: lot-based lookup if no items found from contracts
-        java.util.Set<Item> itemsFromLots = new java.util.HashSet<>();
-        if (itemsFromContracts.isEmpty()) {
-            System.out.println("⚠️ No items found from contracts, trying lot-based lookup...");
-            
-            // Collect unique lot names from contracts
+            // Collect unique lot names
             java.util.Set<String> lotNames = new java.util.HashSet<>();
             for (com.dgsi.maintenance.entity.Contrat contrat : contrats) {
-                String lotName = null;
-                try {
-                    lotName = contrat.getLot(); // this returns lotName (getter in Contrat)
-                } catch (Exception e) {
-                    // ignore
-                }
-                if (lotName == null || lotName.trim().isEmpty()) {
-                    // Try to get the Lot entity name if available
-                    try {
-                        com.dgsi.maintenance.entity.Lot lotEntity = contrat.getLotEntity();
-                        if (lotEntity != null && lotEntity.getNomLot() != null) {
-                            lotName = lotEntity.getNomLot();
-                        }
-                    } catch (Exception e) {
-                        // ignore
-                    }
-                }
-
+                String lotName = contrat.getLot();
                 if (lotName != null && !lotName.trim().isEmpty()) {
-                    // If lotName contains a display suffix like "lot3 (ville1, ville2)", strip the suffix to get raw lot name
-                    String resolvedLot = lotName.trim();
-                    int parenIndex = resolvedLot.indexOf("(");
+                    String cleanLot = lotName.trim();
+                    int parenIndex = cleanLot.indexOf("(");
                     if (parenIndex > 0) {
-                        resolvedLot = resolvedLot.substring(0, parenIndex).trim();
-                        System.out.println("ℹ️ Stripped display suffix for lot: '" + lotName + "' -> '" + resolvedLot + "'");
+                        cleanLot = cleanLot.substring(0, parenIndex).trim();
                     }
-                    lotNames.add(resolvedLot);
-                    System.out.println("📄 Contract " + contrat.getId() + " - resolved lot: " + resolvedLot);
+                    lotNames.add(cleanLot);
+                    System.out.println("🏷️ Contract " + contrat.getId() + " -> lot: " + cleanLot);
                 }
             }
 
-            System.out.println("🏷️ Found " + lotNames.size() + " unique lots: " + lotNames);
+            System.out.println("🏷️ Total lots: " + lotNames.size());
 
-            // Get all items that belong to these lots with fallbacks
+            // Get items for these lots
+            java.util.Set<Item> allItems = new java.util.HashSet<>();
             for (String lotName : lotNames) {
-                List<Item> itemsForLot = itemRepository.findByLot(lotName);
-                System.out.println("📦 Lot '" + lotName + "' has " + itemsForLot.size() + " items (exact match)");
-
-                if (itemsForLot == null || itemsForLot.isEmpty()) {
-                    // Fallback: try contains ignore case (new repository method)
-                    try {
-                        itemsForLot = itemRepository.findByLotContainingIgnoreCase(lotName);
-                        System.out.println("📦 Fallback containsIgnoreCase for '" + lotName + "' returned " + (itemsForLot != null ? itemsForLot.size() : 0));
-                    } catch (Exception e) {
-                        System.out.println("⚠️ Erreur fallback recherche items pour lot '" + lotName + "': " + e.getMessage());
-                    }
+                List<Item> items = itemRepository.findByLot(lotName);
+                if (items == null || items.isEmpty()) {
+                    items = itemRepository.findByLotContainingIgnoreCase(lotName);
                 }
-
-                if (itemsForLot != null && !itemsForLot.isEmpty()) {
-                    itemsFromLots.addAll(itemsForLot);
+                if (items != null) {
+                    allItems.addAll(items);
+                    System.out.println("📦 Lot '" + lotName + "': " + items.size() + " items");
                 }
             }
+
+            List<Item> result = new java.util.ArrayList<>(allItems);
+            System.out.println("✅ Total items: " + result.size());
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            System.err.println("❌ Error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.ok(new java.util.ArrayList<>());
         }
-
-        // Combine results
-        java.util.Set<Item> allItems = new java.util.HashSet<>();
-        allItems.addAll(itemsFromContracts);
-        allItems.addAll(itemsFromLots);
-
-        List<Item> items = new java.util.ArrayList<>(allItems);
-        System.out.println("📊 Total unique items for prestataire: " + items.size());
-
-        // Log each item found
-        for (Item item : items) {
-            System.out.println("📦 Final item: " + item.getIdItem() + " - " + item.getNomItem() + " (Lot: " + item.getLot() + ")");
-        }
-
-        return items;
     }
 
     @GetMapping("/debug-prestations")
@@ -431,7 +380,8 @@ public class ItemController {
                 debug.put("contracts", contractDetails);
                 
                 // Get items via the API method
-                List<Item> itemsViaApi = getItemsByPrestataire(prestataireId);
+                ResponseEntity<List<Item>> itemsResponse = getItemsByPrestataire(prestataireId);
+                List<Item> itemsViaApi = itemsResponse.getBody() != null ? itemsResponse.getBody() : new java.util.ArrayList<>();
                 debug.put("itemsViaApiCount", itemsViaApi.size());
                 
                 return ResponseEntity.ok(debug);

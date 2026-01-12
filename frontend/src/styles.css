@@ -38,8 +38,8 @@ html, body, app-root {
 }
 
 .app-layout.stable-layout .main-content {
-  margin-left: -10px !important;
-  width: calc(100% - 0px) !important;
+  margin-left: 240px !important;
+  width: calc(100% - 240px) !important;
 }
 
 /* Navbar fixé */
@@ -63,6 +63,9 @@ html, body, app-root {
   display: flex !important;
   height: 100vh !important;
   position: relative !important;
+  min-height: 100vh !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* Stable-layout helper */

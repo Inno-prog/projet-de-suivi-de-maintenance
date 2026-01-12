@@ -18,63 +18,64 @@ import { NotificationBellComponent } from '../notification/notification.componen
   templateUrl: './layout.component.html',
   styleUrls: ['./modal-fix.css', './modal-visibility-fix.css'],
   styles: [`
+    * {
+      box-sizing: border-box;
+    }
+
     .app-layout {
-      position: fixed !important;
-      top: -2 !important;
-      left: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
-      display: grid !important;
-      grid-template-columns: 290px 1fr !important;
-      grid-template-rows: 3fr !important;
-      grid-gap: 0 !important;
-      gap: 0 !important;
-      margin: 0!important;
-      padding: 0 !important;
-      overflow: hidden !important;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
     }
 
     app-sidebar {
-      grid-column: 1 !important;
-      grid-row: 1 !important;
-      width: 260px !important;
-      height: 100vh !important;
-      overflow-y: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      flex: 0 0 260px;
+      min-width: 260px;
+      max-width: 260px;
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 100;
     }
 
     .main-content {
-      grid-column: 2 !important;
-      grid-row: 1 !important;
-      display: grid !important;
-      grid-template-rows: 64px 1fr !important;
-      grid-gap: 0 !important;
-      gap: 0 !important;
-      height: 100vh !important;
-      overflow: hidden !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      flex: 1;
+      margin-left: 260px;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: calc(100vw - 260px);
+      overflow: hidden;
     }
 
     .navbar {
-      grid-row: 1 !important;
-      width: 100% !important;
-      height: 64px !important;
-      background: #0f172a !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      flex: 0 0 64px;
+      min-height: 64px;
+      max-height: 64px;
+      width: 100%;
+      background: #0f172a;
+      position: relative;
+      z-index: 50;
     }
 
     .content {
-      grid-row: 2 !important;
-      overflow-y: auto !important;
-      padding: 0 !important;
-      height: calc(100vh - 64px) !important;
-      margin: 30px 0 0 0!important;
-      width: 100% !important;
-      min-height: calc(100vh - 64px) !important;
-      background: #f8fafc !important;
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 30px 40px;
+      width: 100%;
+      background: #f8fafc;
     }
 
     .container {
@@ -342,14 +343,7 @@ import { NotificationBellComponent } from '../notification/notification.componen
       margin: 0.5rem 0;
     }
 
-.content {
-      flex: 1;
-      /* Suppression complète du padding pour éliminer l'espace blanc */
-      padding: 0;
-      overflow-y: auto;
-    }
-
-    .modal-overlay {
+.modal-overlay {
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
@@ -583,9 +577,17 @@ export class LayoutComponent implements AfterViewInit {
     // The `.stable-layout` class (defined in styles.css) enforces fixed sidebar/navbar
     // and correct offsets. We also update navbar-dependent CSS variables.
     try {
-      const root = document.querySelector('.app-layout');
-      if (root && !root.classList.contains('stable-layout')) {
+      const root = document.querySelector('.app-layout') as HTMLElement;
+      if (root) {
+        // Ensure stable-layout class is always applied
         root.classList.add('stable-layout');
+        // Ensure layout is always visible
+        root.style.display = 'flex';
+        root.style.visibility = 'visible';
+        root.style.opacity = '1';
+        root.style.position = 'relative';
+        root.style.height = '100vh';
+        root.style.minHeight = '100vh';
       }
       // Update CSS variables (navbar height) for accurate layout
       this.updateNavbarCssVars();

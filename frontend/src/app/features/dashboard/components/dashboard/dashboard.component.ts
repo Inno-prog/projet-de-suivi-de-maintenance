@@ -13,6 +13,8 @@ import { EvaluationService } from '../../../../core/services/evaluation.service'
 import { UserService } from '../../../../core/services/user.service';
 import { FichePrestationService } from '../../../../core/services/fiche-prestation.service';
 import { PrestationPdfService } from '../../../../core/services/prestation-pdf.service';
+import { PrestationService } from '../../../../core/services/prestation.service';
+import { StructureMefpService } from '../../../../core/services/structure-mefp.service';
 
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmationService } from '../../../../core/services/confirmation.service';
@@ -296,8 +298,8 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
                     <mat-icon></mat-icon>
                   </div>
                   <div class="stat-meta">
-                    <div class="stat-number">{{ stats.totalOrdres }}</div>
-                    <div class="stat-label">Ordres de commande</div>
+                    <div class="stat-number">{{ stats.totalStructuresMefp }}</div>
+                    <div class="stat-label">Structures du MEFP</div>
                   </div>
                 </div>
               </mat-card>
@@ -2063,7 +2065,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private evaluationService: EvaluationService,
     private userService: UserService,
     public router: Router,
-    private prestationService: FichePrestationService,
+    private fichePrestationService: FichePrestationService,
+    private prestationService: PrestationService,
+    private structureMefpService: StructureMefpService,
     private pdfService: PrestationPdfService,
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
@@ -2217,16 +2221,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.prestationService.getAllFiches().subscribe({
-      next: (prestations) => {
-        this.stats.totalPrestations = prestations.length;
+    this.prestationService.getPrestationsCount().subscribe({
+      next: (count) => {
+        this.stats.totalPrestations = count;
       },
       error: (error) => {
         if (error.status !== 401) {
-          console.error('Erreur lors du chargement des prestations:', error);
+          console.error('Erreur lors du chargement du comptage des prestations:', error);
           const errMsg = error?.message || error?.statusText || JSON.stringify(error) || 'Erreur inconnue';
           this.toastService.show({ type: 'error', title: 'Erreur', message: `Impossible de charger les statistiques des prestations : ${errMsg}` });
         }
+        this.stats.totalPrestations = 0;
+      }
+    });
+
+    // Charger les statistiques des structures MEFP
+    this.structureMefpService.getAllStructures().subscribe({
+      next: (structures) => {
+        this.stats.totalStructuresMefp = structures.length;
+      },
+      error: (error) => {
+        if (error.status !== 401) {
+          console.error('Erreur lors du chargement des structures MEFP:', error);
+          const errMsg = error?.message || error?.statusText || JSON.stringify(error) || 'Erreur inconnue';
+          this.toastService.show({ type: 'error', title: 'Erreur', message: `Impossible de charger les statistiques des structures MEFP : ${errMsg}` });
+        }
+        this.stats.totalStructuresMefp = 0;
       }
     });
 

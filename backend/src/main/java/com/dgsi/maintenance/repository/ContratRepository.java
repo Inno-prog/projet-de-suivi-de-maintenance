@@ -21,11 +21,8 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
     @Query("SELECT c FROM Contrat c LEFT JOIN FETCH c.lot")
     List<Contrat> findAllWithItems();
 
-    // Avoid fetching multiple collection-valued associations (Hibernate MultipleBagFetchException)
-    // We fetch ordresCommande but do NOT fetch the nested oc.items collection here to prevent
-    // the "cannot simultaneously fetch multiple bags" error. Items will be accessed lazily via
-    // the Contrat#getItems() helper when needed.
-    @Query("SELECT DISTINCT c FROM Contrat c LEFT JOIN FETCH c.ordresCommande oc WHERE c.prestataire.id = :prestataireId")
+    // Fetch contrats with ordresCommande and their items for prestataire
+    @Query("SELECT DISTINCT c FROM Contrat c LEFT JOIN FETCH c.ordresCommande oc LEFT JOIN FETCH oc.items WHERE c.prestataire.id = :prestataireId")
     List<Contrat> findByPrestataireIdWithItems(String prestataireId);
 
     @Query("SELECT c FROM Contrat c LEFT JOIN FETCH c.ordresCommande WHERE c.id = :id")

@@ -1,0 +1,6 @@
+- [ ] Analyser le formulaire modal de création de prestation existant
+- [ ] Examiner la structure HTML et CSS actuelle
+- [ ] Identifier les éléments qui occupent trop d'espace
+- [ ] Optimiser la mise en page pour réduire la taille
+- [ ] Tester les modifications
+- [ ] Vérifier que le formulaire reste fonctionnel

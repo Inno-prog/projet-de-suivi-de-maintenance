@@ -573,45 +573,25 @@ export class AgentDgsiDashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadStats(): void {
-    // Charger les statistiques des prestations avec la même logique de filtrage
-    const currentUser = this.authService.getCurrentUser();
-    const isPrestataire = currentUser?.role === 'PRESTATAIRE';
-    const prestationPromise = isPrestataire
-      ? this.prestationService.getMyPrestations(0, 1000).toPromise()
-      : this.prestationService.getAllPrestations(0, 1000).toPromise();
-
-    prestationPromise?.then(prestationResponse => {
-      let prestations: any[] = [];
-
-      if (prestationResponse && typeof prestationResponse === 'object' && 'content' in prestationResponse) {
-        prestations = prestationResponse.content || [];
-      } else {
-        prestations = prestationResponse || [];
+    // Charger les statistiques des prestations via le nouveau endpoint de comptage
+    this.prestationService.getPrestationsCount().subscribe({
+      next: (count: number) => {
+        this.stats.totalPrestations = count;
+      },
+      error: (error: any) => {
+        if (error.status !== 401) {
+          console.error('Erreur lors du chargement du comptage des prestations:', error);
+        }
+        this.stats.totalPrestations = 0;
       }
-
-      if (isPrestataire && currentUser) {
-        prestations = prestations.filter(p => {
-          const matchNom = p.nomPrestataire === currentUser.nom;
-          const matchEmail = p.contactPrestataire === currentUser.email;
-          const matchId = p.prestataireId === currentUser.id?.toString();
-          return matchNom || matchEmail || matchId;
-        });
-      }
-
-      this.stats.totalPrestations = prestations.length;
-    }).catch(error => {
-      if (error.status !== 401) {
-        console.error('Erreur lors du chargement des prestations:', error);
-      }
-      this.stats.totalPrestations = 0;
     });
 
     // Charger les statistiques des items
     this.itemService.getAllItems().subscribe({
-      next: (items) => {
+      next: (items: any[]) => {
         this.stats.totalItems = items.length;
       },
-      error: (error) => {
+      error: (error: any) => {
         if (error.status !== 401) {
           console.error('Erreur lors du chargement des items:', error);
         }
@@ -621,10 +601,10 @@ export class AgentDgsiDashboardComponent implements OnInit, OnDestroy {
 
     // Charger les statistiques des structures MEFP
     this.structureMefpService.getAllStructures().subscribe({
-      next: (structures) => {
+      next: (structures: any[]) => {
         this.stats.totalStructuresMefp = structures.length;
       },
-      error: (error) => {
+      error: (error: any) => {
         if (error.status !== 401) {
           console.error('Erreur lors du chargement des structures MEFP:', error);
         }
@@ -665,4 +645,3 @@ export class AgentDgsiDashboardComponent implements OnInit, OnDestroy {
     }
   }
 }
-
