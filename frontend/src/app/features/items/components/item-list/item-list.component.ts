@@ -458,7 +458,9 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
             <lot-manager
               [lots]="lotEntities"
               [items]="items"
-              (lotUpdated)="onLotUpdated($event)">
+              (lotCreated)="onLotCreated($event)"
+              (lotUpdated)="onLotUpdated($event)"
+              (lotDeleted)="onLotDeleted($event)">
             </lot-manager>
           </div>
         </div>
@@ -500,6 +502,48 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
     .modal.fade.show {
       background-color: rgba(0,0,0,0.5);
       backdrop-filter: blur(3px);
+    }
+
+    /* Modal centering fix for item-form modal-lg */
+    .modal.fade.show .modal-dialog.modal-lg {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      margin: 0 !important;
+      max-width: 900px !important;
+      width: 90% !important;
+    }
+
+    /* Modal centering fix for lot-manager modal-xl */
+    .modal.fade.show .modal-dialog.modal-xl {
+      position: fixed !important;
+      top: 50% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      margin: 0 !important;
+      max-width: 1400px !important;
+      width: 95% !important;
+    }
+
+    /* Modal content centering */
+    .modal.fade.show .modal-content {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      transform: none !important;
+    }
+
+    /* Modal backdrop fix */
+    .modal.fade.show + .modal-backdrop {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 9998 !important;
     }
 
     .btn-action {
@@ -1110,6 +1154,28 @@ export class ItemListComponent implements OnInit {
       type: 'success',
       title: 'Succès',
       message: 'Lot mis à jour avec succès'
+    });
+  }
+
+  onLotCreated(newLot: Lot) {
+    console.log('Lot created:', newLot);
+    // Refresh the lots data to include the new lot
+    this.loadLots();
+    this.toast.show({
+      type: 'success',
+      title: 'Succès',
+      message: `Lot "${newLot.nomLot}" créé avec succès`
+    });
+  }
+
+  onLotDeleted(deletedLotId: number) {
+    console.log('Lot deleted:', deletedLotId);
+    // Refresh the lots data to remove the deleted lot
+    this.loadLots();
+    this.toast.show({
+      type: 'success',
+      title: 'Succès',
+      message: 'Lot supprimé avec succès'
     });
   }
 

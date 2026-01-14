@@ -343,9 +343,9 @@ import { AuthService } from '../../../../core/services/auth.service';
     }
 
     td {
-      color: #000000;
+      color: #374151;
       font-size: 0.875rem;
-      font-weight: 600;
+      font-weight: 400;
       border-bottom: 2px solid #e5e7eb;
       border-right: 1px solid #e5e7eb;
     }

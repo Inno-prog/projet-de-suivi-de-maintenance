@@ -88,25 +88,7 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
               </div>
 
               <div class="form-group">
-                <label for="qteEquipDefini" class="required">Qté Equipement Défini *</label>
-                <input
-                  type="number"
-                  id="qteEquipDefini"
-                  name="qteEquipDefini"
-                  class="form-control"
-                  [(ngModel)]="formData.qteEquipDefini"
-                  required
-                  #qteEquipDefini="ngModel"
-                  min="0"
-                  placeholder="0">
-                <div class="error-message" *ngIf="qteEquipDefini.invalid && qteEquipDefini.touched">
-                  La quantité d'équipement défini est obligatoire
-                </div>
-              </div>
-            </div>
-
-              <div class="form-group">
-                <label for="quantiteMaxTrimestre" class="required">Nombre Max Prestations Trimestre *</label>
+                <label for="quantiteMaxTrimestre" class="required">Qté Equipement Défini *</label>
                 <input
                   type="number"
                   id="quantiteMaxTrimestre"
@@ -115,10 +97,47 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
                   [(ngModel)]="formData.quantiteMaxTrimestre"
                   required
                   #quantiteMaxTrimestre="ngModel"
+                  min="0"
+                  placeholder="0">
+                <div class="error-message" *ngIf="quantiteMaxTrimestre.invalid && quantiteMaxTrimestre.touched">
+                  La quantité d'équipement défini est obligatoire
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="quantiteMinTrimestre" class="required">Nombre Min Prestations Trimestre *</label>
+                <input
+                  type="number"
+                  id="quantiteMinTrimestre"
+                  name="quantiteMinTrimestre"
+                  class="form-control"
+                  [(ngModel)]="formData.quantiteMinTrimestre"
+                  required
+                  #quantiteMinTrimestre="ngModel"
+                  min="0"
+                  placeholder="0">
+                <div class="error-message" *ngIf="quantiteMinTrimestre.invalid && quantiteMinTrimestre.touched">
+                  Le nombre minimum de prestations par trimestre est obligatoire
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="quantiteMaxTrimestre2" class="required">Nombre Max Prestations Trimestre *</label>
+                <input
+                  type="number"
+                  id="quantiteMaxTrimestre2"
+                  name="quantiteMaxTrimestre2"
+                  class="form-control"
+                  [(ngModel)]="formData.quantiteMaxTrimestre"
+                  required
+                  #quantiteMaxTrimestre2="ngModel"
                   min="1"
                   placeholder="100">
-              <div class="error-message" *ngIf="quantiteMaxTrimestre.invalid && quantiteMaxTrimestre.touched">
-                Le nombre maximum de prestations par trimestre est obligatoire
+                <div class="error-message" *ngIf="quantiteMaxTrimestre2.invalid && quantiteMaxTrimestre2.touched">
+                  Le nombre maximum de prestations par trimestre est obligatoire
+                </div>
               </div>
             </div>
           </div>
@@ -136,28 +155,40 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
     </div>
   `,
   styles: [`
+    /* Item Form Modal - Force proper centering */
     .form-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 1rem;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      background: rgba(0, 0, 0, 0.6) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 9999 !important;
+      margin: 0 !important;
+      padding: 20px !important;
+      box-sizing: border-box !important;
     }
 
     .form-container {
       background: white;
       border-radius: 12px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-      width: 100%;
-      max-width: 600px;
-      max-height: 90vh;
-      overflow-y: auto;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35) !important;
+      width: 100% !important;
+      max-width: 750px !important;
+      max-height: calc(100vh - 40px) !important;
+      overflow-y: auto !important;
+      margin: 0 auto !important;
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      transform: none !important;
     }
 
     .form-header {

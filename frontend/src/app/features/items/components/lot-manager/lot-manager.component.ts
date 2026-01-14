@@ -168,12 +168,83 @@ import { LotService } from '../../../../core/services/lot.service';
       transform: translateY(-2px);
     }
 
+    /* Lot Manager Modal - Force proper centering - OVERRIDE ALL */
     .modal-backdrop {
-      z-index: 1040;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      background: rgba(0, 0, 0, 0.6) !important;
+      z-index: 9998 !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
 
     .modal {
-      z-index: 1050;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      z-index: 9999 !important;
+      margin: 0 !important;
+      padding: 20px !important;
+      box-sizing: border-box !important;
+      overflow: auto !important;
+      background: rgba(0, 0, 0, 0.6) !important;
+    }
+
+    .modal-dialog {
+      max-width: 700px !important;
+      width: 100% !important;
+      margin: 0 auto !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      transform: none !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    .modal-dialog.modal-lg {
+      max-width: 900px !important;
+      width: 90% !important;
+    }
+
+    .modal-dialog.modal-xl {
+      max-width: 1400px !important;
+      width: 95% !important;
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      transform: none !important;
+      margin: 0 auto !important;
+    }
+    
+    .modal-content {
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35) !important;
+      border-radius: 12px !important;
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      transform: none !important;
+      margin: 0 auto !important;
     }
   `]
 })

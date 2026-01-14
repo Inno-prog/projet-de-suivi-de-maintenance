@@ -102,11 +102,18 @@ export class AuthService {
       this.currentUserSubject.next(null);
     }
 
-    // Vérifier si nous venons de nous déconnecter (éviter la reconnexion automatique)
+    // Vérifier si nous venons de nous déconnecter (AVANT de charger le document de découverte)
     const justLoggedOut = sessionStorage.getItem('justLoggedOut') === 'true';
     if (justLoggedOut) {
-      console.log('Détection de déconnexion récente - pas de reconnexion automatique');
+      console.log('Détection de déconnexion récente - nettoyage et arrêt');
       sessionStorage.removeItem('justLoggedOut');
+      // Nettoyer complètement
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('id_token');
+      localStorage.removeItem('token');
+      localStorage.removeItem('currentUser');
+      this.currentUserSubject.next(null);
       return;
     }
 

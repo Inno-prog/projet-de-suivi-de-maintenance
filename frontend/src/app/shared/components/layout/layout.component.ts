@@ -18,64 +18,73 @@ import { NotificationBellComponent } from '../notification/notification.componen
   templateUrl: './layout.component.html',
   styleUrls: ['./modal-fix.css', './modal-visibility-fix.css'],
   styles: [`
-    * {
-      box-sizing: border-box;
-    }
-
     .app-layout {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      display: grid !important;
+      grid-template-columns: 260px 1fr !important;
+      grid-template-rows: 1fr !important;
+      grid-gap: 0 !important;
+      gap: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow: hidden !important;
     }
 
     app-sidebar {
-      flex: 0 0 260px;
-      min-width: 260px;
-      max-width: 260px;
-      height: 100vh;
-      overflow-y: auto;
-      overflow-x: hidden;
-      position: fixed;
-      left: 0;
-      top: 0;
-      z-index: 100;
+      grid-column: 1 !important;
+      grid-row: 1 !important;
+      width: 260px !important;
+      height: 100vh !important;
+      overflow-y: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
 
     .main-content {
-      flex: 1;
-      margin-left: 260px;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      width: calc(100vw - 260px);
-      overflow: hidden;
+      grid-column: 2 !important;
+      grid-row: 1 !important;
+      display: grid !important;
+      grid-template-rows: 64px 1fr !important;
+      grid-gap: 0 !important;
+      gap: 0 !important;
+      height: 100vh !important;
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
     }
 
     .navbar {
-      flex: 0 0 64px;
-      min-height: 64px;
-      max-height: 64px;
-      width: 100%;
-      background: #0f172a;
-      position: relative;
-      z-index: 50;
+      grid-row: 1 !important;
+      width: calc(100% + 0px) !important;
+      height: 64px !important;
+      background: #0f172a !important;
+      margin: 0 !important;
+      margin-left: 0 !important;
+      padding: 0 !important;
+      padding-left: 0 !important;
     }
 
     .content {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      padding: 30px 40px;
-      width: 100%;
-      background: #f8fafc;
+      grid-row: 2 !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      padding: 0 !important;
+      height: calc(100vh - 64px) !important;
+      margin: 30px 0 0 0 !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-height: calc(100vh - 64px) !important;
+      background: #f8fafc !important;
+      box-sizing: border-box !important;
+    }
+
+    .content > * {
+      max-width: 100% !important;
+      box-sizing: border-box !important;
     }
 
     .container {
@@ -306,6 +315,69 @@ import { NotificationBellComponent } from '../notification/notification.componen
       padding: 0.5rem 0;
     }
 
+    .profile-form-content {
+      padding: 1rem;
+    }
+
+    .profile-form-content .form-group {
+      margin-bottom: 0.75rem;
+    }
+
+    .profile-form-content .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 0.25rem;
+    }
+
+    .profile-form-content .form-control {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: white;
+      color: #1e293b;
+    }
+
+    .profile-form-content .form-control:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
+    .profile-form-content .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .profile-form-content .checkbox-group input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+    }
+
+    .profile-form-content .checkbox-group label {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #374151;
+    }
+
+    .profile-form-content .form-actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+      padding-top: 0.5rem;
+      border-top: 1px solid #e2e8f0;
+      margin-top: 0.5rem;
+    }
+
+    .profile-form-content .form-actions .btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+
     .menu-item {
       display: flex;
       align-items: center;
@@ -343,7 +415,14 @@ import { NotificationBellComponent } from '../notification/notification.componen
       margin: 0.5rem 0;
     }
 
-.modal-overlay {
+.content {
+      flex: 1;
+      /* Suppression complète du padding pour éliminer l'espace blanc */
+      padding: 0;
+      overflow-y: auto;
+    }
+
+    .modal-overlay {
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
@@ -520,6 +599,10 @@ export class LayoutComponent implements AfterViewInit {
   showSettingsModal = false;
   profileLoading = false;
   isMobile = false;
+  
+  // Dropdown inline form states (used in template for inline profile/settings forms)
+  showProfileForm = false;
+  showSettingsForm = false;
 
   // Prevent sidebar from being closed on desktop, allow on mobile
   private preventSidebarClose = true;
@@ -577,17 +660,9 @@ export class LayoutComponent implements AfterViewInit {
     // The `.stable-layout` class (defined in styles.css) enforces fixed sidebar/navbar
     // and correct offsets. We also update navbar-dependent CSS variables.
     try {
-      const root = document.querySelector('.app-layout') as HTMLElement;
-      if (root) {
-        // Ensure stable-layout class is always applied
+      const root = document.querySelector('.app-layout');
+      if (root && !root.classList.contains('stable-layout')) {
         root.classList.add('stable-layout');
-        // Ensure layout is always visible
-        root.style.display = 'flex';
-        root.style.visibility = 'visible';
-        root.style.opacity = '1';
-        root.style.position = 'relative';
-        root.style.height = '100vh';
-        root.style.minHeight = '100vh';
       }
       // Update CSS variables (navbar height) for accurate layout
       this.updateNavbarCssVars();
@@ -766,6 +841,18 @@ export class LayoutComponent implements AfterViewInit {
 
   closeSettingsModal() {
     this.showSettingsModal = false;
+  }
+
+  /**
+   * Save settings from the inline settings form in dropdown
+   */
+  saveSettings(event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    // For now, just show a success message as settings are local preferences
+    this.toastService.show({ type: 'success', title: 'Succès', message: 'Paramètres enregistrés avec succès' });
+    this.showSettingsForm = false;
   }
 
   /**

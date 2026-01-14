@@ -1,0 +1,47 @@
+/* Centrage forcé des modales de lots et items */
+.modal.show.d-block {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.modal-dialog {
+  position: relative !important;
+  margin: auto !important;
+  max-width: 700px !important;
+  width: 90% !important;
+}
+
+.modal-dialog.modal-lg {
+  max-width: 900px !important;
+}
+
+/* Centrage du formulaire item */
+.form-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.form-container {
+  position: relative !important;
+  margin: auto !important;
+  width: 90% !important;
+  max-width: 750px !important;
+}

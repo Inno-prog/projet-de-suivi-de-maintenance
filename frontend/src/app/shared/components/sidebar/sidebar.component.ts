@@ -17,7 +17,9 @@ import { User } from '../../../core/models/auth.models';
       <div class="sidebar-header">
         <!-- Logo at the top -->
         <div class="logo-container">
-          <img src="assets/logoFinal.png" alt="DGSI Logo" class="logo-img-top" />
+          <a href="https://it.finances.bf/" target="_blank">
+            <img src="assets/logoFinal.png" alt="DGSI Logo" class="logo-img-top" />
+          </a>
         </div>
 
         <!-- App title and role -->
@@ -110,12 +112,13 @@ import { User } from '../../../core/models/auth.models';
       left: 0;
       height: 100vh;
       width: 260px;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      background: #0f172a;
       color: #e2e8f0;
-      transition: all 0.3s ease;
       z-index: 1100;
       overflow-y: auto;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+      margin: 0;
+      padding: 0;
+      border: none;
     }
 
     .sidebar.collapsed {
@@ -139,11 +142,13 @@ import { User } from '../../../core/models/auth.models';
 
     .sidebar-header {
       padding: 1rem;
-      border-bottom: 1px solid #334155;
+      border-bottom: 1px solid #1e293b;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 0.75rem;
+      margin: 0;
+      background: #0f172a;
     }
 
     .logo-container {
@@ -370,7 +375,11 @@ import { User } from '../../../core/models/auth.models';
 
     @media (max-width: 768px) {
       .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
         transform: translateX(-100%); /* Hidden by default on mobile */
+        z-index: 1200;
       }
 
       .sidebar.mobile-open {

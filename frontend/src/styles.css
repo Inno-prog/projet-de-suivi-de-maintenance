@@ -1,8 +1,82 @@
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
-@import './modal-positioning-fix.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* CORRECTION MODALES ITEMS ET LOTS - Force proper centering */
+.modal.show {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important;
+  margin: 0 !important;
+  padding: 20px !important;
+}
+
+.modal-dialog {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  margin: 0 auto !important;
+  max-width: 700px !important;
+  width: 100% !important;
+}
+
+.modal-dialog.modal-lg {
+  max-width: 900px !important;
+  width: 90% !important;
+}
+
+.modal-content {
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 12px !important;
+}
+
+.modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9998 !important;
+  margin: 0 !important;
+}
+
+.form-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important;
+  margin: 0 !important;
+  padding: 20px !important;
+}
+
+.form-container {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  width: 100% !important;
+  max-width: 750px !important;
+  margin: 0 auto !important;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 12px !important;
+}
 
 /* Global Styles */
 * {
@@ -12,50 +86,239 @@
 }
 
 /* Ensure the document and root app element fill the viewport */
-html, body, app-root {
+html, body {
   height: 100%;
+  width: 100%;
   min-height: 100%;
-  overflow: auto;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+app-root {
+  display: block;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ============================================
+   AGGRESSIVE MODAL AND FORM POSITIONING FIX
+   These styles override Bootstrap and Angular inline styles
+   ============================================ */
+
+/* ULTRA AGGRESSIVE - Force all modals to be fixed and centered */
+.modal.show,
+.modal.fade.show,
+.modal.in,
+div.modal[style*="display: block"],
+div.modal[style*="display:block"],
+.modal.show.d-block {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important;
+  margin: 0 !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+  overflow: auto !important;
+  background: transparent !important;
+}
+
+/* ULTRA AGGRESSIVE - Force modal dialog */
+.modal-dialog,
+.modal-dialog.modal-lg {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  margin: 0 auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  max-width: 700px !important;
+  width: 90% !important;
+}
+
+.modal-dialog.modal-lg {
+  max-width: 900px !important;
+}
+
+/* ULTRA AGGRESSIVE - Force modal content */
+.modal-content {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 12px !important;
+  margin: 0 auto !important;
+}
+
+/* ULTRA AGGRESSIVE - Force modal backdrop */
+.modal-backdrop,
+.modal-backdrop.fade,
+.modal-backdrop.show {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9998 !important;
+  margin: 0 !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  opacity: 0.6 !important;
+}
+
+/* ULTRA AGGRESSIVE - Force form overlays */
+.form-overlay,
+div.form-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important;
+  margin: 0 !important;
+  padding: 20px !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  box-sizing: border-box !important;
+}
+
+/* ULTRA AGGRESSIVE - Force form containers */
+.form-container,
+div.form-container {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  margin: 0 auto !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  width: 100% !important;
+  max-width: 750px !important;
+  max-height: calc(100vh - 40px) !important;
+  overflow-y: auto !important;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 12px !important;
+  background: white !important;
+}
+
+/* Remove any top margin from modal content */
+.modal-content {
+  margin-top: 0 !important;
+}
+
+/* Ensure modal body can scroll */
+.modal-body {
+  max-height: calc(100vh - 200px) !important;
+  overflow-y: auto !important;
+}
+
+/* Prevent fade transition from affecting positioning */
+.modal.fade .modal-dialog {
+  transition: none !important;
+  transform: none !important;
+}
+
+/* Override any inline transform styles */
+[style*="transform: translate"] {
+  transform: none !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .modal-dialog,
+  .modal-dialog.modal-lg {
+    width: 95% !important;
+    max-width: none !important;
+  }
+  
+  .form-container {
+    width: 95% !important;
+    max-width: none !important;
+  }
+  
+  .modal.show,
+  .modal.fade.show,
+  .form-overlay {
+    padding: 10px !important;
+  }
 }
 
 
 /* RÉDUCTION : Espace entre sidebar et contenu - CORRIGÉ */
 .app-layout.stable-layout {
   display: flex !important;
+  position: relative !important;
+  height: 100vh !important;
+  width: 100vw !important;
+  overflow: hidden !important;
 }
 
 .app-layout.stable-layout app-sidebar {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
+  position: relative !important;
+  flex: 0 0 240px !important;
+  min-width: 240px !important;
+  max-width: 240px !important;
   height: 100vh !important;
-  width: 240px !important;
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
   z-index: 1100 !important;
   border-right: 1px solid #e2e8f0 !important;
+  overflow-y: auto !important;
 }
 
 .app-layout.stable-layout .main-content {
-  margin-left: 240px !important;
-  width: calc(100% - 240px) !important;
+  flex: 1 !important;
+  margin-left: 0 !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  overflow: hidden !important;
 }
 
 /* Navbar fixé */
 .app-layout.stable-layout .navbar {
-  position: fixed !important;
+  position: relative !important;
   top: 0 !important;
-  left: 240px !important;
-  width: calc(100% - 240px) !important;
+  left: 0 !important;
+  width: 100% !important;
   z-index: 1000 !important;
   height: 64px !important;
+  flex: 0 0 64px !important;
 }
 
 /* SUPPRESSION : Container prend toute la largeur disponible sans marge */
-.app-layout.stable-layout .content .container {
-  margin: 0 !important;
+.app-layout.stable-layout .content {
+  flex: 1 !important;
+  margin: 30px 0 0 0 !important;
   width: 100% !important;
+  max-width: 100% !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.app-layout.stable-layout .content > * {
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
 /* Prevent layout shifts */
@@ -75,14 +338,28 @@ html, body, app-root {
 
 /* On small screens */
 @media (max-width: 768px) {
+  .app-layout.stable-layout {
+    flex-direction: column !important;
+  }
+  
+  .app-layout.stable-layout app-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    transform: translateX(-100%) !important;
+    transition: transform 0.3s ease !important;
+    z-index: 1200 !important;
+  }
+  
+  .app-layout.stable-layout app-sidebar.mobile-open {
+    transform: translateX(0) !important;
+  }
+  
   .app-layout.stable-layout .main-content {
     margin-left: 0 !important;
     width: 100% !important;
-    padding-top: 64px !important;
   }
-  .app-layout.stable-layout app-sidebar {
-    transform: translateX(-100%) !important;
-  }
+  
   .app-layout.stable-layout .navbar {
     left: 0 !important;
     width: 100% !important;
@@ -116,7 +393,7 @@ html, body, app-root {
 
 /* Ensure modal dialogs */
 .app-layout.stable-layout .modal-overlay {
-   align-items: flex-start !important;
+   align-items: center !important;
    padding-top: calc(var(--app-navbar-height, 64px) + var(--app-overlay-gap, 16px)) !important;
    z-index: 2200 !important;
    overflow-y: auto !important;
@@ -129,7 +406,7 @@ html, body, app-root {
 
 /* Angular Material dialogs */
 .app-layout.stable-layout .cdk-global-overlay-wrapper {
-  align-items: flex-start !important;
+  align-items: center !important;
   padding-top: calc(var(--app-navbar-height, 64px) + var(--app-overlay-gap, 16px)) !important;
   z-index: 2300 !important;
   overflow-y: auto !important;
@@ -566,10 +843,10 @@ th:last-child, td:last-child {
 
 /* Utility Classes */
 .container {
-  max-width: 98%;
-  margin: 0 auto;
-  padding: 0 0.5rem;
-  height: 100% !important;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 1rem;
+  width: 100%;
 }
 
 .flex {
@@ -632,7 +909,7 @@ th:last-child, td:last-child {
 }
 
 /* Responsive Design */
-/* Modal overlay */
+/* Modal overlay - FOR ALL MODALS */
 .modal-overlay {
   position: fixed !important;
   top: 0 !important;
@@ -651,7 +928,8 @@ th:last-child, td:last-child {
   opacity: 1 !important;
 }
 
-.modal-content {
+/* CORRECTED Modal content - remove problematic margin-top that breaks centering */
+.modal-overlay .modal-content {
   background: rgba(255, 255, 255, 0.98) !important;
   backdrop-filter: blur(20px) !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
@@ -663,30 +941,30 @@ th:last-child, td:last-child {
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
     inset 0 -1px 0 rgba(0, 0, 0, 0.02) !important;
   max-width: 600px !important;
-  width: 50% !important;
+  width: 100% !important;
   max-height: 70vh !important;
   overflow-y: auto !important;
   animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
   position: relative !important;
-  margin-top: 80px !important;
+  margin: 0 auto !important;
   visibility: visible !important;
   opacity: 1 !important;
 }
 
-.modal {
+.modal-overlay .modal {
   background: white !important;
   border: 2px solid #1e293b !important;
   border-radius: 8px !important;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
   max-width: 400px !important;
-  width: 40% !important;
+  width: 100% !important;
   max-height: 80vh !important;
   min-height: 300px !important;
   overflow-y: auto !important;
   visibility: visible !important;
   opacity: 1 !important;
   z-index: 10000 !important;
-  margin-top: 80px !important;
+  margin: 0 auto !important;
 }
 
 .modal *,
@@ -704,7 +982,7 @@ th:last-child, td:last-child {
 }
 
 .form-modal {
-  margin-top: 80px !important;
+  margin: 0 auto !important;
   max-height: calc(100vh - 160px) !important;
 }
 
@@ -715,6 +993,7 @@ th:last-child, td:last-child {
 .large-modal {
   max-width: 65vw !important;
   width: 65vw !important;
+  margin: 0 auto !important;
 }
 
 .content {
@@ -722,16 +1001,16 @@ th:last-child, td:last-child {
 }
 
 .large-popup {
-  margin-top: 80px !important;
+  margin: 0 auto !important;
   max-height: calc(100vh - 160px) !important;
 }
 
 .validation-popup {
-  margin-top: 80px !important;
+  margin: 0 auto !important;
 }
 
 .mat-dialog-container {
-  margin-top: 80px !important;
+  margin: 0 auto !important;
 }
 
 .cdk-overlay-container {
@@ -739,7 +1018,7 @@ th:last-child, td:last-child {
 }
 
 .cdk-overlay-pane {
-  margin-top: 80px !important;
+  margin: 0 auto !important;
 }
 
 .modal-content::before {
@@ -863,5 +1142,165 @@ th:last-child, td:last-child {
 
 .app-layout .content {
   margin-left: 0 !important;
+}
+
+/* ============================================
+   FINAL MODAL CENTERING OVERRIDE
+   This ensures modals are properly centered regardless of Bootstrap/Angular inline styles
+   ============================================ */
+
+/* Force all modals to use flex centering at viewport level */
+body > .modal,
+body > .modal.fade,
+body > .modal.show,
+.modal:not(.modal-overlay):not(.form-overlay),
+.modal.fade:not(.modal-overlay):not(.form-overlay),
+.modal.show:not(.modal-overlay):not(.form-overlay) {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 9999 !important;
+  margin: 0 !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+}
+
+/* Modal content sizing - restore original sizes */
+.modal-content,
+.modal-overlay .modal-content {
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 24px !important;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.25),
+    0 12px 32px rgba(0, 0, 0, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.02) !important;
+  max-width: 1200px !important;
+  width: 90% !important;
+  max-height: 85vh !important;
+  overflow-y: auto !important;
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  position: relative !important;
+  margin: 0 auto !important;
+  margin-top: 0 !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Large modal sizing */
+.modal-content.large-modal,
+.modal-content.large-popup {
+  max-width: 1400px !important;
+  width: 95% !important;
+}
+
+/* Validation popup sizing */
+.modal-content.validation-popup {
+  max-width: 1200px !important;
+  width: 70% !important;
+}
+
+/* Remove any transform that Bootstrap applies */
+.modal:not(.modal-overlay):not(.form-overlay) .modal-dialog,
+.modal.fade:not(.modal-overlay):not(.form-overlay) .modal-dialog,
+.modal.show:not(.modal-overlay):not(.form-overlay) .modal-dialog {
+  transform: none !important;
+  transform-origin: center center !important;
+}
+
+/* Remove any top/left positioning that breaks centering */
+.modal:not(.modal-overlay):not(.form-overlay) .modal-dialog,
+.modal.fade:not(.modal-overlay):not(.form-overlay) .modal-dialog,
+.modal.show:not(.modal-overlay):not(.form-overlay) .modal-dialog {
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  margin-top: 0 !important;
+  margin-left: 0 !important;
+}
+
+/* Ensure modal dialog is centered */
+.modal-dialog {
+  position: relative !important;
+  margin: 0 auto !important;
+  left: auto !important;
+  right: auto !important;
+  max-width: 1200px !important;
+  width: 90% !important;
+}
+
+.modal-dialog.modal-lg,
+.modal-dialog.large-modal {
+  max-width: 1200px !important;
+  width: 90% !important;
+}
+
+/* Ensure modal content is centered */
+.modal-content {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  margin: 0 auto !important;
+  transform: none !important;
+  margin-top: 0 !important;
+}
+
+/* Fix for Bootstrap 5 modal-dialog centering */
+.modal-dialog-centered {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: calc(100vh - 0px) !important;
+}
+
+/* Remove Bootstrap's transform-based centering */
+.modal.fade:not(.modal-overlay):not(.form-overlay) .modal-dialog {
+  transform: none !important;
+}
+
+/* Force modal backdrop to cover full viewport */
+.modal-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9998 !important;
+}
+
+/* Fix for Angular CDK overlay */
+.cdk-overlay-container {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+.cdk-global-overlay-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+.cdk-overlay-pane {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  transform: none !important;
+  margin: 0 auto !important;
 }
 

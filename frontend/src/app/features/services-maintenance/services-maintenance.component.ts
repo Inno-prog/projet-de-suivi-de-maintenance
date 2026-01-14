@@ -13,7 +13,9 @@ import { AuthService } from '../../core/services/auth.service';
         <div class="container">
           <div class="nav-brand">
             <div class="logo">
-              <img src="/assets/logoFinal.png" alt="DGSI Logo" class="logo-image">
+              <a href="https://it.finances.bf/" target="_blank">
+                <img src="/assets/logoFinal.png" alt="DGSI Logo" class="logo-image">
+              </a>
             </div>
           </div>
           <div class="nav-actions">
@@ -205,9 +207,8 @@ import { AuthService } from '../../core/services/auth.service';
     }
 
     .navbar {
-      background: rgba(30, 41, 59, 0.9);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, #0a192f 0%, #0d1b2a 100%);
+      border-bottom: 1px solid #1e293b;
       color: white;
       padding: 1rem 0;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);

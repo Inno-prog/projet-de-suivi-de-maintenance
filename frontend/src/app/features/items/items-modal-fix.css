@@ -1,0 +1,27 @@
+/* Fix pour les modales des items et lots */
+.modal.show {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.modal-dialog {
+  margin: 1.75rem auto !important;
+  max-width: 600px !important;
+  width: 90% !important;
+}
+
+.modal-dialog.modal-lg {
+  max-width: 800px !important;
+}
+
+.form-overlay {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.form-container {
+  width: 90% !important;
+  max-width: 700px !important;
+}
