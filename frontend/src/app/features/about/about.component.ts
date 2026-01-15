@@ -84,28 +84,28 @@ import { RouterModule } from '@angular/router';
               <h2>Notre Histoire</h2>
               <div class="timeline">
                 <div class="timeline-item">
-                  <div class="timeline-date">2010</div>
+                  <div class="timeline-date">1991</div>
                   <div class="timeline-content">
                     <h3>Création de la DGSI</h3>
                     <p>Fondation de la Direction Générale des Systèmes d'Information au sein du Ministère des Finances.</p>
                   </div>
                 </div>
                 <div class="timeline-item">
-                  <div class="timeline-date">2015</div>
+                  <div class="timeline-date">2000</div>
                   <div class="timeline-content">
-                    <h3>Modernisation des infrastructures</h3>
+                    <h3> Devient, la Direction des Services Informatique </h3>
                     <p>Lancement d'un vaste programme de renouvellement des équipements informatiques et réseaux.</p>
                   </div>
                 </div>
                 <div class="timeline-item">
-                  <div class="timeline-date">2020</div>
+                  <div class="timeline-date"> 2008</div>
                   <div class="timeline-content">
-                    <h3>Transformation digitale</h3>
+                    <h3> Elle devient Direction Générale des Services Informatiques</h3>
                     <p>Accélération de la transformation digitale avec l'adoption de nouvelles technologies cloud et mobiles.</p>
                   </div>
                 </div>
                 <div class="timeline-item">
-                  <div class="timeline-date">2024</div>
+                  <div class="timeline-date">2025</div>
                   <div class="timeline-content">
                     <h3>MainTrack Pro</h3>
                     <p>Lancement de notre plateforme de suivi professionnel des prestations de maintenance informatique.</p>
@@ -144,7 +144,7 @@ import { RouterModule } from '@angular/router';
               <h2>Chiffres Clés</h2>
               <div class="stats-grid">
                 <div class="stat-item">
-                  <div class="stat-number">14</div>
+                  <div class="stat-number">35</div>
                   <div class="stat-label">Années d'expérience</div>
                 </div>
                 <div class="stat-item">
@@ -214,9 +214,15 @@ import { RouterModule } from '@angular/router';
     :host { --primary: #f97316; --dark: #0f172a; --gray: #f1f5f9; --blue: #1e4d7b; }
 
     .about-page {
-      min-height: 100vh;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
       background: #f8fafc;
       font-family: 'Inter', -apple-system, sans-serif;
+      overflow-y: auto !important;
+      z-index: 1000 !important;
     }
 
     /* HEADER OFFICIEL */

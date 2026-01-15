@@ -227,9 +227,15 @@ import { FormsModule } from '@angular/forms';
     :host { --primary: #f97316; --dark: #0f172a; --gray: #f1f5f9; --blue: #1e4d7b; }
 
     .contact-page {
-      min-height: 100vh;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
       background: #f8fafc;
       font-family: 'Inter', -apple-system, sans-serif;
+      overflow-y: auto !important;
+      z-index: 1000 !important;
     }
 
     /* HEADER OFFICIEL */

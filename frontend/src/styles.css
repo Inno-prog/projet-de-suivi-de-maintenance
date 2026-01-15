@@ -286,6 +286,7 @@ div.form-container {
 .app-layout.stable-layout .main-content {
   flex: 1 !important;
   margin-left: 0 !important;
+  margin-top: 0 !important;
   width: 100% !important;
   display: flex !important;
   flex-direction: column !important;
@@ -307,18 +308,20 @@ div.form-container {
 /* SUPPRESSION : Container prend toute la largeur disponible sans marge */
 .app-layout.stable-layout .content {
   flex: 1 !important;
-  margin: 30px 0 0 0 !important;
+  margin: 0 !important;
+  padding: 1.5rem 2rem 0 2rem !important;
   width: 100% !important;
   max-width: 100% !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
-  padding: 0 !important;
   box-sizing: border-box !important;
 }
 
 .app-layout.stable-layout .content > * {
   max-width: 100% !important;
   box-sizing: border-box !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
 }
 
 /* Prevent layout shifts */
@@ -329,6 +332,28 @@ div.form-container {
   min-height: 100vh !important;
   visibility: visible !important;
   opacity: 1 !important;
+}
+
+/* SUPPRESSION COMPLÈTE : Espace en haut des tableaux de bord */
+.app-layout.stable-layout .content .container,
+.app-layout.stable-layout .content > .container,
+.app-layout.stable-layout .content app-admin-dashboard,
+.app-layout.stable-layout .content app-agent-dashboard,
+.app-layout.stable-layout .content app-prestataire-dashboard {
+  margin-top: 10px !important;
+  padding-top: 0 !important;
+}
+
+.app-layout.stable-layout .content .table-container,
+.app-layout.stable-layout .content .card {
+  margin-top: 0 !important;
+}
+
+/* Force suppression de tous les espaces en haut */
+.app-layout.stable-layout .content > *:first-child,
+.app-layout.stable-layout .content .container > *:first-child {
+  margin-top: 10px!important;
+  padding-top: 10px !important;
 }
 
 /* Stable-layout helper */

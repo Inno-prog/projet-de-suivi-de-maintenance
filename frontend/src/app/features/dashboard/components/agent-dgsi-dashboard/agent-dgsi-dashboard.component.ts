@@ -24,11 +24,12 @@ interface Stats {
   template: `
     <!-- Tableau de bord Agent DGSI -->
     <div
-      class="min-h-screen bg-[#0f172a] text-white px-8 py-10 font-sans"
+      class="bg-[#0f172a] text-white font-sans"
+      style="margin: -40px; padding: 40px; margin-left:0px; margin-top: 0px"
       *ngIf="authService.isAuthenticated()"
     >
       <!-- En-tête -->
-      <div class="flex items-center justify-between mb-10 ">
+      <div class="flex items-center justify-between mb-1">
         <div>
           <h1 class="text-3xl font-bold text-orange-400" style="margin-left: 0px;">Espace Agent DGSI</h1>
         </div>
