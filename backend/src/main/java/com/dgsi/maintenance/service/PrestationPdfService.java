@@ -55,6 +55,10 @@ public class PrestationPdfService {
             addSectionTitle(document, "DÉTAILS DE L'INTERVENTION", primaryColor, boldFont);
             addInterventionDetails(document, prestation, normalFont, darkGray, lightGray);
 
+            // Add Proforma Details Section
+            if (prestation.getItemsUtilises() != null && !prestation.getItemsUtilises().isEmpty()) {
+                addProformaDetails(document, prestation, boldFont, normalFont, primaryColor, darkGray, lightGray);
+            }
 
             addSignatureSection(document, prestation, normalFont, boldFont, primaryColor, darkGray);
             addProfessionalFooter(document, normalFont, darkGray);
@@ -254,12 +258,220 @@ public class PrestationPdfService {
                 .setPadding(6);
 
         Cell valueCell = new Cell()
-                .add(new Paragraph(value != null ? value : "Non spécifié")
+                .add(new Paragraph(value != null ? value : "-")
                         .setFont(font).setFontSize(10))
                 .setPadding(6);
 
         table.addCell(labelCell);
         table.addCell(valueCell);
+    }
+
+    /**
+     * Ajoute la section détaillée de la facture proforma avec items, prix, quantité, montant
+     */
+    private void addProformaDetails(Document document, Prestation prestation, PdfFont boldFont, 
+                                     PdfFont normalFont, DeviceRgb primaryColor, DeviceRgb darkGray, DeviceRgb bgColor) {
+        
+        addSectionTitle(document, "DÉTAILS DE LA FACTURE PROFORMA", primaryColor, boldFont);
+        
+        // Get items from itemsUtilises or parse from nomPrestation
+        java.util.List<String[]> items = getItemsFromPrestation(prestation);
+        
+        if (items.isEmpty()) {
+            // Fallback: just show items from nomPrestation as text
+            if (prestation.getNomPrestation() != null && !prestation.getNomPrestation().isBlank()) {
+                String[] nomItems = prestation.getNomPrestation().split(",");
+                for (int i = 0; i < nomItems.length; i++) {
+                    items.add(new String[]{nomItems[i].trim(), "0", "1"});
+                }
+            }
+        }
+        
+        if (items.isEmpty()) {
+            // No items to display
+            Paragraph noItems = new Paragraph("Aucun item détaillé disponible.")
+                    .setFont(normalFont).setFontSize(10)
+                    .setMarginBottom(10);
+            document.add(noItems);
+            return;
+        }
+        
+        // Table with 4 columns: Item, Prix unitaire, Quantité, Montant
+        Table table = new Table(UnitValue.createPercentArray(new float[]{30, 35, 10, 25}))
+                .setWidth(UnitValue.createPercentValue(100))
+                .setMarginBottom(15);
+        
+        // Header row
+        Cell itemHeader = new Cell()
+                .add(new Paragraph("Item").setFont(boldFont).setFontSize(10).setBold())
+                .setBackgroundColor(bgColor)
+                .setPadding(8);
+        table.addCell(itemHeader);
+        
+        Cell priceHeader = new Cell()
+                .add(new Paragraph("Prix unitaire (FCFA)").setFont(boldFont).setFontSize(10).setBold())
+                .setBackgroundColor(bgColor)
+                .setPadding(8)
+                .setTextAlignment(TextAlignment.CENTER);
+        table.addCell(priceHeader);
+        
+        Cell qtyHeader = new Cell()
+                .add(new Paragraph("Quantité").setFont(boldFont).setFontSize(10).setBold())
+                .setBackgroundColor(bgColor)
+                .setPadding(8)
+                .setTextAlignment(TextAlignment.CENTER);
+        table.addCell(qtyHeader);
+        
+        Cell amountHeader = new Cell()
+                .add(new Paragraph("Total (FCFA)").setFont(boldFont).setFontSize(10).setBold())
+                .setBackgroundColor(bgColor)
+                .setPadding(8)
+                .setTextAlignment(TextAlignment.RIGHT);
+        table.addCell(amountHeader);
+        
+        // Data rows
+        double totalAmount = 0;
+        int index = 1;
+        
+        for (String[] itemData : items) {
+            String itemName = itemData[0] != null ? itemData[0] : "Item";
+            double price = 0;
+            int quantity = 1;
+            
+            try {
+                if (itemData[1] != null) {
+                    price = Double.parseDouble(itemData[1]);
+                }
+            } catch (NumberFormatException e) {
+                // Ignore
+            }
+            
+            try {
+                if (itemData[2] != null) {
+                    quantity = Integer.parseInt(itemData[2]);
+                }
+            } catch (NumberFormatException e) {
+                // Ignore
+            }
+            
+            double amount = price * quantity;
+            totalAmount += amount;
+            
+            // Item name with number
+            Cell itemCell = new Cell()
+                    .add(new Paragraph(index + ". " + itemName).setFont(normalFont).setFontSize(10))
+                    .setPadding(6);
+            table.addCell(itemCell);
+            
+            // Price
+            Cell priceCell = new Cell()
+                    .add(new Paragraph(String.format("%.0f", price)).setFont(normalFont).setFontSize(10))
+                    .setPadding(6)
+                    .setTextAlignment(TextAlignment.CENTER);
+            table.addCell(priceCell);
+            
+            // Quantity
+            Cell qtyCell = new Cell()
+                    .add(new Paragraph(String.valueOf(quantity)).setFont(normalFont).setFontSize(10))
+                    .setPadding(6)
+                    .setTextAlignment(TextAlignment.CENTER);
+            table.addCell(qtyCell);
+
+            // Amount
+            Cell amountCell = new Cell()
+                    .add(new Paragraph(String.format("%.0f", amount)).setFont(normalFont).setFontSize(10))
+                    .setPadding(6)
+                    .setTextAlignment(TextAlignment.RIGHT);
+            table.addCell(amountCell);
+            
+            index++;
+        }
+        
+        document.add(table);
+        
+        // Total row
+        Table totalTable = new Table(UnitValue.createPercentArray(new float[]{80, 20}))
+                .setWidth(UnitValue.createPercentValue(100))
+                .setMarginTop(10);
+        
+        Cell totalLabel = new Cell()
+                .add(new Paragraph("MONTANT TOTAL").setFont(boldFont).setFontSize(11).setBold())
+                .setBorder(null)
+                .setPadding(8)
+                .setTextAlignment(TextAlignment.RIGHT);
+        totalTable.addCell(totalLabel);
+        
+        Cell totalValue = new Cell()
+                .add(new Paragraph(String.format("%.0f", totalAmount) + " FCFA").setFont(boldFont).setFontSize(11).setFontColor(primaryColor))
+                .setBorder(null)
+                .setPadding(8)
+                .setTextAlignment(TextAlignment.RIGHT);
+        totalTable.addCell(totalValue);
+        
+        document.add(totalTable);
+    }
+    
+    /**
+     * Extract items from prestation, trying itemsUtilises first, then nomPrestation
+     */
+    private java.util.List<String[]> getItemsFromPrestation(Prestation prestation) {
+        java.util.List<String[]> items = new java.util.ArrayList<>();
+        
+        // Try itemsUtilises first
+        if (prestation.getItemsUtilises() != null && !prestation.getItemsUtilises().isEmpty()) {
+            for (com.dgsi.maintenance.entity.Item item : prestation.getItemsUtilises()) {
+                String nomItem = item.getNomItem() != null ? item.getNomItem() : "Item";
+                Float prix = item.getPrix();
+                String prixStr = prix != null ? String.valueOf(prix) : "0";
+                items.add(new String[]{nomItem, prixStr, "1"});
+            }
+            return items;
+        }
+        
+        // Try parsing nomPrestation as JSON
+        if (prestation.getNomPrestation() != null && !prestation.getNomPrestation().isBlank()) {
+            String nomPrestation = prestation.getNomPrestation().trim();
+            
+            // Try JSON array first
+            if (nomPrestation.startsWith("[")) {
+                try {
+                    com.fasterxml.jackson.core.type.TypeReference<java.util.List<java.util.Map<String, Object>>> typeRef =
+                            new com.fasterxml.jackson.core.type.TypeReference<java.util.List<java.util.Map<String, Object>>>() {};
+                    java.util.List<java.util.Map<String, Object>> jsonItems = 
+                            new com.fasterxml.jackson.databind.ObjectMapper().readValue(nomPrestation, typeRef);
+                    
+                    for (java.util.Map<String, Object> jsonItem : jsonItems) {
+                        Object nomObj = jsonItem.get("nom");
+                        Object nomItemObj = jsonItem.get("nomItem");
+                        Object prixObj = jsonItem.get("prix");
+                        Object quantiteObj = jsonItem.get("quantite");
+                        
+                        String nom = nomObj != null ? String.valueOf(nomObj) : 
+                                    (nomItemObj != null ? String.valueOf(nomItemObj) : "Item");
+                        String prix = prixObj != null ? String.valueOf(prixObj) : "0";
+                        String quantite = quantiteObj != null ? String.valueOf(quantiteObj) : "1";
+                        
+                        items.add(new String[]{nom, prix, quantite});
+                    }
+                    return items;
+                } catch (Exception e) {
+                    // Not valid JSON, continue with comma-separated parsing
+                }
+            }
+            
+            // Try comma-separated values
+            if (nomPrestation.contains(",")) {
+                String[] parts = nomPrestation.split(",");
+                for (String part : parts) {
+                    items.add(new String[]{part.trim(), "0", "1"});
+                }
+            } else {
+                // Single item
+                items.add(new String[]{nomPrestation, "0", "1"});
+            }
+        }
+        
+        return items;
     }
 
     private void addSignatureSection(Document document, Prestation prestation, PdfFont normalFont,

@@ -1,21 +1,22 @@
 package com.dgsi.maintenance.service;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.imageio.ImageIO;
 import com.dgsi.maintenance.entity.FichePrestation;
 import com.dgsi.maintenance.entity.Prestation;
+import com.dgsi.maintenance.repository.PrestationRepository;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
-import javax.imageio.ImageIO;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.Ellipse2D;
-import java.awt.image.BufferedImage;
 import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -25,7 +26,6 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
-import com.itextpdf.layout.element.Div;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
@@ -33,10 +33,9 @@ import com.itextpdf.layout.properties.BorderRadius;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.itextpdf.layout.properties.VerticalAlignment;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.dgsi.maintenance.repository.PrestationRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -826,7 +825,7 @@ public class FichePrestationPdfService {
             table.addCell(headerCellCol);
         }
 
-        // Trier par date (plus récente en premier)
+
         List<FichePrestation> fichesSorted = fiches.stream()
                 .sorted((f1, f2) -> {
                     if (f1.getDateRealisation() != null && f2.getDateRealisation() != null) {
@@ -838,6 +837,7 @@ public class FichePrestationPdfService {
 
         double totalMontant = 0;
         boolean alternateRow = false;
+        int rowNumber = 1;
 
         for (FichePrestation fiche : fichesSorted) {
             DeviceRgb rowBg = alternateRow ? LIGHT_GRAY : WHITE;
@@ -851,10 +851,10 @@ public class FichePrestationPdfService {
             table.addCell(createTableCell(fiche.getNomPrestataire() != null ? fiche.getNomPrestataire() : "N/A",
                     normalFont, rowBg, TextAlignment.LEFT));
 
-            // Item/Service
-            table.addCell(createTableCell(fiche.getNomItem() != null ? fiche.getNomItem() : "N/A",
-                    normalFont, rowBg, TextAlignment.LEFT));
-
+            // Item/Service avec numérotation et retour à la ligne
+            String itemsText = getFormattedItemsText(fiche, rowNumber);
+            table.addCell(createTableCell(itemsText, normalFont, rowBg, TextAlignment.LEFT));
+            rowNumber++;
             // Date
             String dateStr = fiche.getDateRealisation() != null ?
                     fiche.getDateRealisation().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "N/A";
@@ -1492,6 +1492,58 @@ public class FichePrestationPdfService {
     // ============================
     // MÉTHODES UTILITAIRES
     // ============================
+
+    private String getFormattedItemsText(FichePrestation fiche, int rowNumber) {
+        String itemsCouverts = fiche.getItemsCouverts();
+        String nomItem = fiche.getNomItem();
+
+        // Try to parse itemsCouverts as JSON array first
+        java.util.List<String> items = new java.util.ArrayList<>();
+        if (itemsCouverts != null && !itemsCouverts.trim().isEmpty()) {
+            try {
+                // Try to parse as JSON array
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                java.util.List<?> parsed = mapper.readValue(itemsCouverts, java.util.List.class);
+                for (Object item : parsed) {
+                    if (item != null) {
+                        items.add(item.toString());
+                    }
+                }
+            } catch (Exception e) {
+                // If JSON parsing fails, treat as comma-separated string
+                String[] splitItems = itemsCouverts.split(",");
+                for (String item : splitItems) {
+                    String trimmed = item.trim();
+                    if (!trimmed.isEmpty()) {
+                        items.add(trimmed);
+                    }
+                }
+            }
+        }
+
+        // If no items found in itemsCouverts, use nomItem
+        if (items.isEmpty() && nomItem != null && !nomItem.trim().isEmpty()) {
+            items.add(nomItem.trim());
+        }
+
+        // If still no items, return N/A
+        if (items.isEmpty()) {
+            return "N/A";
+        }
+
+        // Format items with numbering and line breaks
+        StringBuilder formatted = new StringBuilder();
+        int itemNumber = 1;
+        for (String item : items) {
+            if (formatted.length() > 0) {
+                formatted.append("\n"); // Line break between items
+            }
+            formatted.append(itemNumber).append("- ").append(item);
+            itemNumber++;
+        }
+
+        return formatted.toString();
+    }
 
     private Cell createTableCell(String text, PdfFont font, DeviceRgb bgColor, TextAlignment alignment) {
         return new Cell()

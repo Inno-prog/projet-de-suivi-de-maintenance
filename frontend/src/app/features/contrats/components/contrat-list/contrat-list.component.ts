@@ -17,55 +17,69 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
   template: `
     <div class="container">
 
-        <!-- Statistics Cards -->
+        <!-- Statistics Cards - Material Design Style -->
         <div class="stats-overview">
-          <div class="stat-card">
-            <div class="stat-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14.7 6.3a1 1 0 0 0-1.4 0l-4 4a1 1 0 0 0 0 1.4l4 4a1 1 0 0 0 1.4-1.4L11.42 12l3.28-3.3a1 1 0 0 0 0-1.4z" fill="#F97316"/>
-                <path d="M9.3 6.3a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1 0 1.4l-4 4a1 1 0 0 1-1.4-1.4L12.58 12 9.3 9.7a1 1 0 0 1 0-1.4z" fill="#F97316"/>
-                <rect x="2" y="2" width="20" height="20" rx="3" fill="none" stroke="#F97316" stroke-width="2"/>
-              </svg>
+          <div class="stat-card total-card">
+            <div class="stat-icon-wrapper">
+              <div class="stat-icon-bg">
+                <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                </svg>
+              </div>
+              <div class="stat-icon-shadow"></div>
             </div>
-            <div class="stat-info">
-              <h3>{{ filteredContrats.length }}</h3>
-              <p>Total Contrats</p>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div class="stat-info">
-              <h3>{{ getContratsByStatus('ACTIF').length }}</h3>
-              <p>Contrats Actifs</p>
+            <div class="stat-content">
+              <div class="stat-number">{{ filteredContrats.length }}</div>
+              <div class="stat-label">Total Contrats</div>
+              <div class="stat-subtitle">Tous les contrats</div>
             </div>
           </div>
 
-          <div class="stat-card">
-            <div class="stat-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+          <div class="stat-card active-card">
+            <div class="stat-icon-wrapper">
+              <div class="stat-icon-bg">
+                <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M10.3,16.74L6.21,12.63L7.62,11.21L10.3,13.89L16.38,7.79L17.79,9.21L10.3,16.74Z"/>
+                </svg>
+              </div>
+              <div class="stat-icon-shadow"></div>
             </div>
-            <div class="stat-info">
-              <h3>{{ getContratsByStatus('SUSPENDU').length }}</h3>
-              <p>Contrats Suspendus</p>
+            <div class="stat-content">
+              <div class="stat-number">{{ getContratsByStatus('ACTIF').length }}</div>
+              <div class="stat-label">Contrats Actifs</div>
+              <div class="stat-subtitle">En cours d'exécution</div>
             </div>
           </div>
 
-          <div class="stat-card">
-            <div class="stat-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+          <div class="stat-card suspended-card">
+            <div class="stat-icon-wrapper">
+              <div class="stat-icon-bg">
+                <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M13,14H11V12H13M13,18H11V16H13M1,21H23L12,2L1,21Z"/>
+                </svg>
+              </div>
+              <div class="stat-icon-shadow"></div>
             </div>
-            <div class="stat-info">
-              <h3>{{ getTotalMontant() | number:'1.0-0' }} FCFA</h3>
-              <p>Montant Total</p>
+            <div class="stat-content">
+              <div class="stat-number">{{ getContratsByStatus('SUSPENDU').length }}</div>
+              <div class="stat-label">Suspendus</div>
+              <div class="stat-subtitle">En attente</div>
+            </div>
+          </div>
+
+          <div class="stat-card amount-card">
+            <div class="stat-icon-wrapper">
+              <div class="stat-icon-bg">
+                <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3,6H21V18H3V6M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M7,8A2,2 0 0,1 5,10V14A2,2 0 0,1 7,16H17A2,2 0 0,1 19,14V10A2,2 0 0,1 17,8H7Z"/>
+                </svg>
+              </div>
+              <div class="stat-icon-shadow"></div>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number">{{ getTotalMontant() | number:'1.0-0' }}</div>
+              <div class="stat-label">Montant Total</div>
+              <div class="stat-subtitle">FCFA</div>
             </div>
           </div>
         </div>
@@ -784,53 +798,135 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
 
     .stats-overview {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 2rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
     }
 
     .stat-card {
-      background: white;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      box-shadow:
+        0 16px 32px rgba(0, 0, 0, 0.1),
+        0 6px 12px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
       padding: 1.5rem;
       display: flex;
       align-items: center;
-      gap: 1rem;
-      transition: all 0.3s ease;
+      gap: 1.25rem;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #f59e0b);
+      border-radius: 20px 20px 0 0;
     }
 
     .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      transform: translateY(-6px) scale(1.01);
+      box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.12),
+        0 12px 24px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
-    .stat-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: #f97316;
-      background: rgba(249, 115, 22, 0.1);
+    /* Specific card themes */
+    .total-card::before { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+    .active-card::before { background: linear-gradient(90deg, #10b981, #059669); }
+    .suspended-card::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    .amount-card::before { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
+
+    .stat-icon-wrapper {
+      position: relative;
       flex-shrink: 0;
     }
 
-    .stat-info h3 {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #1e293b;
-      margin: 0;
-      line-height: 1;
+    .stat-icon-bg {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
     }
 
-    .stat-info p {
+    /* Icon backgrounds with gradients */
+    .total-card .stat-icon-bg {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+    }
+
+    .active-card .stat-icon-bg {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+    }
+
+    .suspended-card .stat-icon-bg {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);
+    }
+
+    .amount-card .stat-icon-bg {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
+    }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      color: white;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .stat-icon-shadow {
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 50%;
+      filter: blur(6px);
+    }
+
+    .stat-content {
+      flex: 1;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #1e293b 0%, #374151 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #374151;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-subtitle {
       font-size: 0.875rem;
-      color: #64748b;
-      margin: 0.25rem 0 0 0;
+      color: #6b7280;
       font-weight: 500;
     }
 

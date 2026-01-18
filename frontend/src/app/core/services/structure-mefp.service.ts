@@ -5,6 +5,26 @@ import { Observable } from 'rxjs';
 import { StructureMefp } from '../models/business.models';
 import { environment } from '../../../environments/environment';
 
+export interface RegionHierarchy {
+  nom: string;
+  villes: VilleHierarchy[];
+}
+
+export interface VilleHierarchy {
+  nom: string;
+  structures: StructureInfo[];
+}
+
+export interface StructureInfo {
+  id: string;
+  nom: string;
+  categorie?: string;
+  contact?: string;
+  email?: string;
+  adresseStructure?: string;
+  description?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -28,8 +48,25 @@ export class StructureMefpService {
     return this.http.get<StructureMefp[]>(this.API_URL, { headers: this.getHeaders() });
   }
 
-  getAllStructuresPaginated(page: number = 0, size: number = 12): Observable<any> {
-    const params = `?page=${page}&size=${size}`;
+  getHierarchy(): Observable<RegionHierarchy[]> {
+    return this.http.get<RegionHierarchy[]>(`${this.API_URL}/hierarchy`, { headers: this.getHeaders() });
+  }
+
+  // Nouveaux endpoints pour les données de référence
+  getAllRegions(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.API_URL}/regions`, { headers: this.getHeaders() });
+  }
+
+  getAllVilles(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.API_URL}/villes`, { headers: this.getHeaders() });
+  }
+
+  getVillesByRegion(region: string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.API_URL}/regions/${encodeURIComponent(region)}/villes`, { headers: this.getHeaders() });
+  }
+
+  getAllStructuresPaginated(page: number = 0, size: number = 12, sortBy: string = 'nom', sortDirection: string = 'asc'): Observable<any> {
+    const params = `?page=${page}&size=${size}&sortBy=${sortBy}&sortDirection=${sortDirection}`;
     return this.http.get<any>(`${this.API_URL}/paginated${params}`, { headers: this.getHeaders() });
   }
 
@@ -47,5 +84,17 @@ export class StructureMefpService {
 
   getStructuresByLotId(lotId: number): Observable<StructureMefp[]> {
     return this.http.get<StructureMefp[]>(`${this.API_URL}/by-lot/${lotId}`, { headers: this.getHeaders() });
+  }
+
+  getStructuresByRegion(region: string): Observable<StructureMefp[]> {
+    return this.http.get<StructureMefp[]>(`${this.API_URL}/by-region/${encodeURIComponent(region)}`, { headers: this.getHeaders() });
+  }
+
+  getStructuresByVille(ville: string): Observable<StructureMefp[]> {
+    return this.http.get<StructureMefp[]>(`${this.API_URL}/by-ville/${encodeURIComponent(ville)}`, { headers: this.getHeaders() });
+  }
+
+  getStructuresByRegionAndVille(region: string, ville: string): Observable<StructureMefp[]> {
+    return this.http.get<StructureMefp[]>(`${this.API_URL}/by-region/${encodeURIComponent(region)}/ville/${encodeURIComponent(ville)}`, { headers: this.getHeaders() });
   }
 }

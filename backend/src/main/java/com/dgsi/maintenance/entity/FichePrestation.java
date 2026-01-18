@@ -63,6 +63,9 @@ public class FichePrestation {
     @JoinColumn(name = "prestataire_id")
     private Prestataire prestataire;
 
+    @Column(name = "numero_fiche")
+    private Integer numeroFiche;
+
     @PrePersist
     @PreUpdate
     private void ensurePrestataireInfo() {
@@ -127,4 +130,7 @@ public class FichePrestation {
 
     public Prestataire getPrestataire() { return prestataire; }
     public void setPrestataire(Prestataire prestataire) { this.prestataire = prestataire; }
+
+    public Integer getNumeroFiche() { return numeroFiche; }
+    public void setNumeroFiche(Integer numeroFiche) { this.numeroFiche = numeroFiche; }
 }

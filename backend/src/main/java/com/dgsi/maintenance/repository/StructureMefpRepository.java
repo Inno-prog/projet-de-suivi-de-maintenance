@@ -9,6 +9,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StructureMefpRepository extends JpaRepository<StructureMefp, String> {
     Optional<StructureMefp> findByNom(String nom);
-    
+
     List<StructureMefp> findByLotId(Long lotId);
+
+    List<StructureMefp> findByRegion(String region);
+
+    List<StructureMefp> findByVille(String ville);
+
+    List<StructureMefp> findByRegionAndVille(String region, String ville);
 }

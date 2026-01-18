@@ -90,7 +90,7 @@ html, body {
   height: 100%;
   width: 100%;
   min-height: 100%;
-  overflow: hidden;
+  overflow: auto;
   margin: 0;
   padding: 0;
 }
@@ -99,7 +99,7 @@ app-root {
   display: block;
   height: 100%;
   width: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* ============================================
@@ -1328,4 +1328,3 @@ body > .modal.show,
   transform: none !important;
   margin: 0 auto !important;
 }
-

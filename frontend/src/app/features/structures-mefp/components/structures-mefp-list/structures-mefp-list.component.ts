@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { StructureMefpService } from '../../../../core/services/structure-mefp.service';
 import { LotService } from '../../../../core/services/lot.service';
 import { StructureMefp, Lot } from '../../../../core/models/business.models';
@@ -50,6 +51,19 @@ interface Page<T> {
                 <button *ngIf="searchTerm" class="clear-btn" (click)="clearSearch()" title="Effacer la recherche">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="sort-controls">
+                <select [(ngModel)]="sortBy" (change)="onSortChange()" class="sort-select" title="Trier par">
+                  <option *ngFor="let option of sortOptions" [value]="option.value">{{ option.label }}</option>
+                </select>
+                <button class="sort-direction-btn" (click)="toggleSortDirection()" [title]="sortDirection === 'asc' ? 'Ordre croissant' : 'Ordre décroissant'">
+                  <svg *ngIf="sortDirection === 'asc'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 19V5M5 12l7-7 7 7"/>
+                  </svg>
+                  <svg *ngIf="sortDirection === 'desc'" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12l7 7 7-7"/>
                   </svg>
                 </button>
               </div>
@@ -139,7 +153,7 @@ interface Page<T> {
                     <i class="fas fa-eye"></i>
                     <span>Voir</span>
                   </button>
-                  <button class="action-btn edit-btn" title="Modifier" (click)="editStructure(structure)">
+                  <button class="action-btn edit-btn" title="Modifier" (click)="testClick(structure); editStructure(structure); $event.stopPropagation()">
                     <i class="fas fa-edit"></i>
                     <span>Modifier</span>
                   </button>
@@ -602,6 +616,9 @@ interface Page<T> {
       cursor: pointer;
       transition: all 0.2s ease;
       text-decoration: none;
+      position: relative;
+      z-index: 10;
+      pointer-events: auto;
     }
 
     .view-btn {
@@ -680,6 +697,48 @@ interface Page<T> {
       display: flex;
       gap: 1rem;
       align-items: center;
+    }
+
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .sort-select {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: white;
+      font-size: 0.875rem;
+      color: #374151;
+      min-width: 120px;
+    }
+
+    .sort-select:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
+    .sort-direction-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      background: white;
+      color: #6b7280;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sort-direction-btn:hover {
+      background: #f3f4f6;
+      border-color: #9ca3af;
+      color: #374151;
     }
 
     .lot-filter {
@@ -1024,19 +1083,38 @@ export class StructuresMefpListComponent implements OnInit {
   currentStructure: StructureMefp | null = null;
   structureForm: FormGroup;
 
-  // Pagination properties
+  // Breadcrumb for hierarchy navigation
+  breadcrumb: { label: string; route?: string }[] = [];
+  currentRegion: string = '';
+  currentVille: string = '';
+
+  // Filter type for display
+  filterType: 'all' | 'ville' | 'region' = 'all';
   currentPage = 0;
   pageSize = 12;
   totalElements = 0;
   totalPages = 0;
   paginatedStructures: Page<StructureMefp> | null = null;
 
+  // Sorting properties
+  sortBy = 'nom';
+  sortDirection: 'asc' | 'desc' = 'asc';
+  sortOptions = [
+    { value: 'nom', label: 'Nom' },
+    { value: 'categorie', label: 'Catégorie' },
+    { value: 'ville', label: 'Ville' },
+    { value: 'email', label: 'Email' },
+    { value: 'contact', label: 'Contact' }
+  ];
+
   constructor(
     private structureMefpService: StructureMefpService,
     private lotService: LotService,
     private confirmationService: ConfirmationService,
     private toastService: ToastService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router
   ) {
     this.structureForm = this.formBuilder.group({
       nom: ['', Validators.required],
@@ -1064,8 +1142,86 @@ export class StructuresMefpListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadStructures();
+    // Handle route parameters for hierarchy navigation
+    this.route.paramMap.subscribe(params => {
+      const ville = params.get('ville');
+      const region = params.get('region');
+      
+      if (ville) {
+        this.loadStructuresByVille(ville);
+        this.currentVille = ville;
+        this.filterType = 'ville';
+        this.updateBreadcrumb();
+      } else if (region) {
+        this.loadStructuresByRegion(region);
+        this.currentRegion = region;
+        this.filterType = 'region';
+        this.updateBreadcrumb();
+      } else {
+        this.loadStructures();
+        this.filterType = 'all';
+        this.updateBreadcrumb();
+      }
+    });
     this.loadLots();
+  }
+
+  /**
+   * Update breadcrumb based on current filter type
+   */
+  updateBreadcrumb(): void {
+    this.breadcrumb = [];
+    
+    // Add MEF root
+    this.breadcrumb.push({ label: 'MEF', route: '/structures-mefp' });
+    
+    if (this.filterType === 'region' && this.currentRegion) {
+      this.breadcrumb.push({ label: this.currentRegion });
+    } else if (this.filterType === 'ville' && this.currentVille) {
+      // Find the region for this ville
+      this.structureMefpService.getHierarchy().subscribe({
+        next: (hierarchy) => {
+          const region = hierarchy.find(r => r.villes.some(v => v.nom === this.currentVille));
+          if (region) {
+            // Update breadcrumb with region
+            this.breadcrumb = [
+              { label: 'MEF', route: '/structures-mefp' },
+              { label: region.nom, route: `/structures-mefp/region/${region.nom}` },
+              { label: this.currentVille }
+            ];
+          }
+        },
+        error: () => {
+          // If hierarchy fails, just show MEF > Ville
+          this.breadcrumb = [
+            { label: 'MEF', route: '/structures-mefp' },
+            { label: this.currentVille }
+          ];
+        }
+      });
+      
+      // Set initial breadcrumb while loading
+      this.breadcrumb = [
+        { label: 'MEF', route: '/structures-mefp' },
+        { label: 'Chargement...' }
+      ];
+    }
+  }
+
+  /**
+   * Navigate to a specific breadcrumb item
+   */
+  navigateToBreadcrumb(route?: string): void {
+    if (route) {
+      this.router.navigateByUrl(route);
+    }
+  }
+
+  /**
+   * Reset to show all structures
+   */
+  resetFilter(): void {
+    this.router.navigate(['/structures-mefp']);
   }
 
   loadStructures(): void {
@@ -1098,7 +1254,7 @@ export class StructuresMefpListComponent implements OnInit {
       });
     } else {
       // Load all structures with pagination
-      this.structureMefpService.getAllStructuresPaginated(this.currentPage, this.pageSize).subscribe({
+      this.structureMefpService.getAllStructuresPaginated(this.currentPage, this.pageSize, this.sortBy, this.sortDirection).subscribe({
         next: (page: Page<StructureMefp>) => {
           console.log('Successfully loaded structures:', page);
           this.paginatedStructures = page;
@@ -1125,6 +1281,56 @@ export class StructuresMefpListComponent implements OnInit {
         }
       });
     }
+  }
+
+  loadStructuresByVille(ville: string): void {
+    this.loading = true;
+    console.log('Loading structures for ville:', ville);
+    this.structureMefpService.getStructuresByVille(ville).subscribe({
+      next: (structures: StructureMefp[]) => {
+        console.log('Successfully loaded structures for ville:', structures);
+        this.structures = structures;
+        this.paginatedStructures = null; // No pagination for filtered results
+        this.totalElements = structures.length;
+        this.totalPages = 1; // No pagination for filtered results
+        this.filterStructures();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading structures by ville:', error);
+        this.toastService.show({
+          type: 'error',
+          title: 'Erreur de chargement',
+          message: 'Impossible de charger les structures de cette ville.'
+        });
+        this.loading = false;
+      }
+    });
+  }
+
+  loadStructuresByRegion(region: string): void {
+    this.loading = true;
+    console.log('Loading structures for region:', region);
+    this.structureMefpService.getStructuresByRegion(region).subscribe({
+      next: (structures: StructureMefp[]) => {
+        console.log('Successfully loaded structures for region:', structures);
+        this.structures = structures;
+        this.paginatedStructures = null; // No pagination for filtered results
+        this.totalElements = structures.length;
+        this.totalPages = 1; // No pagination for filtered results
+        this.filterStructures();
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading structures by region:', error);
+        this.toastService.show({
+          type: 'error',
+          title: 'Erreur de chargement',
+          message: 'Impossible de charger les structures de cette région.'
+        });
+        this.loading = false;
+      }
+    });
   }
 
   loadLots(): void {
@@ -1168,6 +1374,18 @@ export class StructuresMefpListComponent implements OnInit {
   }
 
   onLotFilterChange(): void {
+    this.currentPage = 0;
+    this.loadStructures();
+  }
+
+  onSortChange(): void {
+    this.currentPage = 0;
+    this.loadStructures();
+  }
+
+  toggleSortDirection(): void {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    this.currentPage = 0;
     this.loadStructures();
   }
 
@@ -1197,24 +1415,39 @@ export class StructuresMefpListComponent implements OnInit {
   }
 
   editStructure(structure: StructureMefp): void {
-    this.isEditing = true;
-    this.isViewing = false;
-    this.currentStructure = structure;
-    this.structureForm.patchValue({
-      nom: structure.nom,
-      email: structure.email,
-      contact: structure.contact,
-      ville: structure.ville,
-      adresseStructure: structure.adresseStructure,
-      description: structure.description,
-      categorie: structure.categorie,
-      lotId: structure.lot?.id || null,
-      nomCI: structure.nomCI,
-      prenomCI: structure.prenomCI,
-      contactCI: structure.contactCI,
-      fonctionCI: structure.fonctionCI
-    });
-    this.showStructureModal = true;
+    console.log('Edit button clicked for structure:', structure);
+    console.log('Structure ID:', structure?.id);
+    console.log('Structure properties:', Object.keys(structure));
+
+    try {
+      this.isEditing = true;
+      this.isViewing = false;
+      this.currentStructure = structure;
+
+      // Safe patchValue with error handling
+      const formData = {
+        nom: structure.nom || '',
+        email: structure.email || '',
+        contact: structure.contact || '',
+        ville: structure.ville || '',
+        adresseStructure: structure.adresseStructure || '',
+        description: structure.description || '',
+        categorie: structure.categorie || '',
+        lotId: structure.lot?.id || null,
+        nomCI: structure.nomCI || '',
+        prenomCI: structure.prenomCI || '',
+        contactCI: structure.contactCI || '',
+        fonctionCI: structure.fonctionCI || ''
+      };
+
+      console.log('Form data to patch:', formData);
+      this.structureForm.patchValue(formData);
+      this.showStructureModal = true;
+      console.log('Modal should now be open');
+    } catch (error) {
+      console.error('Error in editStructure:', error);
+      console.error('Structure object:', structure);
+    }
   }
 
   closeStructureModal(): void {
@@ -1439,5 +1672,9 @@ export class StructuresMefpListComponent implements OnInit {
 
   getEndIndex(): number {
     return Math.min((this.currentPage + 1) * this.pageSize, this.totalElements);
+  }
+
+  testClick(structure: StructureMefp): void {
+    alert('Edit button clicked! Structure: ' + structure.nom);
   }
 }

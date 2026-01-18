@@ -1,8 +1,9 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
+import { StructureMefpService, RegionHierarchy, VilleHierarchy, StructureInfo } from '../../../core/services/structure-mefp.service';
 import { User } from '../../../core/models/auth.models';
 
 @Component({
@@ -37,7 +38,7 @@ import { User } from '../../../core/models/auth.models';
         </a>
 
         <!-- Prestataire Section -->
-        <div *ngIf="authService.isPrestataire()" class="nav-section">
+        <div *ngIf="authService.isPrestataire()" class="nav-section" data-section="prestataire">
           <div class="section-header" (click)="toggleSection('prestataire')">
             <span>Mes Services</span>
             <svg [class.expanded]="sections['prestataire']" class="arrow-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -53,7 +54,7 @@ import { User } from '../../../core/models/auth.models';
         </div>
 
         <!-- Administrator Section -->
-        <div *ngIf="authService.isAdmin()" class="nav-section">
+        <div *ngIf="authService.isAdmin()" class="nav-section" data-section="admin">
           <div class="section-header" (click)="toggleSection('admin')">
             <span>Administration</span>
             <svg [class.expanded]="sections['admin']" class="arrow-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -66,12 +67,17 @@ import { User } from '../../../core/models/auth.models';
             <a routerLink="/items" routerLinkActive="active" class="nav-item">🧰 Gestion des Items</a>
             <a routerLink="/prestations" routerLinkActive="active" class="nav-item">📋 Prestations & Validation</a>
             <a routerLink="/ordres-commande" routerLinkActive="active" class="nav-item">📦 Ordres de Commande</a>
-            <a routerLink="/structures-mefp" routerLinkActive="active" class="nav-item structure-mefp-item">🏢 Gestion des structures du MEFP</a>
+            
+            <!-- Simple Structures du MEFP link -->
+            <a routerLink="/structures-mefp" routerLinkActive="active" class="nav-item structures-link">
+              <span class="nav-icon">🏢</span>
+              <span class="nav-text">Structures MEFP</span>
+            </a>
           </div>
         </div>
 
         <!-- Rapports et Statistiques Section -->
-        <div *ngIf="authService.isAdmin()" class="nav-section">
+        <div *ngIf="authService.isAdmin()" class="nav-section" data-section="rapports">
           <div class="section-header" (click)="toggleSection('rapports')">
             <span>Rapports et Statistiques</span>
             <svg [class.expanded]="sections['rapports']" class="arrow-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -86,7 +92,7 @@ import { User } from '../../../core/models/auth.models';
         </div>
 
         <!-- Agent DGSI Section -->
-        <div *ngIf="authService.isAgentDGSI()" class="nav-section">
+        <div *ngIf="authService.isAgentDGSI()" class="nav-section" data-section="agent-dgsi">
           <div class="section-header" (click)="toggleSection('agent-dgsi')">
             <span>Supervision</span>
             <svg [class.expanded]="sections['agent-dgsi']" class="arrow-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -95,12 +101,17 @@ import { User } from '../../../core/models/auth.models';
           </div>
           <div class="sub-nav" [class.expanded]="sections['agent-dgsi']">
             <a routerLink="/items" routerLinkActive="active" class="nav-item">🧰 Items et Lots</a>
-            <a routerLink="/équipements" routerLinkActive="active" class="nav-item">�️ Équipements</a>
-            <a routerLink="/structures-mefp" routerLinkActive="active" class="nav-item">🏢 Structures du MEFP</a>
+            <a routerLink="/équipements" routerLinkActive="active" class="nav-item">️ Équipements</a>
+            
+            <!-- Simple Structures du MEFP link -->
+            <a routerLink="/structures-mefp" routerLinkActive="active" class="nav-item structures-link">
+              <span class="nav-icon">🏢</span>
+              <span class="nav-text">Structures MEFP</span>
+            </a>
+            
             <a routerLink="/statistiques" routerLinkActive="active" class="nav-item">📊 Statistiques</a>
           </div>
         </div>
-
 
       </nav>
     </div>
@@ -112,7 +123,7 @@ import { User } from '../../../core/models/auth.models';
       left: 0;
       height: 100vh;
       width: 260px;
-      background: #0f172a;
+      background: #1e4d7b;
       color: #e2e8f0;
       z-index: 1100;
       overflow-y: auto;
@@ -122,19 +133,19 @@ import { User } from '../../../core/models/auth.models';
     }
 
     .sidebar.collapsed {
-      width: 240px; /* Keep full width even when "collapsed" */
+      width: 220px;
       overflow: visible;
     }
 
-    /* Ensure sidebar is always visible - never hide navigation elements */
-    .sidebar, .sidebar.collapsed, .sidebar.open {
+
+
+    .sidebar:hover {
       display: block !important;
       visibility: visible !important;
       opacity: 1 !important;
     }
 
-    /* Prevent any hover effects from hiding the sidebar */
-    .sidebar:hover {
+    .sidebar:not(.mobile-open) {
       display: block !important;
       visibility: visible !important;
       opacity: 1 !important;
@@ -148,7 +159,7 @@ import { User } from '../../../core/models/auth.models';
       align-items: center;
       gap: 0.75rem;
       margin: 0;
-      background: #0f172a;
+      background: #1e4d7b;
     }
 
     .logo-container {
@@ -180,37 +191,6 @@ import { User } from '../../../core/models/auth.models';
     .app-info small {
       color: #94a3b8;
       font-size: 0.75rem;
-    }
-
-    .sidebar-toggle-intersection {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.5rem;
-      background: none;
-      border: none;
-      color: #cbd5e1;
-      cursor: pointer;
-      padding: 0.5rem;
-      border-radius: 6px;
-      transition: all 0.2s ease;
-      z-index: 10;
-    }
-
-    .sidebar-toggle-intersection:hover {
-      background: rgba(255, 255, 255, 0.1);
-    }
-
-    .hamburger {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .hamburger span {
-      width: 18px;
-      height: 2px;
-      background: currentColor;
-      transition: all 0.3s ease;
     }
 
     .sidebar-nav {
@@ -290,24 +270,261 @@ import { User } from '../../../core/models/auth.models';
     }
 
     .sub-nav.expanded {
-      max-height: 500px;
+      max-height: 2000px;
     }
 
     .sub-nav .nav-item {
       padding-left: 3rem;
       font-size: 0.875rem;
+    }
+
+    /* Structures MEFP Navigation Styles */
+    .structures-mefp-nav {
+      margin: 0.5rem 0;
+    }
+
+    .structures-header {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      color: #f97316;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-left: 3px solid #f97316;
+      background: rgba(249, 115, 22, 0.1);
+    }
+
+    .structures-header:hover {
+      background: rgba(249, 115, 22, 0.15);
+    }
+
+    .structures-header.active {
+      background: rgba(249, 115, 22, 0.2);
+    }
+
+    .structures-icon {
+      margin-right: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .structures-text {
+      flex: 1;
+      font-weight: 600;
+    }
+
+    .mef-arrow-svg {
+      transition: transform 0.3s ease;
+    }
+
+    .mef-arrow-svg.expanded {
+      transform: rotate(90deg);
+    }
+
+    .mef-hierarchy {
+      display: none;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .mef-hierarchy.expanded {
+      display: block;
+    }
+
+    .mef-regions {
+      display: none;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .mef-regions.expanded {
+      display: block;
+    }
+
+    .regions-content {
+      padding: 0.25rem 0;
+    }
+
+    .region-link {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem 0.5rem 2rem;
+      color: #cbd5e1;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .region-link:hover {
+      background: rgba(249, 115, 22, 0.1);
+      color: #f97316;
+      border-left-color: #f97316;
+    }
+
+    .hierarchy-loading {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 2rem;
+      color: #94a3b8;
+      font-size: 0.8rem;
+    }
+
+    .loading-spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #94a3b8;
+      border-top-color: #f97316;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hierarchy-content {
+      padding: 0.25rem 0;
+    }
+
+    /* Region styles */
+    .region-node {
+      margin: 2px 0;
+    }
+
+    .region-row {
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem 0.5rem 2rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #cbd5e1;
+    }
+
+    .region-row:hover {
+      background: rgba(249, 115, 22, 0.1);
+      color: #f97316;
+    }
+
+    .row-arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.2s ease;
+      opacity: 0.7;
+    }
+
+    .row-arrow.expanded {
+      transform: rotate(90deg);
+    }
+
+    .region-marker {
+      margin-right: 0.5rem;
+      font-size: 0.85rem;
+    }
+
+    .region-label {
+      flex: 1;
+      font-weight: 500;
+      font-size: 0.85rem;
+    }
+
+    .structure-count {
+      background: rgba(249, 115, 22, 0.2);
+      color: #f97316;
+      padding: 0.125rem 0.375rem;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    /* Villes styles */
+    .villes-node {
+      padding-left: 0.5rem;
+    }
+
+    .ville-node {
+      margin: 1px 0;
+    }
+
+    .ville-row {
+      display: flex;
+      align-items: center;
+      padding: 0.4rem 0.75rem 0.4rem 2.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #94a3b8;
+      font-size: 0.8rem;
+    }
+
+    .ville-row:hover {
+      background: rgba(249, 115, 22, 0.08);
+      color: #f97316;
+    }
+
+    .ville-marker {
+      margin-right: 0.5rem;
+      font-size: 0.75rem;
+    }
+
+    .ville-label {
+      flex: 1;
+    }
+
+    .structure-count-small {
+      background: rgba(249, 115, 22, 0.15);
+      color: #f97316;
+      padding: 0.1rem 0.3rem;
+      border-radius: 8px;
+      font-size: 0.65rem;
+      font-weight: 600;
+    }
+
+    /* Structures styles */
+    .structures-node {
+      padding-left: 0.5rem;
+      margin-left: 1.5rem;
+      border-left: 1px solid rgba(249, 115, 22, 0.2);
+    }
+
+    .structure-row {
+      display: flex;
+      align-items: center;
+      padding: 0.35rem 0.5rem 0.35rem 2rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #64748b;
+      font-size: 0.75rem;
+      text-decoration: none;
+      border-radius: 4px;
+      margin: 1px 0;
+    }
+
+    .structure-row:hover {
+      background: rgba(249, 115, 22, 0.05);
+      color: #f97316;
+    }
+
+    .structure-marker {
+      margin-right: 0.5rem;
+      font-size: 0.7rem;
+    }
+
+    .structure-label {
+      flex: 1;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .structure-mefp-item {
-      white-space: normal !important;
-      overflow: visible !important;
-      text-overflow: clip !important;
-      line-height: 1.3 !important;
-      height: auto !important;
-      min-height: 44px !important;
+    .no-structures {
+      padding: 0.35rem 0.5rem 0.35rem 2rem;
+      color: #475569;
+      font-size: 0.7rem;
+      font-style: italic;
+    }
+
+    .no-data {
+      padding: 0.75rem 2rem;
+      color: #64748b;
+      font-size: 0.8rem;
+      text-align: center;
     }
 
     /* Development User Switcher Styles */
@@ -378,12 +595,12 @@ import { User } from '../../../core/models/auth.models';
         position: fixed;
         top: 0;
         left: 0;
-        transform: translateX(-100%); /* Hidden by default on mobile */
+        transform: translateX(-100%);
         z-index: 1200;
       }
 
       .sidebar.mobile-open {
-        transform: translateX(0); /* Show when mobile-open class is applied */
+        transform: translateX(0);
       }
     }
   `]
@@ -399,37 +616,44 @@ export class SidebarComponent implements OnInit {
     'agent-dgsi': true
   };
 
+
+
   currentUser$: Observable<User | null>;
 
-  constructor(public authService: AuthService) {
+  constructor(
+    public authService: AuthService,
+    private structureService: StructureMefpService,
+    private router: Router
+  ) {
     this.currentUser$ = this.authService.currentUser$;
   }
 
   ngOnInit(): void {
-    // Forcer la mise à jour des données utilisateur au chargement du composant
     if (this.authService.isAuthenticated()) {
       this.authService.updateUserFromToken();
     }
 
-    // Debug logs pour vérifier les rôles
     console.log('Sidebar - User authenticated:', this.authService.isAuthenticated());
-    console.log('Sidebar - Current user:', this.authService.getCurrentUser());
     console.log('Sidebar - isAdmin():', this.authService.isAdmin());
-    console.log('Sidebar - isPrestataire():', this.authService.isPrestataire());
     console.log('Sidebar - isAgentDGSI():', this.authService.isAgentDGSI());
+    console.log('Sidebar - Initial isOpen value:', this.isOpen);
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['isOpen']) this.isOpen = this.isOpen;
+    if (changes['isOpen']) {
+      this.isOpen = changes['isOpen'].currentValue;
+      console.log('Sidebar - isOpen changed to:', this.isOpen);
+    }
   }
 
   toggleSidebar(): void {
-    // Prevent sidebar from being closed - always keep it open
+    console.log('SidebarComponent - toggleSidebar called, forcing isOpen to true');
     this.isOpen = true;
     this.toggleChange.emit(this.isOpen);
   }
 
   toggleSection(section: string): void {
+    const wasExpanded = this.sections[section];
     this.sections[section] = !this.sections[section];
   }
 
@@ -455,5 +679,25 @@ export class SidebarComponent implements OnInit {
   getCurrentUserId(): string {
     const user = this.authService.getCurrentUser();
     return user?.id || '';
+  }
+
+
+
+
+
+  /**
+   * Get total structures count for a region
+   */
+  getTotalStructuresForRegion(region: RegionHierarchy): number {
+    return region.villes.reduce((total, ville) => total + ville.structures.length, 0);
+  }
+
+  /**
+   * Handle structure click - navigate to structures page with ville filter
+   */
+  onStructureClick(structure: StructureInfo): void {
+    // Navigate to structures page with region and ville filters
+    // The structure info contains the region and ville information
+    console.log('Structure clicked:', structure);
   }
 }

@@ -1,0 +1,23 @@
+<parameter name="content">/**
+ * Modèle pour la hiérarchie des structures MEFP
+ */
+export interface StructureHierarchyNode {
+  id: string;
+  nom: string;
+  type: 'region' | 'ville' | 'structure';
+  code?: string;
+  enfants: StructureHierarchyNode[];
+  // Détails pour les structures
+  email?: string;
+  contact?: string;
+  adresse?: string;
+  categorie?: string;
+  lotNom?: string;
+}
+
+export interface StructureBreadcrumb {
+  type: 'region' | 'ville' | null;
+  nom: string;
+  id?: string;
+}
+</parameter>

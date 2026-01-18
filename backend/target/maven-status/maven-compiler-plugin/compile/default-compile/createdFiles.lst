@@ -5,6 +5,7 @@ com/dgsi/maintenance/entity/AgentDGSI.class
 com/dgsi/maintenance/service/UserService.class
 com/dgsi/maintenance/entity/FichePrestation.class
 com/dgsi/maintenance/MaintenanceApplication.class
+com/dgsi/maintenance/service/ReferenceDataService.class
 com/dgsi/maintenance/entity/TypeItem.class
 com/dgsi/maintenance/entity/User.class
 com/dgsi/maintenance/security/WebSecurityConfig.class
@@ -27,7 +28,9 @@ com/dgsi/maintenance/controller/FileController.class
 com/dgsi/maintenance/service/RapportSuiviService.class
 com/dgsi/maintenance/controller/OrdreCommandeController.class
 com/dgsi/maintenance/controller/EvaluationTrimestrielleController.class
+com/dgsi/maintenance/dto/RegionHierarchyDto.class
 com/dgsi/maintenance/security/AuthEntryPointJwt.class
+com/dgsi/maintenance/dto/RegionHierarchyDto$StructureInfoDto.class
 com/dgsi/maintenance/repository/EquipementRepository.class
 com/dgsi/maintenance/entity/Trimestre.class
 com/dgsi/maintenance/dto/OrdreCommandeDto.class
@@ -58,6 +61,7 @@ com/dgsi/maintenance/repository/RapportSuiviRepository.class
 com/dgsi/maintenance/repository/PrestationRepository.class
 com/dgsi/maintenance/entity/StatutContrat.class
 com/dgsi/maintenance/service/StructureMefpService.class
+com/dgsi/maintenance/dto/RegionHierarchyDto$VilleHierarchyDto.class
 com/dgsi/maintenance/entity/StatutFiche.class
 com/dgsi/maintenance/controller/RapportSuiviController.class
 com/dgsi/maintenance/entity/StatutCommande.class

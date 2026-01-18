@@ -240,204 +240,438 @@ import { ToastService } from '../../../../core/services/toast.service';
 
         <!-- Details Modal -->
         <div class="modal-overlay" *ngIf="showDetailsModal" (click)="closeDetailsModal()">
-          <div class="modal-content details-modal" (click)="$event.stopPropagation()">
-            <div class="card">
-              <div class="card-header">
-                <h2>Détails de la Prestation</h2>
-                <button class="close-btn" (click)="closeDetailsModal()">&times;</button>
-              </div>
+          <div class="modal-content large-modal" (click)="$event.stopPropagation()" style="margin-top: 80px; max-width: 1000px;">
+            <div class="modal-header">
+              <h2>Détails de la Fiche de Prestation</h2>
+              <button class="close-btn" (click)="closeDetailsModal()">&times;</button>
+            </div>
 
-              <div class="card-body" *ngIf="selectedFiche">
-                <div class="details-grid">
-                  <div class="detail-item">
-                    <label>ID Prestation:</label>
-                    <span>{{ selectedFiche.idPrestation }}</span>
-                  </div>
+            <div class="modal-body" *ngIf="selectedFiche">
+              <div class="details-container">
+                <!-- Informations générales -->
+                <div class="details-section">
+                  <h3>Informations Générales</h3>
+                  <table class="details-table">
+                    <tr>
+                      <td><strong>ID Prestation:</strong></td>
+                      <td>{{ selectedFiche.idPrestation || 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Prestataire:</strong></td>
+                      <td>{{ selectedFiche.nomPrestataire || 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Item:</strong></td>
+                      <td>{{ selectedFiche.nomItem || 'N/A' }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Date de réalisation:</strong></td>
+                      <td>{{ formatDate(selectedFiche.dateRealisation) }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Quantité:</strong></td>
+                      <td>{{ selectedFiche.quantite || 1 }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Statut:</strong></td>
+                      <td>
+                        <span class="status-badge" [class]="getStatusBadgeClass(selectedFiche.statut)">
+                          {{ getStatusLabel(selectedFiche.statut) }}
+                        </span>
+                      </td>
+                    </tr>
+                  </table>
+                </div>
 
-                  <div class="detail-item">
-                    <label>Prestataire:</label>
-                    <span>{{ selectedFiche.nomPrestataire }}</span>
-                  </div>
-
-                  <div class="detail-item">
-                    <label>Item:</label>
-                    <span>{{ selectedFiche.nomItem }}</span>
-                  </div>
-
-                  <div class="detail-item">
-                    <label>Items Couvert:</label>
-                    <span>{{ selectedFiche.itemsCouverts || 'N/A' }}</span>
-                  </div>
-
-                  <div class="detail-item">
-                    <label>Date de Réalisation:</label>
-                    <span>{{ formatDate(selectedFiche.dateRealisation) }}</span>
-                  </div>
-
-                  <div class="detail-item">
-                    <label>Quantité:</label>
-                    <span>{{ selectedFiche.quantite }}</span>
-                  </div>
-
-                  <div class="detail-item">
-                    <label>Statut:</label>
-                    <span class="badge" [class]="getStatusBadgeClass(selectedFiche.statut)">
-                      {{ getStatusLabel(selectedFiche.statut) }}
-                    </span>
-                  </div>
-
-                  <div class="detail-item">
-                    <label>Statut Intervention:</label>
-                    <span>{{ selectedFiche.statutIntervention || 'N/A' }}</span>
-                  </div>
-
-                  <div class="detail-item full-width">
-                    <label>Commentaire:</label>
-                    <span>{{ selectedFiche.commentaire || 'Aucun commentaire' }}</span>
+                <!-- Items couverts -->
+                <div class="details-section">
+                  <h3>Items Couverts</h3>
+                  <div class="items-display">
+                    <p>{{ getItemsCouvertsString(selectedFiche) }}</p>
                   </div>
                 </div>
+
+                <!-- Commentaire -->
+                <div class="details-section" *ngIf="selectedFiche.commentaire">
+                  <h3>Commentaire</h3>
+                  <div class="comment-display">
+                    <p>{{ selectedFiche.commentaire }}</p>
+                  </div>
+                </div>
+
+                <!-- Résumé -->
+                <div class="details-section">
+                  <h3>Résumé</h3>
+                  <table class="details-table">
+                    <tr>
+                      <td><strong>Nombre d'items couverts:</strong></td>
+                      <td>{{ getItemsArray(selectedFiche).length }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Statut de l'intervention:</strong></td>
+                      <td>{{ getStatutInterventionLabel(selectedFiche.statutIntervention) || 'N/A' }}</td>
+                    </tr>
+                  </table>
+                </div>
               </div>
+            </div>
+
+            <div class="modal-footer">
+              <button class="btn btn-primary" (click)="closeDetailsModal()">Fermer</button>
             </div>
           </div>
         </div>
 
-        <div class="loading" *ngIf="loadingList">
-          Chargement des prestations...
-        </div>
-      </div>
-  `,
-  styles: [`
-    .no-data {
-      padding: 3rem;
-      text-align: center;
-      color: var(--text-secondary);
+        <!-- CSS Styles -->
+        <style>
+    /* Complete prestation-form styles for fiche details modal */
+    .large-modal {
+      max-width: 1100px;
     }
 
-    .loading {
-      text-align: center;
-      padding: 2rem;
-      color: var(--text-secondary);
+    .wizard-modal {
+      max-width: 900px;
+      width: 95%;
     }
 
-    .quarterly-submission {
+    .modal-content.form-modal.wizard-modal.large-modal {
+      max-width: 1100px;
+      width: 95%;
+    }
+
+    /* Step indicator */
+    .step-indicator {
+      display: flex;
+      justify-content: center;
       margin-bottom: 2rem;
     }
 
-    .submission-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(249, 115, 22, 0.15);
-      padding: 2rem;
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0.5;
+      transition: all 0.3s ease;
+    }
+
+    .step.active {
+      opacity: 1;
+    }
+
+    .step.completed {
+      opacity: 1;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #e5e7eb;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: all 0.3s ease;
+    }
+
+    .step.active .step-number {
+      background: #f97316;
+      color: white;
+    }
+
+    .step.completed .step-number {
+      background: #10b981;
+      color: white;
+    }
+
+    .step-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #6b7280;
       text-align: center;
     }
 
-    .submission-card h3 {
-      color: var(--text-primary);
-      margin-bottom: 0.5rem;
-      font-size: 1.5rem;
+    .step.active .step-label {
+      color: #f97316;
+      font-weight: 600;
     }
 
-    .submission-card p {
-      color: var(--text-secondary);
+    .step.completed .step-label {
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    .form-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1E2761;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .step-content {
+      margin-bottom: 2rem;
+    }
+
+    .form-section {
+      background: white;
+      border-radius: 8px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-header {
       margin-bottom: 1.5rem;
     }
 
-    .submission-form {
-      display: flex;
-      gap: 1rem;
-      align-items: end;
-      justify-content: center;
-      flex-wrap: wrap;
+    .section-header h3 {
+      color: #1E2761;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 0 0 0.5rem 0;
     }
 
-    .submission-form .form-group {
-      margin-bottom: 0;
-      min-width: 150px;
+    .section-divider {
+      height: 3px;
+      background: linear-gradient(90deg, #f97316, #ea580c);
+      border-radius: 2px;
     }
 
-    .submission-form .form-control {
-      width: 100%;
-      padding: 0.75rem;
-      border: 2px solid rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.8);
-      transition: all 0.3s ease;
-    }
-
-    .submission-form .form-control:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
-      background: white;
-    }
-
-    .stats-section {
+    /* Summary sections and tables */
+    .summary-section {
       margin-bottom: 2rem;
     }
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .stat-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(249, 115, 22, 0.15);
-      padding: 1.5rem;
+    .summary-section h4 {
+      color: #374151;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0 0 1rem 0;
       display: flex;
       align-items: center;
-      gap: 1rem;
-      transition: all 0.3s ease;
+      gap: 0.5rem;
     }
 
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(249, 115, 22, 0.2);
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
     }
 
-    .stat-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: #f97316;
-      background: rgba(249, 115, 22, 0.1);
-      flex-shrink: 0;
+    .summary-table tr {
+      border-bottom: 1px solid #f3f4f6;
     }
 
-    .stat-info h3 {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #1e293b;
+    .summary-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .label-cell {
+      font-weight: 600;
+      color: #374151;
+      padding: 0.75rem 1rem 0.75rem 0;
+      width: 40%;
+      vertical-align: top;
+    }
+
+    .value-cell {
+      color: #1f2937;
+      padding: 0.75rem 0;
+      word-break: break-word;
+    }
+
+    /* Status colors */
+    .status.VALIDE,
+    .status.Validé {
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    .status.REJETE,
+    .status.Rejeté {
+      color: #ef4444;
+      font-weight: 600;
+    }
+
+    .status.EN_ATTENTE,
+    .status.En_attente {
+      color: #f59e0b;
+      font-weight: 600;
+    }
+
+    .status.TERMINEE,
+    .status.Terminée {
+      color: #3b82f6;
+      font-weight: 600;
+    }
+
+    /* Comment section */
+    .comment-section {
+      background: #f9fafb;
+      border: 1px solid #f3f4f6;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .comment-section p {
       margin: 0;
-      line-height: 1;
+      color: #374151;
+      line-height: 1.6;
     }
 
-    .stat-info p {
+    /* Proforma section */
+    .proforma-section {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+
+    .proforma-header h4 {
+      color: #1E2761;
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .proforma-invoice {
+      background: white;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-top: 1.5rem;
+    }
+
+    .invoice-table {
+      padding: 1.5rem;
+    }
+
+    .proforma-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+
+    .proforma-table th {
+      background: #f3f4f6;
+      padding: 0.75rem;
+      text-align: left;
+      font-weight: 600;
+      color: #374151;
       font-size: 0.875rem;
-      color: #64748b;
-      margin: 0.25rem 0 0 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .proforma-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid #f3f4f6;
+      color: #1f2937;
+    }
+
+    .proforma-table .invoice-row:hover {
+      background: #f9fafb;
+    }
+
+    .item-col {
+      width: 70%;
+    }
+
+    .qty-col {
+      text-align: right;
+      width: 30%;
+    }
+
+    .item-desc {
       font-weight: 500;
     }
 
-    .details-modal {
-      max-width: 600px;
-      width: 90%;
+    .qty-value {
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      text-align: right;
     }
 
-    .details-modal .card-header {
+    .invoice-summary {
+      background: #f9fafb;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid #e5e7eb;
       display: flex;
       justify-content: space-between;
       align-items: center;
+    }
+
+    .summary-line {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .summary-label {
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.875rem;
+    }
+
+    .summary-value {
+      color: #1f2937;
+      font-weight: 500;
+    }
+
+    /* Form actions */
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* Modal and container styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      max-width: 1000px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #1E2761, #3D3B5D);
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
     }
 
     .close-btn {
@@ -445,7 +679,7 @@ import { ToastService } from '../../../../core/services/toast.service';
       border: none;
       font-size: 1.5rem;
       cursor: pointer;
-      color: var(--text-secondary);
+      color: white;
       padding: 0;
       width: 30px;
       height: 30px;
@@ -457,81 +691,430 @@ import { ToastService } from '../../../../core/services/toast.service';
     }
 
     .close-btn:hover {
-      background: rgba(0, 0, 0, 0.1);
-      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.2);
     }
 
-    .details-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+    .modal-body {
+      padding: 2rem;
     }
 
-    .detail-item {
+    .modal-footer {
+      padding: 1.5rem;
+      background: #f9fafb;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: flex-end;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .details-container {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 2rem;
     }
 
-    .detail-item label {
+    .details-section {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 1.5rem;
+      border: 1px solid #e5e7eb;
+    }
+
+    .details-section h3 {
+      color: #1E2761;
+      font-size: 1.125rem;
       font-weight: 600;
-      color: var(--text-primary);
+      margin: 0 0 1rem 0;
+      border-bottom: 2px solid #f97316;
+      padding-bottom: 0.5rem;
+    }
+
+    .details-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .details-table tr {
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .details-table tr:last-child {
+      border-bottom: none;
+    }
+
+    .details-table td {
+      padding: 0.75rem;
+      vertical-align: top;
+    }
+
+    .details-table td:first-child {
+      font-weight: 600;
+      color: #374151;
+      width: 40%;
+    }
+
+    .details-table td:last-child {
+      color: #1f2937;
+    }
+
+    .items-display {
+      background: white;
+      border: 1px solid #f3f4f6;
+      border-radius: 6px;
+      padding: 1rem;
+    }
+
+    .items-display p {
+      margin: 0;
+      color: #374151;
+      line-height: 1.6;
+    }
+
+    .comment-display {
+      background: white;
+      border: 1px solid #f3f4f6;
+      border-radius: 6px;
+      padding: 1rem;
+    }
+
+    .comment-display p {
+      margin: 0;
+      color: #374151;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      display: inline-block;
+      border: none;
+    }
+
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge-info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .form-modal {
+      max-width: 600px;
+    }
+
+    .prestation-form {
+      width: 100%;
+    }
+
+    /* Container and page styles */
+    .container {
+      max-width: 98%;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .page-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1E2761;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .mb-4 {
+      margin-bottom: 1rem;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    .table-header {
+      background: #f9fafb;
+      padding: 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .table-header h2 {
+      margin: 0 0 0.5rem 0;
+      color: #1E2761;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: #f3f4f6;
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: #374151;
       font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
-    .detail-item span {
-      color: var(--text-secondary);
-      padding: 0.5rem;
-      background: rgba(0, 0, 0, 0.05);
-      border-radius: 4px;
-      word-break: break-word;
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #f3f4f6;
+      color: #1f2937;
+      font-size: 0.9rem;
     }
 
-    .detail-item.full-width {
+    tr:hover {
+      background: #f9fafb;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 3rem;
+      color: #6b7280;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* Badge styles */
+    .badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      display: inline-block;
+    }
+
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .badge-info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    /* Button styles */
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: white;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #ea580c, #dc2626);
+      box-shadow: 0 6px 16px rgba(249, 115, 22, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background: linear-gradient(135deg, #059669, #047857);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-info {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-info:hover:not(:disabled) {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280, #4b5563);
+      color: white;
+      box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #4b5563, #374151);
+      box-shadow: 0 6px 16px rgba(107, 114, 128, 0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #6b7280;
+      border: 1px solid #d1d5db;
+    }
+
+    .btn-outline:hover {
+      background: #f3f4f6;
+      border-color: #9ca3af;
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-warning:hover:not(:disabled) {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+    }
+
+    .btn:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Card styles */
+    .card {
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #1E2761, #3D3B5D);
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-header h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group-full {
       grid-column: 1 / -1;
     }
 
-    .detail-item .badge {
-      width: fit-content;
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
     }
 
-    @media (max-width: 768px) {
-      .action-buttons {
-        flex-direction: column;
-      }
-
-      .submission-form {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .submission-form .form-group {
-        min-width: auto;
-      }
-
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .stat-card {
-        padding: 1rem;
-      }
-
-      .stat-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.25rem;
-      }
-
-      .stat-info h3 {
-        font-size: 1.5rem;
-      }
-
-      .details-grid {
-        grid-template-columns: 1fr;
-      }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease;
+      box-sizing: border-box;
     }
-  `]
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #1E2761;
+      box-shadow: 0 0 0 3px rgba(30, 39, 97, 0.1);
+    }
+        </style>
+  `
 })
 export class FicheListComponent implements OnInit {
   fiches: FichePrestation[] = [];
@@ -960,5 +1543,33 @@ export class FicheListComponent implements OnInit {
   closeDetailsModal(): void {
     this.showDetailsModal = false;
     this.selectedFiche = null;
+  }
+
+  // Helper methods for template
+  getItemsCouvertsString(fiche: FichePrestation): string {
+    return fiche.itemsCouverts || 'N/A';
+  }
+
+  getStatutInterventionLabel(statut: string | undefined): string {
+    if (!statut) return 'N/A';
+    const labels: { [key: string]: string } = {
+      'EN_COURS': 'En cours',
+      'TERMINEE': 'Terminée',
+      'NON_COMMENCEE': 'Non commencé'
+    };
+    return labels[statut] || statut;
+  }
+
+  getItemsArray(fiche: FichePrestation): string[] {
+    if (!fiche.itemsCouverts) return [];
+    if (Array.isArray(fiche.itemsCouverts)) return fiche.itemsCouverts;
+    if (typeof fiche.itemsCouverts === 'string') {
+      try {
+        return JSON.parse(fiche.itemsCouverts);
+      } catch {
+        return [fiche.itemsCouverts];
+      }
+    }
+    return [];
   }
 }

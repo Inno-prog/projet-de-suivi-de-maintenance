@@ -28,18 +28,30 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     <!-- Public Layout - shown only when not authenticated and on root path -->
     <ng-container *ngIf="!isAuthenticated && isRootPath()">
       <div class="public-layout">
-        <nav class="navbar">
-          <div class="container">
-            <div class="nav-brand">
-              <div class="logo">
-                <img src="/assets/logoFinal.png" alt="DGSI Logo" class="logo-image">
-              </div>
+        <!-- HEADER OFFICIEL -->
+        <header class="official-header">
+          <div class="header-content">
+            <div class="logo-left">
+              <img src="/assets/logoFinal.png" alt="DGSI Logo">
             </div>
-            <div class="nav-menu">
-              <a href="https://it.finances.bf/" target="_blank" class="nav-link">La DGSI</a>
-              <a routerLink="/contact" class="nav-link">Contacts</a>
-              <a routerLink="/about" class="nav-link">À propos</a>
-              <a href="https://www.finances.gov.bf" target="_blank" class="nav-link">Ministère</a>
+            <div class="header-text">
+              <div class="ministry-name">Ministère de l'Economie, des Finances et du Développement</div>
+              <h1 class="direction-title">DIRECTION GENERALE DES SERVICES INFORMATIQUES</h1>
+              <p class="tagline">L'Informatique, pour une gestion efficiente des finances publiques</p>
+            </div>
+            <div class="logo-right">
+              <img src="/assets/armoiriesbf.png" alt="Armoiries Burkina Faso">
+            </div>
+          </div>
+        </header>
+
+        <!-- NAVBAR -->
+        <nav class="navbar">
+          <div class="container nav-content">
+            <div class="nav-links">
+              <a routerLink="/about">À propos</a>
+              <a routerLink="/contact" class="active">Contact</a>
+              <a href="https://www.finances.gov.bf" target="_blank">Ministère</a>
             </div>
             <div class="nav-actions">
               <button class="btn btn-outline" (click)="login()">Connexion</button>
@@ -58,7 +70,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
             <div class="shape shape-6">🔒</div>
           </div>
           <div class="container">
-            <div class="dashboard-header" style="max-width: 65%; margin: 0 auto; margin-top: 50px; margin-bottom: -20px; padding: 2rem 2rem; background: linear-gradient(135deg, #0a192f 0%, #0d1b2a 100%); border-top: 1px solid #1e293b;">
+            <div class="dashboard-header" style="max-width: 65%; margin: 0 auto; margin-top: 50px; margin-bottom: -20px; padding: 2rem 2rem; background: linear-gradient(135deg, #1e4d7b 0%, #2d5a8a 100%); border-top: 1px solid #1e293b;">
               <div class="welcome-section" style="margin-top: 20px;">
                 <h1 class="animated-title" style="margin-left: 50px;">
                   <span class="title-text">Bienvenue sur </span><span class="title-text-3d" style="margin-left: 10px;"> MainTrack Pro DGSI</span>
@@ -160,7 +172,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
           </div>
         </main>
 
-        <div class="footer text-white px-6 pt-2 pb-8" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); position: relative; top: -70px;">
+        <div class="footer text-white px-6 pt-2 pb-8" style="background: linear-gradient(135deg, #1e4d7b 0%, #2d5a8a 100%);">
           <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
             <!-- Newsletter -->
             <div class="max-w-xs">
@@ -359,6 +371,166 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
 
   `,
   styles: [`
+    /* CSS Variables */
+    :host { --primary: #f97316; --dark: #0f172a; --gray: #f1f5f9; --blue: #1e4d7b; }
+
+    /* HEADER OFFICIEL */
+    .official-header {
+      background: linear-gradient(135deg, var(--blue) 0%, #2d5a8a 100%);
+      color: white;
+      padding: 1.5rem 0;
+      border-bottom: 4px solid var(--primary);
+      box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: 180px 1fr 180px;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .logo-left,
+    .logo-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-left img,
+    .logo-right img {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+      background: white;
+      border-radius: 50%;
+      padding: 15px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.25);
+      border: 3px solid rgba(255,255,255,.3);
+    }
+
+    .header-text {
+      text-align: center;
+    }
+
+    .ministry-name {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: .5rem;
+      letter-spacing: .5px;
+    }
+
+    .direction-title {
+      font-size: 2.5rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin: .5rem 0;
+      text-shadow: 2px 2px 4px rgba(0,0,0,.3);
+    }
+
+    .tagline {
+      font-size: 1.3rem;
+      font-style: italic;
+      color: var(--primary);
+      margin-top: .5rem;
+      font-weight: 500;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 1rem 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    }
+
+    .nav-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      color: #475569;
+      text-decoration: none;
+      font-weight: 600;
+      padding: .5rem 1rem;
+      border-radius: 6px;
+      transition: all .3s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--primary);
+      background: #fff7ed;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .nav-actions .btn {
+      text-decoration: none;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+    }
+
+    .nav-actions .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .nav-actions .btn:hover::before {
+      left: 100%;
+    }
+
+    .nav-actions .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(249, 115, 22, 0.4);
+    }
+
+    .nav-actions .btn-outline {
+      background-color: transparent;
+      border: 1px solid rgba(249, 115, 22, 0.6);
+      color: var(--primary);
+    }
+
+    .nav-actions .btn-outline:hover {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    .nav-actions .btn-primary {
+      background-color: var(--primary);
+      border: 1px solid var(--primary);
+      color: white;
+    }
+
+    .nav-actions .btn-primary:hover {
+      background-color: #ea580c;
+      box-shadow: 0 8px 25px rgba(249, 115, 22, 0.6);
+    }
+
     .dashboard-content {
       display: flex;
       flex-direction: column;
@@ -466,16 +638,14 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
     }
 
     .navbar {
-      background: linear-gradient(135deg, #0a192f 0%, #0d1b2a 100%);
-      border-bottom: 1px solid #1e293b;
-      color: #e2e8f0;
+      background: white;
+      border-bottom: 1px solid #e2e8f0;
       padding: 1rem 0;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      position: relative;
-      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05);
     }
 
     .navbar .container {
@@ -697,10 +867,11 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
 
     .main-content {
       flex: 1;
-      padding: 2rem 0;
+      padding: 2rem 0 4rem 0;
       background: #f8fafc;
       position: relative;
       overflow: hidden;
+      min-height: calc(100vh - 200px);
     }
 
     .main-content::before {
@@ -1992,6 +2163,31 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     .navbar {
       position: relative;
       z-index: 100;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .header-content { grid-template-columns: 120px 1fr 120px; gap: 1rem; }
+      .logo-left img, .logo-right img { width: 100px; height: 100px; }
+      .direction-title { font-size: 1.8rem; }
+      .tagline { font-size: 1rem; }
+    }
+
+    @media (max-width: 768px) {
+      .header-content { grid-template-columns: 1fr; text-align: center; }
+      .logo-left, .logo-right { display: none; }
+      .direction-title { font-size: 1.5rem; letter-spacing: 1px; }
+      .ministry-name { font-size: .9rem; }
+      .container { padding: 0 1rem; }
+      .nav-content { flex-direction: column; gap: 1rem; }
+      .nav-links { flex-wrap: wrap; justify-content: center; }
+      .direction-title { font-size: 1.2rem; }
+    }
+
+    @media (max-width: 640px) {
+      .nav-content { flex-direction: column; gap: 1rem; }
+      .nav-links { flex-wrap: wrap; justify-content: center; }
+      .direction-title { font-size: 1.2rem; }
     }
 
     /* Footer section titles styling */

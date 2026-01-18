@@ -1,0 +1,361 @@
+<div class="page-container">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1 class="page-title">
+      Structures du Ministère de l'Économie, des Finances et de la Prospection (MEFP)
+    </h1>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement des régions...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-state">
+    <p>{{ error }}</p>
+    <button (click)="loadRegions()" class="retry-btn">Réessayer</button>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && !error" class="content-wrapper">
+
+    <!-- Back Button -->
+    <button *ngIf="currentStep !== 'regions'" class="back-btn" (click)="goBack()">
+      ← Retour
+    </button>
+
+    <!-- ==================== STEP 1: REGIONS CARDS ==================== -->
+    <div *ngIf="currentStep === 'regions'" class="step-content">
+      <div class="step-header">
+        <h2>Sélectionnez une région</h2>
+      </div>
+      
+      <div class="stats-bar">
+        <span class="stat-item">
+          <span class="stat-icon">🗺️</span>
+          <strong>{{ regionsList.length }}</strong> Régions
+        </span>
+        <span class="stat-item">
+          <span class="stat-icon">🏙️</span>
+          <strong>{{ getTotalVilles() }}</strong> Villes
+        </span>
+        <span class="stat-item">
+          <span class="stat-icon">🏢</span>
+          <strong>{{ getTotalStructures() }}</strong> Structures
+        </span>
+      </div>
+
+      <div class="regions-grid">
+        <div *ngFor="let region of regionsList; let i = index" 
+             class="region-card"
+             [style.--region-color]="region.color"
+             (click)="goToVilles(region.nom)"
+             [style.animation-delay]="i * 50 + 'ms'">
+          <div class="region-card-header" [style.background]="'linear-gradient(135deg, ' + region.color + ' 0%, ' + region.color + 'cc 100%)'">
+            <span class="region-icon">📍</span>
+            <h3>{{ region.nom }}</h3>
+          </div>
+          <div class="region-card-body">
+            <div class="region-stats">
+              <div class="region-stat">
+                <span class="stat-value">{{ region.villes }}</span>
+                <span class="stat-label">Villes</span>
+              </div>
+              <div class="region-stat">
+                <span class="stat-value">{{ region.structures }}</span>
+                <span class="stat-label">Structures</span>
+              </div>
+            </div>
+            <button class="view-btn">
+              Voir les villes →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== STEP 2: VILLES CARDS ==================== -->
+    <div *ngIf="currentStep === 'villes'" class="step-content">
+      <div class="step-header">
+        <h2>Villes de {{ selectedRegion }}</h2>
+      </div>
+
+      <!-- Loading Villes -->
+      <div *ngIf="villesLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement des villes...</p>
+      </div>
+
+      <!-- Villes Grid -->
+      <div *ngIf="!villesLoading" class="villes-grid">
+        <div *ngFor="let ville of villesList; let i = index" 
+             class="ville-card"
+             (click)="goToStructures(ville)"
+             [style.animation-delay]="i * 30 + 'ms'">
+          <div class="ville-card-icon">
+            <span>🏙️</span>
+          </div>
+          <div class="ville-card-body">
+            <h3>{{ ville }}</h3>
+            <div class="ville-stats">
+              <span class="structures-count" [class.has-structures]="getStructuresCountForVille(ville) > 0">
+                {{ getStructuresCountForVille(ville) }} structure(s)
+              </span>
+            </div>
+          </div>
+          <div class="ville-card-action">
+            <span class="arrow">→</span>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="villesList.length === 0" class="empty-state">
+          <span class="empty-icon">📭</span>
+          <p>Aucune ville trouvée pour cette région</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== STEP 3: STRUCTURES TABLE ==================== -->
+    <div *ngIf="currentStep === 'structures'" class="step-content">
+      <div class="step-header structures-header">
+        <div class="structures-title-section">
+          <h2>Structures de {{ selectedVille }}</h2>
+        </div>
+        <button class="create-btn" (click)="openCreateModal()">
+          Créer une structure
+        </button>
+      </div>
+
+      <!-- Loading Structures -->
+      <div *ngIf="structuresLoading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Chargement des structures...</p>
+      </div>
+
+      <!-- Structures Table (instead of cards) -->
+      <div *ngIf="!structuresLoading" class="table-container">
+        <table class="structures-table">
+          <thead>
+            <tr>
+              <th class="th-nom">Nom de la structure</th>
+              <th class="th-categorie">Catégorie</th>
+              <th class="th-contact">Contact</th>
+              <th class="th-email">Email</th>
+              <th class="th-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let structure of structuresList; let i = index" 
+                class="structure-row"
+                [style.animation-delay]="i * 20 + 'ms'">
+              <td class="td-nom">
+                <div class="structure-name-cell">
+                  <span class="structure-icon-small">🏢</span>
+                  <span class="structure-name-text">{{ structure.nom }}</span>
+                </div>
+              </td>
+              <td class="td-categorie">
+                <span class="category-badge" [ngClass]="getCategoryClass(structure.categorie)">
+                  {{ structure.categorie || 'N/A' }}
+                </span>
+              </td>
+              <td class="td-contact">{{ structure.contact || '-' }}</td>
+              <td class="td-email">{{ structure.email || '-' }}</td>
+              <td class="td-actions">
+                <div class="action-buttons">
+                  <button class="action-btn view" title="Voir les détails" (click)="selectStructure(structure)">
+                    <span class="material-icons action-icon">visibility</span>
+                  </button>
+                  <button class="action-btn edit" title="Modifier" (click)="editStructure(structure)">
+                    <span class="material-icons action-icon">edit</span>
+                  </button>
+                  <button class="action-btn delete" title="Supprimer" (click)="deleteStructure(structure)">
+                    <span class="material-icons action-icon">delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Empty State -->
+        <div *ngIf="structuresList.length === 0" class="empty-state full-width">
+          <span class="empty-icon">📭</span>
+          <h3>Aucune structure dans cette ville</h3>
+          <p>Cliquez sur "Créer une structure" pour ajouter la première structure</p>
+          <button class="create-btn large" (click)="openCreateModal()">
+            ➕ Créer une structure
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- View Structure Modal -->
+<div *ngIf="showViewModal" class="modal-overlay" (click)="closeViewModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>👁️ Détails de la structure</h3>
+      <button class="close-btn" (click)="closeViewModal()">×</button>
+    </div>
+    <div class="modal-body" *ngIf="selectedStructure">
+      <!-- Basic Information -->
+      <div class="form-group">
+        <label><strong>Nom de la structure:</strong></label>
+        <p>{{ selectedStructure.nom }}</p>
+      </div>
+
+      <div class="form-group">
+        <label><strong>Catégorie:</strong></label>
+        <span class="category-badge" [ngClass]="getCategoryClass(selectedStructure.categorie)">
+          {{ selectedStructure.categorie }}
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label><strong>Contact:</strong></label>
+        <p>{{ selectedStructure.contact || 'Non spécifié' }}</p>
+      </div>
+
+      <div class="form-group">
+        <label><strong>Email:</strong></label>
+        <p>{{ selectedStructure.email || 'Non spécifié' }}</p>
+      </div>
+
+      <div class="form-group">
+        <label><strong>Adresse:</strong></label>
+        <p>{{ selectedStructure.adresseStructure || 'Non spécifiée' }}</p>
+      </div>
+
+      <div class="form-group">
+        <label><strong>Description:</strong></label>
+        <p>{{ selectedStructure.description || 'Aucune description' }}</p>
+      </div>
+
+      <!-- Location Information -->
+      <div class="form-group">
+        <label><strong>Localisation:</strong></label>
+        <p>{{ selectedStructure.ville }}, {{ selectedStructure.region }}</p>
+      </div>
+
+      <!-- Correspondant Informatique (CI) Information -->
+      <div class="form-group" *ngIf="selectedStructure.nomCI || selectedStructure.prenomCI">
+        <label><strong>Correspondant Informatique:</strong></label>
+        <p>{{ selectedStructure.prenomCI }} {{ selectedStructure.nomCI }}</p>
+      </div>
+
+      <div class="form-group" *ngIf="selectedStructure.fonctionCI">
+        <label><strong>Fonction CI:</strong></label>
+        <p>{{ selectedStructure.fonctionCI }}</p>
+      </div>
+
+      <div class="form-group" *ngIf="selectedStructure.contactCI">
+        <label><strong>Contact CI:</strong></label>
+        <p>{{ selectedStructure.contactCI }}</p>
+      </div>
+
+      <!-- Timestamps -->
+      <div class="form-group" *ngIf="selectedStructure.createdAt">
+        <label><strong>Créé le:</strong></label>
+        <p>{{ selectedStructure.createdAt | date:'dd/MM/yyyy à HH:mm' }}</p>
+      </div>
+
+      <div class="form-group" *ngIf="selectedStructure.updatedAt">
+        <label><strong>Modifié le:</strong></label>
+        <p>{{ selectedStructure.updatedAt | date:'dd/MM/yyyy à HH:mm' }}</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" (click)="closeViewModal()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Structure Modal -->
+<div *ngIf="showCreateModal" class="modal-overlay" (click)="closeCreateModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>➕ Créer une nouvelle structure</h3>
+      <button class="close-btn" (click)="closeCreateModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="location-info">
+        <p><strong>Localisation:</strong> {{ selectedVille }}, {{ selectedRegion }}</p>
+      </div>
+      
+      <div class="form-group">
+        <label for="nom">Nom de la structure *</label>
+        <input type="text" id="nom" [(ngModel)]="newStructure.nom" placeholder="Ex: Direction Générale des Impôts">
+      </div>
+
+      <div class="form-group">
+        <label for="categorie">Catégorie *</label>
+        <select id="categorie" [(ngModel)]="newStructure.categorie">
+          <option value="">Sélectionner une catégorie</option>
+          <option value="Direction">Direction</option>
+          <option value="Service">Service</option>
+          <option value="Cabinet">Cabinet</option>
+          <option value="Inspection">Inspection</option>
+          <option value="Cellule">Cellule</option>
+          <option value="Bureau">Bureau</option>
+          <option value="Agence">Agence</option>
+          <option value="Centre">Centre</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="contact">Contact</label>
+        <input type="text" id="contact" [(ngModel)]="newStructure.contact" placeholder="Ex: 70 00 00 01">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" [(ngModel)]="newStructure.email" placeholder="Ex: contact@structure.gov.bf">
+      </div>
+
+      <div class="form-group">
+        <label for="adresse">Adresse</label>
+        <input type="text" id="adresse" [(ngModel)]="newStructure.adresseStructure" placeholder="Adresse physique">
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" [(ngModel)]="newStructure.description" rows="3" placeholder="Description de la structure"></textarea>
+      </div>
+
+      <!-- Correspondant Informatique (CI) Fields -->
+      <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 20px;">
+        <h4 style="color: #1f2937; margin-bottom: 16px;">Correspondant Informatique (CI)</h4>
+
+        <div class="form-group">
+          <label for="nomCI">Nom du CI</label>
+          <input type="text" id="nomCI" [(ngModel)]="newStructure.nomCI" placeholder="Nom du correspondant informatique">
+        </div>
+
+        <div class="form-group">
+          <label for="prenomCI">Prénom du CI</label>
+          <input type="text" id="prenomCI" [(ngModel)]="newStructure.prenomCI" placeholder="Prénom du correspondant informatique">
+        </div>
+
+        <div class="form-group">
+          <label for="contactCI">Contact du CI</label>
+          <input type="text" id="contactCI" [(ngModel)]="newStructure.contactCI" placeholder="Numéro de téléphone du CI">
+        </div>
+
+        <div class="form-group">
+          <label for="fonctionCI">Fonction du CI</label>
+          <input type="text" id="fonctionCI" [(ngModel)]="newStructure.fonctionCI" placeholder="Ex: Informaticien, Technicien réseau">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" (click)="closeCreateModal()">Annuler</button>
+      <button class="submit-btn" (click)="createStructure()">Créer la structure</button>
+    </div>
+  </div>
+</div>

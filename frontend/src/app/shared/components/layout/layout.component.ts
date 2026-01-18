@@ -64,7 +64,7 @@ import { NotificationBellComponent } from '../notification/notification.componen
       min-height: 64px;
       max-height: 64px;
       width: 100%;
-      background: #0f172a;
+      background: #1e4d7b;
       position: relative;
       z-index: 50;
     }
@@ -601,6 +601,7 @@ export class LayoutComponent implements AfterViewInit {
   constructor(private fb: FormBuilder, public authService: AuthService, private confirmationService: ConfirmationService, private toastService: ToastService, private elementRef: ElementRef, private router: Router) {
     this.currentUser = this.authService.getCurrentUser();
     this.checkScreenSize();
+    console.log('LayoutComponent - Initial sidebarOpen:', this.sidebarOpen, 'isMobile:', this.isMobile);
     this.profileForm = this.fb.group({
       nom: [this.currentUser?.nom || ''],
       email: [this.currentUser?.email || ''],
@@ -660,30 +661,22 @@ export class LayoutComponent implements AfterViewInit {
 
 
   toggleSidebar() {
-    if (this.isMobile) {
-      // Allow toggling on mobile
-      this.sidebarOpen = !this.sidebarOpen;
-      if (this.sidebar) {
-        this.sidebar.isOpen = this.sidebarOpen;
-      }
-    } else {
-      // Keep open on desktop
-      this.sidebarOpen = true;
-      if (this.sidebar) {
-        this.sidebar.isOpen = true;
-      }
+    console.log('LayoutComponent - toggleSidebar called. isMobile:', this.isMobile, 'current sidebarOpen:', this.sidebarOpen);
+    // Always keep sidebar open for debugging
+    this.sidebarOpen = true;
+    if (this.sidebar) {
+      this.sidebar.isOpen = true;
     }
+    console.log('LayoutComponent - Forcing sidebarOpen to true');
   }
 
   onSidebarToggle(isOpen: boolean) {
-    if (this.isMobile) {
-      this.sidebarOpen = isOpen;
-    } else {
-      // Always keep open on desktop
-      this.sidebarOpen = true;
-      if (this.sidebar && !isOpen) {
-        this.sidebar.isOpen = true;
-      }
+    console.log('LayoutComponent - onSidebarToggle called with isOpen:', isOpen, 'current isMobile:', this.isMobile);
+    // Always keep sidebar open for debugging
+    this.sidebarOpen = true;
+    if (this.sidebar && !isOpen) {
+      this.sidebar.isOpen = true;
+      console.log('LayoutComponent - Forced sidebar.isOpen to true');
     }
   }
 
@@ -715,14 +708,17 @@ export class LayoutComponent implements AfterViewInit {
   }
 
   private checkScreenSize() {
+    const previousIsMobile = this.isMobile;
+    const previousSidebarOpen = this.sidebarOpen;
     this.isMobile = window.innerWidth <= 768;
-    if (this.isMobile) {
-      this.sidebarOpen = false; // Close sidebar on mobile by default
-    } else {
-      this.sidebarOpen = true; // Open sidebar on desktop
-    }
+    // Always keep sidebar open for debugging - will be visible regardless of screen size
+    this.sidebarOpen = true;
     // Keep CSS variables up-to-date when screen size changes
     this.updateNavbarCssVars();
+
+    if (previousIsMobile !== this.isMobile || previousSidebarOpen !== this.sidebarOpen) {
+      console.log('LayoutComponent - Screen size changed. isMobile:', this.isMobile, 'sidebarOpen:', this.sidebarOpen, 'window.innerWidth:', window.innerWidth);
+    }
   }
 
   /** Measure the actual navbar height and write CSS variables so styles can

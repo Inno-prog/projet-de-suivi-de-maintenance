@@ -1,0 +1,891 @@
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m------------------------< [0;36mcom.dgsi:maintenance[0;1m >------------------------[m
+[[1;34mINFO[m] [1mBuilding dgsi-maintenance 0.0.1-SNAPSHOT[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m>>> [0;32mspring-boot-maven-plugin:3.3.0:run[m [1m(default-cli)[0;1m > [0;1mtest-compile[m @ [36mmaintenance[0;1m >>>[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:resources[m [1m(default-resources)[m @ [36mmaintenance[0;1m ---[m
+[[1;34mINFO[m] Copying 1 resource from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 3 resources from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.13.0:compile[m [1m(default-compile)[m @ [36mmaintenance[0;1m ---[m
+[[1;34mINFO[m] Nothing to compile - all classes are up to date.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-resources-plugin:3.3.1:testResources[m [1m(default-testResources)[m @ [36mmaintenance[0;1m ---[m
+[[1;34mINFO[m] Copying 1 resource from src/test/resources to target/test-classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mmaven-compiler-plugin:3.13.0:testCompile[m [1m(default-testCompile)[m @ [36mmaintenance[0;1m ---[m
+[[1;34mINFO[m] Nothing to compile - all classes are up to date.
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m<<< [0;32mspring-boot-maven-plugin:3.3.0:run[m [1m(default-cli)[0;1m < [0;1mtest-compile[m @ [36mmaintenance[0;1m <<<[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot-maven-plugin:3.3.0:run[m [1m(default-cli)[m @ [36mmaintenance[0;1m ---[m
+[[1;34mINFO[m] Attaching agents: []
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.0)
+
+2026-01-17T20:01:07.258Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.maintenance.MaintenanceApplication   : Starting MaintenanceApplication using Java 21.0.9 with PID 207274 (/home/inno/projet-de-suivi-de-maintenance/backend/target/classes started by inno in /home/inno/projet-de-suivi-de-maintenance/backend)
+2026-01-17T20:01:07.261Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.maintenance.MaintenanceApplication   : The following 1 profile is active: "development"
+2026-01-17T20:01:08.780Z  INFO 207274 --- [dgsi-maintenance] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-17T20:01:08.932Z  INFO 207274 --- [dgsi-maintenance] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 142 ms. Found 14 JPA repository interfaces.
+2026-01-17T20:01:09.721Z  INFO 207274 --- [dgsi-maintenance] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8085 (http)
+2026-01-17T20:01:09.737Z  INFO 207274 --- [dgsi-maintenance] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-17T20:01:09.738Z  INFO 207274 --- [dgsi-maintenance] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.24]
+2026-01-17T20:01:09.807Z  INFO 207274 --- [dgsi-maintenance] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-01-17T20:01:09.808Z  INFO 207274 --- [dgsi-maintenance] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2481 ms
+Standard Commons Logging discovery in action with spring-jcl: please remove commons-logging.jar from classpath in order to avoid potential conflicts
+2026-01-17T20:01:10.027Z  INFO 207274 --- [dgsi-maintenance] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-17T20:01:10.089Z  INFO 207274 --- [dgsi-maintenance] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2026-01-17T20:01:10.127Z  INFO 207274 --- [dgsi-maintenance] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-01-17T20:01:10.485Z  INFO 207274 --- [dgsi-maintenance] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-17T20:01:10.518Z  INFO 207274 --- [dgsi-maintenance] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-17T20:01:10.901Z  INFO 207274 --- [dgsi-maintenance] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@38cf3ae1
+2026-01-17T20:01:10.903Z  INFO 207274 --- [dgsi-maintenance] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-17T20:01:10.945Z  WARN 207274 --- [dgsi-maintenance] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-17T20:01:11.100Z  WARN 207274 --- [dgsi-maintenance] [           main] o.h.boot.model.internal.EntityBinder     : HHH000457: Joined inheritance hierarchy [com.dgsi.maintenance.entity.User] defined explicit @DiscriminatorColumn.  Legacy Hibernate behavior was to ignore the @DiscriminatorColumn.  However, as part of issue HHH-6911 we now apply the explicit @DiscriminatorColumn.  If you would prefer the legacy behavior, enable the `hibernate.discriminator.ignore_explicit_for_joined` setting (hibernate.discriminator.ignore_explicit_for_joined=true)
+2026-01-17T20:01:12.938Z  INFO 207274 --- [dgsi-maintenance] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-17T20:01:13.012Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists evaluation_trimestrielle 
+       alter column appreciation_representant set data type TEXT
+Hibernate: 
+    alter table if exists evaluation_trimestrielle 
+       alter column appreciation_representant set data type TEXT
+2026-01-17T20:01:13.023Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists evaluation_trimestrielle 
+       alter column observations_generales set data type TEXT
+Hibernate: 
+    alter table if exists evaluation_trimestrielle 
+       alter column observations_generales set data type TEXT
+2026-01-17T20:01:13.027Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists fiches_prestation 
+       alter column commentaire set data type TEXT
+Hibernate: 
+    alter table if exists fiches_prestation 
+       alter column commentaire set data type TEXT
+2026-01-17T20:01:13.030Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists fiches_prestation 
+       alter column fichiers_contrat set data type TEXT
+Hibernate: 
+    alter table if exists fiches_prestation 
+       alter column fichiers_contrat set data type TEXT
+2026-01-17T20:01:13.034Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists fiches_prestation 
+       alter column items_couverts set data type TEXT
+Hibernate: 
+    alter table if exists fiches_prestation 
+       alter column items_couverts set data type TEXT
+2026-01-17T20:01:13.038Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists lots 
+       alter column villes set data type TEXT
+Hibernate: 
+    alter table if exists lots 
+       alter column villes set data type TEXT
+2026-01-17T20:01:13.043Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists notifications 
+       alter column message set data type TEXT
+Hibernate: 
+    alter table if exists notifications 
+       alter column message set data type TEXT
+2026-01-17T20:01:13.051Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists notifications 
+       alter column prestation_id set data type bigint
+Hibernate: 
+    alter table if exists notifications 
+       alter column prestation_id set data type bigint
+2026-01-17T20:01:13.059Z  WARN 207274 --- [dgsi-maintenance] [           main] o.h.t.s.i.ExceptionHandlerLoggedImpl     : GenerationTarget encountered exception accepting command : Error executing DDL "
+    alter table if exists notifications 
+       alter column prestation_id set data type bigint" via JDBC [ERROR: column "prestation_id" cannot be cast automatically to type bigint
+  Indice : You might need to specify "USING prestation_id::bigint".]
+
+org.hibernate.tool.schema.spi.CommandAcceptanceException: Error executing DDL "
+    alter table if exists notifications 
+       alter column prestation_id set data type bigint" via JDBC [ERROR: column "prestation_id" cannot be cast automatically to type bigint
+  Indice : You might need to specify "USING prestation_id::bigint".]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:94) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:575) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:515) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.migrateTable(AbstractSchemaMigrator.java:333) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:84) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:232) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:117) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:280) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.lambda$process$5(SchemaManagementToolCoordinator.java:144) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at java.base/java.util.HashMap.forEach(HashMap.java:1429) ~[na:na]
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:141) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport.sessionFactoryCreated(SessionFactoryObserverForSchemaExport.java:37) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.internal.SessionFactoryObserverChain.sessionFactoryCreated(SessionFactoryObserverChain.java:35) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:322) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:457) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1506) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:75) ~[spring-orm-6.1.8.jar:6.1.8]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:390) ~[spring-orm-6.1.8.jar:6.1.8]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409) ~[spring-orm-6.1.8.jar:6.1.8]
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396) ~[spring-orm-6.1.8.jar:6.1.8]
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:366) ~[spring-orm-6.1.8.jar:6.1.8]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1835) ~[spring-beans-6.1.8.jar:6.1.8]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1784) ~[spring-beans-6.1.8.jar:6.1.8]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600) ~[spring-beans-6.1.8.jar:6.1.8]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522) ~[spring-beans-6.1.8.jar:6.1.8]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337) ~[spring-beans-6.1.8.jar:6.1.8]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234) ~[spring-beans-6.1.8.jar:6.1.8]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335) ~[spring-beans-6.1.8.jar:6.1.8]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:205) ~[spring-beans-6.1.8.jar:6.1.8]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:952) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:624) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352) ~[spring-boot-3.3.0.jar:3.3.0]
+	at com.dgsi.maintenance.MaintenanceApplication.main(MaintenanceApplication.java:9) ~[classes/:na]
+Caused by: org.postgresql.util.PSQLException: ERROR: column "prestation_id" cannot be cast automatically to type bigint
+  Indice : You might need to specify "USING prestation_id::bigint".
+	at org.postgresql.core.v3.QueryExecutorImpl.receiveErrorResponse(QueryExecutorImpl.java:2725) ~[postgresql-42.7.3.jar:42.7.3]
+	at org.postgresql.core.v3.QueryExecutorImpl.processResults(QueryExecutorImpl.java:2412) ~[postgresql-42.7.3.jar:42.7.3]
+	at org.postgresql.core.v3.QueryExecutorImpl.execute(QueryExecutorImpl.java:371) ~[postgresql-42.7.3.jar:42.7.3]
+	at org.postgresql.jdbc.PgStatement.executeInternal(PgStatement.java:502) ~[postgresql-42.7.3.jar:42.7.3]
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:419) ~[postgresql-42.7.3.jar:42.7.3]
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:341) ~[postgresql-42.7.3.jar:42.7.3]
+	at org.postgresql.jdbc.PgStatement.executeCachedSql(PgStatement.java:326) ~[postgresql-42.7.3.jar:42.7.3]
+	at org.postgresql.jdbc.PgStatement.executeWithFlags(PgStatement.java:302) ~[postgresql-42.7.3.jar:42.7.3]
+	at org.postgresql.jdbc.PgStatement.execute(PgStatement.java:297) ~[postgresql-42.7.3.jar:42.7.3]
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94) ~[HikariCP-5.1.0.jar:na]
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java) ~[HikariCP-5.1.0.jar:na]
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:80) ~[hibernate-core-6.5.2.Final.jar:6.5.2.Final]
+	... 37 common frames omitted
+
+2026-01-17T20:01:13.064Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists prestations 
+       alter column description set data type TEXT
+Hibernate: 
+    alter table if exists prestations 
+       alter column description set data type TEXT
+2026-01-17T20:01:13.068Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations set data type TEXT
+2026-01-17T20:01:13.071Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations_contrats set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations_contrats set data type TEXT
+2026-01-17T20:01:13.075Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations_generales set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations_generales set data type TEXT
+2026-01-17T20:01:13.078Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations_items set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations_items set data type TEXT
+2026-01-17T20:01:13.082Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations_ordres set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations_ordres set data type TEXT
+2026-01-17T20:01:13.085Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations_prestations set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations_prestations set data type TEXT
+2026-01-17T20:01:13.088Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    alter table if exists rapports_suivi 
+       alter column observations_structures set data type TEXT
+Hibernate: 
+    alter table if exists rapports_suivi 
+       alter column observations_structures set data type TEXT
+2026-01-17T20:01:13.454Z  INFO 207274 --- [dgsi-maintenance] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-17T20:01:13.989Z  INFO 207274 --- [dgsi-maintenance] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-01-17T20:01:15.700Z  INFO 207274 --- [dgsi-maintenance] [           main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2026-01-17T20:01:16.093Z  INFO 207274 --- [dgsi-maintenance] [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@21ed2052, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@517ef60, org.springframework.security.web.context.SecurityContextHolderFilter@3b24595e, org.springframework.security.web.header.HeaderWriterFilter@703f29b0, org.springframework.web.filter.CorsFilter@3c07b046, org.springframework.security.web.authentication.logout.LogoutFilter@14796b9e, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@11742b29, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@2bdae168, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4086022, org.springframework.security.web.session.SessionManagementFilter@2a53d576, org.springframework.security.web.access.ExceptionTranslationFilter@4eeff1e3, org.springframework.security.web.access.intercept.AuthorizationFilter@6e1af662]
+2026-01-17T20:01:16.414Z  INFO 207274 --- [dgsi-maintenance] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8085 (http) with context path '/'
+2026-01-17T20:01:16.429Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.maintenance.MaintenanceApplication   : Started MaintenanceApplication in 9.664 seconds (process running for 10.124)
+2026-01-17T20:01:16.433Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.maintenance.config.DataInitializer   : Data initialization started
+2026-01-17T20:01:16.535Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        type_items ti1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        type_items ti1_0
+2026-01-17T20:01:16.548Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        users u1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        users u1_0
+2026-01-17T20:01:16.550Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.maintenance.config.DataInitializer   : Users already exist, skipping sample user creation
+2026-01-17T20:01:16.550Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.LotDataInitializer          : Initializing Lot data...
+2026-01-17T20:01:16.552Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        lots l1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        lots l1_0
+2026-01-17T20:01:16.554Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.LotDataInitializer          : Lots already exist, skipping sample data creation
+2026-01-17T20:01:16.554Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.LotDataInitializer          : Lot data initialized
+2026-01-17T20:01:16.555Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.ContratDataInitializer      : Contrat data initialization skipped - using existing database data
+2026-01-17T20:01:16.555Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.ItemDataInitializer         : Initializing Item data...
+2026-01-17T20:01:16.557Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        count(*) 
+    from
+        items i1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        items i1_0
+2026-01-17T20:01:16.558Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.ItemDataInitializer         : Items already exist, skipping sample data creation
+2026-01-17T20:01:16.559Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.ItemDataInitializer         : Item data initialized
+2026-01-17T20:01:16.559Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : Fixing nomStructure field in existing fiches_prestation records...
+2026-01-17T20:01:16.567Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : Before fix - Total fiches_prestation records: 4
+2026-01-17T20:01:16.567Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : Before fix - Records with nom_structure: 4
+2026-01-17T20:01:16.567Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : Before fix - Records missing nom_structure: 0
+2026-01-17T20:01:16.569Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : Updated 0 fiches_prestation records
+2026-01-17T20:01:16.570Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : Fiche structure fix summary:
+2026-01-17T20:01:16.570Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : - Total fiches_prestation records: 4
+2026-01-17T20:01:16.570Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : - Records updated: 0
+2026-01-17T20:01:16.571Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : - Final records with nom_structure: 4
+2026-01-17T20:01:16.571Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : - Final records still missing nom_structure: 0
+2026-01-17T20:01:16.575Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : Example fixed record - ID: 68, nom_structure: DGCMEF
+2026-01-17T20:01:16.575Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : Example fixed record - ID: 69, nom_structure: DGCTCP
+2026-01-17T20:01:16.575Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : Example fixed record - ID: 70, nom_structure: DESGI
+2026-01-17T20:01:16.575Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : Example fixed record - ID: 71, nom_structure: DSCI
+2026-01-17T20:01:16.576Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.FicheStructureDataFix       : Fiche structure data fix completed
+2026-01-17T20:01:16.576Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.ContractRelationshipFix     : Fixing contract-prestataire relationships...
+2026-01-17T20:01:16.693Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id 
+    where
+        u1_0.email=?
+2026-01-17T20:01:16.722Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.user_type,
+        u1_0.adresse,
+        u1_0.contact,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.nom,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_1.poste,
+        u1_2.structure,
+        u1_3.direction,
+        u1_3.qualification,
+        u1_3.structure 
+    from
+        users u1_0 
+    left join
+        administrators u1_1 
+            on u1_0.id=u1_1.id 
+    left join
+        agents_dgsi u1_2 
+            on u1_0.id=u1_2.id 
+    left join
+        prestataires u1_3 
+            on u1_0.id=u1_3.id 
+    where
+        u1_0.email=?
+2026-01-17T20:01:16.725Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.ContractRelationshipFix     : Found NetCom: 6e80c5a0-b7b8-4151-8f63-4be4bf94b816 and SoftLink: 67c2b8ef-ab87-4e98-b731-b131fc0b5bcf
+2026-01-17T20:01:16.730Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot_id,
+        c1_0.lot_name,
+        c1_0.montant,
+        c1_0.montant_restant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    where
+        c1_0.id_contrat=?
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot_id,
+        c1_0.lot_name,
+        c1_0.montant,
+        c1_0.montant_restant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    where
+        c1_0.id_contrat=?
+2026-01-17T20:01:16.739Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        l1_0.id,
+        l1_0.code_lot,
+        l1_0.nom_lot,
+        l1_0.villes 
+    from
+        lots l1_0 
+    where
+        l1_0.id=?
+Hibernate: 
+    select
+        l1_0.id,
+        l1_0.code_lot,
+        l1_0.nom_lot,
+        l1_0.villes 
+    from
+        lots l1_0 
+    where
+        l1_0.id=?
+2026-01-17T20:01:16.756Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        l1_0.id,
+        l1_0.code_lot,
+        l1_0.nom_lot,
+        l1_0.villes,
+        c1_0.lot_name,
+        c1_0.montant,
+        c1_0.montant_restant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville,
+        oc1_0.contrat_id,
+        oc1_0.id,
+        oc1_0.annee,
+        oc1_0.date_creation,
+        oc1_0.description,
+        oc1_0.ecart_articles,
+        oc1_0.ecart_calcule,
+        oc1_0.id_oc,
+        oc1_0.item_id,
+        oc1_0.lot,
+        oc1_0.max_articles,
+        oc1_0.max_prestations,
+        oc1_0.min_articles,
+        oc1_0.min_prestations,
+        oc1_0.montant,
+        oc1_0.montant_oc,
+        oc1_0.montant_total_calcule,
+        oc1_0.nom_item,
+        oc1_0.nombre_articles_utilise,
+        oc1_0.numero_commande,
+        oc1_0.numero_oc,
+        oc1_0.observations,
+        oc1_0.penalites,
+        oc1_0.penalites_calculees,
+        oc1_0.prestataire_item,
+        oc1_0.prix_unit_prest,
+        oc1_0.prix_unitaires_items_json,
+        oc1_0.statut,
+        oc1_0.total_ecart,
+        oc1_0.total_general,
+        oc1_0.trimestre 
+    from
+        contrats c1_0 
+    left join
+        lots l1_0 
+            on l1_0.id=c1_0.lot_id 
+    left join
+        ordres_commande oc1_0 
+            on c1_0.id=oc1_0.contrat_id 
+    where
+        c1_0.id=?
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        l1_0.id,
+        l1_0.code_lot,
+        l1_0.nom_lot,
+        l1_0.villes,
+        c1_0.lot_name,
+        c1_0.montant,
+        c1_0.montant_restant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville,
+        oc1_0.contrat_id,
+        oc1_0.id,
+        oc1_0.annee,
+        oc1_0.date_creation,
+        oc1_0.description,
+        oc1_0.ecart_articles,
+        oc1_0.ecart_calcule,
+        oc1_0.id_oc,
+        oc1_0.item_id,
+        oc1_0.lot,
+        oc1_0.max_articles,
+        oc1_0.max_prestations,
+        oc1_0.min_articles,
+        oc1_0.min_prestations,
+        oc1_0.montant,
+        oc1_0.montant_oc,
+        oc1_0.montant_total_calcule,
+        oc1_0.nom_item,
+        oc1_0.nombre_articles_utilise,
+        oc1_0.numero_commande,
+        oc1_0.numero_oc,
+        oc1_0.observations,
+        oc1_0.penalites,
+        oc1_0.penalites_calculees,
+        oc1_0.prestataire_item,
+        oc1_0.prix_unit_prest,
+        oc1_0.prix_unitaires_items_json,
+        oc1_0.statut,
+        oc1_0.total_ecart,
+        oc1_0.total_general,
+        oc1_0.trimestre 
+    from
+        contrats c1_0 
+    left join
+        lots l1_0 
+            on l1_0.id=c1_0.lot_id 
+    left join
+        ordres_commande oc1_0 
+            on c1_0.id=oc1_0.contrat_id 
+    where
+        c1_0.id=?
+2026-01-17T20:01:16.763Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        c1_0.lot_id,
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot_name,
+        c1_0.montant,
+        c1_0.montant_restant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    where
+        c1_0.lot_id=?
+Hibernate: 
+    select
+        c1_0.lot_id,
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot_name,
+        c1_0.montant,
+        c1_0.montant_restant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    where
+        c1_0.lot_id=?
+2026-01-17T20:01:16.781Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.ContractRelationshipFix     : Updated CT-001-2025 to link to NetCom
+2026-01-17T20:01:16.783Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot_id,
+        c1_0.lot_name,
+        c1_0.montant,
+        c1_0.montant_restant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    where
+        c1_0.id_contrat=?
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot_id,
+        c1_0.lot_name,
+        c1_0.montant,
+        c1_0.montant_restant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    where
+        c1_0.id_contrat=?
+2026-01-17T20:01:16.784Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        l1_0.id,
+        l1_0.code_lot,
+        l1_0.nom_lot,
+        l1_0.villes 
+    from
+        lots l1_0 
+    where
+        l1_0.id=?
+Hibernate: 
+    select
+        l1_0.id,
+        l1_0.code_lot,
+        l1_0.nom_lot,
+        l1_0.villes 
+    from
+        lots l1_0 
+    where
+        l1_0.id=?
+2026-01-17T20:01:16.788Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        l1_0.id,
+        l1_0.code_lot,
+        l1_0.nom_lot,
+        l1_0.villes,
+        c1_0.lot_name,
+        c1_0.montant,
+        c1_0.montant_restant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville,
+        oc1_0.contrat_id,
+        oc1_0.id,
+        oc1_0.annee,
+        oc1_0.date_creation,
+        oc1_0.description,
+        oc1_0.ecart_articles,
+        oc1_0.ecart_calcule,
+        oc1_0.id_oc,
+        oc1_0.item_id,
+        oc1_0.lot,
+        oc1_0.max_articles,
+        oc1_0.max_prestations,
+        oc1_0.min_articles,
+        oc1_0.min_prestations,
+        oc1_0.montant,
+        oc1_0.montant_oc,
+        oc1_0.montant_total_calcule,
+        oc1_0.nom_item,
+        oc1_0.nombre_articles_utilise,
+        oc1_0.numero_commande,
+        oc1_0.numero_oc,
+        oc1_0.observations,
+        oc1_0.penalites,
+        oc1_0.penalites_calculees,
+        oc1_0.prestataire_item,
+        oc1_0.prix_unit_prest,
+        oc1_0.prix_unitaires_items_json,
+        oc1_0.statut,
+        oc1_0.total_ecart,
+        oc1_0.total_general,
+        oc1_0.trimestre 
+    from
+        contrats c1_0 
+    left join
+        lots l1_0 
+            on l1_0.id=c1_0.lot_id 
+    left join
+        ordres_commande oc1_0 
+            on c1_0.id=oc1_0.contrat_id 
+    where
+        c1_0.id=?
+Hibernate: 
+    select
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        l1_0.id,
+        l1_0.code_lot,
+        l1_0.nom_lot,
+        l1_0.villes,
+        c1_0.lot_name,
+        c1_0.montant,
+        c1_0.montant_restant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville,
+        oc1_0.contrat_id,
+        oc1_0.id,
+        oc1_0.annee,
+        oc1_0.date_creation,
+        oc1_0.description,
+        oc1_0.ecart_articles,
+        oc1_0.ecart_calcule,
+        oc1_0.id_oc,
+        oc1_0.item_id,
+        oc1_0.lot,
+        oc1_0.max_articles,
+        oc1_0.max_prestations,
+        oc1_0.min_articles,
+        oc1_0.min_prestations,
+        oc1_0.montant,
+        oc1_0.montant_oc,
+        oc1_0.montant_total_calcule,
+        oc1_0.nom_item,
+        oc1_0.nombre_articles_utilise,
+        oc1_0.numero_commande,
+        oc1_0.numero_oc,
+        oc1_0.observations,
+        oc1_0.penalites,
+        oc1_0.penalites_calculees,
+        oc1_0.prestataire_item,
+        oc1_0.prix_unit_prest,
+        oc1_0.prix_unitaires_items_json,
+        oc1_0.statut,
+        oc1_0.total_ecart,
+        oc1_0.total_general,
+        oc1_0.trimestre 
+    from
+        contrats c1_0 
+    left join
+        lots l1_0 
+            on l1_0.id=c1_0.lot_id 
+    left join
+        ordres_commande oc1_0 
+            on c1_0.id=oc1_0.contrat_id 
+    where
+        c1_0.id=?
+2026-01-17T20:01:16.791Z DEBUG 207274 --- [dgsi-maintenance] [           main] org.hibernate.SQL                        : 
+    select
+        c1_0.lot_id,
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot_name,
+        c1_0.montant,
+        c1_0.montant_restant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    where
+        c1_0.lot_id=?
+Hibernate: 
+    select
+        c1_0.lot_id,
+        c1_0.id,
+        c1_0.date_debut,
+        c1_0.date_fin,
+        c1_0.fichier_contrat,
+        c1_0.id_contrat,
+        c1_0.lot_name,
+        c1_0.montant,
+        c1_0.montant_restant,
+        c1_0.nom_prestataire,
+        c1_0.prestataire_id,
+        c1_0.statut,
+        c1_0.type_contrat,
+        c1_0.ville 
+    from
+        contrats c1_0 
+    where
+        c1_0.lot_id=?
+2026-01-17T20:01:16.795Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.ContractRelationshipFix     : Updated CT-002-2025 to link to SoftLink
+2026-01-17T20:01:16.795Z  INFO 207274 --- [dgsi-maintenance] [           main] c.d.m.config.ContractRelationshipFix     : Contract-prestataire relationships fixed successfully!
+2026-01-17T20:01:18.315Z  INFO 207274 --- [dgsi-maintenance] [nio-8085-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-17T20:01:18.315Z  INFO 207274 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-01-17T20:01:18.317Z  INFO 207274 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-01-17T20:01:18.343Z DEBUG 207274 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.security.web.FilterChainProxy        : Securing GET /api/notifications/stream/agent@gmail.com
+2026-01-17T20:01:18.365Z DEBUG 207274 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.s.w.a.AnonymousAuthenticationFilter  : Set SecurityContextHolder to anonymous SecurityContext
+2026-01-17T20:01:18.367Z DEBUG 207274 --- [dgsi-maintenance] [nio-8085-exec-1] o.s.security.web.FilterChainProxy        : Secured GET /api/notifications/stream/agent@gmail.com
+2026-01-17T20:01:18.400Z DEBUG 207274 --- [dgsi-maintenance] [nio-8085-exec-1] org.hibernate.SQL                        : 
+    select
+        n1_0.id,
+        n1_0.date_creation,
+        n1_0.destinataire,
+        n1_0.lu,
+        n1_0.message,
+        n1_0.prestation_id,
+        n1_0.titre,
+        n1_0.type 
+    from
+        notifications n1_0 
+    where
+        n1_0.destinataire=? 
+    order by
+        n1_0.date_creation desc
+Hibernate: 
+    select
+        n1_0.id,
+        n1_0.date_creation,
+        n1_0.destinataire,
+        n1_0.lu,
+        n1_0.message,
+        n1_0.prestation_id,
+        n1_0.titre,
+        n1_0.type 
+    from
+        notifications n1_0 
+    where
+        n1_0.destinataire=? 
+    order by
+        n1_0.date_creation desc
+2026-01-17T20:01:41.867Z  INFO 207274 --- [dgsi-maintenance] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-17T20:01:41.877Z  INFO 207274 --- [dgsi-maintenance] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-01-17T20:01:41.908Z  INFO 207274 --- [dgsi-maintenance] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

@@ -1,0 +1,294 @@
+<parameter name="content">package com.dgsi.maintenance.service;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import com.dgsi.maintenance.dto.StructureHierarchyDto;
+import com.dgsi.maintenance.entity.StructureMefp;
+import com.dgsi.maintenance.repository.StructureMefpRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+@Service
+public class StructureMefpService {
+
+    private static final Logger logger = Logger.getLogger(StructureMefpService.class.getName());
+
+    @Autowired
+    private StructureMefpRepository structureMefpRepository;
+
+    public List<StructureMefp> getAllStructures() {
+        logger.info("Fetching all structures from database");
+        List<StructureMefp> structures = structureMefpRepository.findAll();
+        logger.info("Found " + structures.size() + " structures in database");
+        return structures;
+    }
+
+    public Page<StructureMefp> getAllStructuresPaginated(Pageable pageable) {
+        logger.info("Fetching structures from database with pagination: " + pageable);
+        Page<StructureMefp> structures = structureMefpRepository.findAll(pageable);
+        logger.info("Found " + structures.getNumberOfElements() + " structures (page " + pageable.getPageNumber() + " of " + structures.getTotalPages() + ")");
+        return structures;
+    }
+
+    public Page<StructureMefp> getAllStructuresPaginated(Pageable pageable, String sortBy, String sortDirection) {
+        logger.info("Fetching structures with custom sorting: sortBy=" + sortBy + ", direction=" + sortDirection);
+        
+        Sort sort;
+        if ("desc".equalsIgnoreCase(sortDirection)) {
+            sort = Sort.by(sortBy).descending();
+        } else {
+            sort = Sort.by(sortBy).ascending();
+        }
+        
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        Page<StructureMefp> structures = structureMefpRepository.findAll(pageRequest);
+        
+        logger.info("Found " + structures.getNumberOfElements() + " structures with custom sorting");
+        return structures;
+    }
+
+    public Optional<StructureMefp> getStructureById(String id) {
+        logger.info("Fetching structure by ID: " + id);
+        Optional<StructureMefp> structure = structureMefpRepository.findById(id);
+        if (structure.isPresent()) {
+            logger.info("Structure found: " + structure.get().getNom());
+        } else {
+            logger.warning("Structure not found with ID: " + id);
+        }
+        return structure;
+    }
+
+    public StructureMefp createStructure(StructureMefp structure) {
+        logger.info("Creating new structure: " + structure.getNom());
+        StructureMefp savedStructure = structureMefpRepository.save(structure);
+        logger.info("Structure created successfully with ID: " + savedStructure.getId());
+        return savedStructure;
+    }
+
+    public Optional<StructureMefp> updateStructure(String id, StructureMefp structureDetails) {
+        logger.info("Updating structure with ID: " + id);
+        return structureMefpRepository.findById(id)
+            .map(structure -> {
+                logger.info("Found existing structure: " + structure.getNom());
+                structure.setNom(structureDetails.getNom());
+                structure.setContact(structureDetails.getContact());
+                structure.setEmail(structureDetails.getEmail());
+                structure.setVille(structureDetails.getVille());
+                structure.setAdresseStructure(structureDetails.getAdresseStructure());
+                structure.setDescription(structureDetails.getDescription());
+                structure.setCategorie(structureDetails.getCategorie());
+                structure.setLot(structureDetails.getLot());
+                structure.setNomCI(structureDetails.getNomCI());
+                structure.setPrenomCI(structureDetails.getPrenomCI());
+                structure.setContactCI(structureDetails.getContactCI());
+                structure.setFonctionCI(structureDetails.getFonctionCI());
+                StructureMefp updatedStructure = structureMefpRepository.save(structure);
+                logger.info("Structure updated successfully: " + updatedStructure.getNom());
+                return updatedStructure;
+            });
+    }
+
+    public boolean deleteStructure(String id) {
+        logger.info("Attempting to delete structure with ID: " + id);
+        return structureMefpRepository.findById(id)
+            .map(structure -> {
+                logger.info("Deleting structure: " + structure.getNom());
+                structureMefpRepository.delete(structure);
+                logger.info("Structure deleted successfully");
+                return true;
+            })
+            .orElseGet(() -> {
+                logger.warning("Structure not found for deletion with ID: " + id);
+                return false;
+            });
+    }
+
+    public List<StructureMefp> getStructuresByLotId(Long lotId) {
+        logger.info("Fetching structures for lot ID: " + lotId);
+        List<StructureMefp> structures = structureMefpRepository.findByLotId(lotId);
+        logger.info("Found " + structures.size() + " structures for lot ID: " + lotId);
+        return structures;
+    }
+
+    /**
+     * Génère la hiérarchie complète des structures MEFP
+     * Structure: Région → Ville → Structures
+     */
+    public List<StructureHierarchyDto> getHierarchy() {
+        logger.info("Generating structure hierarchy");
+        
+        List<StructureMefp> structures = structureMefpRepository.findAll();
+        logger.info("Processing " + structures.size() + " structures for hierarchy");
+        
+        // Grouper les structures par région puis par ville
+        Map<String, Map<String, List<StructureMefp>>> groupedByRegionAndVille = new HashMap<>();
+        
+        for (StructureMefp structure : structures) {
+            String region = structure.getVille() != null ? extractRegion(structure.getVille()) : "Autre";
+            String ville = structure.getVille() != null ? structure.getVille() : "Autre";
+            
+            groupedByRegionAndVille
+                .computeIfAbsent(region, k -> new HashMap<>())
+                .computeIfAbsent(ville, k -> new ArrayList<>())
+                .add(structure);
+        }
+        
+        // Construire l'arbre hiérarchique
+        List<StructureHierarchyDto> hierarchy = new ArrayList<>();
+        
+        // Trier les régions alphabétiquement
+        List<String> sortedRegions = new ArrayList<>(groupedByRegionAndVille.keySet());
+        Collections.sort(sortedRegions);
+        
+        for (String region : sortedRegions) {
+            StructureHierarchyDto regionNode = new StructureHierarchyDto(
+                "region-" + region.hashCode(),
+                region,
+                "region"
+            );
+            
+            Map<String, List<StructureMefp>> villesMap = groupedByRegionAndVille.get(region);
+            
+            // Trier les villes alphabétiquement
+            List<String> sortedVilles = new ArrayList<>(villesMap.keySet());
+            Collections.sort(sortedVilles);
+            
+            for (String ville : sortedVilles) {
+                StructureHierarchyDto villeNode = new StructureHierarchyDto(
+                    "ville-" + ville.hashCode(),
+                    ville,
+                    "ville"
+                );
+                
+                List<StructureMefp> structuresInVille = villesMap.get(ville);
+                
+                // Trier les structures alphabétiquement par nom
+                List<StructureMefp> sortedStructures = structuresInVille.stream()
+                    .sorted((s1, s2) -> {
+                        if (s1.getNom() == null) return 1;
+                        if (s2.getNom() == null) return -1;
+                        return s1.getNom().compareToIgnoreCase(s2.getNom());
+                    })
+                    .collect(Collectors.toList());
+                
+                for (StructureMefp structure : sortedStructures) {
+                    StructureHierarchyDto structureNode = new StructureHierarchyDto(
+                        structure.getId(),
+                        structure.getNom(),
+                        "structure"
+                    );
+                    structureNode.setEmail(structure.getEmail());
+                    structureNode.setContact(structure.getContact());
+                    structureNode.setAdresse(structure.getAdresseStructure());
+                    structureNode.setCategorie(structure.getCategorie());
+                    if (structure.getLot() != null) {
+                        structureNode.setLotNom(structure.getLot().getNomLot());
+                    }
+                    villeNode.addEnfant(structureNode);
+                }
+                
+                regionNode.addEnfant(villeNode);
+            }
+            
+            hierarchy.add(regionNode);
+        }
+        
+        logger.info("Generated hierarchy with " + hierarchy.size() + " regions");
+        return hierarchy;
+    }
+
+    /**
+     * Extrait la région à partir du nom de ville
+     * Pour le Burkina Faso
+     */
+    private String extractRegion(String ville) {
+        if (ville == null || ville.isEmpty()) {
+            return "Autre";
+        }
+        
+        // Mapping simplifié des villes vers les régions du Burkina Faso
+        String normalizedVille = ville.toLowerCase().trim();
+        
+        // Villes de la région Centre
+        if (normalizedVille.equals("ouagadougou") || normalizedVille.equals("koudougou")) {
+            return "Centre";
+        }
+        
+        // Villes de la Boucle du Mouhoun
+        if (normalizedVille.equals("bobo-dioulasso") || normalizedVille.equals("dedougou") || 
+            normalizedVille.equals("nouna") || normalizedVille.equals("tougan")) {
+            return "Boucle du Mouhoun";
+        }
+        
+        // Villes des Hauts-Bassins
+        if (normalizedVille.equals("bobo-dioulasso") || normalizedVille.equals("orodara")) {
+            return "Hauts-Bassins";
+        }
+        
+        // Villes du Centre-Est
+        if (normalizedVille.equals("fada n'gourma") || normalizedVille.equals("koupela") || 
+            normalizedVille.equals("pama")) {
+            return "Centre-Est";
+        }
+        
+        // Villes du Centre-Nord
+        if (normalizedVille.equals("kaya") || normalizedVille.equals("tougan")) {
+            return "Centre-Nord";
+        }
+        
+        // Villes du Centre-Ouest
+        if (normalizedVille.equals("koudougou") || normalizedVille.equals("leo") || 
+            normalizedVille.equals("manga")) {
+            return "Centre-Ouest";
+        }
+        
+        // Villes de l'Est
+        if (normalizedVille.equals("fada n'gourma") || normalizedVille.equals("pama") || 
+            normalizedVille.equals("diapaga")) {
+            return "Est";
+        }
+        
+        // Villes du Nord
+        if (normalizedVille.equals("ouahigouya") || normalizedVille.equals("tougan") || 
+            normalizedVille.equals("yako")) {
+            return "Nord";
+        }
+        
+        // Villes du Sahel
+        if (normalizedVille.equals("djibo") || normalizedVille.equals("gorom-gorom") || 
+            normalizedVille.equals("diapaga")) {
+            return "Sahel";
+        }
+        
+        // Villes du Sud-Ouest
+        if (normalizedVille.equals("gaoua") || normalizedVille.equals("bobo-dioulasso")) {
+            return "Sud-Ouest";
+        }
+        
+        // Si la ville n'est pas reconnue, utiliser le nom comme région
+        String[] parts = ville.split("\\s+");
+        if (parts.length > 0 && !parts[0].isEmpty()) {
+            return capitalizeFirst(parts[0]);
+        }
+        
+        return "Autre";
+    }
+
+    private String capitalizeFirst(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
+    }
+}
+</parameter>

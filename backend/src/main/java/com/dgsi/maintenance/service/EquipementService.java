@@ -47,9 +47,21 @@ public class EquipementService {
     }
 
     public void deleteEquipement(Long id) {
-        if (!equipementRepository.existsById(id)) {
+        Optional<Equipement> equipementOpt = equipementRepository.findById(id);
+        if (!equipementOpt.isPresent()) {
             throw new RuntimeException("Équipement non trouvé avec l'id: " + id);
         }
+
+        Equipement equipement = equipementOpt.get();
+
+        // Clear relationships before deletion
+        equipement.getPrestations().clear();
+        equipement.getItems().clear();
+
+        // Save to update relationships
+        equipementRepository.save(equipement);
+
+        // Now delete the equipment
         equipementRepository.deleteById(id);
     }
 }

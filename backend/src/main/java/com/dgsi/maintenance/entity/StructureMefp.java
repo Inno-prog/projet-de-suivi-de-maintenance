@@ -31,6 +31,9 @@ public class StructureMefp {
     @Size(max = 100)
     private String ville;
 
+    @Size(max = 100)
+    private String region;
+
     @Size(max = 200)
     @Column(name = "adresse_structure")
     private String adresseStructure;
@@ -100,6 +103,9 @@ public class StructureMefp {
     public String getVille() { return ville; }
     public void setVille(String ville) { this.ville = ville; }
 
+    public String getRegion() { return region; }
+    public void setRegion(String region) { this.region = region; }
+
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
@@ -127,3 +133,4 @@ public class StructureMefp {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }
+

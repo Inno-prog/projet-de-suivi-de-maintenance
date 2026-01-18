@@ -1,0 +1,78 @@
+<parameter name="content">package com.dgsi.maintenance.dto;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * DTO pour représenter la hiérarchie des structures MEFP
+ * Structure: Région → Ville → Structures
+ */
+public class StructureHierarchyDto {
+    
+    private String id;
+    private String nom;
+    private String type; // "region", "ville", "structure"
+    private String code;
+    private List<StructureHierarchyDto> enfants;
+    
+    // Détails de la structure (pour les structures finales)
+    private String email;
+    private String contact;
+    private String adresse;
+    private String categorie;
+    private String lotNom;
+    
+    public StructureHierarchyDto() {
+        this.enfants = new ArrayList<>();
+    }
+    
+    public StructureHierarchyDto(String id, String nom, String type) {
+        this.id = id;
+        this.nom = nom;
+        this.type = type;
+        this.enfants = new ArrayList<>();
+    }
+    
+    // Getters et Setters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
+    
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    
+    public String getCode() { return code; }
+    public void setCode(String code) { this.code = code; }
+    
+    public List<StructureHierarchyDto> getEnfants() { return enfants; }
+    public void setEnfants(List<StructureHierarchyDto> enfants) { this.enfants = enfants; }
+    
+    public void addEnfant(StructureHierarchyDto enfant) {
+        this.enfants.add(enfant);
+    }
+    
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    
+    public String getContact() { return contact; }
+    public void setContact(String contact) { this.contact = contact; }
+    
+    public String getAdresse() { return adresse; }
+    public void setAdresse(String adresse) { this.adresse = adresse; }
+    
+    public String getCategorie() { return categorie; }
+    public void setCategorie(String categorie) { this.categorie = categorie; }
+    
+    public String getLotNom() { return lotNom; }
+    public void setLotNom(String lotNom) { this.lotNom = lotNom; }
+    
+    // Méthodes utilitaires
+    public boolean isRegion() { return "region".equals(type); }
+    public boolean isVille() { return "ville".equals(type); }
+    public boolean isStructure() { return "structure".equals(type); }
+    
+    public boolean hasEnfants() { return enfants != null && !enfants.isEmpty(); }
+}
+</parameter>

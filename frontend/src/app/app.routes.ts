@@ -114,7 +114,19 @@ export const routes: Routes = [
   },
   {
     path: 'structures-mefp',
-    loadComponent: () => import('./features/structures-mefp/components/structures-mefp-list/structures-mefp-list.component').then(m => m.StructuresMefpListComponent),
+    loadComponent: () => import('./features/structures-mefp/components/structures-mefp/structures-mefp.component').then(m => m.StructuresMefpComponent),
+    canActivate: [AuthGuard],
+    data: { role: ['ADMINISTRATEUR', 'AGENT_DGSI'] }
+  },
+  {
+    path: 'structures-mefp/region/:region',
+    loadComponent: () => import('./features/structures-mefp/components/structures-mefp/structures-mefp.component').then(m => m.StructuresMefpComponent),
+    canActivate: [AuthGuard],
+    data: { role: ['ADMINISTRATEUR', 'AGENT_DGSI'] }
+  },
+  {
+    path: 'structures-mefp/ville/:ville',
+    loadComponent: () => import('./features/structures-mefp/components/structures-mefp/structures-mefp.component').then(m => m.StructuresMefpComponent),
     canActivate: [AuthGuard],
     data: { role: ['ADMINISTRATEUR', 'AGENT_DGSI'] }
   },

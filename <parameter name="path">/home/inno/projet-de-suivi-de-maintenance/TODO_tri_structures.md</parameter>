@@ -1,0 +1,58 @@
+<parameter name="content"># TODO - Navigation Hiérarchique des Structures MEFP
+
+## Objectif
+Afficher les structures MEFP dans une arborescence hiérarchique:
+- Régions → Villes → Structures
+
+## Structure hiérarchique cible:
+```
+MEFP
+└── Régions
+    ├── Centre
+    │   ├── Ouagadougou
+    │   │   ├── Impôts
+    │   │   ├── Contrôle / DCMEF
+    │   │   └── Trésor
+    │   ├── Koudougou
+    │   └── ...
+    ├── Boucle du Mouhoun
+    ├── Hauts-Bassins
+    ├── Centre-Est
+    └── ...
+```
+
+## Backend - Étapes
+
+### 1. Créer un nouveau DTO pour la hiérarchie
+- [ ] Créer `StructureHierarchyDto` avec: id, nom, type (region/ville/structure), enfants, details
+
+### 2. Ajouter endpoint hiérarchique dans StructureMefpController
+- [ ] GET `/api/structures-mefp/hierarchy` - Retourne toute la hiérarchie
+
+### 3. Créer service de hiérarchie
+- [ ] Créer méthode pour grouper les structures par région puis ville
+
+## Frontend - Étapes
+
+### 1. Créer nouveau modèle TypeScript
+- [ ] Créer `structure-hierarchy.model.ts` avec interfaces
+
+### 2. Ajouter service pour la hiérarchie
+- [ ] Créer méthode pour récupérer la hiérarchie complète
+
+### 3. Refondre StructureMefpListComponent
+- [ ] Changer l'affichage en vue arborescente/navigation par onglets
+- [ ] Afficher d'abord les régions
+- [ ] Cliquer sur région → voir villes
+- [ ] Cliquer sur ville → voir structures
+- [ ] Navigation retour (breadcrumb)
+
+### 4. Mettre à jour le template
+- [ ] Créer template pour navigation hiérarchique
+- [ ] Ajouter animations/transitions entre niveaux
+
+## Tests
+- [ ] Vérifier que la hiérarchie s'affiche correctement
+- [ ] Vérifier la navigation entre niveaux
+- [ ] Vérifier que les structures sont accessibles depuis la hiérarchie
+</parameter>

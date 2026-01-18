@@ -22,164 +22,93 @@ interface Stats {
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <!-- Tableau de bord Agent DGSI -->
-    <div
-      class="bg-[#0f172a] text-white font-sans"
-      style="margin: -40px; padding: 40px; margin-left:0px; margin-top: 0px"
-      *ngIf="authService.isAuthenticated()"
-    >
-      <!-- En-tête -->
-      <div class="flex items-center justify-between mb-1">
-        <div>
-          <h1 class="text-3xl font-bold text-orange-400" style="margin-left: 0px;">Espace Agent DGSI</h1>
-        </div>
-        <div class="flex items-center gap-4">
-          <button
-            class="bg-green-500/20 text-green-400 px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-500/30 transition-all"
-            (click)="refreshStats()"
-          >
-            🔄 Actualiser
-          </button>
-          <div
-            class="bg-orange-500/20 text-orange-400 px-4 py-2 rounded-lg text-sm font-medium"
-          >
-            {{ getCurrentDate() }}
-          </div>
-          <div
-            class="bg-blue-500/20 text-blue-300 px-4 py-2 rounded-lg text-sm font-medium"
-          >
-            {{ getCurrentTime() }}
-          </div>
-        </div>
-      </div>
-
-      <!-- Carte de bienvenue -->
-      <div
-        class="relative bg-gradient-to-br from-[#1e293b] to-[#0f172a] rounded-2xl p-8 shadow-lg overflow-hidden border border-[#1e3a8a]/30 mb-10"
-      >
-        <div class="flex items-center justify-between flex-wrap">
-          <div>
-            <h2 class="text-2xl font-semibold mb-2">
-              Bonjour,
-              <span class="text-orange-400">{{
-                authService.getCurrentUser()?.nom
-              }}</span>
-              
-            </h2>
-            <p class="text-gray-300">
-               Bienvenue sur le tableau de bord agent DGSI.
-            </p>
-          </div>
-          <div class="hidden md:block">
-            <img
-              src="assets/dashboard-illustration.svg"
-              alt="dashboard illustration"
-              class="w-40 opacity-80"
-            />
-          </div>
-        </div>
-
-        <!-- Animation décorative -->
-        <div
-          class="absolute -top-10 -right-10 w-48 h-48 bg-orange-500/10 rounded-full blur-3xl"
-        ></div>
-        <div
-          class="absolute -bottom-10 -left-10 w-64 h-64 bg-blue-700/10 rounded-full blur-3xl"
-        ></div>
-      </div>
-
-      <!-- Statistiques -->
-      <div class="grid md:grid-cols-3 gap-6 mb-10">
-        <div
-          class="bg-[#1e293b] hover:bg-[#27364b] transition-all rounded-xl p-6 flex flex-col items-start border border-[#1e3a8a]/20"
-        >
-          <div class="text-orange-400 text-4xl mb-3">📋</div>
-          <div class="text-3xl font-bold">{{ stats.totalPrestations }}</div>
-          <p class="text-gray-400 text-sm mt-1">Prestations</p>
-        </div>
-
-        <div
-          class="bg-[#1e293b] hover:bg-[#27364b] transition-all rounded-xl p-6 flex flex-col items-start border border-[#1e3a8a]/20"
-        >
-          <div class="text-blue-400 text-4xl mb-3">🧰</div>
-          <div class="text-3xl font-bold">{{ stats.totalItems }}</div>
-          <p class="text-gray-400 text-sm mt-1">Items</p>
-        </div>
-
-        <div
-          class="bg-[#1e293b] hover:bg-[#27364b] transition-all rounded-xl p-6 flex flex-col items-start border border-[#1e3a8a]/20"
-        >
-          <div class="text-green-400 text-4xl mb-3">🏢</div>
-          <div class="text-3xl font-bold">{{ stats.totalStructuresMefp }}</div>
-          <p class="text-gray-400 text-sm mt-1">Structures du MEFP</p>
-        </div>
-      </div>
-
-      <!-- Actions rapides -->
-      <div
-        class="bg-[#1e293b] rounded-2xl p-8 border border-[#1e3a8a]/30 shadow-md"
-      >
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-xl font-semibold text-orange-400">
-            Actions rapides
-          </h3>
-        </div>
-
-        <div class="grid grid-cols-4 gap-4">
-          <div
-            class="bg-[#0f172a] hover:bg-[#1e293b] rounded-lg p-4 border border-[#1e3a8a]/20 cursor-pointer transition-all duration-200 hover:border-orange-400/50 hover:shadow-lg"
-            (click)="navigateTo('items')"
-          >
-            <div class="text-center">
-              <div class="text-2xl mb-2">🧰</div>
-              <h4 class="text-sm font-medium text-blue-300 mb-1">Items et Lots</h4>
-              <p class="text-gray-400 text-xs">
-                Gestion complète des items et lots de maintenance
-              </p>
+    <!-- Tableau de bord Agent DGSI - Style similaire au Prestataire avec meilleur remplissage -->
+    <div class="dashboard-container" *ngIf="authService.isAuthenticated()" style="padding: 20px;">
+      <div class="dashboard-content" style="margin-top: 0px;">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900 mb-2">Tableau de Bord Agent DGSI</h1>
+              <p class="text-gray-600 text-lg">Bienvenue, {{ authService.getCurrentUser()?.nom }}</p>
             </div>
-          </div>
-
-          <div
-            class="bg-[#0f172a] hover:bg-[#1e293b] rounded-lg p-4 border border-[#1e3a8a]/20 cursor-pointer transition-all duration-200 hover:border-orange-400/50 hover:shadow-lg"
-            (click)="navigateTo('équipements')"
-          >
-            <div class="text-center">
-              <div class="text-2xl mb-2">🛠️</div>
-              <h4 class="text-sm font-medium text-blue-300 mb-1">Équipements</h4>
-              <p class="text-gray-400 text-xs">
-                Gestion complète des équipements informatiques
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="bg-[#0f172a] hover:bg-[#1e293b] rounded-lg p-4 border border-[#1e3a8a]/20 cursor-pointer transition-all duration-200 hover:border-orange-400/50 hover:shadow-lg"
-            (click)="navigateTo('structures-mefp')"
-          >
-            <div class="text-center">
-              <div class="text-2xl mb-2">🏢</div>
-              <h4 class="text-sm font-medium text-blue-300 mb-1">Structures du MEFP</h4>
-              <p class="text-gray-400 text-xs">
-                Gestion des structures du Ministère de l'Économie, des Finances et de la Prospective
-              </p>
-            </div>
-          </div>
-
-          <div
-            class="bg-[#0f172a] hover:bg-[#1e293b] rounded-lg p-4 border border-[#1e3a8a]/20 cursor-pointer transition-all duration-200 hover:border-orange-400/50 hover:shadow-lg"
-            (click)="navigateTo('statistiques')"
-          >
-            <div class="text-center">
-              <div class="text-2xl mb-2">📊</div>
-              <h4 class="text-sm font-medium text-blue-300 mb-1">Statistiques</h4>
-              <p class="text-gray-400 text-xs">
-                Consulter les tableaux de bord et statistiques détaillées
-              </p>
+            <div class="flex items-center gap-6">
+              <button (click)="refreshStats()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-lg">
+                <i class="fas fa-sync-alt mr-2"></i>Actualiser
+              </button>
+              <div class="text-right">
+                <div class="text-lg text-gray-500 font-medium">{{ getCurrentDate() }}</div>
+                <div class="text-xl font-bold text-gray-700">{{ getCurrentTime() }}</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-blue-100">
+                <i class="fas fa-file-contract text-blue-600 text-2xl"></i>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-3xl font-bold text-gray-900">{{ stats.totalPrestations }}</h3>
+                <p class="text-gray-600">Prestations</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-green-100">
+                <i class="fas fa-tools text-green-600 text-2xl"></i>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-3xl font-bold text-gray-900">{{ stats.totalItems }}</h3>
+                <p class="text-gray-600">Items</p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-orange-100">
+                <i class="fas fa-building text-orange-600 text-2xl"></i>
+              </div>
+              <div class="ml-4">
+                <h3 class="text-3xl font-bold text-gray-900">{{ stats.totalStructuresMefp }}</h3>
+                <p class="text-gray-600">Structures MEFP</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow-sm p-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-8">Actions Rapides</h2>
+          <div class="flex justify-center gap-6 flex-wrap md:flex-nowrap">
+
+            <a routerLink="/items" class="bg-blue-50 hover:bg-blue-100 p-8 rounded-lg text-center transition flex-1 min-w-[250px] hover:shadow-lg">
+              <i class="fas fa-tools text-blue-600 text-4xl mb-4"></i>
+              <p class="font-semibold text-gray-900 text-xl">Items et Lots</p>
+            </a>
+
+            <a routerLink="/équipements" class="bg-green-50 hover:bg-green-100 p-8 rounded-lg text-center transition flex-1 min-w-[250px] hover:shadow-lg">
+              <i class="fas fa-cogs text-green-600 text-4xl mb-4"></i>
+              <p class="font-semibold text-gray-900 text-xl">Équipements</p>
+            </a>
+
+            <a routerLink="/structures-mefp" class="bg-orange-50 hover:bg-orange-100 p-8 rounded-lg text-center transition flex-1 min-w-[250px] hover:shadow-lg">
+              <i class="fas fa-building text-orange-600 text-4xl mb-4"></i>
+              <p class="font-semibold text-gray-900 text-xl">Structures MEFP</p>
+            </a>
+
+            <a routerLink="/statistiques" class="bg-purple-50 hover:bg-purple-100 p-8 rounded-lg text-center transition flex-1 min-w-[250px] hover:shadow-lg">
+              <i class="fas fa-chart-line text-purple-600 text-4xl mb-4"></i>
+              <p class="font-semibold text-gray-900 text-xl">Statistiques</p>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   `,
   styles: [`

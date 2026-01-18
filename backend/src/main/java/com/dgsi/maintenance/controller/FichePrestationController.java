@@ -292,6 +292,19 @@ public class FichePrestationController {
             .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Calcule le prochain numéro de fiche disponible.
+     * Réutilise les numéros des fiches supprimées en commençant par le plus petit.
+     */
+    private int getNextAvailableNumero() {
+        List<Integer> usedNumbers = ficheRepository.findAllUsedNumeros();
+        int nextNumero = 1;
+        while (usedNumbers.contains(nextNumero)) {
+            nextNumero++;
+        }
+        return nextNumero;
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('PRESTATAIRE')")
     public ResponseEntity<?> createFichePrestation(@RequestBody FichePrestation fiche) {
@@ -323,6 +336,13 @@ public class FichePrestationController {
                     // S'assurer que les champs obligatoires sont définis
                     if (fiche.getDateRealisation() == null) {
                         fiche.setDateRealisation(java.time.LocalDateTime.now());
+                    }
+
+                    // Assigner un numéro de fiche séquentiel (réutilise les numéros supprimés)
+                    if (fiche.getNumeroFiche() == null) {
+                        int nextNumero = getNextAvailableNumero();
+                        fiche.setNumeroFiche(nextNumero);
+                        System.out.println("[DEBUG] Assigned numeroFiche: " + nextNumero);
                     }
 
                     // Enregistrer la fiche
@@ -1070,6 +1090,49 @@ public class FichePrestationController {
             result.put("totalRecords", allFiches.size());
             result.put("recordsUpdated", updatedCount);
             result.put("message", "Fixed nomStructure for " + updatedCount + " fiches");
+
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Admin endpoint pour initialiser ou régénérer les numéros de fiche.
+     * Assigne des numéros séquentiels à toutes les fiches qui n'en ont pas.
+     * Utile pour la migration initiale.
+     */
+    @PostMapping("/init-numeros")
+    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    public ResponseEntity<?> initializeNumeroFiche() {
+        try {
+            List<FichePrestation> allFiches = ficheRepository.findAll();
+            int initializedCount = 0;
+            int nextNumero = 1;
+
+            // Trier par ID pour préserver l'ordre de création
+            allFiches.sort((a, b) -> a.getId().compareTo(b.getId()));
+
+            for (FichePrestation fiche : allFiches) {
+                if (fiche.getNumeroFiche() == null) {
+                    // Trouver le prochain numéro disponible
+                    while (ficheRepository.existsByNumeroFiche(nextNumero)) {
+                        nextNumero++;
+                    }
+                    fiche.setNumeroFiche(nextNumero);
+                    ficheRepository.save(fiche);
+                    initializedCount++;
+                    nextNumero++;
+                }
+            }
+
+            Map<String, Object> result = new java.util.HashMap<>();
+            result.put("totalRecords", allFiches.size());
+            result.put("recordsUpdated", initializedCount);
+            result.put("message", "Initialisé numeroFiche pour " + initializedCount + " fiches");
 
             return ResponseEntity.ok(result);
 

@@ -25,4 +25,15 @@ public interface FichePrestationRepository extends JpaRepository<FichePrestation
     // Native query to force selection of all fields including statutIntervention
     @org.springframework.data.jpa.repository.Query(value = "SELECT * FROM fiches_prestation", nativeQuery = true)
     List<FichePrestation> findAllWithStatutIntervention();
+
+    // Get all used numero_fiche values
+    @Query("SELECT f.numeroFiche FROM FichePrestation f WHERE f.numeroFiche IS NOT NULL ORDER BY f.numeroFiche")
+    List<Integer> findAllUsedNumeros();
+
+    // Find the maximum numero_fiche used
+    @Query("SELECT COALESCE(MAX(f.numeroFiche), 0) FROM FichePrestation f")
+    int findMaxNumeroFiche();
+
+    // Check if a specific numero is already used
+    boolean existsByNumeroFiche(Integer numeroFiche);
 }

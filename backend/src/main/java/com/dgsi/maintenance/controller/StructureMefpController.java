@@ -3,6 +3,7 @@ package com.dgsi.maintenance.controller;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
+import com.dgsi.maintenance.dto.RegionHierarchyDto;
 import com.dgsi.maintenance.entity.StructureMefp;
 import com.dgsi.maintenance.service.StructureMefpService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +40,57 @@ public class StructureMefpController {
         return structures;
     }
 
+    @GetMapping("/hierarchy")
+    @PreAuthorize("#profile != 'production' or isAuthenticated()")
+    public List<RegionHierarchyDto> getHierarchy() {
+        logger.info("GET /api/structures-mefp/hierarchy - Fetching hierarchical structure");
+        List<RegionHierarchyDto> hierarchy = structureMefpService.getHierarchy();
+        logger.info("Returning hierarchy with " + hierarchy.size() + " regions");
+        return hierarchy;
+    }
+    
+    @GetMapping("/regions")
+    @PreAuthorize("#profile != 'production' or isAuthenticated()")
+    public List<String> getAllRegions() {
+        logger.info("GET /api/structures-mefp/regions - Fetching all 17 regions");
+        List<String> regions = structureMefpService.getAllRegions();
+        logger.info("Returning " + regions.size() + " regions");
+        return regions;
+    }
+    
+    @GetMapping("/villes")
+    @PreAuthorize("#profile != 'production' or isAuthenticated()")
+    public List<String> getAllVilles() {
+        logger.info("GET /api/structures-mefp/villes - Fetching all villes");
+        List<String> villes = structureMefpService.getAllVilles();
+        logger.info("Returning " + villes.size() + " villes");
+        return villes;
+    }
+    
+    @GetMapping("/regions/{region}/villes")
+    @PreAuthorize("#profile != 'production' or isAuthenticated()")
+    public List<String> getVillesByRegion(@PathVariable String region) {
+        logger.info("GET /api/structures-mefp/regions/" + region + "/villes - Fetching villes for region");
+        try {
+            List<String> villes = structureMefpService.getVillesByRegion(region);
+            logger.info("Returning " + villes.size() + " villes for region: " + region);
+            return villes;
+        } catch (Exception e) {
+            logger.warning("Error fetching villes for region: " + region + ", error: " + e.getMessage());
+            return java.util.Collections.emptyList();
+        }
+    }
+
     @GetMapping("/paginated")
     @PreAuthorize("#profile != 'production' or isAuthenticated()")
     public ResponseEntity<Page<StructureMefp>> getAllStructuresPaginated(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size) {
-        logger.info("GET /api/structures-mefp/paginated - Fetching structures with pagination (page: " + page + ", size: " + size + ")");
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(defaultValue = "nom") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection) {
+        logger.info("GET /api/structures-mefp/paginated - Fetching structures with pagination (page: " + page + ", size: " + size + ", sortBy: " + sortBy + ", direction: " + sortDirection + ")");
         Pageable pageable = PageRequest.of(page, size);
-        Page<StructureMefp> structures = structureMefpService.getAllStructuresPaginated(pageable);
+        Page<StructureMefp> structures = structureMefpService.getAllStructuresPaginated(pageable, sortBy, sortDirection);
         logger.info("Returning " + structures.getNumberOfElements() + " structures (page " + page + " of " + structures.getTotalPages() + ")");
         return ResponseEntity.ok(structures);
     }
@@ -69,13 +113,13 @@ public class StructureMefpController {
     @PreAuthorize("#profile != 'production' or isAuthenticated()")
     public ResponseEntity<List<StructureMefp>> getStructuresByLotId(@PathVariable String lotId) {
         logger.info("GET /api/structures-mefp/by-lot/" + lotId + " - Fetching structures by lot ID");
-        
+
         // Handle the case where lotId is "null"
         if ("null".equals(lotId)) {
             logger.warning("lotId parameter is 'null', returning empty list");
             return ResponseEntity.ok(java.util.Collections.emptyList());
         }
-        
+
         try {
             Long parsedLotId = Long.parseLong(lotId);
             List<StructureMefp> structures = structureMefpService.getStructuresByLotId(parsedLotId);
@@ -83,6 +127,48 @@ public class StructureMefpController {
             return ResponseEntity.ok(structures);
         } catch (NumberFormatException e) {
             logger.warning("Invalid lotId format: " + lotId + ", returning empty list");
+            return ResponseEntity.ok(java.util.Collections.emptyList());
+        }
+    }
+
+    @GetMapping("/by-region/{region}")
+    @PreAuthorize("#profile != 'production' or isAuthenticated()")
+    public ResponseEntity<List<StructureMefp>> getStructuresByRegion(@PathVariable String region) {
+        logger.info("GET /api/structures-mefp/by-region/" + region + " - Fetching structures by region");
+        try {
+            List<StructureMefp> structures = structureMefpService.getStructuresByRegion(region);
+            logger.info("Returning " + structures.size() + " structures for region: " + region);
+            return ResponseEntity.ok(structures);
+        } catch (Exception e) {
+            logger.warning("Error fetching structures by region: " + region + ", error: " + e.getMessage());
+            return ResponseEntity.ok(java.util.Collections.emptyList());
+        }
+    }
+
+    @GetMapping("/by-ville/{ville}")
+    @PreAuthorize("#profile != 'production' or isAuthenticated()")
+    public ResponseEntity<List<StructureMefp>> getStructuresByVille(@PathVariable String ville) {
+        logger.info("GET /api/structures-mefp/by-ville/" + ville + " - Fetching structures by ville");
+        try {
+            List<StructureMefp> structures = structureMefpService.getStructuresByVille(ville);
+            logger.info("Returning " + structures.size() + " structures for ville: " + ville);
+            return ResponseEntity.ok(structures);
+        } catch (Exception e) {
+            logger.warning("Error fetching structures by ville: " + ville + ", error: " + e.getMessage());
+            return ResponseEntity.ok(java.util.Collections.emptyList());
+        }
+    }
+
+    @GetMapping("/by-region/{region}/ville/{ville}")
+    @PreAuthorize("#profile != 'production' or isAuthenticated()")
+    public ResponseEntity<List<StructureMefp>> getStructuresByRegionAndVille(@PathVariable String region, @PathVariable String ville) {
+        logger.info("GET /api/structures-mefp/by-region/" + region + "/ville/" + ville + " - Fetching structures by region and ville");
+        try {
+            List<StructureMefp> structures = structureMefpService.getStructuresByRegionAndVille(region, ville);
+            logger.info("Returning " + structures.size() + " structures for region: " + region + " and ville: " + ville);
+            return ResponseEntity.ok(structures);
+        } catch (Exception e) {
+            logger.warning("Error fetching structures by region and ville: " + region + "/" + ville + ", error: " + e.getMessage());
             return ResponseEntity.ok(java.util.Collections.emptyList());
         }
     }
