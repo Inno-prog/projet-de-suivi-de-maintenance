@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Subscription, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
@@ -613,19 +613,25 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       margin-top: 1rem;
     }
     .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
       display: flex;
       align-items: center;
-      padding: 1rem;
-      border-radius: 12px;
-      background: linear-gradient(180deg, #ffffff 0%, #fbfbfb 100%);
-      height: 100%;
+      justify-content: space-between;
+      box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+      border: 1px solid rgba(226,232,240,0.6);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      min-height: 88px;
     }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(15,23,42,0.09); }
     .stat-card-content { display:flex; gap:1rem; align-items:center; }
-    .stat-icon { width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:#f1f5f9; }
-    .stat-icon mat-icon { font-size:28px; color:#0f172a; }
+    .stat-icon { width:52px; height:52px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:#f8fafc; box-shadow: 0 6px 14px rgba(2,6,23,0.06); }
+    .stat-icon mat-icon { font-size:22px; color:#0f172a; }
     .stat-meta { text-align:left; }
-    .stat-number { font-size:1.6rem; font-weight:700; color:#0b5cff; }
-    .stat-label { font-size:0.85rem; color:#6b7280; }
+    .stat-number { font-size:2rem; font-weight:800; color:var(--text-primary); margin-bottom:0.125rem; line-height:1; }
+    .stat-label { font-size:0.85rem; color:var(--text-secondary); margin-bottom:0; }
+    .stat-meta .stat-change { font-size:0.8rem; }
 
     .role-actions { margin-top: 1.75rem; }
     .actions-grid {
@@ -1556,57 +1562,22 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       gap: 1rem;
     }
 
-    .stat-card {
+    .stat-card { /* keep same compact style for alternate block */
         background: white;
-        padding: 1.5rem;
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
-        text-align: center;
+        padding: 0.9rem 1rem;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(2,6,23,0.06);
         position: relative;
-        transition: all 0.3s ease;
-        border: 1px solid rgba(249, 115, 22, 0.1);
+        transition: transform 0.18s ease, box-shadow 0.18s ease;
+        border: 1px solid rgba(226,232,240,0.6);
         display: flex;
-        flex-direction: column;
-        justify-content: center;
         align-items: center;
+        justify-content: space-between;
       }
 
-      .stat-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 20px 60px rgba(249, 115, 22, 0.15), 0 8px 24px rgba(0, 0, 0, 0.1);
-        border-color: rgba(249, 115, 22, 0.3);
-      }
+      .stat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 36px rgba(2,6,23,0.08); }
 
-    .stat-sticker {
-       margin-bottom: 0.75rem;
-       display: flex;
-       justify-content: center;
-       align-items: center;
-       width: 56px;
-       height: 56px;
-       background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-       border-radius: 50%;
-       box-shadow: 0 8px 24px rgba(249, 115, 22, 0.25), 0 4px 12px rgba(249, 115, 22, 0.15);
-       border: 3px solid rgba(249, 115, 22, 0.3);
-       position: relative;
-       overflow: hidden;
-     }
-
-     .stat-sticker::before {
-       content: '';
-       position: absolute;
-       top: -50%;
-       left: -50%;
-       width: 200%;
-       height: 200%;
-       background: linear-gradient(45deg, transparent, rgba(249, 115, 22, 0.15), transparent);
-       animation: rotate 4s linear infinite;
-     }
-
-     @keyframes rotate {
-       0% { transform: rotate(0deg); }
-       100% { transform: rotate(360deg); }
-     }
+    .stat-sticker { display:none; }
 
     .stat-sticker .material-symbols-outlined {
       font-size: 48px;

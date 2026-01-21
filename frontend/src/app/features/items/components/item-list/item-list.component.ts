@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { ItemService } from '../../../../core/services/item.service';
 import { PrestationService } from '../../../../core/services/prestation.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { Item, Equipement, LotWithContractorDto, Lot } from '../../../../core/models/business.models';
 import { EquipementService } from '../../../../core/services/equipement.service';
 import { LotService } from '../../../../core/services/lot.service';
@@ -133,10 +134,10 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
                 <i class="fa-solid fa-layer-group fa-xl"></i>
               </div>
 
-              <!-- LOT NAME -->
-              <h5 class="card-title fw-bold text-primary mb-2">
-                 {{ lot.lot }}
-              </h5>
+          <!-- LOT NAME -->
+          <h5 class="card-title fw-bold text-primary mb-2">
+            {{ formatLotLabel(lot.lot) }}
+          </h5>
 
               <!-- LOT CITIES -->
               <p class="text-muted small mb-3 flex-grow-1">
@@ -200,9 +201,9 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
               Retour aux lots
             </button>
             <div *ngIf="selectedLot">
-              <h2 class="h4 fw-bold text-primary mb-0">
+                <h2 class="h4 fw-bold text-primary mb-0">
                 <i class="fa-solid fa-layer-group me-2"></i>
-                Lot {{ selectedLot.lot }}
+                {{ formatLotLabel(selectedLot.lot) }}
               </h2>
               <p class="text-muted small mb-0">
                 <i class="fa-solid fa-map-marker-alt me-1"></i>
@@ -239,7 +240,7 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
                 <label class="form-label fw-semibold">Filtrer par Lot</label>
                 <select class="form-select" [(ngModel)]="selectedLotFilter" (ngModelChange)="applySearch()">
                   <option [ngValue]="null">Tous les lots</option>
-                  <option *ngFor="let lot of lots" [ngValue]="lot.lot">Lot {{ lot.lot }} ({{ lot.villes.join(', ') }})</option>
+                  <option *ngFor="let lot of lots" [ngValue]="lot.lot">{{ formatLotLabel(lot.lot) }}</option>
                 </select>
               </div>
 
@@ -367,7 +368,7 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
                     <label class="form-label fw-semibold">Lot d'appartenance</label>
                     <select formControlName="lot" class="form-select">
                       <option value="">Aucun lot</option>
-                      <option *ngFor="let lot of lots" [value]="lot.lot">Lot {{ lot.lot }} ({{ lot.villes.join(', ') }})</option>
+                      <option *ngFor="let lot of lots" [value]="lot.lot">{{ formatLotLabel(lot.lot) }}</option>
                     </select>
                     <div class="form-text">Associer cet item à un lot géographique</div>
                   </div>
@@ -990,6 +991,7 @@ export class ItemListComponent implements OnInit {
     private prestationService: PrestationService,
     private equipementService: EquipementService,
     private lotService: LotService,
+    private authService: AuthService,
     private toast: ToastService,
     private confirm: ConfirmationService
   ) {}
@@ -1015,29 +1017,53 @@ export class ItemListComponent implements OnInit {
 
 
   loadItems() {
-     this.loading = true;
-     // Charger les items complets ET les statistiques
-     Promise.all([
-       this.itemService.getAllItems().toPromise(),
-       this.itemService.getItemsStatistiques().toPromise()
-     ]).then(([items, itemsStats]) => {
-       // Fusionner les données complètes avec les statistiques
-       this.items = (items || []).map(item => {
-         const stat = (itemsStats || []).find(s => s.id === item.id);
-         return {
-           ...item,
-           quantiteUtilisee: stat ? stat.quantiteUtilisee : 0,
-           quantiteUtiliseeTrimestre: stat ? stat.quantiteUtiliseeTrimestre : 0
-         };
-       });
-       this.filteredItems = [...this.items];
-       this.groupItemsByLot();
-       this.loading = false;
-     }).catch(() => {
-       this.loading = false;
-       this.toast.show({ type: 'error', title: 'Erreur', message: 'Erreur lors du chargement des données' });
-     });
+    this.loading = true;
+    const currentUser = this.authService.getCurrentUser();
+    
+    // Vérifier si l'utilisateur est un prestataire
+    if (this.authService.isPrestataire() && currentUser?.id) {
+      // Charger uniquement les items du prestataire via ses contrats
+      console.log('[DEBUG] Loading items for prestataire:', currentUser.id);
+      this.itemService.getItemsByPrestataire(currentUser.id).subscribe({
+        next: (items) => {
+          this.items = (items || []).map(item => ({
+            ...item,
+            quantiteUtilisee: item.quantiteUtilisee || 0
+          }));
+          this.filteredItems = [...this.items];
+          this.groupItemsByLot();
+          this.loading = false;
+          
+          console.log('[DEBUG] Prestataire items loaded:', this.items.length);
+        },
+        error: (error) => {
+          console.error('[DEBUG] Error loading prestataire items:', error);
+          this.loading = false;
+          this.toast.show({ type: 'error', title: 'Erreur', message: 'Erreur lors du chargement des items' });
+        }
+      });
+    } else {
+      // Admin ou autre rôle : charger tous les items
+      Promise.all([
+        this.itemService.getAllItems().toPromise(),
+        this.itemService.getItemsStatistiques().toPromise()
+      ]).then(([items, itemsStats]) => {
+        const statsObj = itemsStats as Record<string, any>;
+        const itemsByLot = statsObj ? statsObj['itemsByLot'] : {};
+        
+        this.items = (items || []).map(item => ({
+          ...item,
+          quantiteUtilisee: item.quantiteUtilisee || 0
+        }));
+        this.filteredItems = [...this.items];
+        this.groupItemsByLot();
+        this.loading = false;
+      }).catch(() => {
+        this.loading = false;
+        this.toast.show({ type: 'error', title: 'Erreur', message: 'Erreur lors du chargement des données' });
+      });
     }
+  }
 
   loadLots() {
     // Load both contract-based lots and lot entities
@@ -1140,7 +1166,7 @@ export class ItemListComponent implements OnInit {
 
       if (!grouped[lotKey]) {
         grouped[lotKey] = {
-          lotName: lotInfo ? `Lot ${lotInfo.lot}` : (lotKey ? `Lot ${lotKey}` : null),
+          lotName: lotInfo ? this.formatLotLabel(lotInfo.lot) : (lotKey ? this.formatLotLabel(lotKey) : null),
           villes: lotInfo ? lotInfo.villes : [],
           items: []
         };
@@ -1238,8 +1264,20 @@ export class ItemListComponent implements OnInit {
   getTotalValue() { return this.items.reduce((a, b) => a + (b.prix || 0), 0); }
 
   getLotName(lotId: string): string {
-    const lot = this.lots.find(l => l.contractIds.includes(lotId));
-    return lot ? `Lot ${lot.lot} (${lot.villes.join(', ')})` : 'Lot inconnu';
+    const lot = this.lots.find(l => l.contractIds && l.contractIds.includes(lotId));
+    return lot ? `${this.formatLotLabel(lot.lot)} (${(lot.villes || []).join(', ')})` : 'Lot inconnu';
+  }
+
+  /**
+   * Normalise l'affichage du libellé d'un lot.
+   */
+  formatLotLabel(value: string | null | undefined): string {
+    if (!value) return 'Lot inconnu';
+    const v = value.toString().trim();
+    if (/^lot\s+/i.test(v)) {
+      return v.replace(/^lot\s+/i, 'Lot ');
+    }
+    return `Lot ${v}`;
   }
 
   getLotBadgeClass(lotId: string): string {

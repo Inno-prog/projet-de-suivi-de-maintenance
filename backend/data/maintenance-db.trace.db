@@ -22,3 +22,7 @@ Wrong user name or password [28000-224]
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Erreur de syntaxe dans l'instruction SQL "[*]DESCRIBE contrats"; attendu "DELETE, DROP"
 Syntax error in SQL statement "[*]DESCRIBE contrats"; expected "DELETE, DROP"; SQL statement:
 DESCRIBE contrats [42001-224]
+2026-01-20 11:50:30.511474Z jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "LOTS" non trouvée
+Table "LOTS" not found; SQL statement:
+SELECT id, nom_lot, COUNT(*) as count FROM lots GROUP BY id, nom_lot HAVING COUNT(*) > 1 [42102-224]

@@ -525,19 +525,23 @@
       "groups": []
     }
   ],
-  "groups": [],
-  "browserFlow": "browser",
-  "registrationFlow": "registration",
-  "directGrantFlow": "direct grant",
-  "resetCredentialsFlow": "reset credentials",
-  "clientAuthenticationFlow": "clients",
-  "dockerAuthenticationFlow": "docker auth",
   "attributes": {
     "cibaBackchannelTokenDeliveryMode": "poll",
     "cibaExpiresIn": "120",
     "cibaAuthRequestedUserHint": "login_hint",
     "parRequestUriLifespan": "60",
     "cibaInterval": "5",
-    "realmReusableOtpCode": "false"
+    "realmReusableOtpCode": "false",
+    "ssoSessionIdleTimeout": "3600",
+    "ssoSessionMaxLifespan": "28800",
+    "accessTokenLifespan": "3600",
+    "accessTokenLifespanForImplicitFlow": "3600",
+    "refreshTokenMaxReuse": "0",
+    "accessTokenLifespanOffline": "604800",
+    "offlineSessionIdleTimeout": "604800"
+  },
+  "sessions": {
+    "idleTimeout": 3600,
+    "maxLifespan": 28800
   }
 }

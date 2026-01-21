@@ -66,4 +66,7 @@ public interface PrestationRepository extends JpaRepository<Prestation, Long> {
 
     @Query("SELECT p FROM Prestation p WHERE p.ordreCommande IS NULL AND (p.deleted IS NULL OR p.deleted = false)")
     List<Prestation> findPrestationsWithoutOrdreCommande();
+
+    @Query("SELECT p FROM Prestation p LEFT JOIN FETCH p.itemsUtilises WHERE p.id = :id")
+    Optional<Prestation> findByIdForPdf(@Param("id") Long id);
 }

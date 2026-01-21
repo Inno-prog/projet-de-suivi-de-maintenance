@@ -21,6 +21,7 @@ import { UserService } from '../../../../core/services/user.service';
 import { User } from '../../../../core/models/auth.models';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LotService } from '../../../../core/services/lot.service';
+import { formatLotDisplay as formatLotDisplayUtil } from '../../../../shared/utils/lot-utils';
 
 @Component({
   selector: 'app-prestation-form',
@@ -257,18 +258,37 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       lots: this.lotService.getAllLotEntities()
     }).subscribe({
       next: ({ items, lots }) => {
-        // Créer un map des noms de lots vers leurs IDs
-        const lotMap = new Map(lots.map(lot => [lot.nomLot, lot.id]));
+        // Créer un map complet pour toutes les variantes de noms de lots
+        const lotMap = this.createComprehensiveLotMapping(lots);
+
+        console.log('🗺️ Lot mapping complet créé:', Array.from(lotMap.entries()));
 
         // Mapper les items pour inclure l'ID du lot
-        this.items = (items || []).map(item => ({
-          ...item,
-          lotId: item.lot ? lotMap.get(item.lot) || 0 : 0
-        })) as any[];
+        this.items = (items || []).map(item => {
+          let lotId = 0;
+          if (item.lot) {
+            // Essayer de trouver une correspondance avec toutes les variantes
+            const lotName = item.lot.trim();
+            lotId = this.findLotIdForItem(lotName, lotMap);
+          }
+
+          return {
+            ...item,
+            lotId: lotId
+          } as any;
+        });
 
         this.allItems = [...this.items];
-        console.log('📦 Items chargés avec IDs de lots:', this.items);
-        console.log('🗺️ Lot map:', Array.from(lotMap.entries()));
+
+        // Debug: Afficher les correspondances
+        console.log('📦 Items chargés avec IDs de lots:');
+        this.items.forEach(item => {
+          const itemWithLotId = item as any;
+          console.log(`  - ${item.nomItem}: "${item.lot}" -> ID ${itemWithLotId.lotId}`);
+        });
+
+        console.log('🗺️ Lots disponibles:', lots.map(l => `${l.nomLot} (ID: ${l.id})`));
+
         this.testLotMatching();
         this.updateFilteredItems();
         this.loading = false;
@@ -285,18 +305,127 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Crée un mapping complet pour toutes les variantes possibles de noms de lots
+   */
+  private createComprehensiveLotMapping(lots: any[]): Map<string, number> {
+    const lotMap = new Map<string, number>();
+
+    lots.forEach(lot => {
+      const normalizedName = lot.nomLot;
+
+      // Ajouter le nom normalisé principal
+      lotMap.set(normalizedName, lot.id);
+
+      // Ajouter des variantes courantes
+      lotMap.set(normalizedName.toLowerCase(), lot.id);
+      lotMap.set(normalizedName.toUpperCase(), lot.id);
+
+      // Extraire le numéro du lot pour les variantes avec parenthèses
+      const numberMatch = normalizedName.match(/(\d+)/);
+      if (numberMatch) {
+        const number = numberMatch[1];
+        lotMap.set(`(${number})`, lot.id);
+        lotMap.set(`Lot (${number})`, lot.id);
+        lotMap.set(`lot${number}`, lot.id);
+        lotMap.set(`LOT${number}`, lot.id);
+        lotMap.set(number, lot.id);
+      }
+
+      // Gérer les variantes avec/sans "Lot"
+      if (normalizedName.startsWith('Lot ')) {
+        const withoutLot = normalizedName.substring(4);
+        lotMap.set(withoutLot, lot.id);
+        lotMap.set(withoutLot.toLowerCase(), lot.id);
+        lotMap.set(withoutLot.toUpperCase(), lot.id);
+      } else {
+        lotMap.set(`Lot ${normalizedName}`, lot.id);
+        lotMap.set(`lot ${normalizedName}`, lot.id);
+        lotMap.set(`LOT ${normalizedName}`, lot.id);
+      }
+
+      // Supprimer les espaces et caractères spéciaux pour les variantes
+      const cleanName = normalizedName.replace(/[^a-zA-Z0-9]/g, '');
+      lotMap.set(cleanName, lot.id);
+      lotMap.set(cleanName.toLowerCase(), lot.id);
+      lotMap.set(cleanName.toUpperCase(), lot.id);
+    });
+
+    return lotMap;
+  }
+
+  /**
+   * Trouve l'ID du lot pour un nom d'item en essayant toutes les variantes possibles
+   */
+  private findLotIdForItem(itemLotName: string, lotMap: Map<string, number>): number {
+    if (!itemLotName) return 0;
+
+    // Nettoyer le nom d'entrée
+    const cleanInput = itemLotName.trim();
+
+    // Essayer les correspondances directes d'abord
+    if (lotMap.has(cleanInput)) {
+      return lotMap.get(cleanInput)!;
+    }
+
+    // Essayer avec casse différente
+    if (lotMap.has(cleanInput.toLowerCase())) {
+      return lotMap.get(cleanInput.toLowerCase())!;
+    }
+
+    if (lotMap.has(cleanInput.toUpperCase())) {
+      return lotMap.get(cleanInput.toUpperCase())!;
+    }
+
+    // Essayer de normaliser et chercher
+    const normalized = this.normalizeLot(cleanInput);
+    if (lotMap.has(normalized)) {
+      return lotMap.get(normalized)!;
+    }
+
+    // Essayer d'extraire un numéro et chercher avec parenthèses
+    const numberMatch = cleanInput.match(/(\d+)/);
+    if (numberMatch) {
+      const number = numberMatch[1];
+      if (lotMap.has(`(${number})`)) {
+        return lotMap.get(`(${number})`)!;
+      }
+      if (lotMap.has(`Lot (${number})`)) {
+        return lotMap.get(`Lot (${number})`)!;
+      }
+      if (lotMap.has(number)) {
+        return lotMap.get(number)!;
+      }
+    }
+
+    // Supprimer tous les caractères non alphanumériques et essayer
+    const alphaNumeric = cleanInput.replace(/[^a-zA-Z0-9]/g, '');
+    if (lotMap.has(alphaNumeric)) {
+      return lotMap.get(alphaNumeric)!;
+    }
+
+    if (lotMap.has(alphaNumeric.toLowerCase())) {
+      return lotMap.get(alphaNumeric.toLowerCase())!;
+    }
+
+    // Si rien ne marche, retourner 0
+    console.warn(`⚠️ Impossible de trouver un lot correspondant pour "${cleanInput}"`);
+    return 0;
+  }
+
   loadAvailableLots(): void {
     console.log('🔄 Loading available lots...');
     this.lotService.getAllLotEntities().subscribe({
       next: (lots) => {
         console.log('📦 Lots loaded from API:', lots);
         this.lotEntities = lots; // Store full lot entities for mapping
-        // S'assurer que le format est cohérent
-        this.availableLots = lots.map(lot => lot.nomLot)
+        // Keep raw entities for lookups and build a user-friendly display list
+        this.availableLots = lots
+          .map(lot => lot.nomLot) // Use raw lot names directly
           .filter(Boolean)
           .sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
 
-        console.log('📦 Lots disponibles (processed):', this.availableLots);
+        console.log('📦 Lots disponibles (raw):', this.availableLots);
         console.log('📦 Lot entities (stored):', this.lotEntities);
       },
       error: (error) => {
@@ -305,6 +434,12 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       }
     });
   }
+
+  /**
+   * Format a raw lot name into a user-friendly display name like "Lot 1".
+   * - Accepts inputs such as "(1)", "Lot (1)", "(Lot 1)", "lot1" and returns "Lot 1".
+   */
+  formatLotDisplay(raw?: string): string { return formatLotDisplayUtil(raw); }
 
   loadItemPrestationsCounters(): void {
     if (!this.items || this.items.length === 0) {
@@ -760,14 +895,12 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
 
     if (selectedValue) {
       console.log('🎯 Lot value is truthy, looking up lot entity');
-      // Récupérer l'entité lot complète
-      const selectedLot = this.lotEntities.find(lot =>
-        lot.nomLot === selectedValue ||
-        (typeof selectedValue === 'object' && lot.nomLot === selectedValue.nomLot)
-      );
+      // The select now stores the lot.id as value. Normalize to number and find by id.
+      const selectedLotId = Number(selectedValue);
+      const selectedLot = this.lotEntities.find(lot => Number(lot.id) === selectedLotId);
 
       if (selectedLot) {
-        this.selectedLotName = selectedLot.nomLot;
+        this.selectedLotName = selectedLot.nomLot; // keep original raw name for filtering/mapping
         this.selectedLotId = selectedLot.id;
         console.log('🎯 Lot sélectionné:', this.selectedLotName, 'ID:', this.selectedLotId);
 
@@ -1004,6 +1137,11 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
 
   getSelectedItemsNames(): string {
     return this.selectedItems.map(i => i.nomItem).join(', ');
+  }
+
+  getSelectedItemsNamesNumbered(): string {
+    if (this.selectedItems.length === 0) return '';
+    return this.selectedItems.map((item, index) => `${index + 1}. ${item.nomItem}`).join('<br>');
   }
 
   getFormValue(fieldName: string): any {
@@ -1303,11 +1441,17 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
         String(d.getSeconds()).padStart(2, '0');
     };
 
+    const quantity = this.getItemQuantity(item) || 1;
+    const prixUnitaire = item.prix || 50000; // Use item's price or default
+    const montantTotal = quantity * prixUnitaire;
+
     return {
       nomPrestataire: formValue.nomPrestataire,
       nomItem: item.nomItem, // Use individual item name
       dateRealisation: formatDateTime(formValue.dateDebut, formValue.heureDebut),
-      quantite: this.getItemQuantity(item) || 1, // Quantity for this specific item
+      quantite: quantity, // Quantity for this specific item
+      prixUnitaire: prixUnitaire,
+      montantTotal: montantTotal,
       statut: 'EN_ATTENTE', // Fiche status is EN_ATTENTE when created (admin will validate/reject later)
       statutIntervention: formValue.statutIntervention, // Keep intervention status separate
       commentaire: `Prestation créée via formulaire`,
@@ -1325,7 +1469,8 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       console.log('🔍 Validation des items sélectionnés pour le lot ID:', this.selectedLotId);
       
       const invalidItems = this.selectedItems.filter(item => {
-        const itemLotId = (item as any).lotId || 0;
+        const itemWithLotId = item as any;
+        const itemLotId = itemWithLotId.lotId || 0;
         const isInvalid = itemLotId !== this.selectedLotId;
         if (isInvalid) {
           console.error('❌ Item invalide détecté:', {
@@ -1433,6 +1578,15 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     // Calculate total quantity from selected items
     const totalQuantite = this.selectedItems.reduce((sum, item) => sum + this.getItemQuantity(item), 0);
 
+    // Calculate average price per unit and total amount
+    const totalMontant = this.selectedItems.reduce((sum, item) => {
+      const quantity = this.getItemQuantity(item);
+      const prixUnitaire = item.prix || 50000;
+      return sum + (quantity * prixUnitaire);
+    }, 0);
+    
+    const prixUnitaire = totalQuantite > 0 ? totalMontant / totalQuantite : 0;
+
     // Ensure we have at least one item selected
     if (this.selectedItems.length === 0) {
       throw new Error('Au moins un item doit être sélectionné');
@@ -1444,6 +1598,8 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       itemsCouverts: this.getSelectedItemsNames(), // All covered items as comma-separated string
       dateRealisation: formatDateTime(formValue.dateDebut, formValue.heureDebut),
       quantite: totalQuantite, // Sum of item quantities
+      prixUnitaire: prixUnitaire,
+      montantTotal: totalMontant,
       statut: 'EN_ATTENTE', // Fiche status is always EN_ATTENTE when created (admin will validate/reject later)
       statutIntervention: formValue.statutIntervention, // Keep intervention status separate
       commentaire: `Prestation créée via formulaire`,
@@ -1474,7 +1630,9 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     const formValue = this.prestationForm.getRawValue();
     const currentDate = new Date().toLocaleDateString('fr-FR');
 
-    return `
+  const itemsToShow = this.selectedItems.filter(i => i && i.nomItem);
+
+  return `
       <!DOCTYPE html>
       <html>
       <head>
@@ -1535,9 +1693,11 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
             background: #007bff;
             color: white;
             padding: 12px;
-            text-align: left;
             font-weight: bold;
           }
+          th.price-col, td.price-col { text-align: center; }
+          th.qty-col, td.qty-col { text-align: center; }
+          th.amount-col, td.amount-col { text-align: right; }
           td {
             padding: 10px 12px;
             border-bottom: 1px solid #ddd;
@@ -1632,18 +1792,18 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
             <thead>
               <tr>
                 <th>Item</th>
-                <th class="text-center">Prix unitaire</th>
-                <th class="text-center">Quantité</th>
-                <th class="text-right">Montant</th>
+                <th class="price-col">Prix unitaire</th>
+                <th class="qty-col">Quantité</th>
+                <th class="amount-col">Montant</th>
               </tr>
             </thead>
             <tbody>
-              ${this.selectedItems.map(item => `
+              ${itemsToShow.map(item => `
                 <tr>
                   <td>${item.nomItem}</td>
-                  <td class="text-center">${(item.prix || 0).toLocaleString('fr-FR')} FCFA</td>
-                  <td class="text-center">${this.getItemQuantity(item)}</td>
-                  <td class="text-right">${this.calculateItemAmount(item).toLocaleString('fr-FR')} FCFA</td>
+                  <td class="price-col">${(item.prix || 0).toLocaleString('fr-FR')} FCFA</td>
+                  <td class="qty-col">${this.getItemQuantity(item)}</td>
+                  <td class="amount-col">${this.calculateItemAmount(item).toLocaleString('fr-FR')} FCFA</td>
                 </tr>
               `).join('')}
               <tr class="total-row">
@@ -1654,12 +1814,12 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
           </table>
         </div>
 
-        <div class="info-section">
+            <div class="info-section">
           <div class="info-block">
             <h3>Informations sur l'intervention</h3>
             <div class="info-item">
               <span class="info-label">Lot:</span>
-              ${formValue.lotSelection || 'N/A'}
+              ${this.selectedLotName || formValue.lotSelection || 'N/A'}
             </div>
             <div class="info-item">
               <span class="info-label">Date début:</span>

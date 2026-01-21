@@ -11,6 +11,7 @@ import com.dgsi.maintenance.repository.OrdreCommandeRepository;
 import com.dgsi.maintenance.repository.PrestationRepository;
 import com.dgsi.maintenance.repository.UserRepository;
 import com.dgsi.maintenance.service.FichePrestationPdfService;
+import com.dgsi.maintenance.service.FichePrestationService;
 import com.dgsi.maintenance.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -57,6 +58,9 @@ public class FichePrestationController {
 
         @Autowired
           private NotificationService notificationService;
+
+        @Autowired
+          private FichePrestationService fichePrestationService;
     
         @Autowired
         private UserRepository userRepository;
@@ -297,12 +301,7 @@ public class FichePrestationController {
      * Réutilise les numéros des fiches supprimées en commençant par le plus petit.
      */
     private int getNextAvailableNumero() {
-        List<Integer> usedNumbers = ficheRepository.findAllUsedNumeros();
-        int nextNumero = 1;
-        while (usedNumbers.contains(nextNumero)) {
-            nextNumero++;
-        }
-        return nextNumero;
+        return fichePrestationService.getNextAvailableNumero();
     }
 
     @PostMapping
@@ -491,6 +490,50 @@ public class FichePrestationController {
                 return ResponseEntity.ok().build();
             })
             .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Admin endpoint pour réinitialiser les numéros de fiche après suppression.
+     * Réorganise les numéros pour éviter les trous et réutiliser les numéros supprimés.
+     */
+    @PostMapping("/reorganize-numeros")
+    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    public ResponseEntity<?> reorganizeFicheNumeros() {
+        try {
+            // Récupérer toutes les fiches existantes et les trier par numéro
+            List<FichePrestation> allFiches = ficheRepository.findAll();
+            allFiches.sort((a, b) -> {
+                // Trier d'abord par numéro de fiche (null en dernier)
+                if (a.getNumeroFiche() == null && b.getNumeroFiche() == null) return 0;
+                if (a.getNumeroFiche() == null) return 1;
+                if (b.getNumeroFiche() == null) return -1;
+                return a.getNumeroFiche().compareTo(b.getNumeroFiche());
+            });
+
+            int nextNumero = 1;
+            int updatedCount = 0;
+
+            for (FichePrestation fiche : allFiches) {
+                if (fiche.getNumeroFiche() == null || fiche.getNumeroFiche() != nextNumero) {
+                    fiche.setNumeroFiche(nextNumero);
+                    ficheRepository.save(fiche);
+                    updatedCount++;
+                }
+                nextNumero++;
+            }
+
+            Map<String, Object> result = new java.util.HashMap<>();
+            result.put("totalRecords", allFiches.size());
+            result.put("recordsUpdated", updatedCount);
+            result.put("message", "Réorganisé les numerosFiche pour éviter les trous");
+
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                .body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}/valider")

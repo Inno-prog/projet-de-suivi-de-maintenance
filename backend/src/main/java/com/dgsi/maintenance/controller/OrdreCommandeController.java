@@ -9,6 +9,7 @@ import com.dgsi.maintenance.entity.FichePrestation;
 import com.dgsi.maintenance.repository.FichePrestationRepository;
 import com.dgsi.maintenance.repository.OrdreCommandeRepository;
 import com.dgsi.maintenance.repository.PrestationRepository;
+import com.dgsi.maintenance.util.LotUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +65,7 @@ public class OrdreCommandeController {
                 map.put("nomItem", oc.getNomItem());
                 map.put("trimestre", oc.getTrimestre());
                 map.put("annee", oc.getAnnee());
-                map.put("lot", oc.getLot());
+                map.put("lot", sanitizeLotName(oc.getLot()));
                 map.put("prestataireItem", oc.getPrestataireItem());
                 map.put("montant", oc.getMontant());
                 map.put("dateCreation", oc.getDateCreation());
@@ -184,7 +185,7 @@ public class OrdreCommandeController {
                     allContrats.forEach(c -> {
                         String lotName = c.getLot();
                         if (lotName == null && c.getLotEntity() != null) {
-                            lotName = c.getLotEntity().getNomLot();
+                                lotName = sanitizeLotName(c.getLotEntity().getNomLot());
                         }
                         log.info("  - Contrat: {} - Prestataire: {} - Lot: {} - LotEntity: {}",
                             c.getIdContrat(), c.getNomPrestataire(), c.getLot(),
@@ -199,7 +200,7 @@ public class OrdreCommandeController {
                             .filter(c -> {
                                 String contractLotName = c.getLot();
                                 if (contractLotName == null && c.getLotEntity() != null) {
-                                    contractLotName = c.getLotEntity().getNomLot();
+                                    contractLotName = sanitizeLotName(c.getLotEntity().getNomLot());
                                 }
                                 return contractLotName != null && (
                                     lotNom.equals(contractLotName) ||
@@ -283,5 +284,13 @@ public class OrdreCommandeController {
             log.error("❌ Erreur lors de la récupération des fiches pour lot {} - T{}", lotId, trimestre, e);
             return ResponseEntity.internalServerError().body("Erreur: " + e.getMessage());
         }
+    }
+
+    /**
+     * Supprime les parenthèses d'un nom de lot (ne supprime pas le contenu entre parenthèses,
+     * mais retire les caractères '(' et ')' pour un affichage sans parenthèses).
+     */
+    private String sanitizeLotName(String raw) {
+        return LotUtils.normalizeLotName(raw);
     }
 }

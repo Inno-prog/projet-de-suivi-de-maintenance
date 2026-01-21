@@ -7,6 +7,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { ContratService } from '../../../../core/services/contrat.service';
 import { ItemService } from '../../../../core/services/item.service';
 import { StructureMefpService } from '../../../../core/services/structure-mefp.service';
+import { NotificationBellComponent } from '../../../../shared/components/notification/notification.component';
 
 import { FichePrestationService } from '../../../../core/services/fiche-prestation.service';
 import { PrestationService } from '../../../../core/services/prestation.service';
@@ -20,7 +21,7 @@ interface Stats {
 @Component({
   selector: 'app-agent-dgsi-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, NotificationBellComponent],
   template: `
     <!-- Tableau de bord Agent DGSI - Style similaire au Prestataire avec meilleur remplissage -->
     <div class="dashboard-container" *ngIf="authService.isAuthenticated()" style="padding: 20px;">
@@ -36,7 +37,8 @@ interface Stats {
               <button (click)="refreshStats()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-lg">
                 <i class="fas fa-sync-alt mr-2"></i>Actualiser
               </button>
-              <div class="text-right">
+
+              <div class="text-right hidden md:block">
                 <div class="text-lg text-gray-500 font-medium">{{ getCurrentDate() }}</div>
                 <div class="text-xl font-bold text-gray-700">{{ getCurrentTime() }}</div>
               </div>
@@ -479,6 +481,7 @@ export class AgentDgsiDashboardComponent implements OnInit, OnDestroy {
   };
 
   private userSub?: Subscription;
+  headerProfileOpen = false;
 
   constructor(
     public authService: AuthService,
@@ -489,6 +492,24 @@ export class AgentDgsiDashboardComponent implements OnInit, OnDestroy {
     private prestationService: PrestationService,
     private router: Router
   ) {}
+
+  toggleHeaderProfileMenu() {
+    this.headerProfileOpen = !this.headerProfileOpen;
+  }
+
+  closeHeaderProfileMenu() {
+    this.headerProfileOpen = false;
+  }
+
+  logout() {
+    try {
+      this.authService.logout();
+    } catch (e) {
+      console.warn('Logout failed', e);
+      try { localStorage.removeItem('currentUser'); } catch {}
+      this.router.navigate(['/']);
+    }
+  }
 
   ngOnInit(): void {
     if (this.authService.isAgentDGSI()) {

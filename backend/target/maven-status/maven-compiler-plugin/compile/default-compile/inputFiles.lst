@@ -88,6 +88,7 @@
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/FichePrestationPdfService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/FichePrestationService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/FileUploadService.java
+/home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/ItemService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/KeycloakService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/NotificationService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/OrdreCommandeService.java
@@ -99,3 +100,4 @@
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/ReferenceDataService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/StructureMefpService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/UserService.java
+/home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/util/LotUtils.java

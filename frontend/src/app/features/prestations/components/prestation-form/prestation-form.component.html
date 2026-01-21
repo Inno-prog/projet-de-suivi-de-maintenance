@@ -140,8 +140,8 @@
               (change)="onLotChange()"
             >
               <option value="">-- Choisir un lot --</option>
-              <option *ngFor="let lot of availableLots" [value]="lot">
-                {{ lot }}
+              <option *ngFor="let lot of lotEntities" [value]="lot.id">
+                {{ lot.nomLot }}
               </option>
             </select>
             <div class="input-line" [class.error]="prestationForm.get('lotSelection')?.invalid && prestationForm.get('lotSelection')?.touched"></div>
@@ -692,7 +692,7 @@
               </tr>
               <tr>
                 <td class="label-cell">Items couverts:</td>
-                <td class="value-cell">{{ getSelectedItemsNames() }}</td>
+                <td class="value-cell" [innerHTML]="getSelectedItemsNamesNumbered()"></td>
               </tr>
               <tr>
                 <td class="label-cell">Date de début:</td>
@@ -732,28 +732,28 @@
                 Exporter PDF
               </button>
             </div>
-            
+
             <div class="proforma-invoice">
               <div class="invoice-table">
                 <table class="proforma-table">
                   <thead>
                     <tr>
                       <th class="item-col">Item</th>
-                      <th class="price-col">Prix unitaire (FCFA)</th>
-                      <th class="qty-col" style="margin-left: 56px;">Quantité</th>
-                      <th class="amount-col">Montant (FCFA)</th>
+                      <th class="price-col">Prix unitaire</th>
+                      <th class="qty-col">Quantité</th>
+                      <th class="amount-col">Montant</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of selectedItems" class="invoice-row">
                       <td class="item-desc">{{ item.nomItem }}</td>
-                      <td class="price-value">{{ item.prix | number:'1.0-0' }}</td>
+                      <td class="price-value">{{ item.prix | number:'1.0-0' }} FCFA</td>
                       <td class="qty-value">{{ getItemQuantity(item) }}</td>
-                      <td class="amount-value">{{ calculateItemAmount(item) | number:'1.0-0' }}</td>
+                      <td class="amount-value">{{ calculateItemAmount(item) | number:'1.0-0' }} FCFA</td>
                     </tr>
                   </tbody>
                 </table>
-                
+
                 <div class="invoice-summary">
                   <div class="summary-line">
                     <span class="summary-label">Nombre d'items:</span>

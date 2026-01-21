@@ -270,7 +270,7 @@ div.form-container {
 }
 
 .app-layout.stable-layout app-sidebar {
-  position: relative !important;
+  position: fixed !important;
   flex: 0 0 240px !important;
   min-width: 240px !important;
   max-width: 240px !important;
@@ -285,9 +285,9 @@ div.form-container {
 
 .app-layout.stable-layout .main-content {
   flex: 1 !important;
-  margin-left: 0 !important;
+  margin-left: 240px !important;
   margin-top: 0 !important;
-  width: 100% !important;
+  width: calc(100% - 240px) !important;
   display: flex !important;
   flex-direction: column !important;
   height: 100vh !important;
@@ -1327,4 +1327,55 @@ body > .modal.show,
   left: auto !important;
   transform: none !important;
   margin: 0 auto !important;
+}
+
+/* ============================================
+   PRESTATION DETAIL DIALOG STYLES
+   ============================================ */
+
+/* Dialog container for prestation details */
+.prestation-detail-dialog .mat-mdc-dialog-container {
+  --mdc-dialog-container-shape: 24px;
+  max-width: 1200px !important;
+  width: 90vw !important;
+  max-height: 90vh !important;
+}
+
+.prestation-detail-dialog {
+  max-width: 1200px !important;
+  width: 90vw !important;
+}
+
+.prestation-detail-dialog .mat-mdc-dialog-surface {
+  overflow: hidden !important;
+}
+
+/* Ensure the detail overlay inside the component is not visible when used as dialog */
+.prestation-detail-dialog .detail-overlay {
+  position: static !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.prestation-detail-dialog .detail-modal {
+  max-height: none !important;
+  overflow: visible !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Hide the overlay background when used as dialog */
+.cdk-dialog-container .detail-overlay {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+/* Ensure the detail modal fits in dialog */
+@media (max-width: 768px) {
+  .prestation-detail-dialog .mat-mdc-dialog-container {
+    width: 95vw !important;
+    max-height: 95vh !important;
+  }
 }

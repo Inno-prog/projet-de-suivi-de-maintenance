@@ -305,28 +305,32 @@ public class PrestationPdfService {
         Cell itemHeader = new Cell()
                 .add(new Paragraph("Item").setFont(boldFont).setFontSize(10).setBold())
                 .setBackgroundColor(bgColor)
-                .setPadding(8);
+                .setPadding(8)
+                .setBorder(new com.itextpdf.layout.borders.SolidBorder(darkGray, 1));
         table.addCell(itemHeader);
-        
+
         Cell priceHeader = new Cell()
                 .add(new Paragraph("Prix unitaire (FCFA)").setFont(boldFont).setFontSize(10).setBold())
                 .setBackgroundColor(bgColor)
                 .setPadding(8)
-                .setTextAlignment(TextAlignment.CENTER);
+                .setTextAlignment(TextAlignment.CENTER)
+                .setBorder(new com.itextpdf.layout.borders.SolidBorder(darkGray, 1));
         table.addCell(priceHeader);
-        
+
         Cell qtyHeader = new Cell()
                 .add(new Paragraph("Quantité").setFont(boldFont).setFontSize(10).setBold())
                 .setBackgroundColor(bgColor)
                 .setPadding(8)
-                .setTextAlignment(TextAlignment.CENTER);
+                .setTextAlignment(TextAlignment.CENTER)
+                .setBorder(new com.itextpdf.layout.borders.SolidBorder(darkGray, 1));
         table.addCell(qtyHeader);
-        
+
         Cell amountHeader = new Cell()
                 .add(new Paragraph("Total (FCFA)").setFont(boldFont).setFontSize(10).setBold())
                 .setBackgroundColor(bgColor)
                 .setPadding(8)
-                .setTextAlignment(TextAlignment.RIGHT);
+                .setTextAlignment(TextAlignment.RIGHT)
+                .setBorder(new com.itextpdf.layout.borders.SolidBorder(darkGray, 1));
         table.addCell(amountHeader);
         
         // Data rows
@@ -360,28 +364,32 @@ public class PrestationPdfService {
             // Item name with number
             Cell itemCell = new Cell()
                     .add(new Paragraph(index + ". " + itemName).setFont(normalFont).setFontSize(10))
-                    .setPadding(6);
+                    .setPadding(6)
+                    .setBorder(new com.itextpdf.layout.borders.SolidBorder(darkGray, 0.5f));
             table.addCell(itemCell);
-            
+
             // Price
             Cell priceCell = new Cell()
                     .add(new Paragraph(String.format("%.0f", price)).setFont(normalFont).setFontSize(10))
                     .setPadding(6)
-                    .setTextAlignment(TextAlignment.CENTER);
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setBorder(new com.itextpdf.layout.borders.SolidBorder(darkGray, 0.5f));
             table.addCell(priceCell);
-            
+
             // Quantity
             Cell qtyCell = new Cell()
                     .add(new Paragraph(String.valueOf(quantity)).setFont(normalFont).setFontSize(10))
                     .setPadding(6)
-                    .setTextAlignment(TextAlignment.CENTER);
+                    .setTextAlignment(TextAlignment.CENTER)
+                    .setBorder(new com.itextpdf.layout.borders.SolidBorder(darkGray, 0.5f));
             table.addCell(qtyCell);
 
             // Amount
             Cell amountCell = new Cell()
                     .add(new Paragraph(String.format("%.0f", amount)).setFont(normalFont).setFontSize(10))
                     .setPadding(6)
-                    .setTextAlignment(TextAlignment.RIGHT);
+                    .setTextAlignment(TextAlignment.RIGHT)
+                    .setBorder(new com.itextpdf.layout.borders.SolidBorder(darkGray, 0.5f));
             table.addCell(amountCell);
             
             index++;

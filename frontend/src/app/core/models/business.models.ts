@@ -210,6 +210,8 @@ export interface FichePrestation {
   dateRealisation: string;
   statut: StatutFiche;
   quantite: number;
+  prixUnitaire?: number;
+  montantTotal?: number;
   commentaire?: string;
   fichiersContrat?: string;
   statutIntervention?: string;

@@ -818,6 +818,21 @@ public class PrestationService {
     }
 
     /**
+     * Récupération d'une prestation pour la génération de PDF
+     * Charge uniquement les données essentielles pour éviter les problèmes de mémoire
+     */
+    @Transactional(readOnly = true)
+    public Optional<Prestation> findByIdForPdf(Long id) {
+        try {
+            // Charger uniquement les données nécessaires pour le PDF
+            return prestationRepository.findByIdForPdf(id);
+        } catch (Exception e) {
+            log.error("❌ Erreur lors de la récupération de la prestation pour PDF ID: {}", id, e);
+            throw new RuntimeException("Erreur lors de la récupération de la prestation pour PDF", e);
+        }
+    }
+
+    /**
      * Comptage avec gestion d'erreur robuste
      */
     @Transactional(readOnly = true)

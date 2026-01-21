@@ -28,35 +28,69 @@ import { ToastService } from '../../../../core/services/toast.service';
         </div>
       </div>
 
-      <!-- STAT CARDS -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-4">
-          <div class="stat-card">
-            <i class="fa-solid fa-box-open stat-icon text-primary"></i>
-            <div>
-              <h4 class="fw-bold mb-0 text-muted">{{ getTotalItems() }}</h4>
-              <small class="text-muted">Items disponibles</small>
+      <!-- Statistics Cards - Material Design Style -->
+      <div class="stats-overview">
+        <div class="stat-card total-items-card">
+          <div class="stat-icon-wrapper">
+            <div class="stat-icon-bg">
+              <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,19H5V17H19V19M19,13H5V11H19V13M19,9H5V7H19V9Z"/>
+              </svg>
             </div>
+            <div class="stat-icon-shadow"></div>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ getTotalItems() }}</div>
+            <div class="stat-label">Total Items</div>
+            <div class="stat-subtitle">Tous mes items</div>
           </div>
         </div>
 
-        <div class="col-md-4">
-          <div class="stat-card">
-            <i class="fa-solid fa-money-bill-wave stat-icon text-success"></i>
-            <div>
-              <h4 class="fw-bold mb-0 text-muted">{{ getTotalValue() | number:'1.0-0' }} FCFA</h4>
-              <small class="text-muted">Valeur Totale</small>
+        <div class="stat-card active-lots-card">
+          <div class="stat-icon-wrapper">
+            <div class="stat-icon-bg">
+              <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3,6H21V18H3V6M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M7,8A2,2 0 0,1 5,10V14A2,2 0 0,1 7,16H17A2,2 0 0,1 19,14V10A2,2 0 0,1 17,8H7Z"/>
+              </svg>
             </div>
+            <div class="stat-icon-shadow"></div>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ getTotalLots() }}</div>
+            <div class="stat-label">Lots Actifs</div>
+            <div class="stat-subtitle">Lots disponibles</div>
           </div>
         </div>
 
-        <div class="col-md-4">
-          <div class="stat-card">
-            <i class="fa-solid fa-tools stat-icon text-warning"></i>
-            <div>
-              <h4 class="fw-bold mb-0 text-muted">{{ totalPrestations }}</h4>
-              <small class="text-muted">Mes Prestations</small>
+        <div class="stat-card total-value-card">
+          <div class="stat-icon-wrapper">
+            <div class="stat-icon-bg">
+              <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.8,10.9C9.53,10.31 8.8,13 9.6,14.4L9.47,14.5C7.55,12 5.89,8.15 4.81,6.31L3,5V4.5C3,3 4,2 5.5,2S8,3 8,4.5V5C7.14,5.78 6.32,6.5 5.55,7.17C7.41,9.95 9.22,13.47 10.55,15.93C12.3,16 13.64,13.33 11.8,10.9M15.5,4C16.88,4 18,5.12 18,6.5C18,7.88 16.88,9 15.5,9S13,7.88 13,6.5C13,5.12 14.12,4 15.5,4M12,20A2,2 0 0,0 14,18A2,2 0 0,0 12,16A2,2 0 0,0 10,18A2,2 0 0,0 12,20M7,24H17V22H7V24Z"/>
+              </svg>
             </div>
+            <div class="stat-icon-shadow"></div>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ getTotalValue() | number:'1.0-0' }}</div>
+            <div class="stat-label">Valeur Totale</div>
+            <div class="stat-subtitle">FCFA</div>
+          </div>
+        </div>
+
+        <div class="stat-card prestations-card">
+          <div class="stat-icon-wrapper">
+            <div class="stat-icon-bg">
+              <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M22.7,19L13.6,9.9C14.5,7.6 14,4.9 12.1,3C10.1,1 7.1,0.6 4.7,1.7L9,6L7.9,7.1L3.7,2.9C2.6,5.3 3,8.3 5,10.3C6.9,12.2 9.6,12.7 11.9,11.8L21,20.9C21.4,21.3 22,21.3 22.4,20.9C22.8,20.5 22.8,19.9 22.7,19Z"/>
+              </svg>
+            </div>
+            <div class="stat-icon-shadow"></div>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{ totalPrestations }}</div>
+            <div class="stat-label">Total Prestations</div>
+            <div class="stat-subtitle">Utilisations</div>
           </div>
         </div>
       </div>
@@ -78,7 +112,7 @@ import { ToastService } from '../../../../core/services/toast.service';
               <label class="form-label fw-semibold">Filtrer par Lot</label>
               <select class="form-select" [(ngModel)]="selectedLotFilter" (ngModelChange)="onLotFilterChange($event)">
                 <option [ngValue]="null">Tous les lots</option>
-                <option *ngFor="let lot of lots" [ngValue]="lot.lot">Lot {{ lot.lot }} ({{ lot.villes.join(', ') }})</option>
+                <option *ngFor="let lot of lots" [ngValue]="lot.lot">{{ formatLotLabel(lot.lot) }}</option>
               </select>
             </div>
 
@@ -248,26 +282,139 @@ import { ToastService } from '../../../../core/services/toast.service';
       font-family: 'Poppins', sans-serif;
     }
 
+    /* Material Design Statistics Cards */
+    .stats-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
     .stat-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 20px;
+      box-shadow:
+        0 16px 32px rgba(0, 0, 0, 0.1),
+        0 6px 12px rgba(0, 0, 0, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      padding: 1rem;
       display: flex;
       align-items: center;
       gap: 1rem;
-      border: none;
-      border-radius: 0.75rem;
-      padding: 1rem 1.25rem;
-      background: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      transition: transform .2s;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #f59e0b);
+      border-radius: 20px 20px 0 0;
     }
 
     .stat-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-6px) scale(1.01);
+      box-shadow:
+        0 24px 48px rgba(0, 0, 0, 0.12),
+        0 12px 24px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    /* Specific card themes */
+    .total-items-card::before { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+    .active-lots-card::before { background: linear-gradient(90deg, #10b981, #059669); }
+    .total-value-card::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
+    .prestations-card::before { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
+
+    .stat-icon-wrapper {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .stat-icon-bg {
+      width: 60px;
+      height: 60px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Icon backgrounds with gradients */
+    .total-items-card .stat-icon-bg {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+    }
+
+    .active-lots-card .stat-icon-bg {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+    }
+
+    .total-value-card .stat-icon-bg {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);
+    }
+
+    .prestations-card .stat-icon-bg {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
     }
 
     .stat-icon {
+      width: 36px;
+      height: 36px;
+      color: white;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .stat-icon-shadow {
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 50%;
+      filter: blur(6px);
+    }
+
+    .stat-content {
+      flex: 1;
+    }
+
+    .stat-number {
       font-size: 2rem;
-      border-radius: 0.5rem;
-      padding: 0.5rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+      background: linear-gradient(135deg, #1e293b 0%, #374151 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.125rem;
+    }
+
+    .stat-subtitle {
+      font-size: 0.75rem;
+      color: #6b7280;
+      font-weight: 500;
     }
 
     .modal.fade.show {
@@ -387,29 +534,69 @@ export class MyItemsComponent implements OnInit {
     }
 
     console.log('SUCCESS - Loading items for prestataire (dev):', currentUser.id);
-    this.itemService.getItemsByPrestataire(currentUser.id).subscribe({
-      next: (items) => {
-        console.log('SUCCESS - My items loaded (dev):', items);
-        this.items = items || [];
-        this.filteredItems = [...this.items];
-        this.loading = false;
-        
-        if (this.items.length === 0) {
+
+    // First load the prestataire's lots, then filter items by those lots
+    this.lotService.getLotsByPrestataire(currentUser.id).subscribe({
+      next: (lots) => {
+        this.lots = lots || [];
+        const lotIds = this.lots.map(lot => lot.lot);
+
+        if (lotIds.length === 0) {
+          console.log('No lots found for prestataire');
+          this.items = [];
+          this.filteredItems = [];
+          this.loading = false;
           this.toast.show({
             type: 'info',
             title: 'Information',
-            message: 'Aucun item trouvé pour vos contrats'
+            message: 'Aucun lot assigné à votre compte'
           });
+          return;
         }
+
+        // Load all items and filter by prestataire's lots
+        this.itemService.getAllItems().subscribe({
+          next: (allItems) => {
+            console.log('SUCCESS - All items loaded (dev):', allItems);
+            // Filter items by the prestataire's lots
+            this.items = (allItems || []).filter(item =>
+              item.lot && lotIds.includes(item.lot)
+            );
+            this.filteredItems = [...this.items];
+            this.loading = false;
+
+            console.log('Filtered items for prestataire lots:', this.items);
+
+            if (this.items.length === 0) {
+              this.toast.show({
+                type: 'info',
+                title: 'Information',
+                message: 'Aucun item trouvé dans vos lots assignés'
+              });
+            }
+          },
+          error: (error) => {
+            console.error('Erreur lors du chargement des items:', error);
+            this.items = [];
+            this.filteredItems = [];
+            this.toast.show({
+              type: 'error',
+              title: 'Erreur',
+              message: 'Impossible de charger vos items. Veuillez réessayer.'
+            });
+            this.loading = false;
+          }
+        });
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des items:', error);
+        console.error('Erreur lors du chargement des lots:', error);
+        this.lots = [];
         this.items = [];
         this.filteredItems = [];
         this.toast.show({
           type: 'error',
           title: 'Erreur',
-          message: 'Impossible de charger vos items. Veuillez réessayer.'
+          message: 'Impossible de charger vos lots. Veuillez réessayer.'
         });
         this.loading = false;
       }
@@ -474,6 +661,7 @@ export class MyItemsComponent implements OnInit {
 
   // Méthodes utilitaires
   getTotalItems() { return this.items.length; }
+  getTotalLots() { return this.lots.length; }
   getTotalValue() { return this.items.reduce((a, b) => a + (b.prix || 0), 0); }
 
   getLotName(lotId: string): string {
@@ -486,9 +674,23 @@ export class MyItemsComponent implements OnInit {
       lot = this.lots.find(l => l.contractIds && l.contractIds.includes(lotId));
     }
 
-    if (!lot) return `Lot ${lotId}`;
+    if (!lot) return this.formatLotLabel(lotId);
     const villes = (lot.villes || []).filter(v => v && v.trim().length > 0);
-    return villes.length > 0 ? `Lot ${lot.lot} (${villes.join(', ')})` : `Lot ${lot.lot}`;
+    return villes.length > 0 ? `${this.formatLotLabel(lot.lot)} (${villes.join(', ')})` : this.formatLotLabel(lot.lot);
+  }
+
+  /**
+   * Retourne un libellé de lot cohérent :
+   * - Si la valeur fournie commence déjà par 'lot' (insensible à la casse), on la normalise en 'Lot ...'.
+   * - Sinon on préfixe par 'Lot '.
+   */
+  formatLotLabel(value: string | null | undefined): string {
+    if (!value) return 'Lot inconnu';
+    const v = value.toString().trim();
+    if (/^lot\s+/i.test(v)) {
+      return v.replace(/^lot\s+/i, 'Lot ');
+    }
+    return `Lot ${v}`;
   }
 
   getUsageStatus(item: Item): string {

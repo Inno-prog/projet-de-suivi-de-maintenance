@@ -50,6 +50,12 @@ public class FichePrestation {
     @Column(name = "quantite")
     private Integer quantite;
 
+    @Column(name = "prix_unitaire")
+    private Double prixUnitaire;
+
+    @Column(name = "montant_total")
+    private Double montantTotal;
+
     @Column(name = "commentaire", columnDefinition = "TEXT")
     private String commentaire;
 
@@ -118,6 +124,12 @@ public class FichePrestation {
 
     public Integer getQuantite() { return quantite; }
     public void setQuantite(Integer quantite) { this.quantite = quantite; }
+
+    public Double getPrixUnitaire() { return prixUnitaire; }
+    public void setPrixUnitaire(Double prixUnitaire) { this.prixUnitaire = prixUnitaire; }
+
+    public Double getMontantTotal() { return montantTotal; }
+    public void setMontantTotal(Double montantTotal) { this.montantTotal = montantTotal; }
 
     public String getCommentaire() { return commentaire; }
     public void setCommentaire(String commentaire) { this.commentaire = commentaire; }

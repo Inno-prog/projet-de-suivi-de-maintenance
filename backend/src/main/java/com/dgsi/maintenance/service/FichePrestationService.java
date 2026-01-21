@@ -23,6 +23,26 @@ public class FichePrestationService {
     @Autowired
     private FichePrestationPdfService pdfService;
 
+    /**
+     * Calcule le prochain numéro de fiche disponible.
+     * Utilise le COUNT réel des fiches existantes + 1.
+     * Exemple: s'il y a 5 fiches, la prochaine sera numéro 6.
+     */
+    public int getNextAvailableNumero() {
+        // Compter le nombre réel de fiches avec un numero_fiche non null
+        List<Integer> usedNumbers = ficheRepository.findAllUsedNumeros();
+        if (usedNumbers.isEmpty()) {
+            return 1; // Première fiche
+        }
+        // Le prochain numéro est le nombre de fiches existantes + 1
+        // Cela permet de réutiliser les trous dans la séquence
+        int nextNumero = 1;
+        while (usedNumbers.contains(nextNumero)) {
+            nextNumero++;
+        }
+        return nextNumero;
+    }
+
     public List<LotWithContractorDto> getLotsWithContractors(int annee, int trimestre) {
         List<Contrat> contrats = contratRepository.findAll();
         java.util.Map<String, LotWithContractorDto> lotMap = new java.util.HashMap<>();

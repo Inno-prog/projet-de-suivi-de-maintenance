@@ -23,6 +23,7 @@ import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.utils.PdfMerger;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
@@ -133,225 +134,53 @@ public class FichePrestationPdfService {
     // ============================
     @Transactional(readOnly = true)
     public byte[] generateGlobalServiceSheetPdf(String lot, int annee, int trimestre, List<FichePrestation> fiches) {
+        // Nouvelle approche : la fiche globale pour "tous les prestataires" est
+        // l'assemblage (concaténation) des fiches par prestataire. On génère la
+        // fiche prestataire pour chaque prestataire et on les fusionne en un
+        // seul PDF en respectant le format existant (design inchangé).
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             PdfWriter writer = new PdfWriter(outputStream);
-            PdfDocument pdfDoc = new PdfDocument(writer);
-            Document document = new Document(pdfDoc, PageSize.A4);
-            document.setMargins(40, 40, 40, 40);
+            PdfDocument destPdf = new PdfDocument(writer);
+            PdfMerger merger = new PdfMerger(destPdf);
 
-            // Polices
-            PdfFont titleFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
-            PdfFont boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
-            PdfFont normalFont = PdfFontFactory.createFont(StandardFonts.HELVETICA);
-            PdfFont italicFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_OBLIQUE);
-
-            // 1. En-tête organisé en 3 colonnes (fond transparent — suivre la maquette fournie)
-            Table headerTable = new Table(UnitValue.createPercentArray(new float[]{35, 30, 35}))
-                    .setWidth(UnitValue.createPercentValue(100))
-                    .setMarginBottom(20);
-
-            // Colonne GAUCHE - Informations ministérielles (texte noir/centré selon la maquette)
-            Cell leftCell = new Cell()
-                    .setBorder(null)
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setVerticalAlignment(VerticalAlignment.MIDDLE)
-                    .setPadding(8);
-
-            Paragraph ministere = new Paragraph("MINISTERE DE L'ECONOMIE")
-                    .setFont(boldFont)
-                    .setFontSize(12)
-                    .setFontColor(BLACK)
-                    .setMarginBottom(6);
-            leftCell.add(ministere);
-
-            leftCell.add(new Paragraph("------------------------")
-                    .setFont(normalFont)
-                    .setFontSize(10)
-                    .setFontColor(DARK_GRAY)
-                    .setMarginBottom(2)
-                    .setTextAlignment(TextAlignment.CENTER));
-
-            Paragraph secretariat = new Paragraph("SECRETARIAT GENERAL")
-                    .setFont(boldFont)
-                    .setFontSize(12)
-                    .setFontColor(BLACK)
-                    .setMarginBottom(2);
-            leftCell.add(secretariat);
-
-            leftCell.add(new Paragraph("------------------------")
-                    .setFont(normalFont)
-                    .setFontSize(10)
-                    .setFontColor(DARK_GRAY)
-                    .setMarginBottom(2)
-                    .setTextAlignment(TextAlignment.CENTER));
-
-            Paragraph dgsi = new Paragraph("DIRECTION GENERALE DES SYSTEMES D'INFORMATION")
-                    .setFont(boldFont)
-                    .setFontSize(12)
-                    .setFontColor(BLACK)
-                    .setMarginBottom(2);
-            leftCell.add(dgsi);
-
-            leftCell.add(new Paragraph("------------------------")
-                    .setFont(normalFont)
-                    .setFontSize(10)
-                    .setFontColor(DARK_GRAY)
-                    .setMarginBottom(2)
-                    .setTextAlignment(TextAlignment.CENTER));
-
-            Paragraph drs = new Paragraph("DIRECTION DES RESEAUX ET SYSTEMES")
-                    .setFont(boldFont)
-                    .setFontSize(12)
-                    .setFontColor(BLACK);
-            leftCell.add(drs);
-
-            // Colonne CENTRE - Logo centré et circulaire (fond supprimé)
-            Cell centerCell = new Cell()
-                    .setBorder(null)
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setVerticalAlignment(VerticalAlignment.TOP)
-                    .setPaddingTop(2)
-                    .setPaddingBottom(2)
-                    .setPaddingLeft(2)
-                    .setPaddingRight(2);
-
-            try {
-                ClassPathResource logoResource = new ClassPathResource("static/assets/logoFinal.png");
-                                if (logoResource.exists()) {
-                                        // Read logo and create a circular buffered image so the logo is truly round
-                                        BufferedImage original = ImageIO.read(logoResource.getInputStream());
-                                        int size = 92;
-                                        BufferedImage circ = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-                                        Graphics2D g2 = circ.createGraphics();
-                                        try {
-                                                g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-                                                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                                                // Clip to circle
-                                                g2.setClip(new Ellipse2D.Float(0, 0, size, size));
-                                                // Draw scaled original into circular clip
-                                                g2.drawImage(original, 0, 0, size, size, null);
-                                        } finally {
-                                                g2.dispose();
-                                        }
-                                        // Convert to byte[] PNG and create ImageData
-                                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                        ImageIO.write(circ, "PNG", baos);
-                                        ImageData imageData = ImageDataFactory.create(baos.toByteArray());
-                                        Image logoImage = new Image(imageData);
-                                        logoImage.setWidth(size);
-                                        logoImage.setHeight(size);
-                                        logoImage.setAutoScale(false);
-                                        logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
-                                        centerCell.add(logoImage);
-                } else {
-                    centerCell.add(new Paragraph(" "));
-                }
-            } catch (IOException e) {
-                log.warn("Impossible de charger le logo", e);
-                centerCell.add(new Paragraph(" "));
-            }
-
-            // Colonne DROITE - Devise nationale et date (fond transparent, contenu poussé vers le haut)
-            Cell rightCell = new Cell()
-                    .setBorder(null)
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setVerticalAlignment(VerticalAlignment.TOP)
-                    .setPaddingTop(2)
-                    .setPaddingBottom(2)
-                    .setPaddingLeft(2)
-                    .setPaddingRight(2);
-
-            Paragraph bf = new Paragraph("BURKINA FASO")
-                    .setFont(boldFont)
-                    .setFontSize(14)
-                    .setFontColor(BLACK)
-                    .setMarginBottom(4)
-                    .setTextAlignment(TextAlignment.CENTER);
-            rightCell.add(bf);
-
-            Paragraph devise = new Paragraph("La Patrie ou la Mort, nous\nVaincrons")
-                    .setFont(boldFont)
-                    .setFontSize(12)
-                    .setFontColor(BLACK)
-                    .setMarginTop(4)
-                    .setMarginBottom(6)
-                    .setTextAlignment(TextAlignment.CENTER);
-            rightCell.add(devise);
-
-            // Ligne séparatrice sous la devise
-            rightCell.add(new Paragraph("------------------------")
-                    .setFont(normalFont)
-                    .setFontSize(10)
-                    .setFontColor(DARK_GRAY)
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setMarginBottom(4));
-
-            // Date de génération (sous la ligne séparatrice)
-            String currentDate = java.time.LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            Paragraph dateGen = new Paragraph("Généré à Ouaga le " + currentDate)
-                    .setFont(normalFont)
-                    .setFontSize(10)
-                    .setFontColor(DARK_GRAY)
-                    .setTextAlignment(TextAlignment.CENTER);
-            rightCell.add(dateGen);
-
-            headerTable.addCell(leftCell);
-            headerTable.addCell(centerCell);
-            headerTable.addCell(rightCell);
-
-            document.add(headerTable);
-
-            // Ligne de séparation
-            document.add(new Paragraph("_".repeat(100))
-                    .setFont(normalFont)
-                    .setFontSize(6)
-                    .setFontColor(DARK_BLUE)
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setMarginBottom(20));
-
-            // 2. Titre principal
-            document.add(new Paragraph("FICHE GLOBALE DE PRESTATIONS")
-                    .setFont(titleFont)
-                    .setFontSize(18)
-                    .setFontColor(DARK_BLUE)
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setMarginBottom(5));
-
-            document.add(new Paragraph("Synthèse Trimestrielle")
-                    .setFont(italicFont)
-                    .setFontSize(12)
-                    .setFontColor(TEXT_COLOR)
-                    .setTextAlignment(TextAlignment.CENTER)
-                    .setMarginBottom(25));
-
-            // 3. INFORMATIONS GÉNÉRALES
-            if (fiches != null && !fiches.isEmpty()) {
-                addGeneralInfoSection(document, lot, annee, trimestre, fiches, normalFont, boldFont);
-            }
-
-            // 4. DÉTAILS DES PRESTATIONS
             if (fiches == null || fiches.isEmpty()) {
+                // Si aucune fiche, retourner un PDF court indiquant l'absence de données
+                Document document = new Document(destPdf, PageSize.A4);
+                PdfFont normalFont = PdfFontFactory.createFont(StandardFonts.HELVETICA);
                 document.add(new Paragraph("Aucune prestation enregistrée pour cette période.")
                         .setFont(normalFont)
                         .setFontSize(12)
                         .setFontColor(TEXT_COLOR)
                         .setTextAlignment(TextAlignment.CENTER)
-                        .setPadding(20)
-                        .setBackgroundColor(LIGHT_GRAY)
-                        .setBorder(new SolidBorder(MEDIUM_GRAY, 1))
-                        .setBorderRadius(new BorderRadius(5)));
-            } else {
-                addDetailedPrestationsSection(document, fiches, normalFont, boldFont);
+                        .setMarginTop(200));
+                document.close();
+                return outputStream.toByteArray();
             }
 
-            // 5. Pied de page
-            addFooter(document, normalFont);
+            // Grouper les fiches par prestataire
+            java.util.Map<String, List<FichePrestation>> byPrestataire = fiches.stream()
+                    .filter(f -> f.getNomPrestataire() != null)
+                    .collect(Collectors.groupingBy(FichePrestation::getNomPrestataire));
 
-            document.close();
+            for (java.util.Map.Entry<String, List<FichePrestation>> entry : byPrestataire.entrySet()) {
+                String prestataire = entry.getKey();
+                List<FichePrestation> fichesForPrest = entry.getValue();
+
+                // Générer le PDF de la fiche prestataire (déjà formaté)
+                byte[] prestPdf = generatePrestataireServiceSheetPdf(lot, annee, trimestre, prestataire, fichesForPrest);
+
+                // Fusionner les pages de ce PDF dans le document de destination
+                try (java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(prestPdf);
+                     PdfDocument srcPdf = new PdfDocument(new com.itextpdf.kernel.pdf.PdfReader(bais))) {
+                    merger.merge(srcPdf, 1, srcPdf.getNumberOfPages());
+                }
+            }
+
+            // Fermer le document final
+            destPdf.close();
             return outputStream.toByteArray();
-
         } catch (Exception e) {
-            log.error("Erreur lors de la génération du PDF de fiche globale", e);
+            log.error("Erreur lors de la génération du PDF de fiche globale (merge prestataires)", e);
             throw new RuntimeException("Erreur lors de la génération du PDF", e);
         }
     }
@@ -638,7 +467,7 @@ public class FichePrestationPdfService {
         addInfoRow(table, "Statut", fiche.getStatut() != null ? fiche.getStatut().toString() : "N/A", normalFont);
         addInfoRow(table, "Statut d'intervention", fiche.getStatutIntervention() != null ? fiche.getStatutIntervention() : "N/A", normalFont);
 
-        document.add(table);
+                document.add(table);
     }
 
     private void addFichePrestataireInfo(Document document, FichePrestation fiche, PdfFont normalFont) {
@@ -648,8 +477,8 @@ public class FichePrestationPdfService {
 
         addInfoRow(table, "Nom du prestataire", fiche.getNomPrestataire() != null ? fiche.getNomPrestataire() : "N/A", normalFont);
 
-        document.add(table);
-    }
+                document.add(table);
+        }
 
     private void addHeader(Document document, PdfFont boldFont, PdfFont italicFont, int logoSize) {
         try {
@@ -1242,12 +1071,12 @@ public class FichePrestationPdfService {
     private void addPrestatairePrestationsTable(Document document, List<FichePrestation> fiches,
                                                PdfFont normalFont, PdfFont boldFont) {
 
-        Table table = new Table(UnitValue.createPercentArray(new float[]{15, 35, 15, 10, 15, 10}))
+        Table table = new Table(UnitValue.createPercentArray(new float[]{8, 30, 10, 12, 10, 15, 15}))
                 .setWidth(UnitValue.createPercentValue(100))
                 .setMarginBottom(30);
 
-        // En-têtes
-        String[] headers = {"N° Fiche", "Item/Service", "Date", "Qté", "Montant", "Statut"};
+        // En-têtes (7 colonnes: numéro, désignation du service, quantité réalisée, prix unitaire, date, montant total, statut)
+        String[] headers = {"N°", "Désignation du service", "Quantité réalisée", "Prix unitaire", "Date", "Montant total", "Statut"};
         for (String header : headers) {
             Cell headerCell = new Cell()
                     .add(new Paragraph(header)
@@ -1273,30 +1102,38 @@ public class FichePrestationPdfService {
 
         double totalMontant = 0;
         boolean alternateRow = false;
+        int rowNumber = 1;
 
         for (FichePrestation fiche : fichesSorted) {
             DeviceRgb rowBg = alternateRow ? LIGHT_GRAY : WHITE;
             alternateRow = !alternateRow;
 
-            // N° Fiche
-            table.addCell(createTableCell(fiche.getIdPrestation() != null ? fiche.getIdPrestation() : "N/A",
-                    normalFont, rowBg, TextAlignment.LEFT));
+            // N° (numéro de ligne)
+            table.addCell(createTableCell(String.valueOf(rowNumber++),
+                    normalFont, rowBg, TextAlignment.CENTER));
 
-            // Item/Service
+            // Désignation du service (Item/Service)
             table.addCell(createTableCell(fiche.getNomItem() != null ? fiche.getNomItem() : "N/A",
                     normalFont, rowBg, TextAlignment.LEFT));
+
+            // Quantité réalisée
+            String qteStr = fiche.getQuantite() != null ? fiche.getQuantite().toString() : "0";
+            table.addCell(createTableCell(qteStr, normalFont, rowBg, TextAlignment.CENTER));
+
+            // Prix unitaire
+            String prixStr = fiche.getPrixUnitaire() != null ? String.format("%.0f FCFA", fiche.getPrixUnitaire()) : "N/A";
+            table.addCell(createTableCell(prixStr, normalFont, rowBg, TextAlignment.RIGHT));
 
             // Date
             String dateStr = fiche.getDateRealisation() != null ?
                     fiche.getDateRealisation().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "N/A";
             table.addCell(createTableCell(dateStr, normalFont, rowBg, TextAlignment.CENTER));
 
-            // Quantité
-            String qteStr = fiche.getQuantite() != null ? fiche.getQuantite().toString() : "0";
-            table.addCell(createTableCell(qteStr, normalFont, rowBg, TextAlignment.CENTER));
-
-            // Montant
-            double montant = fiche.getQuantite() != null ? fiche.getQuantite() * 50000 : 0;
+            // Montant total
+            double montant = (fiche.getMontantTotal() != null) ? fiche.getMontantTotal() : 
+                           (fiche.getQuantite() != null && fiche.getPrixUnitaire() != null) ? 
+                           fiche.getQuantite() * fiche.getPrixUnitaire() : 
+                           (fiche.getQuantite() != null ? fiche.getQuantite() * 50000 : 0);
             totalMontant += montant;
             table.addCell(createTableCell(String.format("%.0f FCFA", montant),
                     normalFont, rowBg, TextAlignment.RIGHT));
@@ -1325,7 +1162,7 @@ public class FichePrestationPdfService {
         }
 
         // Ligne de total
-        Cell totalLabelCell = new Cell(1, 4)
+        Cell totalLabelCell = new Cell(1, 5)
                 .add(new Paragraph("TOTAL PRESTATAIRE")
                         .setFont(boldFont)
                         .setFontSize(11)

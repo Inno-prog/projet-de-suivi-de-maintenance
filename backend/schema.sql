@@ -26,7 +26,7 @@ CREATE TABLE users (
 -- Table des lots
 CREATE TABLE lots (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    nom_lot VARCHAR(255) NOT NULL,
+    nom_lot VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
     budget_alloue DECIMAL(15,2),
     budget_utilise DECIMAL(15,2) DEFAULT 0,

@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import com.dgsi.maintenance.entity.Contrat;
 import com.dgsi.maintenance.entity.Item;
 import com.dgsi.maintenance.entity.StatutContrat;
 import com.dgsi.maintenance.repository.ContratRepository;
 import com.dgsi.maintenance.repository.ItemRepository;
 import com.dgsi.maintenance.service.FileUploadService;
-
+import com.dgsi.maintenance.util.LotUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/contrats")
 @CrossOrigin(origins = "*", maxAge = 3600)
+
 public class ContratController {
 
     @Autowired
@@ -59,7 +58,7 @@ public class ContratController {
             // Ensure lotName is populated for each contract
             for (Contrat contrat : contrats) {
                 if (contrat.getLotEntity() != null && (contrat.getLot() == null || contrat.getLot().trim().isEmpty())) {
-                    contrat.setLot(contrat.getLotEntity().getNomLot());
+                    contrat.setLot(sanitizeLotName(contrat.getLotEntity().getNomLot()));
                 }
             }
 
@@ -288,4 +287,13 @@ public class ContratController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    /**
+     * Supprime les parenthèses autour des lots (ne supprime pas le contenu entre parenthèses,
+     * mais retire les caractères '(' et ')' pour afficher le lot sans parenthèses).
+     */
+    private String sanitizeLotName(String raw) {
+        return LotUtils.normalizeLotName(raw);
+    }
+
 }

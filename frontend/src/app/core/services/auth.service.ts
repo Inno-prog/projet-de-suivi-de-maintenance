@@ -15,6 +15,8 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private confirmationService?: any;
+  // timestamp (ms) of last successful authentication update — used for UI grace period
+  public lastAuthenticatedAt: number | null = null;
 
   constructor(
     private http: HttpClient,
@@ -40,9 +42,9 @@ export class AuthService {
       skipIssuerCheck: !isProduction, // Vérification stricte de l'émetteur en production
       strictDiscoveryDocumentValidation: isProduction, // Validation stricte en production
   oidc: true,
-  // Désactiver silent refresh pour éviter la déconnexion automatique
-  useSilentRefresh: false,
-  // silentRefreshRedirectUri: window.location.origin + '/silent-refresh.html',
+      // Activer silent refresh pour éviter la déconnexion automatique
+      useSilentRefresh: true,
+      silentRefreshRedirectUri: window.location.origin + '/silent-refresh.html',
       disableAtHashCheck: false, // Activer la vérification de hachage pour la sécurité
       loginUrl: isProduction
         ? 'https://your-keycloak-domain.com/realms/Maintenance-DGSI/protocol/openid-connect/auth'
@@ -273,6 +275,8 @@ export class AuthService {
 
     // 2. Effacer l'utilisateur actuel
     this.currentUserSubject.next(null);
+  // clear session activity marker so UI does not remain visible after explicit logout
+  this.lastAuthenticatedAt = null;
     console.log('Utilisateur actuel effacé');
 
     // 3. Obtenir l'id_token avant de nettoyer (fallback depuis localStorage si nécessaire)
@@ -400,6 +404,8 @@ export class AuthService {
 
     localStorage.setItem('currentUser', JSON.stringify(user));
     this.currentUserSubject.next(user);
+    // mark last authenticated time
+    this.lastAuthenticatedAt = Date.now();
   }
 
   loadCurrentUser(): void {
@@ -464,6 +470,8 @@ export class AuthService {
     } else {
       this.currentUserSubject.next(user);
       localStorage.setItem('currentUser', JSON.stringify(user));
+      // mark last authenticated time
+      this.lastAuthenticatedAt = Date.now();
     }
   }
 
@@ -543,6 +551,17 @@ export class AuthService {
     return this.oauthService.hasValidAccessToken() && !!this.getCurrentUser();
   }
 
+  /**
+   * UI-level session activity check. Returns true as long as the user is
+   * authenticated OR was authenticated within the last hour (grace period).
+   * This prevents transient auth falsey values from immediately hiding the layout.
+   */
+  isSessionActive(graceMs: number = 60 * 60 * 1000): boolean {
+    if (this.isAuthenticated()) return true;
+    if (!this.lastAuthenticatedAt) return false;
+    return (Date.now() - this.lastAuthenticatedAt) < graceMs;
+  }
+
   hasRole(role: string): boolean {
     const currentUser = this.getCurrentUser();
     return currentUser ? currentUser.role === role : false;
@@ -603,7 +622,7 @@ export class AuthService {
   private async checkKeycloakConnectivity(): Promise<boolean> {
     try {
       // Use a simple HEAD request to check connectivity without triggering CORS issues
-      const response = await fetch('http://localhost:8080/realms/Maintenance-DGSI/.well-known/openid_connect_configuration', {
+      const response = await fetch('http://localhost:8080/realms/Maintenance-DGSI/.well-known/openid-configuration', {
         method: 'HEAD',
         mode: 'no-cors' // Avoid CORS issues during connectivity check
       });

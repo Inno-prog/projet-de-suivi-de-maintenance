@@ -46,12 +46,9 @@
               <option value="ORDINATEUR_PORTABLE">Ordinateur Portable</option>
               <option value="ORDINATEUR_BUREAU">Ordinateur de Bureau</option>
               <option value="TABLETTE">Tablette</option>
-              <option value="SERVEUR">Serveur</option>
-              <option value="SWITCH">Switch</option>
-              <option value="ROUTEUR">Routeur</option>
-              <option value="PRISE">Prise</option>
-              <option value="ECRAN">Écran</option>
-              <option value="CLIMATISEUR">Climatiseur</option>
+              <option value="SERVEUR">Imprimante</option>
+              <option value="SWITCH">onduleur</option>
+              
             </select>
             <div class="error-message" *ngIf="equipementForm.get('typeEquipement')?.invalid && equipementForm.get('typeEquipement')?.touched">
               {{ getErrorMessage('typeEquipement') }}

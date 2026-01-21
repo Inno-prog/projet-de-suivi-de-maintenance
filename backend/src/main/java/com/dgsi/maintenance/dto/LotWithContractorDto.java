@@ -2,6 +2,7 @@ package com.dgsi.maintenance.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.dgsi.maintenance.util.LotUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LotWithContractorDto {
@@ -37,9 +38,10 @@ public class LotWithContractorDto {
      */
     @JsonProperty("lot")
     public String getLotDisplay() {
+        // Normalize to a display-friendly lot name (e.g. "Lot 2"). We intentionally
+        // do NOT include villes (content in parentheses) in the displayed lot name.
         if (this.lot == null) return null;
-        if (this.villes == null || this.villes.isEmpty()) return this.lot;
-        return this.lot + " (" + String.join(", ", this.villes) + ")";
+        return LotUtils.normalizeLotName(this.lot);
     }
 
     /**

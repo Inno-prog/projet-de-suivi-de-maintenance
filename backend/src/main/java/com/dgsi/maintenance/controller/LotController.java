@@ -29,6 +29,12 @@ public class LotController {
     @Autowired
     private com.dgsi.maintenance.repository.ContratRepository contratRepository;
 
+    @Autowired
+    private com.dgsi.maintenance.repository.ItemRepository itemRepository;
+
+    @Autowired
+    private com.dgsi.maintenance.repository.StructureMefpRepository structureMefpRepository;
+
 
 
     @GetMapping
@@ -47,38 +53,43 @@ public class LotController {
 
             System.out.println("🔍 Found " + contrats.size() + " active contracts");
 
-            // Group contracts by lot name
+            // Group contracts by lot name - only for lots that exist in database
             java.util.Map<String, LotWithContractorDto> lotMap = new java.util.HashMap<>();
 
             // Initialize with all lots from database
             for (Lot lot : lots) {
                 LotWithContractorDto dto = new LotWithContractorDto(lot.getNomLot());
+                // Populate villes from the lot entity if available
+                if (lot.getVilles() != null && !lot.getVilles().isEmpty()) {
+                    for (String ville : lot.getVilles()) {
+                        dto.addVille(ville);
+                    }
+                }
                 lotMap.put(lot.getNomLot(), dto);
             }
 
-            // Populate with contract data
+            // Populate with contract data - only for existing lots
             for (com.dgsi.maintenance.entity.Contrat contrat : contrats) {
                 if (contrat.getLot() != null && !contrat.getLot().trim().isEmpty()) {
                     String lotName = contrat.getLot();
 
-                    // Get or create DTO for this lot (should exist from database)
+                    // Only add contract data if the lot exists in our map (i.e., in database)
                     LotWithContractorDto dto = lotMap.get(lotName);
-                    if (dto == null) {
-                        dto = new LotWithContractorDto(lotName);
-                        lotMap.put(lotName, dto);
-                    }
+                    if (dto != null) {
+                        // Add ville if not null and not already in the lot's villes
+                        if (contrat.getVille() != null && !contrat.getVille().trim().isEmpty()) {
+                            dto.addVille(contrat.getVille());
+                        }
 
-                    // Add ville if not null
-                    if (contrat.getVille() != null && !contrat.getVille().trim().isEmpty()) {
-                        dto.addVille(contrat.getVille());
-                    }
+                        // Add contract ID
+                        if (contrat.getIdContrat() != null && !contrat.getIdContrat().trim().isEmpty()) {
+                            dto.addContractId(contrat.getIdContrat());
+                        }
 
-                    // Add contract ID
-                    if (contrat.getIdContrat() != null && !contrat.getIdContrat().trim().isEmpty()) {
-                        dto.addContractId(contrat.getIdContrat());
+                        System.out.println("📄 Contract: " + contrat.getIdContrat() + " - Lot: " + lotName + " - Prestataire: " + contrat.getNomPrestataire());
+                    } else {
+                        System.out.println("⚠️  Contract " + contrat.getIdContrat() + " references non-existent lot: " + lotName);
                     }
-
-                    System.out.println("📄 Contract: " + contrat.getIdContrat() + " - Lot: " + lotName + " - Prestataire: " + contrat.getNomPrestataire());
                 }
             }
 
@@ -203,6 +214,13 @@ public class LotController {
         try {
             List<Lot> lots = lotRepository.findAll();
 
+            // Sanitize lot names for display: remove parentheses characters
+            for (Lot lot : lots) {
+                if (lot.getNomLot() != null) {
+                    lot.setNomLot(com.dgsi.maintenance.util.LotUtils.normalizeLotName(lot.getNomLot()));
+                }
+            }
+
             // Get all contracts to populate villes for each lot
             List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findAllWithItems();
 
@@ -283,12 +301,41 @@ public class LotController {
     public ResponseEntity<?> deleteLot(@PathVariable Long id) {
         return lotRepository.findById(id)
             .map(lot -> {
-                // Check if lot has associated contracts
-                if (lot.getContrats() != null && !lot.getContrats().isEmpty()) {
-                    return ResponseEntity.badRequest().build(); // Cannot delete lot with contracts
+                try {
+                    // Update contracts that reference this lot name to null
+                    java.util.List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findByLot(lot.getNomLot());
+                    if (contrats != null && !contrats.isEmpty()) {
+                        for (com.dgsi.maintenance.entity.Contrat contrat : contrats) {
+                            contrat.setLot(null);
+                            contratRepository.save(contrat);
+                        }
+                    }
+
+                    // Update items that reference this lot name to null
+                    java.util.List<com.dgsi.maintenance.entity.Item> items = itemRepository.findByLot(lot.getNomLot());
+                    if (items != null && !items.isEmpty()) {
+                        for (com.dgsi.maintenance.entity.Item item : items) {
+                            item.setLot(null);
+                            itemRepository.save(item);
+                        }
+                    }
+
+                    // Update structures_mefp that reference this lot ID to null
+                    java.util.List<com.dgsi.maintenance.entity.StructureMefp> structures = structureMefpRepository.findByLotId(lot.getId());
+                    if (structures != null && !structures.isEmpty()) {
+                        for (com.dgsi.maintenance.entity.StructureMefp structure : structures) {
+                            structure.setLot(null);
+                            structureMefpRepository.save(structure);
+                        }
+                    }
+
+                    // Safe to delete the lot now
+                    lotRepository.delete(lot);
+                    return ResponseEntity.ok().build();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return ResponseEntity.internalServerError().build();
                 }
-                lotRepository.delete(lot);
-                return ResponseEntity.ok().build();
             })
             .orElse(ResponseEntity.notFound().build());
     }

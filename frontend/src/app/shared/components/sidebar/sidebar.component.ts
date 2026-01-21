@@ -123,7 +123,7 @@ import { User } from '../../../core/models/auth.models';
       left: 0;
       height: 100vh;
       width: 260px;
-      background: #1e4d7b;
+      background: rgb(28, 82, 118);
       color: #e2e8f0;
       z-index: 1100;
       overflow-y: auto;
@@ -159,7 +159,7 @@ import { User } from '../../../core/models/auth.models';
       align-items: center;
       gap: 0.75rem;
       margin: 0;
-      background: #1e4d7b;
+      background: rgb(28, 82, 118);
     }
 
     .logo-container {

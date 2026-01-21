@@ -265,12 +265,20 @@ import { ToastService } from '../../../../core/services/toast.service';
                       <td>{{ selectedFiche.nomItem || 'N/A' }}</td>
                     </tr>
                     <tr>
+                      <td><strong>Lot sélectionné:</strong></td>
+                      <td>{{ getLotFromFiche(selectedFiche) || 'N/A' }}</td>
+                    </tr>
+                    <tr>
                       <td><strong>Date de réalisation:</strong></td>
                       <td>{{ formatDate(selectedFiche.dateRealisation) }}</td>
                     </tr>
                     <tr>
                       <td><strong>Quantité:</strong></td>
                       <td>{{ selectedFiche.quantite || 1 }}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Montant total:</strong></td>
+                      <td><strong>{{ getMontantFromFiche(selectedFiche) | number:'1.0-0' }} FCFA</strong></td>
                     </tr>
                     <tr>
                       <td><strong>Statut:</strong></td>
@@ -1571,5 +1579,43 @@ export class FicheListComponent implements OnInit {
       }
     }
     return [];
+  }
+
+  // Get lot information from fiche
+  getLotFromFiche(fiche: FichePrestation): string {
+    const ficheAny = fiche as any;
+    if (ficheAny.lot && ficheAny.lot.nomLot) {
+      return ficheAny.lot.nomLot;
+    }
+    if (ficheAny.nomLot) {
+      return ficheAny.nomLot;
+    }
+    // Try to get from item if available
+    if (ficheAny.item && ficheAny.item.lot) {
+      return `Lot ${ficheAny.item.lot}`;
+    }
+    return 'N/A';
+  }
+
+  // Get montant from fiche - calculate based on quantity and item price
+  getMontantFromFiche(fiche: FichePrestation): number {
+    const ficheAny = fiche as any;
+
+    // If montant is directly available
+    if (ficheAny.montant && ficheAny.montant > 0) {
+      return ficheAny.montant;
+    }
+
+    if (ficheAny.montantIntervention && ficheAny.montantIntervention > 0) {
+      return ficheAny.montantIntervention;
+    }
+
+    // Try to calculate from item price and quantity
+    if (ficheAny.item && ficheAny.item.prix && fiche.quantite) {
+      return ficheAny.item.prix * fiche.quantite;
+    }
+
+    // If no amount available, return 0
+    return 0;
   }
 }

@@ -1,13 +1,15 @@
 import { Component, Input, EventEmitter, Output, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { FichePrestationService } from '../../core/services/fiche-prestation.service';
 import { PrestationService } from '../../core/services/prestation.service';
 import { ToastService } from '../../core/services/toast.service';
+import { PrestationDetailComponent } from '../../features/prestations/components/prestation-detail/prestation-detail.component';
 
 @Component({
   selector: 'app-prestation-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatDialogModule],
   templateUrl: './prestation-card.component.html',
   styleUrls: ['./prestation-card.component.css']
 })
@@ -33,7 +35,8 @@ export class PrestationCardComponent implements OnChanges, OnInit {
   constructor(
     private ficheService: FichePrestationService,
     private prestationService: PrestationService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -292,7 +295,23 @@ export class PrestationCardComponent implements OnChanges, OnInit {
   }
 
   onDetailsClick(): void {
-    this.detailsClicked.emit(this.prestationId ?? '');
+    if (!this.prestationId) return;
+
+    // Ouvrir une dialog avec les détails de la prestation
+    const dialogRef = this.dialog.open(PrestationDetailComponent, {
+      width: '95vw',
+      maxWidth: '1400px',
+      maxHeight: '95vh',
+      height: 'auto',
+      panelClass: 'prestation-detail-dialog',
+      data: { id: parseInt(this.prestationId, 10) },
+      autoFocus: false,
+      restoreFocus: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('Dialog des détails fermée');
+    });
   }
 
   onSubmitClick(): void {

@@ -798,25 +798,25 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
 
     .stats-overview {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin-bottom: 3rem;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     .stat-card {
       background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
       backdrop-filter: blur(20px);
       border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 20px;
+      border-radius: 12px;
       box-shadow:
-        0 16px 32px rgba(0, 0, 0, 0.1),
-        0 6px 12px rgba(0, 0, 0, 0.06),
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        0 2px 6px rgba(0, 0, 0, 0.04),
         inset 0 1px 0 rgba(255, 255, 255, 0.8);
-      padding: 1.5rem;
+      padding: 1rem;
       display: flex;
       align-items: center;
-      gap: 1.25rem;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      gap: 0.75rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
     }
@@ -827,16 +827,16 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
       top: 0;
       left: 0;
       right: 0;
-      height: 3px;
+      height: 2px;
       background: linear-gradient(90deg, #3b82f6, #8b5cf6, #f59e0b);
-      border-radius: 20px 20px 0 0;
+      border-radius: 12px 12px 0 0;
     }
 
     .stat-card:hover {
-      transform: translateY(-6px) scale(1.01);
+      transform: translateY(-3px) scale(1.01);
       box-shadow:
-        0 24px 48px rgba(0, 0, 0, 0.12),
-        0 12px 24px rgba(0, 0, 0, 0.08),
+        0 8px 20px rgba(0, 0, 0, 0.1),
+        0 4px 10px rgba(0, 0, 0, 0.06),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
@@ -852,9 +852,9 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
     }
 
     .stat-icon-bg {
-      width: 80px;
-      height: 80px;
-      border-radius: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -865,41 +865,41 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
     /* Icon backgrounds with gradients */
     .total-card .stat-icon-bg {
       background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+      box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
     }
 
     .active-card .stat-icon-bg {
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
     }
 
     .suspended-card .stat-icon-bg {
       background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);
+      box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
     }
 
     .amount-card .stat-icon-bg {
       background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-      box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
+      box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
     }
 
     .stat-icon {
-      width: 36px;
-      height: 36px;
+      width: 24px;
+      height: 24px;
       color: white;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
 
     .stat-icon-shadow {
       position: absolute;
-      bottom: -4px;
+      bottom: -2px;
       left: 50%;
       transform: translateX(-50%);
-      width: 60px;
-      height: 8px;
+      width: 36px;
+      height: 4px;
       background: rgba(0, 0, 0, 0.2);
       border-radius: 50%;
-      filter: blur(6px);
+      filter: blur(4px);
     }
 
     .stat-content {
@@ -907,10 +907,10 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
     }
 
     .stat-number {
-      font-size: 3rem;
-      font-weight: 800;
+      font-size: 1.5rem;
+      font-weight: 700;
       line-height: 1;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
       background: linear-gradient(135deg, #1e293b 0%, #374151 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -918,14 +918,14 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
     }
 
     .stat-label {
-      font-size: 1.25rem;
-      font-weight: 700;
+      font-size: 0.875rem;
+      font-weight: 600;
       color: #374151;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.15rem;
     }
 
     .stat-subtitle {
-      font-size: 0.875rem;
+      font-size: 0.75rem;
       color: #6b7280;
       font-weight: 500;
     }

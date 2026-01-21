@@ -53,7 +53,7 @@ export class ItemService {
     return this.http.get<Item[]>(`${this.API_URL}/by-prestataire/${prestataireId}`);
   }
 
-  getItemsStatistiques(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.API_URL}/statistiques`);
+  getItemsStatistiques(): Observable<Map<string, any>> {
+    return this.http.get<Map<string, any>>(`${this.API_URL}/statistiques`);
   }
 }

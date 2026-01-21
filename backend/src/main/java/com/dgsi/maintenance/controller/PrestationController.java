@@ -315,7 +315,7 @@ public class PrestationController {
     }
 
     @GetMapping("/mes-prestations/dev")
-    public ResponseEntity<?> getMesPrestationsDev(@RequestParam(required = false) String secret, 
+    public ResponseEntity<?> getMesPrestationsDev(@RequestParam(required = false) String secret,
                                                   @RequestParam(required = false) String username) {
         // Simple guard: require known secret value. Change or remove for production.
         if (secret == null || !"dev-secret-please-change".equals(secret)) {
@@ -341,6 +341,25 @@ public class PrestationController {
         } catch (Exception e) {
             log.error("[DEV] Error in getMesPrestationsDev", e);
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/dev")
+    public ResponseEntity<?> getPrestationByIdDev(@PathVariable Long id, @RequestParam(required = false) String secret) {
+        // Simple guard: require known secret value. Change or remove for production.
+        if (secret == null || !"dev-secret-please-change".equals(secret)) {
+            return ResponseEntity.status(403).body("Forbidden: missing or invalid dev secret");
+        }
+
+        try {
+            Optional<Prestation> prestation = prestationService.getPrestationById(id);
+            return prestation.map(ResponseEntity::ok)
+                           .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            log.error("❌ Erreur lors de la récupération de la prestation ID: {}", id, e);
+            return ResponseEntity.internalServerError().body(
+                new ErrorResponse("FETCH_ERROR", "Erreur lors de la récupération de la prestation")
+            );
         }
     }
 
@@ -702,13 +721,13 @@ public class PrestationController {
     @Transactional(readOnly = true)
     public ResponseEntity<byte[]> generatePrestationPdf(@PathVariable Long id) {
         try {
-            // Récupérer la prestation avec les relations nécessaires (avec fetch des collections)
-            Prestation prestation = prestationService.findByIdWithEquipements(id).orElse(null);
+            // Récupérer uniquement les données essentielles pour le PDF (éviter les relations lourdes)
+            Prestation prestation = prestationService.findByIdForPdf(id).orElse(null);
             if (prestation == null) {
                 return ResponseEntity.notFound().build();
             }
 
-            // Générer le PDF
+            // Générer le PDF avec un timeout pour éviter les blocages
             byte[] pdfContent = prestationPdfService.generatePrestationPdf(prestation);
 
             if (pdfContent == null || pdfContent.length == 0) {

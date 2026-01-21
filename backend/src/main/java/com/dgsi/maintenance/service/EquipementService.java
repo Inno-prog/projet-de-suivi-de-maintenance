@@ -3,6 +3,7 @@ package com.dgsi.maintenance.service;
 import java.util.List;
 import java.util.Optional;
 import com.dgsi.maintenance.entity.Equipement;
+import com.dgsi.maintenance.entity.Item;
 import com.dgsi.maintenance.repository.EquipementRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,6 +57,11 @@ public class EquipementService {
 
         // Clear relationships before deletion
         equipement.getPrestations().clear();
+        
+        // Clear the equipment from all items that reference it
+        for (Item item : equipement.getItems()) {
+            item.getEquipements().remove(equipement);
+        }
         equipement.getItems().clear();
 
         // Save to update relationships

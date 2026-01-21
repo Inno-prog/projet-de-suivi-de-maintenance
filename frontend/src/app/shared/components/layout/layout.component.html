@@ -3,7 +3,7 @@
   <app-sidebar #sidebar (toggleChange)="onSidebarToggle($event)" [isOpen]="sidebarOpen" [class.mobile-open]="sidebarOpen && isMobile"></app-sidebar>
 
   <!-- Main Content -->
-  <div class="main-content" [class.sidebar-open]="sidebarOpen && isMobile">
+  <div class="main-content" [class.sidebar-open]="sidebarOpen && isMobile" (click)="onLayoutClick()">
     <!-- Header -->
     <nav class="navbar">
       <div class="container">
@@ -20,212 +20,229 @@
           <!-- Navigation links removed for authenticated users -->
         </div>
 
-        <!-- User Profile + Notifications -->
-
-        <div class="nav-user" *ngIf="currentUser">
-          <div class="profile-section" (click)="toggleProfileMenu()">
-            <button class="profile-item">
-              <div class="user-avatar">
-                <i class="fas fa-user"></i>
-              </div>
+        <!-- User Profile + Notifications (only for authenticated users) -->
+        <div class="nav-user" *ngIf="currentUser" (click)="$event.stopPropagation()">
+          <!-- Notification Bell -->
+          <div class="notification-container">
+            <app-notification-bell></app-notification-bell>
+          </div>
+          
+          <!-- Profile Section with Dropdown -->
+          <div class="profile-section" [class.expanded]="profileMenuOpen">
+            <!-- Profile Header (clickable to toggle dropdown) -->
+            <div class="profile-item" (click)="toggleProfileMenu(); $event.stopPropagation()">
+              <div class="user-avatar">{{ getUserInitials() }}</div>
               <div class="user-info">
-                <span class="user-name">{{ currentUser.nom }}</span>
-                <span class="user-role">{{ getRoleLabel(currentUser.role) }}</span>
+                <p class="user-name">{{ currentUser.nom }}</p>
+                <p class="user-role">{{ getRoleLabel() }}</p>
               </div>
               <i class="fas fa-chevron-down dropdown-icon" [class.rotated]="profileMenuOpen"></i>
-            </button>
-
-            <!-- Profile Dropdown -->
-            <div class="profile-dropdown" *ngIf="profileMenuOpen" (clickOutside)="closeProfileMenu()">
-              <div class="profile-header">
-                <div class="user-avatar-large">
-                  <i class="fas fa-user"></i>
+            </div>
+            
+            <!-- Profile Dropdown Menu -->
+            <div class="profile-dropdown" *ngIf="profileMenuOpen">
+              <!-- Section 1: Profile Details Toggle -->
+              <div class="profile-section-compact">
+                <div class="profile-header-compact">
+                  <div class="user-info-compact">
+                    <div class="user-avatar-small">{{ getUserInitials() }}</div>
+                    <div class="user-details-compact">
+                      <p class="user-name-compact">{{ currentUser?.nom }}</p>
+                      <p class="user-email-compact">{{ currentUser?.email }}</p>
+                    </div>
+                  </div>
+                  <button class="btn-details-toggle" (click)="toggleProfileDetails()" [class.expanded]="showProfileDetails">
+                    <i class="fas fa-chevron-down"></i>
+                    <span>Détails profil</span>
+                  </button>
                 </div>
-                <div class="user-details">
-                  <h4>{{ currentUser.nom }}</h4>
-                  <p>{{ currentUser.email }}</p>
-                  <span class="role-badge" [ngClass]="getRoleClass()">
-                    {{ getRoleLabel(currentUser.role) }}
-                  </span>
+
+                <!-- Expandable Profile Details -->
+                <div class="profile-details-expanded" *ngIf="showProfileDetails">
+                  <div class="profile-details-content">
+                    <div class="detail-row">
+                      <span *ngIf="currentUser?.contact" class="detail-compact">{{ currentUser?.contact }}</span>
+                      <span *ngIf="currentUser?.adresse && currentUser?.contact" class="detail-separator">•</span>
+                      <span *ngIf="currentUser?.adresse" class="detail-compact">{{ currentUser?.adresse }}</span>
+                    </div>
+                    <div class="detail-row" *ngIf="authService.isPrestataire() && (currentUser?.structure || currentUser?.direction || currentUser?.qualification)">
+                      <span *ngIf="currentUser?.structure" class="detail-compact">{{ currentUser?.structure }}</span>
+                      <span *ngIf="currentUser?.direction && currentUser?.structure" class="detail-separator">•</span>
+                      <span *ngIf="currentUser?.direction" class="detail-compact">{{ currentUser?.direction }}</span>
+                      <span *ngIf="currentUser?.qualification && (currentUser?.structure || currentUser?.direction)" class="detail-separator">•</span>
+                      <span *ngIf="currentUser?.qualification" class="detail-compact">{{ currentUser?.qualification }}</span>
+                    </div>
+                    <div class="role-display">
+                      <span class="role-badge" [ngClass]="getRoleClass()">{{ getRoleLabel() }}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <!-- Profile Form directly in dropdown -->
-              <div class="profile-menu" *ngIf="!showProfileForm && !showSettingsForm">
-                <button class="menu-item" (click)="showProfileForm = true; $event.stopPropagation()">
-                  <i class="fas fa-user menu-icon"></i>
-                  Mon Profil
-                </button>
-                <button class="menu-item" (click)="showSettingsForm = true; $event.stopPropagation()">
-                  <i class="fas fa-cog menu-icon"></i>
-                  Paramètres
-                </button>
-                <hr class="menu-divider">
-                <button class="menu-item logout" (click)="logout()">
-                  <i class="fas fa-sign-out-alt menu-icon"></i>
-                  Déconnexion
-                </button>
+              <!-- Section 2: Profile Management -->
+              <div class="profile-management-section">
+                <div class="section-header">
+                  <h4><i class="fas fa-user"></i> Mon Profil</h4>
+                  <button class="btn btn-primary btn-sm" (click)="toggleEditProfile()">
+                    <i class="fas fa-edit"></i> Modifier
+                  </button>
+                </div>
               </div>
 
               <!-- Profile Edit Form -->
-              <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" *ngIf="showProfileForm" (click)="$event.stopPropagation()">
-                <div class="profile-form-content">
-                  <div class="form-group">
-                    <label>Nom complet</label>
-                    <input type="text" class="form-control" formControlName="nom" required>
-                  </div>
-
-                  <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" class="form-control" formControlName="email" required>
-                  </div>
-
-                  <div class="form-group">
-                    <label>Contact</label>
-                    <input type="text" class="form-control" formControlName="contact">
-                  </div>
-
-                  <div class="form-group">
-                    <label>Adresse</label>
-                    <textarea class="form-control" formControlName="adresse" rows="2"></textarea>
-                  </div>
-
-                  <div *ngIf="authService.isPrestataire()">
-                    <div class="form-group">
-                      <label>Structure</label>
-                      <input type="text" class="form-control" formControlName="structure">
-                    </div>
-
-                    <div class="form-group">
-                      <label>Direction</label>
-                      <input type="text" class="form-control" formControlName="direction">
-                    </div>
-
-                    <div class="form-group">
-                      <label>Qualification</label>
-                      <input type="text" class="form-control" formControlName="qualification">
-                    </div>
-                  </div>
-
-                  <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" (click)="showProfileForm = false; $event.stopPropagation()">
-                      Retour
-                    </button>
-                    <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || profileLoading">
-                      <i class="fas fa-spinner fa-spin" *ngIf="profileLoading"></i>
-                      {{ profileLoading ? 'Sauvegarde...' : 'Sauvegarder' }}
-                    </button>
-                  </div>
-                </div>
-              </form>
-
-              <!-- Settings Form -->
-              <div class="profile-form-content" *ngIf="showSettingsForm" (click)="$event.stopPropagation()">
-                <div class="form-group">
-                  <label>Langue de l'interface</label>
-                  <select class="form-control">
-                    <option>Français</option>
-                    <option>English</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label>Notifications par email</label>
-                  <div class="checkbox-group">
-                    <input type="checkbox" id="emailNotif" checked>
-                    <label for="emailNotif">Recevoir les notifications par email</label>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label>Notifications push</label>
-                  <div class="checkbox-group">
-                    <input type="checkbox" id="pushNotif" checked>
-                    <label for="pushNotif">Activer les notifications push</label>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label>Affichage</label>
-                  <select class="form-control">
-                    <option>Mode clair</option>
-                    <option>Mode sombre</option>
-                    <option>Automatique</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label>Fuseau horaire</label>
-                  <select class="form-control">
-                    <option>GMT+0 (Ouagadougou)</option>
-                    <option>GMT+1 (Paris)</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label>Format de date</label>
-                  <select class="form-control">
-                    <option>JJ/MM/AAAA</option>
-                    <option>MM/JJ/AAAA</option>
-                    <option>AAAA-MM-JJ</option>
-                  </select>
-                </div>
-
-                <div class="form-actions">
-                  <button type="button" class="btn btn-secondary" (click)="showSettingsForm = false; $event.stopPropagation()">
-                    Retour
+              <div class="profile-edit-form" *ngIf="isEditingProfile">
+                <div class="profile-form-header">
+                  <h4><i class="fas fa-user-edit"></i> Modifier mon profil</h4>
+                  <button class="close-form-btn" (click)="cancelEditProfile()">
+                    <i class="fas fa-times"></i>
                   </button>
-                  <button type="button" class="btn btn-primary" (click)="saveSettings($event)">
-                    Enregistrer
+                </div>
+
+                <form [formGroup]="profileForm" (ngSubmit)="saveInlineProfile()">
+                  <div class="profile-form-content">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>Nom complet</label>
+                        <input type="text" class="form-control" formControlName="nom" placeholder="Votre nom">
+                      </div>
+                      <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" class="form-control" formControlName="email" placeholder="Votre email">
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>Contact</label>
+                        <input type="text" class="form-control" formControlName="contact" placeholder="Numéro de téléphone">
+                      </div>
+                      <div class="form-group">
+                        <label>Adresse</label>
+                        <input type="text" class="form-control" formControlName="adresse" placeholder="Votre adresse">
+                      </div>
+                    </div>
+
+                    <!-- Prestataire-specific fields -->
+                    <div *ngIf="authService.isPrestataire()">
+                      <div class="form-row">
+                        <div class="form-group">
+                          <label>Structure</label>
+                          <input type="text" class="form-control" formControlName="structure" placeholder="Votre structure">
+                        </div>
+                        <div class="form-group">
+                          <label>Direction</label>
+                          <input type="text" class="form-control" formControlName="direction" placeholder="Votre direction">
+                        </div>
+                      </div>
+                      <div class="form-row single">
+                        <div class="form-group">
+                          <label>Qualification</label>
+                          <input type="text" class="form-control" formControlName="qualification" placeholder="Votre qualification">
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-actions">
+                      <button type="button" class="btn btn-secondary" (click)="cancelEditProfile()">Annuler</button>
+                      <button type="submit" class="btn btn-primary" [disabled]="profileLoading">
+                        {{ profileLoading ? 'Enregistrement...' : 'Enregistrer' }}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Section 3: Settings and Logout -->
+              <div class="settings-logout-section">
+                <div class="settings-display" *ngIf="!isEditingSettings">
+                  <h4><i class="fas fa-cog"></i> Paramètres</h4>
+                  <div class="settings-list">
+                    <div class="setting-item-display">
+                      <span><i class="fas fa-bell"></i> Notifications</span>
+                      <span class="setting-status enabled">Activé</span>
+                    </div>
+                    <div class="setting-item-display">
+                      <span><i class="fas fa-moon"></i> Mode sombre</span>
+                      <span class="setting-status">Désactivé</span>
+                    </div>
+                    <div class="setting-item-display">
+                      <span><i class="fas fa-globe"></i> Langue</span>
+                      <span class="setting-value">Français</span>
+                    </div>
+                  </div>
+                  <button class="btn btn-secondary btn-sm w-full" (click)="toggleEditSettings()">
+                    <i class="fas fa-sliders-h"></i> Gérer les paramètres
+                  </button>
+                </div>
+
+                <!-- Settings Edit Form -->
+                <div class="settings-edit-form" *ngIf="isEditingSettings">
+                  <div class="settings-form-header">
+                    <h4><i class="fas fa-cog"></i> Paramètres</h4>
+                    <button class="close-form-btn" (click)="cancelEditSettings()">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+
+                  <div class="settings-content">
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <label>Notifications en temps réel</label>
+                        <p>Recevez des notifications instantanées</p>
+                      </div>
+                      <label class="switch">
+                        <input type="checkbox" checked>
+                        <span class="slider round"></span>
+                      </label>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <label>Mode sombre</label>
+                        <p>Activer le thème sombre</p>
+                      </div>
+                      <label class="switch">
+                        <input type="checkbox">
+                        <span class="slider round"></span>
+                      </label>
+                    </div>
+
+                    <div class="setting-item">
+                      <div class="setting-info">
+                        <label>Langue</label>
+                        <p>Sélectionnez votre langue</p>
+                      </div>
+                      <select class="form-control lang-select">
+                        <option value="fr">Français</option>
+                        <option value="en">English</option>
+                      </select>
+                    </div>
+
+                    <div class="form-actions">
+                      <button type="button" class="btn btn-secondary" (click)="cancelEditSettings()">Annuler</button>
+                      <button type="button" class="btn btn-primary" (click)="saveInlineSettings($event)">Enregistrer</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Logout Button -->
+                <div class="logout-section">
+                  <button class="menu-item logout" (click)="logout()">
+                    <i class="fas fa-sign-out-alt menu-icon"></i>
+                    <span>Déconnexion</span>
                   </button>
                 </div>
               </div>
             </div>
           </div>
-          <!-- Notification bell placed to the right of profile -->
-          <div class="notification-container">
-            <app-notification-bell></app-notification-bell>
-          </div>
         </div>
+
       </div>
     </nav>
 
     <!-- Page Content -->
     <div class="content">
       <router-outlet></router-outlet>
-    </div>
-  </div>
-
-  <!-- Settings Modal -->
-  <div class="modal-overlay" *ngIf="showSettingsModal" (click)="closeSettingsModal()" style="display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important;">
-    <div class="modal settings-modal" (click)="$event.stopPropagation()" style="visibility: visible !important; opacity: 1 !important; z-index: 10000 !important;">
-      <div class="modal-header">
-        <h2>Paramètres</h2>
-        <button class="close-btn" (click)="closeSettingsModal()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-
-      <div class="modal-body">
-        <p class="mb-4">Gérez vos préférences utilisateur ici.</p>
-        <!-- Example settings: notification toggle, theme -->
-        <div class="form-group">
-          <label>Notifications en temps réel</label>
-          <div>
-            <button class="btn btn-outline" (click)="showDemoMessage('Paramètre démo', $event)">Modifier</button>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Thème</label>
-          <div>
-            <button class="btn btn-outline" (click)="showDemoMessage('Changer thème (démo)', $event)">Changer</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="closeSettingsModal()">Fermer</button>
-      </div>
     </div>
   </div>
 

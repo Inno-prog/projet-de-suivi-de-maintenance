@@ -506,7 +506,7 @@ export class AuthService {
   private async checkKeycloakConnectivity(): Promise<boolean> {
     try {
       // Use a simple HEAD request to check connectivity without triggering CORS issues
-      const response = await fetch('http://localhost:8080/realms/Maintenance-DGSI/.well-known/openid_connect_configuration', {
+      const response = await fetch('http://localhost:8080/realms/Maintenance-DGSI/.well-known/openid-configuration', {
         method: 'HEAD',
         mode: 'no-cors' // Avoid CORS issues during connectivity check
       });

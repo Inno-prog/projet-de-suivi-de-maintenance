@@ -5,11 +5,13 @@ import { Lot, Item } from '../../../../core/models/business.models';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmationService } from '../../../../core/services/confirmation.service';
 import { LotService } from '../../../../core/services/lot.service';
+import { formatLotDisplay } from '../../../../shared/utils/lot-utils';
+import { LotDisplayPipe } from '../../../../shared/pipes/lot-display.pipe';
 
 @Component({
   selector: 'lot-manager',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, LotDisplayPipe],
   template: `
     <div class="lot-manager">
       <div class="d-flex justify-content-between align-items-center mb-4">
@@ -25,7 +27,7 @@ import { LotService } from '../../../../core/services/lot.service';
           <div class="col-md-6" *ngFor="let lot of lots">
             <div class="card h-100">
               <div class="card-header d-flex justify-content-between align-items-center">
-                <h6 class="mb-0">{{ lot.nomLot }}</h6>
+                <h6 class="mb-0">{{ lot.nomLot | lotDisplay }}</h6>
                 <span class="badge bg-primary">{{ getItemsCountForLot(lot) }} items</span>
               </div>
               <div class="card-body">
@@ -109,9 +111,9 @@ import { LotService } from '../../../../core/services/lot.service';
       <div class="modal fade show d-block" tabindex="-1" *ngIf="showItemSelectionModal" (click)="closeItemSelection()">
         <div class="modal-dialog modal-lg" (click)="$event.stopPropagation()">
           <div class="modal-content">
-            <div class="modal-header">
+                <div class="modal-header">
               <h5 class="modal-title">
-                <i class="fa-solid fa-plus me-2"></i>Ajouter des items au lot "{{ selectedLotForItems?.nomLot }}"
+                <i class="fa-solid fa-plus me-2"></i>Ajouter des items au lot "{{ selectedLotForItems?.nomLot | lotDisplay }}"
               </h5>
               <button type="button" class="btn-close" (click)="closeItemSelection()"></button>
             </div>
@@ -175,8 +177,8 @@ import { LotService } from '../../../../core/services/lot.service';
       left: 0 !important;
       right: 0 !important;
       bottom: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
+      width: 100% !important;
+      height: 100% !important;
       background: rgba(0, 0, 0, 0.6) !important;
       z-index: 9998 !important;
       margin: 0 !important;
@@ -189,8 +191,8 @@ import { LotService } from '../../../../core/services/lot.service';
       left: 0 !important;
       right: 0 !important;
       bottom: 0 !important;
-      width: 100vw !important;
-      height: 100vh !important;
+      width: 100% !important;
+      height: 100% !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -396,7 +398,10 @@ export class LotManagerComponent {
 
   // Item management methods
   getItemsForLot(lot: Lot): Item[] {
-    return this.items.filter(item => item.lot === lot.nomLot);
+    // Normalize comparison: items may store lot as a name, number or prefixed value.
+    const normalize = (v?: string) => (v || '').toString().trim().toLowerCase();
+    const lotKey = normalize(lot.nomLot);
+    return this.items.filter(item => normalize(item.lot) === lotKey);
   }
 
   addItemToLot(lot: Lot) {
@@ -465,7 +470,7 @@ export class LotManagerComponent {
   }
 
   getItemsCountForLot(lot: Lot): number {
-    return this.items.filter(item => item.lot === lot.nomLot).length;
+    return this.getItemsForLot(lot).length;
   }
 
 }

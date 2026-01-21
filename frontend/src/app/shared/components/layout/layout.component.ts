@@ -1,6 +1,6 @@
-import { Component, ViewChild, HostListener, ElementRef, OnDestroy, AfterViewInit, AfterViewChecked } from '@angular/core';
+import { Component, ViewChild, HostListener, ElementRef, OnDestroy, AfterViewInit, AfterViewChecked, Directive, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
@@ -10,6 +10,25 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 import { ToastComponent } from '../toast/toast.component';
 import { ConfirmationComponent } from '../confirmation/confirmation.component';
 import { NotificationBellComponent } from '../notification/notification.component';
+
+// Directive pour détecter les clics à l'extérieur d'un élément
+@Directive({
+  selector: '[clickOutside]',
+  standalone: true
+})
+export class ClickOutsideDirective {
+  @Output() clickOutside = new EventEmitter<MouseEvent>();
+
+  constructor(private elementRef: ElementRef) {}
+
+  @HostListener('document:click', ['$event'])
+  onClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!this.elementRef.nativeElement.contains(target)) {
+      this.clickOutside.emit(event);
+    }
+  }
+}
 
 @Component({
   selector: 'app-layout',
@@ -28,7 +47,7 @@ import { NotificationBellComponent } from '../notification/notification.componen
       left: 0;
       right: 0;
       bottom: 0;
-      width: 100vw;
+      width: 100%; /* avoid 100vw which can cause layout shifts with scrollbars */
       height: 100vh;
       display: flex;
       margin: 0;
@@ -43,7 +62,7 @@ import { NotificationBellComponent } from '../notification/notification.componen
       height: 100vh;
       overflow-y: auto;
       overflow-x: hidden;
-      position: fixed;
+      position: fixed !important;
       left: 0;
       top: 0;
       z-index: 100;
@@ -55,7 +74,7 @@ import { NotificationBellComponent } from '../notification/notification.componen
       display: flex;
       flex-direction: column;
       height: 100vh;
-      width: calc(100vw - 260px);
+      width: calc(100% - 260px);
       overflow: hidden;
     }
 
@@ -64,8 +83,8 @@ import { NotificationBellComponent } from '../notification/notification.componen
       min-height: 64px;
       max-height: 64px;
       width: 100%;
-      background: #1e4d7b;
-      position: relative;
+      background: rgb(28, 82, 118);
+      position: relative !important;
       z-index: 50;
     }
 
@@ -230,6 +249,30 @@ import { NotificationBellComponent } from '../notification/notification.componen
       transform: rotate(180deg);
     }
 
+    .dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: auto;
+      min-width: 280px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      margin-top: 0.5rem;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.2s ease;
+    }
+
+    .dropdown-menu.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
     .profile-dropdown {
       position: absolute;
       top: 100%;
@@ -307,7 +350,7 @@ import { NotificationBellComponent } from '../notification/notification.componen
     }
 
     .profile-form-content {
-      padding: 1rem;
+      padding: 1.25rem;
     }
 
     .profile-form-content .form-group {
@@ -570,10 +613,609 @@ import { NotificationBellComponent } from '../notification/notification.componen
       cursor: not-allowed;
     }
 
+    /* Inline profile and settings dropdown styles */
+    .profile-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: auto;
+      min-width: 320px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      margin-top: 0.5rem;
+      overflow: visible;
+    }
+
+    .profile-details-dropdown,
+    .profile-edit-dropdown,
+    .settings-edit-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: auto;
+      min-width: 360px;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      margin-top: 0.5rem;
+      overflow: visible;
+    }
+
+    .profile-details-content {
+      padding: 0;
+    }
+
+    .profile-info-display {
+      padding: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .profile-avatar-section {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .profile-avatar-large {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: white;
+      color: #f97316;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1.25rem;
+      margin: 0 auto 0.5rem auto;
+      border: 2px solid #f97316;
+    }
+
+    .profile-avatar-section h3 {
+      margin: 0 0 0.25rem 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .profile-avatar-section p {
+      margin: 0 0 0.5rem 0;
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    .profile-details-compact {
+      margin-bottom: 0.75rem;
+      padding: 0 1.25rem;
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-bottom: 0.25rem;
+    }
+
+    .detail-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-compact {
+      color: #64748b;
+      font-size: 0.75rem;
+      word-break: break-word;
+      line-height: 1.2;
+    }
+
+    .detail-separator {
+      color: #cbd5e1;
+      font-size: 0.75rem;
+      margin: 0 0.25rem;
+    }
+
+    .profile-details-list {
+      margin-bottom: 1rem;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .detail-item:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      font-weight: 500;
+      color: #64748b;
+      font-size: 0.875rem;
+    }
+
+    .detail-value {
+      color: #1e293b;
+      font-size: 0.875rem;
+      text-align: right;
+      max-width: 60%;
+      word-break: break-word;
+    }
+
+    .profile-actions {
+      text-align: center;
+    }
+
+    .profile-edit-section {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .edit-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .edit-section-header h4 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .w-full {
+      width: 100%;
+    }
+
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+
+    .settings-display {
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .settings-section {
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .settings-display h4 {
+      margin: 0 0 0.75rem 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .settings-list {
+      margin-bottom: 0.75rem;
+    }
+
+    .setting-item-display {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.375rem 0;
+      font-size: 0.875rem;
+      color: #374151;
+    }
+
+    .setting-item-display i {
+      margin-right: 0.5rem;
+      width: 16px;
+      color: #64748b;
+    }
+
+    .setting-status {
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: #f1f5f9;
+      color: #64748b;
+    }
+
+    .setting-status.enabled {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .setting-value {
+      color: #1e293b;
+      font-weight: 500;
+    }
+
+    .settings-actions {
+      text-align: center;
+    }
+
+    .profile-form-header,
+    .settings-form-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .profile-form-header h4,
+    .settings-form-header h4 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .close-form-btn {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      color: #64748b;
+      padding: 0.25rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+      line-height: 1;
+    }
+
+    .close-form-btn:hover {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .profile-edit-dropdown form,
+    .settings-content {
+      padding: 1.25rem;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .form-row.single {
+      display: block;
+    }
+
+    .form-row.single .form-group {
+      width: 100%;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 0.25rem;
+    }
+
+    .form-group .form-control {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      background: white;
+      color: #1e293b;
+    }
+
+    .form-group .form-control:focus {
+      outline: none;
+      border-color: #f97316;
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+      margin-top: 0.5rem;
+    }
+
+    .form-actions .btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+    }
+
+    /* Switch toggle for settings */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+    }
+
+    input:checked + .slider {
+      background-color: #f97316;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .slider.round {
+      border-radius: 20px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+
+    .setting-info {
+      flex: 1;
+    }
+
+    .setting-info label {
+      display: block;
+      font-weight: 500;
+      color: #1e293b;
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .setting-info p {
+      margin: 0;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    .lang-select {
+      padding: 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      background: white;
+      min-width: 120px;
+    }
+
+    /* New compact profile section styles */
+    .profile-section-compact {
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .profile-header-compact {
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .profile-header-compact:hover {
+      background: #f8fafc;
+    }
+
+    .user-info-compact {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .user-avatar-small {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: white;
+      color: #f97316;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: 2px solid #f97316;
+    }
+
+    .user-details-compact {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .user-name-compact {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #1e293b;
+      margin: 0;
+    }
+
+    .user-email-compact {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin: 0;
+    }
+
+    .btn-details-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: none;
+      border: none;
+      color: #64748b;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .btn-details-toggle:hover {
+      color: #1e293b;
+    }
+
+    .btn-details-toggle.expanded i {
+      transform: rotate(180deg);
+    }
+
+    .profile-details-expanded {
+      border-top: 1px solid #f1f5f9;
+      background: #f8fafc;
+      animation: slideDown 0.2s ease-out;
+    }
+
+    .profile-details-content {
+      padding: 1rem 1.25rem;
+    }
+
+    .role-display {
+      margin-top: 0.5rem;
+    }
+
+    /* Profile management section */
+    .profile-management-section {
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .section-header {
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-header h4 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Settings and logout section */
+    .settings-logout-section {
+      background: #f8fafc;
+    }
+
+    .logout-section {
+      padding: 0.75rem 1.25rem 1.25rem 1.25rem;
+    }
+
+    .profile-menu {
+      padding: 0.75rem 1.25rem;
+      background: #f8fafc;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      color: #374151;
+      transition: background 0.2s;
+      border-radius: 6px;
+    }
+
+    .menu-item:hover {
+      background: #f1f5f9;
+    }
+
+    .menu-item.logout {
+      color: #dc2626;
+    }
+
+    .menu-item.logout:hover {
+      background: #fef2f2;
+    }
+
+    .menu-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Section expand animation */
+    .profile-section.expanded .profile-details-dropdown,
+    .profile-section.expanded .profile-edit-dropdown,
+    .profile-section.expanded .settings-edit-dropdown {
+      animation: slideDown 0.2s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
 
   `]
 })
-export class LayoutComponent implements AfterViewInit {
+export class LayoutComponent implements AfterViewInit, OnDestroy {
   @ViewChild('sidebar') sidebar!: SidebarComponent;
   @ViewChild('toast') toast!: ToastComponent;
   @ViewChild('confirmation') confirmation!: ConfirmationComponent;
@@ -589,6 +1231,13 @@ export class LayoutComponent implements AfterViewInit {
   // Dropdown inline form states (used in template for inline profile/settings forms)
   showProfileForm = false;
   showSettingsForm = false;
+  
+  // Inline editing states - profile and settings details displayed inline with edit capability
+  isEditingProfile = false;
+  isEditingSettings = false;
+
+  // Profile details expansion state
+  showProfileDetails = false;
 
   // Prevent sidebar from being closed on desktop, allow on mobile
   private preventSidebarClose = true;
@@ -597,6 +1246,7 @@ export class LayoutComponent implements AfterViewInit {
 
   private routerEventsSub?: Subscription;
   private stabilizeInterval?: any;
+  private layoutObserver?: MutationObserver;
 
   constructor(private fb: FormBuilder, public authService: AuthService, private confirmationService: ConfirmationService, private toastService: ToastService, private elementRef: ElementRef, private router: Router) {
     this.currentUser = this.authService.getCurrentUser();
@@ -634,12 +1284,97 @@ export class LayoutComponent implements AfterViewInit {
 
   ngOnDestroy(): void {
     this.routerEventsSub?.unsubscribe();
-    // No periodic stabilization to clear (we avoid continuous inline style mutation)
+    // Clear observer and any periodic watchdog
+    if (this.layoutObserver) {
+      try { this.layoutObserver.disconnect(); } catch (e) { /* ignore */ }
+      this.layoutObserver = undefined;
+    }
+    if (this.stabilizeInterval) {
+      try { clearInterval(this.stabilizeInterval); } catch (e) { /* ignore */ }
+      this.stabilizeInterval = undefined;
+    }
   }
 
   ngAfterViewInit(): void {
     // Stabiliser le layout immédiatement
     this.stabilizeLayout();
+
+    // Observe DOM mutations and re-apply the stable-layout class and
+    // visibility styles in case something (third-party code or a bug)
+    // removes them at runtime. This ensures the sidebar/navbar do not
+    // disappear unexpectedly during a session.
+    try {
+      this.layoutObserver = new MutationObserver(() => {
+        try {
+          const root = document.querySelector('.app-layout');
+          if (root && !root.classList.contains('stable-layout')) {
+            root.classList.add('stable-layout');
+            this.updateNavbarCssVars();
+            console.log('LayoutComponent - MutationObserver: re-added stable-layout');
+          }
+
+          const sidebarEl = document.querySelector('app-sidebar') as HTMLElement | null;
+          if (sidebarEl) {
+            sidebarEl.style.display = 'block';
+            sidebarEl.style.visibility = 'visible';
+            sidebarEl.style.opacity = '1';
+          }
+          const navbarEl = document.querySelector('.navbar') as HTMLElement | null;
+          if (navbarEl) {
+            navbarEl.style.display = 'block';
+            navbarEl.style.visibility = 'visible';
+            navbarEl.style.opacity = '1';
+          }
+        } catch (e) {
+          // ignore per-observer errors
+        }
+      });
+
+      this.layoutObserver.observe(document.documentElement, { attributes: true, subtree: true, attributeFilter: ['class', 'style'] });
+    } catch (e) {
+      console.warn('LayoutComponent - failed to init MutationObserver', e);
+    }
+
+    // Lightweight watchdog: occasional check to recover layout after long idle periods.
+    try {
+      this.stabilizeInterval = setInterval(() => {
+        try {
+          if (typeof document === 'undefined' || document.visibilityState !== 'visible') return;
+          const root = document.querySelector('.app-layout');
+          if (root && !root.classList.contains('stable-layout')) {
+            root.classList.add('stable-layout');
+            this.updateNavbarCssVars();
+            console.log('LayoutComponent - Watchdog: reapplied stable-layout');
+          }
+
+          const sidebarEl = document.querySelector('app-sidebar') as HTMLElement | null;
+          if (sidebarEl) {
+            const cs = getComputedStyle(sidebarEl);
+            if (sidebarEl.style.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') {
+              sidebarEl.style.display = 'block';
+              sidebarEl.style.visibility = 'visible';
+              sidebarEl.style.opacity = '1';
+              console.log('LayoutComponent - Watchdog: restored sidebar visibility');
+            }
+          }
+
+          const navbarEl = document.querySelector('.navbar') as HTMLElement | null;
+          if (navbarEl) {
+            const csNav = getComputedStyle(navbarEl);
+            if (navbarEl.style.display === 'none' || csNav.visibility === 'hidden' || csNav.opacity === '0') {
+              navbarEl.style.display = 'block';
+              navbarEl.style.visibility = 'visible';
+              navbarEl.style.opacity = '1';
+              console.log('LayoutComponent - Watchdog: restored navbar visibility');
+            }
+          }
+        } catch (e) {
+          // swallow
+        }
+      }, 15000);
+    } catch (e) {
+      // ignore if interval not permitted
+    }
   }
 
   private stabilizeLayout(): void {
@@ -662,22 +1397,28 @@ export class LayoutComponent implements AfterViewInit {
 
   toggleSidebar() {
     console.log('LayoutComponent - toggleSidebar called. isMobile:', this.isMobile, 'current sidebarOpen:', this.sidebarOpen);
-    // Always keep sidebar open for debugging
-    this.sidebarOpen = true;
-    if (this.sidebar) {
-      this.sidebar.isOpen = true;
+    // Toggle state; respect preventSidebarClose on desktop
+    this.sidebarOpen = !this.sidebarOpen;
+    if (this.preventSidebarClose && !this.isMobile && !this.sidebarOpen) {
+      // restore open state on desktop
+      this.sidebarOpen = true;
+      console.log('LayoutComponent - prevented closing sidebar on desktop');
     }
-    console.log('LayoutComponent - Forcing sidebarOpen to true');
+    if (this.sidebar) {
+      this.sidebar.isOpen = this.sidebarOpen;
+    }
   }
 
   onSidebarToggle(isOpen: boolean) {
     console.log('LayoutComponent - onSidebarToggle called with isOpen:', isOpen, 'current isMobile:', this.isMobile);
-    // Always keep sidebar open for debugging
-    this.sidebarOpen = true;
-    if (this.sidebar && !isOpen) {
-      this.sidebar.isOpen = true;
-      console.log('LayoutComponent - Forced sidebar.isOpen to true');
+    if (this.preventSidebarClose && !this.isMobile && !isOpen) {
+      this.sidebarOpen = true;
+      if (this.sidebar) this.sidebar.isOpen = true;
+      console.log('LayoutComponent - prevented sidebar close on desktop');
+      return;
     }
+    this.sidebarOpen = isOpen;
+    if (this.sidebar) this.sidebar.isOpen = isOpen;
   }
 
   getUserInitials(): string {
@@ -687,6 +1428,10 @@ export class LayoutComponent implements AfterViewInit {
 
   toggleProfileMenu() {
     this.profileMenuOpen = !this.profileMenuOpen;
+  }
+
+  toggleProfileDetails() {
+    this.showProfileDetails = !this.showProfileDetails;
   }
 
   closeProfileMenu() {
@@ -704,7 +1449,29 @@ export class LayoutComponent implements AfterViewInit {
     if (!this.elementRef.nativeElement.contains(target)) {
       // Close profile menu when clicking outside
       this.profileMenuOpen = false;
+      this.isEditingProfile = false;
+      this.isEditingSettings = false;
     }
+  }
+
+  /**
+   * Close dropdown when clicking on the main content area
+   */
+  onLayoutClick() {
+    this.profileMenuOpen = false;
+    this.isEditingProfile = false;
+    this.isEditingSettings = false;
+  }
+
+  /**
+   * UI-level session activity check. Returns true as long as the user is
+   * authenticated OR was authenticated within the last hour (grace period).
+   * This prevents transient auth falsey values from immediately hiding the layout.
+   */
+  isSessionActive(graceMs: number = 60 * 60 * 1000): boolean {
+    if (this.authService.isAuthenticated()) return true;
+    if (!this.authService.lastAuthenticatedAt) return false;
+    return (Date.now() - this.authService.lastAuthenticatedAt) < graceMs;
   }
 
   private checkScreenSize() {
@@ -835,6 +1602,64 @@ export class LayoutComponent implements AfterViewInit {
     // For now, just show a success message as settings are local preferences
     this.toastService.show({ type: 'success', title: 'Succès', message: 'Paramètres enregistrés avec succès' });
     this.showSettingsForm = false;
+  }
+
+  // Inline editing methods for profile and settings
+  toggleEditProfile() {
+    this.isEditingProfile = !this.isEditingProfile;
+    if (this.isEditingProfile) {
+      // Pre-fill form with current user data when entering edit mode
+      this.profileForm.patchValue({
+        nom: this.currentUser?.nom || '',
+        email: this.currentUser?.email || '',
+        contact: this.currentUser?.contact || '',
+        adresse: this.currentUser?.adresse || '',
+        structure: this.currentUser?.structure || '',
+        direction: this.currentUser?.direction || '',
+        qualification: this.currentUser?.qualification || ''
+      });
+    }
+  }
+
+  toggleEditSettings() {
+    this.isEditingSettings = !this.isEditingSettings;
+  }
+
+  cancelEditProfile() {
+    this.isEditingProfile = false;
+  }
+
+  cancelEditSettings() {
+    this.isEditingSettings = false;
+  }
+
+  saveInlineProfile() {
+    if (this.profileForm.valid) {
+      this.profileLoading = true;
+      const profileData = this.profileForm.value;
+
+      this.authService.updateUserProfile(profileData).subscribe({
+        next: (updatedUser) => {
+          this.profileLoading = false;
+          this.isEditingProfile = false;
+          this.currentUser = updatedUser;
+          this.toastService.show({ type: 'success', title: 'Succès', message: 'Profil mis à jour avec succès' });
+        },
+        error: (error) => {
+          this.profileLoading = false;
+          console.error('Error updating profile:', error);
+          this.toastService.show({ type: 'error', title: 'Erreur', message: 'Erreur lors de la mise à jour du profil' });
+        }
+      });
+    }
+  }
+
+  saveInlineSettings(event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.toastService.show({ type: 'success', title: 'Succès', message: 'Paramètres enregistrés avec succès' });
+    this.isEditingSettings = false;
   }
 
   /**

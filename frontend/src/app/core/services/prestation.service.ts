@@ -27,6 +27,11 @@ export interface Prestation {
   rolePrestataire?: string;
   qualificationPrestataire?: string;
 
+  // Responsable de la prestation
+  nomResponsablePrestation?: string;
+  contactResponsablePrestation?: string;
+  qualificationResponsablePrestation?: string;
+
   // Lot information
   lot?: string;
 
@@ -140,7 +145,24 @@ export class PrestationService {
   }
 
   getPrestationById(id: number): Observable<Prestation> {
-    return this.http.get<Prestation>(`${this.apiUrl}/${id}`);
+    // In development, use the dev endpoint that doesn't require authentication
+    if (!environment.production) {
+      return this.http.get<Prestation>(`${this.apiUrl}/${id}/dev?secret=dev-secret-please-change`).pipe(
+        tap(prestation => console.log('✅ Prestation loaded (dev):', prestation)),
+        catchError(error => {
+          console.error('❌ ERROR - Dev endpoint failed for getPrestationById:', error);
+          return throwError(() => error);
+        })
+      );
+    }
+
+    return this.http.get<Prestation>(`${this.apiUrl}/${id}`).pipe(
+      tap(prestation => console.log('✅ Prestation loaded:', prestation)),
+      catchError(error => {
+        console.error('❌ ERROR - Failed to load prestation:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   // CRÉER une prestation

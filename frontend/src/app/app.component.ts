@@ -10,12 +10,12 @@ import { environment } from '../environments/environment';
   standalone: true,
   imports: [RouterOutlet, CommonModule, LayoutComponent],
   template: `
-    <ng-container *ngIf="authService.isAuthenticated()">
+    <ng-container *ngIf="authService.getCurrentUser()">
       <app-layout>
         <router-outlet></router-outlet>
       </app-layout>
     </ng-container>
-    <ng-container *ngIf="!authService.isAuthenticated()">
+    <ng-container *ngIf="!authService.getCurrentUser()">
       <router-outlet></router-outlet>
     </ng-container>
   `
