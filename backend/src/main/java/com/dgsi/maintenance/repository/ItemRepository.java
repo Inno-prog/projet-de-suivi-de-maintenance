@@ -52,6 +52,25 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByLotIn(@Param("lots") List<String> lots);
 
     // Trouver les items par lot (avec variante pour "Lot X" vs "X")
-    @Query("SELECT i FROM Item i WHERE LOWER(TRIM(i.lot)) IN :lotNames")
+    @Query("SELECT DISTINCT i FROM Item i WHERE " +
+           "LOWER(TRIM(i.lot)) IN :lotNames OR " +
+           "LOWER(TRIM(REPLACE(i.lot, 'Lot ', ''))) IN :lotNames OR " +
+           "LOWER(TRIM(REPLACE(i.lot, 'lot', ''))) IN :lotNames OR " +
+           "LOWER(TRIM(CONCAT('Lot ', i.lot))) IN :lotNames OR " +
+           "LOWER(TRIM(CONCAT('lot', i.lot))) IN :lotNames OR " +
+           "UPPER(TRIM(i.lot)) IN :lotNames OR " +
+           "UPPER(TRIM(REPLACE(i.lot, 'Lot ', ''))) IN :lotNames OR " +
+           "UPPER(TRIM(CONCAT('Lot ', i.lot))) IN :lotNames")
     List<Item> findByLotNameInIgnoreCase(@Param("lotNames") List<String> lotNames);
+
+    // NOUVELLE MÉTHODE: Recherche optimisée par lots avec correspondance flexible
+    // Gère les cas: "3", "lot3", "Lot 3", "lot 3", etc.
+    @Query(value = "SELECT * FROM items i WHERE " +
+           "LOWER(TRIM(i.lot)) = ANY(:lotNumbers) OR " +
+           "LOWER(TRIM(REPLACE(i.lot, 'lot', ''))) = ANY(:lotNumbers) OR " +
+           "LOWER(TRIM(REPLACE(i.lot, 'Lot ', ''))) = ANY(:lotNumbers) OR " +
+           "LOWER(TRIM(CONCAT('lot', i.lot))) = ANY(:lotNumbers) OR " +
+           "LOWER(TRIM(CONCAT('lot ', i.lot))) = ANY(:lotNumbers)",
+           nativeQuery = true)
+    List<Item> findByLotNumbersFlexible(@Param("lotNumbers") List<String> lotNumbers);
 }

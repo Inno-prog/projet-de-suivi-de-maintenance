@@ -89,9 +89,10 @@ import { Subscription } from 'rxjs';
               class="w-full border border-gray-300 rounded-lg py-2 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
             >
               <option value="">Tous les statuts</option>
-              <option value="en attente">En attente</option>
-              <option value="en cours">Validées</option>
-              <option value="terminée">rejetées</option>
+              <option value="EN_ATTENTE">En attente de validation</option>
+              <option value="VALIDE">Validées</option>
+              <option value="REJETE">Rejetées</option>
+              <option value="BROUILLON">Brouillons</option>
             </select>
           </div>
 
@@ -365,9 +366,9 @@ export class PrestationListComponent implements OnInit {
       );
     }
 
-    // Filter by status
+    // Filter by validation status
     if (this.selectedStatut) {
-      filtered = filtered.filter(p => p.statut === this.selectedStatut);
+      filtered = filtered.filter(p => (p as any).statutValidation === this.selectedStatut);
     }
 
     this.filteredDisplayItems = filtered;

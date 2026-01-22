@@ -469,6 +469,22 @@ public class PrestationController {
         }
     }
 
+    @GetMapping("/count-all-items")
+    @PreAuthorize("hasRole('PRESTATAIRE') or hasRole('ADMINISTRATEUR')")
+    @Transactional(readOnly = true)
+    public ResponseEntity<java.util.Map<String, Long>> countAllItems() {
+        log.info("📊 Comptage des prestations pour tous les items");
+
+        try {
+            java.util.Map<String, Long> itemCounts = prestationService.countAllByNomPrestation();
+            log.info("✅ Nombre d'items avec comptage: {}", itemCounts.size());
+            return ResponseEntity.ok(itemCounts);
+        } catch (Exception e) {
+            log.error("❌ Erreur lors du comptage des items: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @GetMapping("/count")
     @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
     @Transactional(readOnly = true)

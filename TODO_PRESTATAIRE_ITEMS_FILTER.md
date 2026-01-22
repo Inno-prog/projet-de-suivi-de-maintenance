@@ -1,64 +1,45 @@
-# Filtrage des Items par Prestataire
+# Plan de Correction - Affichage des Items pour les Prestataires
 
-## Objectif
-Un prestataire doit voir uniquement les items liés à ses contrats (via les lots).
+## Problème Identifié
+Le système n'affiche pas les items aux prestataires malgré qu'ils ont un contrat sur un lot.
+Le problème vient de l'incohérence dans le format des noms de lots:
+- Contrat: "3" (juste le numéro)
+- Item: "lot3" ou "Lot 3" (avec préfixe)
 
-## Plan d'implémentation
+## Fichiers à Modifier
 
-### Backend
+### 1. Backend - `ItemController.java`
+- Améliorer la logique de normalisation des lots
+- Ajouter des requêtes SQL plus robustes dans `ItemRepository.java`
+- Corriger la méthode `getItemsByPrestataire()`
 
-1. **ItemRepository.java** ✅ FAIT
-   - Ajouter une méthode pour trouver les items par liste de lots
-   ```java
-   List<Item> findByLotIn(List<String> lots);
-   List<Item> findByLotNameInIgnoreCase(List<String> lotNames);
-   ```
+### 2. Backend - `ItemRepository.java`
+- Ajouter des requêtes optimisées pour la correspondance de lots
 
-2. **ItemController.java** ✅ FAIT
-   - Améliorer `getItemsByPrestataire()` pour mieux gérer la correspondance lot → item
-   - Utiliser une requête JPQL plus efficace avec fallback
+### 3. Frontend - `item.service.ts`
+- Optionnel: Ajouter des logs pour le débogage
 
-### Frontend
+## Étapes de Correction
 
-3. **item.service.ts** ✅ DÉJÀ PRESENT
-   - La méthode `getItemsByPrestataire()` existe déjà
+### Étape 1: Corriger ItemRepository.java
+Ajouter une nouvelle méthode de requête SQL pour gérer les correspondances de lots:
+- `findByLotNormalized()` - gestion flexible des formats de lots
 
-4. **item-list.component.ts** ✅ FAIT
-   - Injecter `AuthService` pour connaître le rôle de l'utilisateur
-   - Modifier `loadItems()` pour appeler:
-     - `getAllItems()` si ADMINISTRATEUR
-     - `getItemsByPrestataire(id)` si PRESTATAIRE
-   - Adapter les lots affichés pour les prestataires
+### Étape 2: Corriger ItemController.java  
+Améliorer la méthode `getItemsByPrestataire()`:
+- Normaliser les lots des contrats (extraire juste le numéro)
+- Normaliser les lots des items (retirer le préfixe "lot")
+- Faire la correspondance sur les numéros uniquement
 
-## Tâches
+### Étape 3: Corriger ContratRepository.java (si nécessaire)
+Vérifier et améliorer les méthodes de recherche de contrats par lot
 
-- [x] 1. Ajouter méthode findByLotIn dans ItemRepository
-- [x] 2. Améliorer endpoint getItemsByPrestataire dans ItemController
-- [x] 3. Modifier ItemListComponent pour filtrer par rôle
-- [ ] 4. Tester le comportement pour ADMIN et PRESTATAIRE
+### Étape 4: Ajouter des logs de débogage
+Pour faciliter le diagnostic futur des problèmes de correspondance
 
-## Notes
-
-L'endpoint existant `/api/items/by-prestataire/{prestataireId}` retourne les items dont le lot correspond aux lots des contrats du prestataire.
-
-## Flux de données
-
-1. Prestataire se connecte
-2. Frontend vérifie le rôle avec `authService.isPrestataire()`
-3. Si prestataire:
-   - Appelle `/api/items/by-prestataire/{id}`
-   - Le backend récupère les contrats du prestataire
-   - Extrait les lots des contrats
-   - Filtre les items dont le `lot` correspond
-4. Si admin:
-   - Appelle `/api/items` pour tous les items
-
-## Débogage
-
-Les logs de débogage sont ajoutés avec le préfixe `[DEBUG]`:
-- `[DEBUG] Loading items for prestataire: {id}`
-- `[DEBUG] Prestataire items loaded: {count}`
-- `[DEBUG] Prestataire {id} has {n} contracts`
-- `[DEBUG] Looking for items with lots: {lots}`
-- `[DEBUG] Found {n} items matching the lots`
+## Vérification
+Après les modifications:
+1. Redémarrer le backend
+2. Tester avec un prestataire comme "netcomAfrique"
+3. Vérifier que les items de son lot s'affichent correctement
 

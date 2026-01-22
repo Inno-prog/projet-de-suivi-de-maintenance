@@ -100,4 +100,6 @@
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/ReferenceDataService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/StructureMefpService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/UserService.java
+/home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/util/DatabaseFixer.java
+/home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/util/DbChecker.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/util/LotUtils.java

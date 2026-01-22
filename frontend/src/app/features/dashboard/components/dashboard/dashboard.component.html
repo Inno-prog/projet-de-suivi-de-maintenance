@@ -1,5 +1,17 @@
 <!-- Admin Dashboard Layout -->
 <div *ngIf="isAdmin" class="admin-dashboard">
+  <!-- Google Maps Background -->
+  <div class="map-background">
+    <iframe 
+      id="google-map"
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.5932023843613!2d-1.5334512240710387!3d12.36865458757334!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9e1c754a5a85%3A0x3534a28a2ef20271!2sOuagadougou%2C%20Burkina%20Faso!5e0!3m2!1sfr!2sbf!4v1705846800000!5m2!1sfr!2sbf" 
+      allowfullscreen="" 
+      loading="lazy" 
+      referrerpolicy="no-referrer-when-downgrade"
+      title="Carte de Ouagadougou"
+    ></iframe>
+  </div>
+
   <!-- Header with Hamburger and Search -->
   <header class="dashboard-header">
     <div class="header-top">
@@ -71,128 +83,174 @@
         </div>
       </div>
 
-      <!-- Statistics Cards Section -->
-      <section class="stats-section">
-        <div class="section-header">
-          <h2>Statistiques du système</h2>
-          <div class="stats-actions">
-            <button class="refresh-btn" (click)="refreshStats()" title="Actualiser les statistiques">
-              <span>🔄</span> Actualiser
-            </button>
-            <button class="export-btn" (click)="exportStats()" title="Exporter les statistiques">
-              <span>📊</span> Exporter
-            </button>
-          </div>
-        </div>
-        
-        <div class="stats-grid">
-          <div class="stat-card" *ngFor="let stat of statsCards">
-            <div class="stat-icon">{{ stat.icon }}</div>
-            <div class="stat-content">
-              <div class="stat-number">{{ stat.value }}</div>
-              <div class="stat-label">{{ stat.label }}</div>
-              <div class="stat-change" [class]="stat.changeClass">{{ stat.change }}</div>
+      <!-- Dashboard Metrics & Carousel Section -->
+      <div class="dashboard-metrics-carousel-section">
+        <!-- Statistic cards -->
+        <div class="stats-container">
+          <div class="stats-grid">
+            <!-- Carte Utilisateurs -->
+            <div class="stat-card">
+              <div class="card-header">
+                  <div class="card-title">Utilisateurs</div>
+                  <div class="card-trend">
+                      <span class="trend-icon">↑</span>
+                      <span class="trend-value">12%</span>
+                  </div>
+              </div>
+              <div class="card-body">
+                  <div class="card-number">{{ adminMetrics[0]?.value }}</div>
+              </div>
+              <div class="card-progress">
+                  <div class="progress-bar">
+                      <div class="progress-fill" style="width: 75%;"></div>
+                  </div>
+                  <div class="progress-label">Total des utilisateurs</div>
+              </div>
+              <div class="card-icon product-icon">
+                  👥
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
 
-      <!-- Prestations Preview Section -->
-      <section class="prestations-preview">
-        <div class="section-header">
-          <h2>Aperçu des Prestations</h2>
-          <div class="preview-actions">
-            <button class="view-all-btn" routerLink="/prestations">Voir toutes les prestations</button>
-          </div>
-        </div>
-        
-        <div class="prestations-grid">
-          <div class="prestation-card" *ngFor="let prestation of recentPrestations">
-            <div class="prestation-header">
-              <div class="prestation-title">{{ prestation.title }}</div>
-              <div class="prestation-date">{{ prestation.date }}</div>
-            </div>
-            <div class="prestation-details">
-              <div class="detail-item">
-                <span class="detail-label">Structure:</span>
-                <span class="detail-value">{{ prestation.structure }}</span>
+            <!-- Carte Prestations -->
+            <div class="stat-card">
+              <div class="card-header">
+                  <div class="card-title">Prestations</div>
+                  <div class="card-trend">
+                      <span class="trend-icon">↑</span>
+                      <span class="trend-value">8%</span>
+                  </div>
               </div>
-              <div class="detail-item">
-                <span class="detail-label">Statut:</span>
-                <span class="status-badge" [class]="'status-' + prestation.status.toLowerCase()">{{ prestation.status }}</span>
+              <div class="card-body">
+                  <div class="card-number">{{ adminMetrics[1]?.value }}</div>
               </div>
-              <div class="detail-item">
-                <span class="detail-label">Prestataire:</span>
-                <span class="detail-value">{{ prestation.prestataire }}</span>
+              <div class="card-progress">
+                  <div class="progress-bar">
+                      <div class="progress-fill" style="width: 82%;"></div>
+                  </div>
+                  <div class="progress-label">Prestations ce mois</div>
+              </div>
+              <div class="card-icon order-icon">
+                  📋
               </div>
             </div>
-            <div class="prestation-actions">
-              <button class="action-btn view-btn" (click)="viewPrestation(prestation.id)">Voir</button>
-              <button class="action-btn edit-btn" (click)="editPrestation(prestation.id)">Modifier</button>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      <!-- Quick Actions Section -->
-      <section class="quick-actions">
+            <!-- Carte Structures MEFP -->
+            <div class="stat-card">
+              <div class="card-header">
+                  <div class="card-title">Structures MEFP</div>
+                  <div class="card-trend">
+                      <span class="trend-icon">↑</span>
+                      <span class="trend-value">5%</span>
+                  </div>
+              </div>
+              <div class="card-body">
+                  <div class="card-number">{{ adminMetrics[2]?.value }}</div>
+              </div>
+              <div class="card-progress">
+                  <div class="progress-bar">
+                      <div class="progress-fill" style="width: 90%;"></div>
+                  </div>
+                  <div class="progress-label">Structures actives</div>
+              </div>
+              <div class="card-icon customer-icon">
+                  🏛️
+              </div>
+            </div>
+
+            <!-- Carte Contrats -->
+            <div class="stat-card">
+              <div class="card-header">
+                  <div class="card-title">Contrats</div>
+                  <div class="card-trend negative">
+                      <span class="trend-icon">↓</span>
+                      <span class="trend-value">1%</span>
+                  </div>
+              </div>
+              <div class="card-body">
+                  <div class="card-number">{{ adminMetrics[3]?.value }}</div>
+              </div>
+              <div class="card-progress">
+                  <div class="progress-bar">
+                      <div class="progress-fill" style="width: 85%;"></div>
+                  </div>
+                  <div class="progress-label">Contrats en cours</div>
+              </div>
+              <div class="card-icon review-icon">
+                  📄
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel -->
+        <div class="carousel-section">
+          <div class="carousel" (mouseenter)="stopCarousel()" (mouseleave)="startCarousel()">
+            <div class="carousel-track">
+              <img *ngFor="let img of carouselImages; let i = index" [src]="img" [class.active]="i === currentCarouselIndex" alt="carousel image"/>
+            </div>
+            <div class="carousel-controls">
+              <button type="button" class="ctrl prev" (click)="prevSlide()">‹</button>
+              <button type="button" class="ctrl next" (click)="nextSlide()">›</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Quick Actions - 5 Cards -->
+      <section class="admin-quick-actions-section">
         <div class="section-header">
-          <h2>Actions Rapides</h2>
+          <h2>⚡ Actions Rapides</h2>
         </div>
         
-        <div class="actions-grid">
-          <a routerLink="/prestations" class="action-card">
-            <div class="action-icon">📋</div>
-            <div class="action-content">
-              <h3>Prestations & Validation</h3>
-              <p>Valider ou rejeter les fiches de prestations</p>
+        <div class="admin-quick-actions-grid">
+          <a routerLink="/prestations" class="admin-quick-action-card" style="--card-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+            <div class="admin-action-card-glow"></div>
+            <div class="admin-action-card-icon">📋</div>
+            <div class="admin-action-card-content">
+              <h3>Nouvelle Prestation</h3>
+              <p>Créer une nouvelle demande de prestation</p>
             </div>
-            <div class="action-arrow">→</div>
+            <div class="admin-action-card-arrow">→</div>
           </a>
           
-          <a routerLink="/users" class="action-card">
-            <div class="action-icon">👥</div>
-            <div class="action-content">
-              <h3>Gérer les Utilisateurs</h3>
-              <p>Administrer les comptes utilisateur</p>
-            </div>
-            <div class="action-arrow">→</div>
-          </a>
-          
-          <a routerLink="/contrats" class="action-card">
-            <div class="action-icon">📄</div>
-            <div class="action-content">
-              <h3>Gérer les Contrats</h3>
+          <a routerLink="/contrats" class="admin-quick-action-card" style="--card-color: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
+            <div class="admin-action-card-glow"></div>
+            <div class="admin-action-card-icon">📄</div>
+            <div class="admin-action-card-content">
+              <h3>Gestion Contrats</h3>
               <p>Visualiser et gérer tous les contrats</p>
             </div>
-            <div class="action-arrow">→</div>
+            <div class="admin-action-card-arrow">→</div>
           </a>
           
-          <a routerLink="/ordres-commande" class="action-card">
-            <div class="action-icon">📋</div>
-            <div class="action-content">
+          <a routerLink="/users" class="admin-quick-action-card" style="--card-color: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">
+            <div class="admin-action-card-glow"></div>
+            <div class="admin-action-card-icon">👥</div>
+            <div class="admin-action-card-content">
+              <h3>Gestion Utilisateurs</h3>
+              <p>Administrer les comptes utilisateur</p>
+            </div>
+            <div class="admin-action-card-arrow">→</div>
+          </a>
+          
+          <a routerLink="/ordres-commande" class="admin-quick-action-card" style="--card-color: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)">
+            <div class="admin-action-card-glow"></div>
+            <div class="admin-action-card-icon">📋</div>
+            <div class="admin-action-card-content">
               <h3>Ordres de Commande</h3>
-              <p>Accéder aux ordres de commande par trimestre</p>
+              <p>Accéder aux ordres de commande</p>
             </div>
-            <div class="action-arrow">→</div>
+            <div class="admin-action-card-arrow">→</div>
           </a>
           
-          <a routerLink="/équipements" class="action-card">
-            <div class="action-icon">🛠️</div>
-            <div class="action-content">
-              <h3>Équipements</h3>
-              <p>Gestion complète des équipements informatiques</p>
-            </div>
-            <div class="action-arrow">→</div>
-          </a>
-          
-          <a routerLink="/structures-mefp" class="action-card">
-            <div class="action-icon">🏛️</div>
-            <div class="action-content">
+          <a routerLink="/structures-mefp" class="admin-quick-action-card" style="--card-color: linear-gradient(135deg, #fa709a 0%, #fee140 100%)">
+            <div class="admin-action-card-glow"></div>
+            <div class="admin-action-card-icon">🏛️</div>
+            <div class="admin-action-card-content">
               <h3>Structures MEFP</h3>
               <p>Gérer les structures et leurs équipements</p>
             </div>
-            <div class="action-arrow">→</div>
+            <div class="admin-action-card-arrow">→</div>
           </a>
         </div>
       </section>
@@ -304,160 +362,3 @@
       </div>
     </div>
   </div>
-</div>
-
-<!-- Nouveau contenu enrichi pour remplir la page -->
-<div class="dashboard-extended" *ngIf="isAuthenticated" style="padding: 2rem; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); min-height: 400px;">
-  <div class="container" style="max-width: 1200px; margin: 0 auto;">
-    <!-- Section des rapports et analyses -->
-    <div class="reports-section" style="margin-bottom: 3rem;">
-      <h2 style="color: #1e4d7b; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 700;">Rapports et Analyses</h2>
-      <div class="reports-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-        <div class="report-card" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-left: 4px solid #f97316;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-            <h3 style="margin: 0; color: #1e4d7b; font-size: 1.1rem;">Performance Globale</h3>
-            <span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">En temps réel</span>
-          </div>
-          <p style="color: #6b7280; margin-bottom: 1rem; line-height: 1.5;">Suivi des indicateurs clés de performance pour l'ensemble du système de maintenance.</p>
-          <div style="display: flex; gap: 1rem;">
-            <button style="flex: 1; padding: 0.75rem; background: #1e4d7b; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Voir le rapport</button>
-            <button style="flex: 1; padding: 0.75rem; background: transparent; color: #1e4d7b; border: 2px solid #1e4d7b; border-radius: 8px; cursor: pointer; font-weight: 600;">Exporter</button>
-          </div>
-        </div>
-
-        <div class="report-card" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-left: 4px solid #3b82f6;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-            <h3 style="margin: 0; color: #1e4d7b; font-size: 1.1rem;">Analyse Financière</h3>
-            <span style="background: #dbeafe; color: #1e4d7b; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Mensuel</span>
-          </div>
-          <p style="color: #6b7280; margin-bottom: 1rem; line-height: 1.5;">Détails des coûts, budgets et dépenses liés aux prestations de maintenance.</p>
-          <div style="display: flex; gap: 1rem;">
-            <button style="flex: 1; padding: 0.75rem; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Voir le rapport</button>
-            <button style="flex: 1; padding: 0.75rem; background: transparent; color: #3b82f6; border: 2px solid #3b82f6; border-radius: 8px; cursor: pointer; font-weight: 600;">Exporter</button>
-          </div>
-        </div>
-
-        <div class="report-card" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-left: 4px solid #10b981;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-            <h3 style="margin: 0; color: #1e4d7b; font-size: 1.1rem;">Satisfaction Clients</h3>
-            <span style="background: #d1fae5; color: #065f46; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">Trimestriel</span>
-          </div>
-          <p style="color: #6b7280; margin-bottom: 1rem; line-height: 1.5;">Évaluation de la satisfaction des structures MEFP concernant les prestations réalisées.</p>
-          <div style="display: flex; gap: 1rem;">
-            <button style="flex: 1; padding: 0.75rem; background: #10b981; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Voir le rapport</button>
-            <button style="flex: 1; padding: 0.75rem; background: transparent; color: #10b981; border: 2px solid #10b981; border-radius: 8px; cursor: pointer; font-weight: 600;">Exporter</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Section des notifications et alertes -->
-    <div class="alerts-section" style="margin-bottom: 3rem;">
-      <h2 style="color: #1e4d7b; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 700;">Notifications et Alertes</h2>
-      <div class="alerts-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
-        <div class="notifications-list" style="background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 1.5rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h3 style="margin: 0; color: #1e4d7b; font-size: 1.1rem;">Dernières Notifications</h3>
-            <span style="background: #f3f4f6; color: #374151; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;">5 non lues</span>
-          </div>
-          <div class="notification-items" style="display: flex; flex-direction: column; gap: 1rem;">
-            <div class="notification-item" style="padding: 1rem; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 8px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <span style="font-weight: 600; color: #92400e;">Nouvelle prestation soumise</span>
-                <span style="font-size: 0.8rem; color: #92400e;">Il y a 2 heures</span>
-              </div>
-              <p style="margin: 0; color: #92400e; font-size: 0.9rem;">La structure MEFP "Ministère des Finances" a soumis une nouvelle demande de prestation.</p>
-            </div>
-            
-            <div class="notification-item" style="padding: 1rem; background: #dbeafe; border-left: 4px solid #3b82f6; border-radius: 8px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <span style="font-weight: 600; color: #1e4d7b;">Rappel de contrat</span>
-                <span style="font-size: 0.8rem; color: #1e4d7b;">Hier</span>
-              </div>
-              <p style="margin: 0; color: #1e4d7b; font-size: 0.9rem;">Le contrat "DGSI-2024-001" arrive à expiration dans 30 jours.</p>
-            </div>
-            
-            <div class="notification-item" style="padding: 1rem; background: #fee2e2; border-left: 4px solid #ef4444; border-radius: 8px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <span style="font-weight: 600; color: #991b1b;">Prestation en retard</span>
-                <span style="font-size: 0.8rem; color: #991b1b;">Aujourd'hui</span>
-              </div>
-              <p style="margin: 0; color: #991b1b; font-size: 0.9rem;">La prestation "Maintenance informatique" pour la structure "Trésor Public" est en retard de 5 jours.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="quick-actions-sidebar" style="background: linear-gradient(135deg, #1e4d7b 0%, #2d5a8a 100%); border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 1.5rem;">
-          <h3 style="margin: 0 0 1rem 0; color: white; font-size: 1.1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">Actions Rapides</h3>
-          <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <button style="padding: 1rem; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; backdrop-filter: blur(10px); transition: all 0.3s ease;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span>Nouvelle Prestation</span>
-                <span style="font-size: 1.2rem;">➕</span>
-              </div>
-              <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Créer une nouvelle demande de prestation</div>
-            </button>
-            
-            <button style="padding: 1rem; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; backdrop-filter: blur(10px); transition: all 0.3s ease;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span>Gestion Contrats</span>
-                <span style="font-size: 1.2rem;">📄</span>
-              </div>
-              <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Consulter et gérer les contrats</div>
-            </button>
-            
-            <button style="padding: 1rem; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; backdrop-filter: blur(10px); transition: all 0.3s ease;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span>Statistiques</span>
-                <span style="font-size: 1.2rem;">📊</span>
-              </div>
-              <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Voir les statistiques détaillées</div>
-            </button>
-            
-            <button style="padding: 1rem; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; cursor: pointer; font-weight: 600; text-align: left; backdrop-filter: blur(10px); transition: all 0.3s ease;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span>Support</span>
-                <span style="font-size: 1.2rem;">❓</span>
-              </div>
-              <div style="font-size: 0.8rem; opacity: 0.9; margin-top: 0.25rem;">Obtenir de l'aide et du support</div>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Section des indicateurs clés -->
-    <div class="kpi-section" style="margin-bottom: 3rem;">
-      <h2 style="color: #1e4d7b; margin-bottom: 1.5rem; font-size: 1.8rem; font-weight: 700;">Indicateurs Clés de Performance</h2>
-      <div class="kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
-        <div class="kpi-card" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;">
-          <div style="font-size: 2.5rem; margin-bottom: 1rem;">⚡</div>
-          <h3 style="margin: 0 0 0.5rem 0; color: #1e4d7b; font-size: 1.1rem;">Taux de Réponse</h3>
-          <div style="font-size: 2rem; font-weight: 700; color: #10b981; margin-bottom: 0.5rem;">98.5%</div>
-          <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Temps moyen de réponse aux demandes</p>
-        </div>
-
-        <div class="kpi-card" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;">
-          <div style="font-size: 2.5rem; margin-bottom: 1rem;">✅</div>
-          <h3 style="margin: 0 0 0.5rem 0; color: #1e4d7b; font-size: 1.1rem;">Taux de Satisfaction</h3>
-          <div style="font-size: 2rem; font-weight: 700; color: #f59e0b; margin-bottom: 0.5rem;">4.2/5</div>
-          <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Évaluation moyenne des prestations</p>
-        </div>
-
-        <div class="kpi-card" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;">
-          <div style="font-size: 2.5rem; margin-bottom: 1rem;">⏱️</div>
-          <h3 style="margin: 0 0 0.5rem 0; color: #1e4d7b; font-size: 1.1rem;">Délai Moyen</h3>
-          <div style="font-size: 2rem; font-weight: 700; color: #3b82f6; margin-bottom: 0.5rem;">2.3 jours</div>
-          <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Temps moyen de traitement</p>
-        </div>
-
-        <div class="kpi-card" style="background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;">
-          <div style="font-size: 2.5rem; margin-bottom: 1rem;">💰</div>
-          <h3 style="margin: 0 0 0.5rem 0; color: #1e4d7b; font-size: 1.1rem;">Coût Moyen</h3>
-          <div style="font-size: 2rem; font-weight: 700; color: #8b5cf6; margin-bottom: 0.5rem;">125 000 FCFA</div>
-          <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Coût moyen par prestation</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>

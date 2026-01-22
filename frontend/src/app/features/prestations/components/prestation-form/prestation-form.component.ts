@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -28,6 +28,7 @@ import { formatLotDisplay as formatLotDisplayUtil } from '../../../../shared/uti
   templateUrl: './prestation-form.component.html',
   styleUrls: ['./prestation-form.component.css'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -140,6 +141,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private toastService: ToastService,
     private confirmationService: ConfirmationService,
+    private cdr: ChangeDetectorRef,
     public dialogRef: MatDialogRef<PrestationFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
@@ -236,7 +238,6 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     // Removed: this.loadStructuresMefp(); // Now loaded based on lot selection
     this.loadEquipements();
     this.loadPrestataires();
-    this.loadItemPrestationsCounters(); // Load item counters for max validation
     this.setupItemSelectionListener();
 
     // Test lot matching for debugging
@@ -291,7 +292,9 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
 
         this.testLotMatching();
         this.updateFilteredItems();
+        this.loadItemPrestationsCounters(); // Charger les compteurs après le chargement des items
         this.loading = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('❌ Erreur lors du chargement des données:', error);
@@ -427,6 +430,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
 
         console.log('📦 Lots disponibles (raw):', this.availableLots);
         console.log('📦 Lot entities (stored):', this.lotEntities);
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('❌ Erreur lors du chargement des lots:', error);
@@ -441,33 +445,48 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
    */
   formatLotDisplay(raw?: string): string { return formatLotDisplayUtil(raw); }
 
+  // Flag pour éviter les appels multiples simultanés
+  private isLoadingCounters = false;
+  
   loadItemPrestationsCounters(): void {
-    if (!this.items || this.items.length === 0) {
+    if (!this.items || this.items.length === 0 || this.isLoadingCounters) {
       return;
     }
 
+    this.isLoadingCounters = true;
     console.log('🔄 Chargement des compteurs de quantités utilisées pour validation côté client');
+    console.log('📦 Items à traiter:', this.items.map(item => item.nomItem));
 
-    // Utiliser la même logique que le backend : compter dynamiquement depuis les prestations validées
-    // Pour chaque item, charger le nombre de prestations utilisant cet item
-    this.items.forEach(item => {
-      if (item.nomItem) {
-        // Utiliser l'appel count-by-item qui existe sur le backend
-        this.prestationService.getCountByItem(item.nomItem).subscribe({
-          next: (count: number) => {
-            // Stocker le nombre de prestations utilisant cet item
-            this.itemPrestationsCount[item.nomItem] = count;
-            console.log(`📊 Nombre de prestations chargées pour "${item.nomItem}": ${count}/${item.quantiteMaxTrimestre || 0}`);
-          },
-          error: (error) => {
-            console.error(`❌ Erreur chargement compteur pour "${item.nomItem}":`, error);
+    // Utiliser le nouveau endpoint pour récupérer tous les compteurs en une seule requête
+    this.prestationService.getCountAllItems().subscribe({
+      next: (itemCounts) => {
+        console.log('✅ Tous les compteurs récupérés:', itemCounts);
+        
+        // Mettre à jour les compteurs pour chaque item
+        this.items.forEach(item => {
+          if (item.nomItem) {
+            this.itemPrestationsCount[item.nomItem] = itemCounts[item.nomItem] || 0;
+            console.log(`📊 Nombre de prestations chargées pour "${item.nomItem}": ${this.itemPrestationsCount[item.nomItem]}/${item.quantiteMaxTrimestre || 0}`);
+          }
+        });
+        
+        this.isLoadingCounters = false;
+        console.log('✅ Chargement des compteurs de validation terminé');
+        console.log('📊 État des compteurs:', this.itemPrestationsCount);
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        console.error('❌ Erreur chargement des compteurs:', error);
+        // Mettre tous les compteurs à 0 en cas d'erreur
+        this.items.forEach(item => {
+          if (item.nomItem) {
             this.itemPrestationsCount[item.nomItem] = 0;
           }
         });
+        this.isLoadingCounters = false;
+        this.cdr.markForCheck();
       }
     });
-
-    console.log('✅ Chargement des compteurs de validation terminé');
   }
 
   loadPrestataires(): void {
@@ -512,6 +531,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     if (!lotId) {
       console.log('🏢 No lotId provided, clearing structures');
       this.structuresMefp = [];
+      this.cdr.markForCheck();
       return;
     }
 
@@ -537,6 +557,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
             fonctionCI: ''
           });
         }
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('🏢 Error loading structures by lot:', error);
@@ -876,10 +897,9 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     return numberMatch ? `lot${numberMatch[0]}` : normalized;
   }
 
-  get filteredItems(): Item[] {
-    console.log('🔍 filteredItems getter called, returning:', this.filteredItemsList.length, 'items');
-    return this.filteredItemsList;
-  }
+  // Supprimer le getter pour éviter les appels à chaque cycle de détection
+  // Utiliser directement filteredItemsList dans le template
+
 
   onLotChange(): void {
     console.log('🎯 onLotChange called - change event fired');

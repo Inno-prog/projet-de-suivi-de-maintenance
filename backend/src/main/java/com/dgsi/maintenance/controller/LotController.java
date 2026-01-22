@@ -138,11 +138,23 @@ public class LotController {
     @PreAuthorize("hasRole('ADMINISTRATEUR') or (hasRole('PRESTATAIRE') and #prestataireId == authentication.principal.id)")
     public ResponseEntity<List<LotWithContractorDto>> getLotsByPrestataire(@PathVariable String prestataireId) {
         try {
-            // Get contracts for this prestataire
+            // Get contracts for this prestataire using foreign key
             List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findByPrestataireId(prestataireId)
                 .stream()
-                .filter(contrat -> contrat.getStatut() == StatutContrat.ACTIF)
+                .filter(contrat -> contrat.getStatut() == com.dgsi.maintenance.entity.StatutContrat.ACTIF)
                 .collect(Collectors.toList());
+
+            // If no contracts found with foreign key, try alternative methods
+            if (contrats.isEmpty()) {
+                System.out.println("⚠️ No contracts found with prestataire_id=" + prestataireId + ", trying alternative searches...");
+                
+                // Try finding by contact email (for prestataires registered in the system)
+                List<com.dgsi.maintenance.entity.Contrat> contratsByContact = contratRepository.findActiveContratsByContactPrestataire(prestataireId);
+                if (!contratsByContact.isEmpty()) {
+                    contrats.addAll(contratsByContact);
+                    System.out.println("✅ Found " + contratsByContact.size() + " contracts by contact email");
+                }
+            }
 
             System.out.println("🔍 Found " + contrats.size() + " active contracts for prestataire " + prestataireId);
 

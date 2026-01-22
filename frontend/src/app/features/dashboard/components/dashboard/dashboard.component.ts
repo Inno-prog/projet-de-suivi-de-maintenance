@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ChangeDetectorRef } from '@angular/core';
 import { Subscription, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
@@ -254,7 +254,19 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
 
     <!-- Authenticated Dashboard Layout -->
     <ng-container *ngIf="isAuthenticated">
-      <div class="dashboard-container">
+      <div class="dashboard-container" style="position: relative; min-height: 100vh;">
+        <!-- Google Maps Background -->
+        <div class="map-background" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.6;">
+          <iframe 
+            id="google-map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.5932023843613!2d-1.5334512240710387!3d12.36865458757334!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9e1c754a5a85%3A0x3534a28a2ef20271!2sOuagadougou%2C%20Burkina%20Faso!5e0!3m2!1sfr!2sbf!4v1705846800000!5m2!1sfr!2sbf" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Carte de Ouagadougou"
+            style="width: 100%; height: 100%; border: none; filter: grayscale(30%) brightness(1.1);"
+          ></iframe>
+        </div>
         <!-- Welcome Section for Authenticated Users (except Agent DGSI) -->
         <div class="welcome-palette" *ngIf="isAuthenticated && !isAgentDGSI" style="margin-bottom: 10px;">
            <div class="welcome-card">
@@ -280,53 +292,76 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
               </button>
             </div>
             <div class="stats-grid">
-              <mat-card class="stat-card mat-elevation-z3">
-                <div class="stat-card-content">
-                  <div class="stat-icon">
-                    <mat-icon aria-hidden="false" aria-label="users"></mat-icon>
-                  </div>
-                  <div class="stat-meta">
-                    <div class="stat-number">{{ stats.totalUsers }}</div>
-                    <div class="stat-label">Utilisateurs</div>
-                  </div>
+              <div class="stat-card" style="--card-color: #ff6b6b;">
+                <div class="stat-icon">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="var(--card-color)" opacity="0.3"/>
+                    <path d="M12 8v8M8 12h8" stroke="var(--card-color)" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
                 </div>
-              </mat-card>
+                <div class="stat-info">
+                  <div class="stat-label">Utilisateurs</div>
+                  <div class="stat-number">{{ stats.totalUsers }}</div>
+                </div>
+                <div class="stat-trend">
+                  <div class="trend-arrow">↑</div>
+                  <div class="trend-value">12%</div>
+                </div>
+              </div>
 
-              <mat-card class="stat-card mat-elevation-z3">
-                <div class="stat-card-content">
-                  <div class="stat-icon">
-                    <mat-icon></mat-icon>
-                  </div>
-                  <div class="stat-meta">
-                    <div class="stat-number">{{ stats.totalPrestations }}</div>
-                    <div class="stat-label">Prestations</div>
-                  </div>
+              <div class="stat-card" style="--card-color: #4dabf7;">
+                <div class="stat-icon">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="var(--card-color)" opacity="0.3"/>
+                    <path d="M14 2H6v20h8" stroke="var(--card-color)" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M14 8l6-6v10" stroke="var(--card-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </div>
-              </mat-card>
+                <div class="stat-info">
+                  <div class="stat-label">Prestations</div>
+                  <div class="stat-number">{{ stats.totalPrestations }}</div>
+                </div>
+                <div class="stat-trend">
+                  <div class="trend-arrow">↑</div>
+                  <div class="trend-value">8%</div>
+                </div>
+              </div>
 
-              <mat-card class="stat-card mat-elevation-z3">
-                <div class="stat-card-content">
-                  <div class="stat-icon">
-                    <mat-icon></mat-icon>
-                  </div>
-                  <div class="stat-meta">
-                    <div class="stat-number">{{ stats.totalStructuresMefp }}</div>
-                    <div class="stat-label">Structures du MEFP</div>
-                  </div>
+              <div class="stat-card" style="--card-color: #ffd43b;">
+                <div class="stat-icon">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="var(--card-color)" opacity="0.3"/>
+                    <path d="M12 6a6 6 0 110 12 6 6 0 010-12z" stroke="var(--card-color)" stroke-width="2"/>
+                    <circle cx="12" cy="12" r="2" fill="var(--card-color)"/>
+                  </svg>
                 </div>
-              </mat-card>
+                <div class="stat-info">
+                  <div class="stat-label">Structures MEFP</div>
+                  <div class="stat-number">{{ stats.totalStructuresMefp }}</div>
+                </div>
+                <div class="stat-trend">
+                  <div class="trend-arrow">↑</div>
+                  <div class="trend-value">5%</div>
+                </div>
+              </div>
 
-              <mat-card class="stat-card mat-elevation-z3">
-                <div class="stat-card-content">
-                  <div class="stat-icon">
-                    <mat-icon></mat-icon>
-                  </div>
-                  <div class="stat-meta">
-                    <div class="stat-number">{{ stats.totalContrats }}</div>
-                    <div class="stat-label">Contrats</div>
-                  </div>
+              <div class="stat-card" style="--card-color: #51cf66;">
+                <div class="stat-icon">
+                  <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" fill="var(--card-color)" opacity="0.3"/>
+                    <path d="M12 8l2 2 4-4" stroke="var(--card-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="12" r="6" stroke="var(--card-color)" stroke-width="2"/>
+                  </svg>
                 </div>
-              </mat-card>
+                <div class="stat-info">
+                  <div class="stat-label">Contrats</div>
+                  <div class="stat-number">{{ stats.totalContrats }}</div>
+                </div>
+                <div class="stat-trend">
+                  <div class="trend-arrow">↑</div>
+                  <div class="trend-value">15%</div>
+                </div>
+              </div>
             </div>
 
             <!-- Admin Actions -->
@@ -335,30 +370,55 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
               <div class="actions-grid">
                 <!-- Admin actions -->
                 <ng-container *ngIf="isAdmin">
-                  <a routerLink="/prestations" class="action-card">
-                    <div class="action-icon">📋</div>
-                    <h3>Prestations & Validation</h3>
-                    <p>Valider ou rejeter les fiches de prestations</p>
+                  <a routerLink="/prestations" class="action-card" style="--card-color: #ff6b6b;">
+                    <div class="action-icon">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" fill="var(--card-color)" opacity="0.2"/>
+                        <circle cx="12" cy="12" r="10" stroke="var(--card-color)" stroke-width="2"/>
+                        <path d="M8 12L11 15L16 9" stroke="var(--card-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <h3>Prestations</h3>
                   </a>
-                  <a routerLink="/users" class="action-card">
-                    <div class="action-icon">👥</div>
-                    <h3>Gérer les Utilisateurs</h3>
-                    <p>Administrer les comptes utilisateur</p>
+                  <a routerLink="/users" class="action-card" style="--card-color: #4dabf7;">
+                    <div class="action-icon">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" fill="var(--card-color)" opacity="0.2"/>
+                        <circle cx="12" cy="12" r="10" stroke="var(--card-color)" stroke-width="2"/>
+                        <path d="M8 12L11 15L16 9" stroke="var(--card-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <h3>Utilisateurs</h3>
                   </a>
-                  <a routerLink="/contrats" class="action-card">
-                    <div class="action-icon">📄</div>
-                    <h3>Gérer les Contrats</h3>
-                    <p>Visualiser et gérer tous les contrats</p>
+                  <a routerLink="/contrats" class="action-card" style="--card-color: #51cf66;">
+                    <div class="action-icon">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" fill="var(--card-color)" opacity="0.2"/>
+                        <circle cx="12" cy="12" r="10" stroke="var(--card-color)" stroke-width="2"/>
+                        <path d="M8 12L11 15L16 9" stroke="var(--card-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <h3>Contrats</h3>
                   </a>
-                  <a routerLink="/ordres-commande" class="action-card">
-                    <div class="action-icon">📋</div>
+                  <a routerLink="/ordres-commande" class="action-card" style="--card-color: #ffd43b;">
+                    <div class="action-icon">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" fill="var(--card-color)" opacity="0.2"/>
+                        <circle cx="12" cy="12" r="10" stroke="var(--card-color)" stroke-width="2"/>
+                        <path d="M8 12L11 15L16 9" stroke="var(--card-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
                     <h3>Ordres de Commande</h3>
-                    <p>Accéder aux ordres de commande par trimestre</p>
                   </a>
-                  <a routerLink="/équipements" class="action-card">
-                    <div class="action-icon">🛠️</div>
+                  <a routerLink="/équipements" class="action-card" style="--card-color: #748ffc;">
+                    <div class="action-icon">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" fill="var(--card-color)" opacity="0.2"/>
+                        <circle cx="12" cy="12" r="10" stroke="var(--card-color)" stroke-width="2"/>
+                        <path d="M8 12L11 15L16 9" stroke="var(--card-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
                     <h3>Équipements</h3>
-                    <p>Gestion complète des équipements informatiques</p>
                   </a>
                 </ng-container>
               </div>
@@ -373,6 +433,44 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
   styles: [`
     /* CSS Variables */
     :host { --primary: #f97316; --dark: #0f172a; --gray: #f1f5f9; --blue: #1e4d7b; }
+
+    /* Dashboard Content Positioning */
+    .dashboard-content {
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    .stats-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
+
+    .role-actions {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+    }
+
+    .action-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+    }
+
+    .welcome-palette {
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    .welcome-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+    }
 
     /* HEADER OFFICIEL */
     .official-header {
@@ -607,7 +705,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     }
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1rem;
       align-items: stretch;
       margin-top: 1rem;
@@ -615,30 +713,99 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     .stat-card {
       background: white;
       border-radius: 12px;
-      padding: 0.75rem 1rem;
+      padding: 1.25rem;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 6px 18px rgba(15,23,42,0.06);
-      border: 1px solid rgba(226,232,240,0.6);
-      transition: transform 0.18s ease, box-shadow 0.18s ease;
-      min-height: 88px;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(15,23,42,0.09); }
-    .stat-card-content { display:flex; gap:1rem; align-items:center; }
-    .stat-icon { width:52px; height:52px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:#f8fafc; box-shadow: 0 6px 14px rgba(2,6,23,0.06); }
-    .stat-icon mat-icon { font-size:22px; color:#0f172a; }
-    .stat-meta { text-align:left; }
-    .stat-number { font-size:2rem; font-weight:800; color:var(--text-primary); margin-bottom:0.125rem; line-height:1; }
-    .stat-label { font-size:0.85rem; color:var(--text-secondary); margin-bottom:0; }
-    .stat-meta .stat-change { font-size:0.8rem; }
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: -40px;
+      width: 120px;
+      height: 120px;
+      background: var(--card-color, #ff6b6b);
+      border-radius: 50%;
+    }
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .stat-info {
+      flex: 1;
+      z-index: 1;
+    }
+    .stat-label {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 0.5rem;
+    }
+    .stat-number {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+    .stat-trend {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      text-align: center;
+      z-index: 1;
+      color: white;
+    }
+    .trend-arrow {
+      font-size: 0.875rem;
+      margin-bottom: 0.125rem;
+    }
+    .trend-value {
+      font-size: 0.65rem;
+      font-weight: 600;
+    }
 
     .role-actions { margin-top: 1.75rem; }
     .actions-grid {
       display:grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap:1rem;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap:1.5rem;
       margin-top:0.75rem;
+    }
+    .action-card {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      border: 1px solid #e5e7eb;
+    }
+    .action-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .action-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+    .action-card h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin: 0;
     }
     .public-layout {
       min-height: 100vh;
@@ -1562,22 +1729,57 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       gap: 1rem;
     }
 
-    .stat-card { /* keep same compact style for alternate block */
+    .stat-card {
         background: white;
-        padding: 0.9rem 1rem;
-        border-radius: 12px;
-        box-shadow: 0 8px 20px rgba(2,6,23,0.06);
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+        text-align: center;
         position: relative;
-        transition: transform 0.18s ease, box-shadow 0.18s ease;
-        border: 1px solid rgba(226,232,240,0.6);
+        transition: all 0.3s ease;
+        border: 1px solid rgba(249, 115, 22, 0.1);
         display: flex;
+        flex-direction: column;
+        justify-content: center;
         align-items: center;
-        justify-content: space-between;
       }
 
-      .stat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 36px rgba(2,6,23,0.08); }
+      .stat-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 60px rgba(249, 115, 22, 0.15), 0 8px 24px rgba(0, 0, 0, 0.1);
+        border-color: rgba(249, 115, 22, 0.3);
+      }
 
-    .stat-sticker { display:none; }
+    .stat-sticker {
+       margin-bottom: 0.75rem;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       width: 56px;
+       height: 56px;
+       background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+       border-radius: 50%;
+       box-shadow: 0 8px 24px rgba(249, 115, 22, 0.25), 0 4px 12px rgba(249, 115, 22, 0.15);
+       border: 3px solid rgba(249, 115, 22, 0.3);
+       position: relative;
+       overflow: hidden;
+     }
+
+     .stat-sticker::before {
+       content: '';
+       position: absolute;
+       top: -50%;
+       left: -50%;
+       width: 200%;
+       height: 200%;
+       background: linear-gradient(45deg, transparent, rgba(249, 115, 22, 0.15), transparent);
+       animation: rotate 4s linear infinite;
+     }
+
+     @keyframes rotate {
+       0% { transform: rotate(0deg); }
+       100% { transform: rotate(360deg); }
+     }
 
     .stat-sticker .material-symbols-outlined {
       font-size: 48px;

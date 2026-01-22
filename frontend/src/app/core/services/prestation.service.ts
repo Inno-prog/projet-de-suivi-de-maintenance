@@ -251,6 +251,22 @@ export class PrestationService {
     );
   }
 
+  // COMPTER les prestations pour tous les items en une seule requête
+  getCountAllItems(): Observable<{ [nomItem: string]: number }> {
+    const url = `${this.apiUrl}/count-all-items`;
+    console.log(`🔍 GET ${url}`);
+
+    return this.http.get<{ [nomItem: string]: number }>(url).pipe(
+      timeout(15000), // Timeout de 15s
+      retry(2), // 2 tentatives
+      tap(counts => console.log(`✅ Counts received for all items: ${Object.keys(counts).length} items`)),
+      catchError(error => {
+        console.error('❌ Error getting all item counts:', error);
+        return of({}); // Retourner un objet vide en cas d'erreur
+      })
+    );
+  }
+
   // VÉRIFIER si le maximum de prestations est atteint pour un item
   checkMaxPrestationsReached(nomItem: string, maxAllowed: number): Observable<boolean> {
     return this.getCountByItem(nomItem).pipe(

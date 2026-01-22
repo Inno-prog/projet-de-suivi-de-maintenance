@@ -535,68 +535,31 @@ export class MyItemsComponent implements OnInit {
 
     console.log('SUCCESS - Loading items for prestataire (dev):', currentUser.id);
 
-    // First load the prestataire's lots, then filter items by those lots
-    this.lotService.getLotsByPrestataire(currentUser.id).subscribe({
-      next: (lots) => {
-        this.lots = lots || [];
-        const lotIds = this.lots.map(lot => lot.lot);
+    // Utiliser le endpoint dédié backend qui a une logique robuste de correspondance lots/items
+    this.itemService.getItemsByPrestataire(currentUser.id).subscribe({
+      next: (items) => {
+        this.items = items || [];
+        this.filteredItems = [...this.items];
+        this.loading = false;
 
-        if (lotIds.length === 0) {
-          console.log('No lots found for prestataire');
-          this.items = [];
-          this.filteredItems = [];
-          this.loading = false;
+        console.log('Items found for prestataire:', this.items);
+
+        if (this.items.length === 0) {
           this.toast.show({
             type: 'info',
             title: 'Information',
-            message: 'Aucun lot assigné à votre compte'
+            message: 'Aucun item trouvé dans vos lots assignés'
           });
-          return;
         }
-
-        // Load all items and filter by prestataire's lots
-        this.itemService.getAllItems().subscribe({
-          next: (allItems) => {
-            console.log('SUCCESS - All items loaded (dev):', allItems);
-            // Filter items by the prestataire's lots
-            this.items = (allItems || []).filter(item =>
-              item.lot && lotIds.includes(item.lot)
-            );
-            this.filteredItems = [...this.items];
-            this.loading = false;
-
-            console.log('Filtered items for prestataire lots:', this.items);
-
-            if (this.items.length === 0) {
-              this.toast.show({
-                type: 'info',
-                title: 'Information',
-                message: 'Aucun item trouvé dans vos lots assignés'
-              });
-            }
-          },
-          error: (error) => {
-            console.error('Erreur lors du chargement des items:', error);
-            this.items = [];
-            this.filteredItems = [];
-            this.toast.show({
-              type: 'error',
-              title: 'Erreur',
-              message: 'Impossible de charger vos items. Veuillez réessayer.'
-            });
-            this.loading = false;
-          }
-        });
       },
       error: (error) => {
-        console.error('Erreur lors du chargement des lots:', error);
-        this.lots = [];
+        console.error('Erreur lors du chargement des items:', error);
         this.items = [];
         this.filteredItems = [];
         this.toast.show({
           type: 'error',
           title: 'Erreur',
-          message: 'Impossible de charger vos lots. Veuillez réessayer.'
+          message: 'Impossible de charger vos items. Veuillez réessayer.'
         });
         this.loading = false;
       }

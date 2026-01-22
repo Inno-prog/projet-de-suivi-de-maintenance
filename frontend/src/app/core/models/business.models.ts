@@ -266,6 +266,7 @@ export interface Item {
 
 export interface Equipement {
   id?: number;
+  numero?: number;
   nomEquipement: string;
   description?: string;
   typeEquipement: string;

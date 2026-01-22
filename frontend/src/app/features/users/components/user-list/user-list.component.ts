@@ -62,9 +62,7 @@ import { AuthService } from '../../../../core/services/auth.service';
                 <tr *ngFor="let user of filteredUsers">
                   <td>
                     <div class="cell-content">
-                      <svg class="cell-icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                      </svg>
+                      <img [src]="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + user.nom" alt="{{ user.nom }}" class="avatar-circle">
                       {{ user.nom }}
                     </div>
                   </td>
@@ -346,12 +344,26 @@ import { AuthService } from '../../../../core/services/auth.service';
       color: #374151;
       font-size: 0.875rem;
       font-weight: 400;
-      border-bottom: 2px solid #e5e7eb;
-      border-right: 1px solid #e5e7eb;
+      border-bottom: 1px solid #f3f4f6;
+      border-right: 1px solid #f3f4f6;
     }
 
     td:last-child {
       border-right: none;
+    }
+
+    .avatar-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      flex-shrink: 0;
     }
 
     .edit-btn, .delete-btn {

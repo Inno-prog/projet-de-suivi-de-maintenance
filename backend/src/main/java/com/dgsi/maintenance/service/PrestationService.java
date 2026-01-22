@@ -780,14 +780,14 @@ public class PrestationService {
     }
 
     /**
-     * Récupération paginée des prestations
+     * Récupération paginée des prestations pour le tableau de bord admin (exclut les BROUILLON)
      */
     @Transactional(readOnly = true)
     public Page<Prestation> getAllPrestationsPaginated(int page, int size) {
         try {
-            log.info("Fetching paginated prestations from database (page={}, size={})", page, size);
+            log.info("Fetching paginated prestations for admin dashboard (page={}, size={})", page, size);
             Pageable pageable = PageRequest.of(page, size);
-            Page<Prestation> prestationsPage = prestationRepository.findAll(pageable);
+            Page<Prestation> prestationsPage = prestationRepository.findAllForAdminDashboard(pageable);
             log.info("Found {} prestations in page {}/{} (total: {})",
                     prestationsPage.getContent().size(), page + 1, prestationsPage.getTotalPages(), prestationsPage.getTotalElements());
             return prestationsPage;
@@ -864,13 +864,39 @@ public class PrestationService {
                 }
             }
 
-            Long count = prestationRepository.countByNomPrestation(nomItem);
+            Long count = prestationRepository.countPrestationsByItemName(nomItem);
             log.info("✅ Count pour {}: {}", nomItem, count);
             return count;
 
         } catch (Exception e) {
             log.error("❌ Erreur critique lors du comptage pour: {}", nomItem, e);
             return 0L; // Retourner 0 plutôt que de faire échouer la requête
+        }
+    }
+
+    /**
+     * Count prestations for all item names
+     */
+    @Transactional(readOnly = true)
+    public java.util.Map<String, Long> countAllByNomPrestation() {
+        log.info("🔍 Comptage des prestations pour tous les items");
+        
+        try {
+            List<Object[]> results = prestationRepository.countByNomPrestationGrouped();
+            java.util.Map<String, Long> counts = new java.util.HashMap<>();
+            
+            for (Object[] result : results) {
+                String nomItem = (String) result[0];
+                Long count = (Long) result[1];
+                counts.put(nomItem, count);
+            }
+            
+            log.info("✅ Nombre d'items avec comptage: {}", counts.size());
+            return counts;
+            
+        } catch (Exception e) {
+            log.error("❌ Erreur lors du comptage des items: {}", e.getMessage(), e);
+            return new java.util.HashMap<>();
         }
     }
 

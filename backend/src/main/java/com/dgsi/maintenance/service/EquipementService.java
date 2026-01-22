@@ -16,6 +16,24 @@ public class EquipementService {
     @Autowired
     private EquipementRepository equipementRepository;
 
+    /**
+     * Calculates the next available equipment number.
+     * Reuses numbers that have been deleted to avoid gaps.
+     */
+    public int getNextAvailableNumero() {
+        List<Integer> usedNumeros = equipementRepository.findAllUsedNumeros();
+        
+        if (usedNumeros.isEmpty()) {
+            return 1;
+        }
+        
+        int nextNumero = 1;
+        while (usedNumeros.contains(nextNumero)) {
+            nextNumero++;
+        }
+        return nextNumero;
+    }
+
     public List<Equipement> getAllEquipements() {
         return equipementRepository.findAll();
     }
@@ -33,12 +51,16 @@ public class EquipementService {
     }
 
     public Equipement createEquipement(Equipement equipement) {
+        if (equipement.getNumero() == null) {
+            equipement.setNumero(getNextAvailableNumero());
+        }
         return equipementRepository.save(equipement);
     }
 
     public Equipement updateEquipement(Long id, Equipement equipementDetails) {
         return equipementRepository.findById(id)
             .map(equipement -> {
+                equipement.setNumero(equipementDetails.getNumero());
                 equipement.setNomEquipement(equipementDetails.getNomEquipement());
                 equipement.setDescription(equipementDetails.getDescription());
                 equipement.setMarque(equipementDetails.getMarque());

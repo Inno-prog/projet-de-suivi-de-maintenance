@@ -64,9 +64,21 @@ public interface PrestationRepository extends JpaRepository<Prestation, Long> {
     @Query("SELECT COUNT(p) FROM Prestation p JOIN p.itemsUtilises i WHERE i.id = :itemId")
     Long countPrestationsByItemId(@Param("itemId") Long itemId);
 
+    @Query("SELECT COUNT(p) FROM Prestation p JOIN p.itemsUtilises i WHERE i.nomItem = :nomItem")
+    Long countPrestationsByItemName(@Param("nomItem") String nomItem);
+
     @Query("SELECT p FROM Prestation p WHERE p.ordreCommande IS NULL AND (p.deleted IS NULL OR p.deleted = false)")
     List<Prestation> findPrestationsWithoutOrdreCommande();
 
     @Query("SELECT p FROM Prestation p LEFT JOIN FETCH p.itemsUtilises WHERE p.id = :id")
     Optional<Prestation> findByIdForPdf(@Param("id") Long id);
+
+    @Query("SELECT p FROM Prestation p WHERE p.statutValidation IS NULL OR p.statutValidation != 'BROUILLON'")
+    Page<Prestation> findAllForAdminDashboard(Pageable pageable);
+
+    @Query("SELECT COUNT(p) FROM Prestation p WHERE p.statutValidation IS NULL OR p.statutValidation != 'BROUILLON'")
+    long countForAdminDashboard();
+
+    @Query("SELECT i.nomItem, COUNT(p) FROM Prestation p JOIN p.itemsUtilises i GROUP BY i.nomItem")
+    List<Object[]> countByNomPrestationGrouped();
 }

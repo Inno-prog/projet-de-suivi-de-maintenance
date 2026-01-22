@@ -371,8 +371,8 @@
                   </div>
                 </div>
 
-                <div class="items-grid" *ngIf="filteredItems.length > 0; else noItemsMessage">
-                  <div *ngFor="let item of filteredItems"
+                <div class="items-grid" *ngIf="filteredItemsList.length > 0; else noItemsMessage">
+                  <div *ngFor="let item of filteredItemsList"
                       class="item-card"
                       [class.selected]="isItemSelected(item)"
                       [class.budget-exhausted]="isItemBudgetExhausted(item)"
@@ -437,7 +437,7 @@
                   <div class="no-items-message" style="text-align: center; padding: 40px; color: #666;">
                     <h4>Aucun item trouvé</h4>
                     <p>Vérifiez que vous avez sélectionné un lot valide.</p>
-                    <p><small>Debug: Total items: {{ items.length || 0 }}, Filtered: {{ filteredItems.length || 0 }}, Selected Lot ID: {{ selectedLotId }}</small></p>
+                    <p><small>Debug: Total items: {{ items.length || 0 }}, Filtered: {{ filteredItemsList.length || 0 }}, Selected Lot ID: {{ selectedLotId }}</small></p>
                   </div>
                 </ng-template>
 

@@ -58,6 +58,9 @@ public class EquipementController {
     @PostMapping
     @PreAuthorize("hasRole('ADMINISTRATEUR')")
     public Equipement createEquipement(@RequestBody Equipement equipement) {
+        if (equipement.getNumero() == null) {
+            equipement.setNumero(equipementService.getNextAvailableNumero());
+        }
         return equipementService.createEquipement(equipement);
     }
 

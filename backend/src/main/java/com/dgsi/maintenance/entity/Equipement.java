@@ -22,6 +22,9 @@ public class Equipement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "numero")
+    private Integer numero;
+
     @NotBlank
     @Column(name = "nom_equipement")
     private String nomEquipement;
@@ -60,6 +63,9 @@ public class Equipement {
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public Integer getNumero() { return numero; }
+    public void setNumero(Integer numero) { this.numero = numero; }
 
     public String getNomEquipement() { return nomEquipement; }
     public void setNomEquipement(String nomEquipement) { this.nomEquipement = nomEquipement; }

@@ -269,47 +269,60 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let item of getItemsForSelectedLot()" [class.table-warning]="isItemCritical(item)">
-                  <td>
-                    <span class="badge bg-primary-subtle text-primary fw-semibold">
-                      #{{ item.idItem }}
-                    </span>
-                  </td>
-                  <td class="fw-semibold">{{ item.nomItem }}</td>
-                  <td class="text-muted">{{ item.description || '-' }}</td>
-                  <td>
-                    <span class="text-success fw-semibold">{{ item.prix | number:'1.0-0' }} FCFA</span>
-                  <td>
-                    <span class="badge bg-info-subtle text-info">{{ item.quantiteMaxTrimestre }}</span>
-                  </td>
-                  <td>
-                    <div class="d-flex align-items-center gap-2">
-                      <div class="usage-indicator flex-grow-1">
-                        <div class="progress" style="height: 8px;">
-                          <div class="progress-bar" [ngClass]="getUsageProgressClass(item)"
-                               [style.width.%]="getUsagePercentage(item)">
+                <!-- Group items by equipment -->
+                <ng-container *ngFor="let equipmentGroup of groupedItemsByEquipement | keyvalue">
+                  <!-- Equipment header row -->
+                  <tr class="table-primary">
+                    <td colspan="7" class="fw-bold text-primary">
+                      <i class="fa-solid fa-tools me-2"></i>
+                      {{ isEquipement(equipmentGroup.key) ? 
+                         (equipmentGroup.key.numero ? equipmentGroup.key.numero + ' - ' : '') + equipmentGroup.key.nomEquipement : 
+                         equipmentGroup.key }}
+                    </td>
+                  </tr>
+                  <!-- Items for this equipment -->
+                  <tr *ngFor="let item of equipmentGroup.value; let i = index" [class.table-warning]="isItemCritical(item)">
+                    <td>
+                      <span class="badge bg-primary-subtle text-primary fw-semibold">
+                        #{{ getFormattedItemNumber(equipmentGroup.key, i + 1) }}
+                      </span>
+                    </td>
+                    <td class="fw-semibold">{{ item.nomItem }}</td>
+                    <td class="text-muted">{{ item.description || '-' }}</td>
+                    <td>
+                      <span class="text-success fw-semibold">{{ item.prix | number:'1.0-0' }} FCFA</span>
+                    <td>
+                      <span class="badge bg-info-subtle text-info">{{ item.quantiteMaxTrimestre }}</span>
+                    </td>
+                    <td>
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="usage-indicator flex-grow-1">
+                          <div class="progress" style="height: 8px;">
+                            <div class="progress-bar" [ngClass]="getUsageProgressClass(item)"
+                                 [style.width.%]="getUsagePercentage(item)">
+                            </div>
                           </div>
-                        </div>
-                      </div>->
-                      <small class="fw-semibold text-muted">
-                        {{ getPrestationsCountForItem(item) }}/{{ item.quantiteMaxTrimestre }}
-                      </small>
-                    </div>
-                  </td>
-                  <td class="text-center">
-                    <div class="d-flex gap-1 justify-content-center">
-                      <button class="btn btn-outline-info btn-sm" (click)="viewItem(item)" title="Voir les détails">
-                        <i class="fa-solid fa-eye"></i>
-                      </button>
-                      <button class="btn btn-outline-warning btn-sm" (click)="onEdit(item)" title="Modifier l'item">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                      </button>
-                      <button class="btn btn-outline-danger btn-sm" (click)="onDelete(item)" title="Supprimer l'item">
-                        <i class="fa-solid fa-trash"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                        </div>->
+                        <small class="fw-semibold text-muted">
+                          {{ getPrestationsCountForItem(item) }}/{{ item.quantiteMaxTrimestre }}
+                        </small>
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <div class="d-flex gap-1 justify-content-center">
+                        <button class="btn btn-outline-info btn-sm" (click)="viewItem(item)" title="Voir les détails">
+                          <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm" (click)="onEdit(item)" title="Modifier l'item">
+                          <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" (click)="onDelete(item)" title="Supprimer l'item">
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
               </tbody>
             </table>
           </div>
@@ -985,6 +998,35 @@ export class ItemListComponent implements OnInit {
     totalPrestations = 0;
     prestationsCountByItem: { [itemId: number]: number } = {};
 
+  // Group items by equipment - stored as property to avoid infinite loops
+  groupedItemsByEquipement: Map<Equipement | string, Item[]> = new Map();
+
+  // Calculate grouped items and store in property
+  updateGroupedItemsByEquipement() {
+    const items = this.getItemsForSelectedLot();
+    const grouped = new Map<Equipement | string, Item[]>();
+    
+    items.forEach(item => {
+      // If item has equipment(s)
+      if (item.equipements && item.equipements.length > 0) {
+        item.equipements.forEach(equipement => {
+          if (!grouped.has(equipement)) {
+            grouped.set(equipement, []);
+          }
+          grouped.get(equipement)?.push(item);
+        });
+      } else {
+        // Items without equipment go to "Sans équipement" group
+        if (!grouped.has('Sans équipement')) {
+          grouped.set('Sans équipement', []);
+        }
+        grouped.get('Sans équipement')?.push(item);
+      }
+    });
+    
+    this.groupedItemsByEquipement = grouped;
+  }
+
   constructor(
     private fb: FormBuilder,
     private itemService: ItemService,
@@ -995,6 +1037,19 @@ export class ItemListComponent implements OnInit {
     private toast: ToastService,
     private confirm: ConfirmationService
   ) {}
+
+  // Helper to check if a group key is an Equipement object
+  isEquipement(key: any): key is Equipement {
+    return typeof key !== 'string' && 'nomEquipement' in key;
+  }
+
+  // Helper to get formatted item number (e.g., 5.1)
+  getFormattedItemNumber(groupKey: Equipement | string, index: number): string {
+    if (this.isEquipement(groupKey) && groupKey.numero) {
+      return `${groupKey.numero}.${index}`;
+    }
+    return index.toString();
+  }
 
   ngOnInit() {
     this.initForm();
@@ -1032,6 +1087,7 @@ export class ItemListComponent implements OnInit {
           }));
           this.filteredItems = [...this.items];
           this.groupItemsByLot();
+          this.updateGroupedItemsByEquipement();
           this.loading = false;
           
           console.log('[DEBUG] Prestataire items loaded:', this.items.length);
@@ -1057,6 +1113,7 @@ export class ItemListComponent implements OnInit {
         }));
         this.filteredItems = [...this.items];
         this.groupItemsByLot();
+        this.updateGroupedItemsByEquipement();
         this.loading = false;
       }).catch(() => {
         this.loading = false;
@@ -1114,6 +1171,7 @@ export class ItemListComponent implements OnInit {
      if (!this.searchTerm && !this.selectedLotFilter) {
        this.filteredItems = [...this.items];
        this.groupItemsByLot();
+       this.updateGroupedItemsByEquipement();
        return;
      }
 
@@ -1133,6 +1191,7 @@ export class ItemListComponent implements OnInit {
      });
 
      this.groupItemsByLot();
+     this.updateGroupedItemsByEquipement();
      this.loading = false;
     }
 
@@ -1214,7 +1273,7 @@ export class ItemListComponent implements OnInit {
     this.selectedLot = lot;
     this.selectedLotFilter = null; // Don't use filter when lot is selected
     this.searchTerm = ''; // Clear search when selecting a lot
-    // No need to call applyFilters() here since we're using getItemsForSelectedLot()
+    this.updateGroupedItemsByEquipement();
   }
 
   backToLots() {
@@ -1222,6 +1281,7 @@ export class ItemListComponent implements OnInit {
     this.selectedLotFilter = null;
     this.searchTerm = '';
     this.filteredItems = [...this.items]; // Reset to all items
+    this.updateGroupedItemsByEquipement();
   }
 
   getItemsForSelectedLot(): Item[] {

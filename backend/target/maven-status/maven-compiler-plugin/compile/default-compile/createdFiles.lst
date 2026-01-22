@@ -39,6 +39,7 @@ com/dgsi/maintenance/controller/PrestationController.class
 com/dgsi/maintenance/controller/ContratController.class
 com/dgsi/maintenance/config/TransactionConfig.class
 com/dgsi/maintenance/service/EquipementService.class
+com/dgsi/maintenance/util/DatabaseFixer.class
 com/dgsi/maintenance/config/DataInitializer.class
 com/dgsi/maintenance/config/ContractRelationshipFix.class
 com/dgsi/maintenance/controller/TypeItemController.class
@@ -87,6 +88,7 @@ com/dgsi/maintenance/controller/TestController.class
 com/dgsi/maintenance/controller/FichePrestationController.class
 com/dgsi/maintenance/service/KeycloakService.class
 com/dgsi/maintenance/controller/PrestationController$PrestationCreateRequest.class
+com/dgsi/maintenance/util/DbChecker.class
 com/dgsi/maintenance/config/ItemDataInitializer.class
 com/dgsi/maintenance/service/NotificationService.class
 com/dgsi/maintenance/service/OrdreCommandeService.class

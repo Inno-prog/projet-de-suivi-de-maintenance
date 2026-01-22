@@ -7,6 +7,7 @@ import com.dgsi.maintenance.repository.ContratRepository;
 import com.dgsi.maintenance.repository.ItemRepository;
 import com.dgsi.maintenance.repository.OrdreCommandeRepository;
 import com.dgsi.maintenance.service.ItemService;
+import com.dgsi.maintenance.service.PrestationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,6 +39,9 @@ public class ItemController {
 
     @Autowired
     private OrdreCommandeRepository ordreCommandeRepository;
+
+    @Autowired
+    private PrestationService prestationService;
 
     /**
      * Calcule le prochain ID d'item disponible.
@@ -77,75 +81,117 @@ public class ItemController {
      * Un prestataire voit les items liés à ses contrats par le biais des lots.
      * Les items sont associés à des lots (champ 'lot' de la table items),
      * et les contrats ont également un champ 'lot'.
+     * 
+     * CORRECTION: Amélioration de la logique de correspondance des lots
+     * pour gérer les incohérences de format (ex: "3" vs "lot3" vs "Lot 3")
      */
     @Transactional(readOnly = true)
     @GetMapping("/by-prestataire/{prestataireId}")
     public List<Item> getItemsByPrestataire(@PathVariable String prestataireId) {
-        // Récupérer les contrats du prestataire
-        List<com.dgsi.maintenance.entity.Contrat> contrats = 
-            contratRepository.findByPrestataireId(prestataireId);
+        System.out.println("[DEBUG] Getting items for prestataire: " + prestataireId);
         
+        // Récupérer les contrats du prestataire en utilisant d'abord le prestataire_id
+        List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findByPrestataireId(prestataireId);
+
+        // Si aucun contrat trouvé avec prestataire_id, essayer avec le contact email
+        if (contrats.isEmpty()) {
+            System.out.println("[DEBUG] No contracts found with prestataire_id=" + prestataireId + ", trying by contact...");
+            List<com.dgsi.maintenance.entity.Contrat> contratsByContact = 
+                contratRepository.findActiveContratsByContactPrestataireAndLot(prestataireId, null);
+            if (!contratsByContact.isEmpty()) {
+                contrats = contratsByContact;
+                System.out.println("[DEBUG] Found " + contrats.size() + " contracts by contact");
+            }
+        }
+
+        // Si toujours vide, essayer de trouver par prestataire_id dans les contrats avec items
+        if (contrats.isEmpty()) {
+            System.out.println("[DEBUG] Still no contracts, trying findByPrestataireIdWithItems...");
+            List<com.dgsi.maintenance.entity.Contrat> contratsWithItems = 
+                contratRepository.findByPrestataireIdWithItems(prestataireId);
+            if (!contratsWithItems.isEmpty()) {
+                contrats = contratsWithItems.stream()
+                    .filter(c -> c.getStatut() == com.dgsi.maintenance.entity.StatutContrat.ACTIF)
+                    .collect(java.util.stream.Collectors.toList());
+                System.out.println("[DEBUG] Found " + contrats.size() + " contracts with items");
+            }
+        }
+
         if (contrats.isEmpty()) {
             System.out.println("[DEBUG] Prestataire " + prestataireId + " has no contracts, returning empty list");
             return new java.util.ArrayList<>();
         }
+
+        System.out.println("[DEBUG] Prestataire has " + contrats.size() + " contract(s):");
+        for (com.dgsi.maintenance.entity.Contrat c : contrats) {
+            System.out.println("[DEBUG] Contract: " + c.getIdContrat() + ", Lot: " + c.getLot() + ", LotEntity: " + (c.getLotEntity() != null ? c.getLotEntity().getNomLot() : "null"));
+        }
+
+        // Extraire les noms de lots des contrats (y compris via l'entité Lot)
+        java.util.Set<String> uniqueLots = new java.util.HashSet<>();
         
-        // Extraire les numéros de lots des contrats (formes normalisées)
-        java.util.Set<String> lotNumbers = new java.util.HashSet<>();
         for (com.dgsi.maintenance.entity.Contrat contrat : contrats) {
-            String lot = contrat.getLot();
-            if (lot != null && !lot.trim().isEmpty()) {
-                String trimmedLot = lot.trim();
-                lotNumbers.add(trimmedLot.toLowerCase());
-                // Ajouter avec préfixe "Lot " en minuscule
-                lotNumbers.add(("Lot " + trimmedLot).toLowerCase());
-                // Extraire juste le numéro du lot
-                String lotNumber = trimmedLot.replaceAll("(?i)^lot\\s*", "").trim();
-                if (!lotNumber.isEmpty()) {
-                    lotNumbers.add(lotNumber.toLowerCase());
-                    lotNumbers.add(("Lot " + lotNumber).toLowerCase());
-                }
+            // Récupérer le lot depuis lotName (champ string)
+            if (contrat.getLot() != null && !contrat.getLot().trim().isEmpty()) {
+                uniqueLots.add(contrat.getLot().trim().toLowerCase());
+            }
+            // Récupérer le lot depuis l'entité Lot si disponible
+            if (contrat.getLotEntity() != null && contrat.getLotEntity().getNomLot() != null) {
+                uniqueLots.add(contrat.getLotEntity().getNomLot().trim().toLowerCase());
             }
         }
-        
-        if (lotNumbers.isEmpty()) {
+
+        if (uniqueLots.isEmpty()) {
             System.out.println("[DEBUG] Prestataire " + prestataireId + " has contracts but no lots, returning empty list");
             return new java.util.ArrayList<>();
         }
-        
-        // Utiliser la nouvelle méthode optimisée pour trouver les items
-        // Créer une liste de tous les noms de lots possibles
-        java.util.List<String> allLotNames = new java.util.ArrayList<>(lotNumbers);
-        
-        // Méthode 1: Essayer avec la requête case-insensitive
-        List<Item> items = itemRepository.findByLotNameInIgnoreCase(allLotNames);
-        
-        // Si aucun résultat, essayer avec des correspondances alternatives
-        if (items.isEmpty()) {
-            System.out.println("[DEBUG] No items found with exact lot match, trying alternative matching");
-            List<Item> allItems = itemRepository.findAll();
-            for (Item item : allItems) {
-                String itemLot = item.getLot();
-                if (itemLot != null && !itemLot.trim().isEmpty()) {
-                    String normalizedItemLot = itemLot.trim().toLowerCase();
-                    // Vérifier si le lot de l'item correspond à l'un des lots du prestataire
-                    boolean matches = lotNumbers.stream().anyMatch(lotNum -> 
-                        normalizedItemLot.equals(lotNum) ||
-                        normalizedItemLot.equals("lot " + lotNum) ||
-                        lotNum.equals("lot " + normalizedItemLot)
-                    );
-                    if (matches) {
-                        items.add(item);
-                    }
+
+        System.out.println("[DEBUG] Looking for items with lots: " + uniqueLots);
+
+        // Récupérer tous les items et filtrer par lots (correspondance flexible)
+        List<Item> allItems = itemRepository.findAll();
+        java.util.List<Item> matchingItems = new java.util.ArrayList<>();
+
+        for (Item item : allItems) {
+            if (item.getLot() != null && !item.getLot().trim().isEmpty()) {
+                String itemLot = item.getLot().trim().toLowerCase();
+                
+                // Vérifier si le lot de l'item correspond à l'un des lots du prestataire
+                boolean matches = uniqueLots.stream().anyMatch(prestataireLot -> {
+                    // Correspondance exacte
+                    if (itemLot.equals(prestataireLot)) return true;
+                    // Correspondance sans préfixe "lot" (insensible à la casse)
+                    String itemLotWithoutPrefix = itemLot.replaceAll("(?i)^lot\\s*", "").trim();
+                    String prestataireLotWithoutPrefix = prestataireLot.replaceAll("(?i)^lot\\s*", "").trim();
+                    return itemLotWithoutPrefix.equals(prestataireLotWithoutPrefix);
+                });
+
+                if (matches) {
+                    matchingItems.add(item);
+                    System.out.println("[DEBUG] Found matching item: " + item.getNomItem() + ", Lot: " + item.getLot());
                 }
             }
         }
-        
-        System.out.println("[DEBUG] Prestataire " + prestataireId + " has " + contrats.size() + " contracts");
-        System.out.println("[DEBUG] Looking for items with lots: " + lotNumbers);
-        System.out.println("[DEBUG] Found " + items.size() + " items matching the lots");
-        
-        return items;
+
+        System.out.println("[DEBUG] Total items found: " + matchingItems.size());
+
+        // Mettre à jour la quantité utilisée pour chaque item (en temps réel)
+        for (Item item : matchingItems) {
+            // Compter le nombre de prestations utilisant cet item
+            Long count = prestationService.countByNomPrestation(item.getNomItem());
+            item.setQuantiteUtilisee(count.intValue());
+            System.out.println("[DEBUG] Updated quantiteUtilisee for " + item.getNomItem() + ": " + count);
+        }
+
+        // Trier les résultats par nom d'item
+        matchingItems.sort((a, b) -> {
+            if (a.getNomItem() == null && b.getNomItem() == null) return 0;
+            if (a.getNomItem() == null) return 1;
+            if (b.getNomItem() == null) return -1;
+            return a.getNomItem().compareToIgnoreCase(b.getNomItem());
+        });
+
+        return matchingItems;
     }
 
     @GetMapping("/search")
