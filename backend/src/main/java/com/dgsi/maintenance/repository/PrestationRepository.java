@@ -79,6 +79,6 @@ public interface PrestationRepository extends JpaRepository<Prestation, Long> {
     @Query("SELECT COUNT(p) FROM Prestation p WHERE p.statutValidation IS NULL OR p.statutValidation != 'BROUILLON'")
     long countForAdminDashboard();
 
-    @Query("SELECT i.nomItem, COUNT(p) FROM Prestation p JOIN p.itemsUtilises i GROUP BY i.nomItem")
-    List<Object[]> countByNomPrestationGrouped();
+    @Query("SELECT i.nomItem, COUNT(p) FROM Prestation p JOIN p.itemsUtilises i WHERE p.trimestre = :trimestre GROUP BY i.nomItem")
+    List<Object[]> countByNomPrestationGrouped(@Param("trimestre") String trimestre);
 }

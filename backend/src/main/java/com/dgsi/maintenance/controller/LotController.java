@@ -274,7 +274,7 @@ public class LotController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
     public ResponseEntity<Lot> createLot(@Valid @RequestBody Lot lot) {
         try {
             // Check if lot name already exists
@@ -289,7 +289,7 @@ public class LotController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
     public ResponseEntity<Lot> updateLot(@PathVariable Long id, @Valid @RequestBody Lot lotDetails) {
         Optional<Lot> lotOpt = lotRepository.findById(id);
         if (lotOpt.isPresent()) {
@@ -300,6 +300,7 @@ public class LotController {
                 return ResponseEntity.badRequest().build();
             }
             lot.setNomLot(lotDetails.getNomLot());
+            lot.setCodeLot(lotDetails.getCodeLot());
             lot.setVilles(lotDetails.getVilles());
             Lot updatedLot = lotRepository.save(lot);
             return ResponseEntity.ok(updatedLot);
@@ -309,7 +310,7 @@ public class LotController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
     public ResponseEntity<?> deleteLot(@PathVariable Long id) {
         return lotRepository.findById(id)
             .map(lot -> {

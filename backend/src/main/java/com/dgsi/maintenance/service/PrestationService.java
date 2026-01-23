@@ -878,11 +878,11 @@ public class PrestationService {
      * Count prestations for all item names
      */
     @Transactional(readOnly = true)
-    public java.util.Map<String, Long> countAllByNomPrestation() {
-        log.info("🔍 Comptage des prestations pour tous les items");
+    public java.util.Map<String, Long> countAllByNomPrestation(String trimestre) {
+        log.info("🔍 Comptage des prestations pour tous les items pour le trimestre: {}", trimestre);
         
         try {
-            List<Object[]> results = prestationRepository.countByNomPrestationGrouped();
+            List<Object[]> results = prestationRepository.countByNomPrestationGrouped(trimestre);
             java.util.Map<String, Long> counts = new java.util.HashMap<>();
             
             for (Object[] result : results) {

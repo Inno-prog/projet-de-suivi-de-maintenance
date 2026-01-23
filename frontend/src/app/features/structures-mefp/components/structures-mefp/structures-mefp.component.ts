@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StructureMefpService, RegionHierarchy, VilleHierarchy, StructureInfo } from '../../../../core/services/structure-mefp.service';
+import { LotService } from '../../../../core/services/lot.service';
+import { Lot } from '../../../../core/models/business.models';
+import { ToastService } from '../../../../core/services/toast.service';
 
 interface RegionInfo {
   nom: string;
@@ -50,8 +53,12 @@ export class StructuresMefpComponent implements OnInit {
     nomCI: '',
     prenomCI: '',
     contactCI: '',
-    fonctionCI: ''
+    fonctionCI: '',
+    lotId: null as number | null
   };
+  
+  // Lots data
+  lots: Lot[] = [];
 
   // Region colors for visual distinction
   private regionColors: string[] = [
@@ -63,11 +70,16 @@ export class StructuresMefpComponent implements OnInit {
 
   constructor(
     private structureService: StructureMefpService,
+    private lotService: LotService,
+    private toastService: ToastService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    // Load lots data
+    this.loadLots();
+    
     // Handle route parameters for hierarchy navigation
     this.route.paramMap.subscribe(params => {
       const region = params.get('region');
@@ -85,6 +97,47 @@ export class StructuresMefpComponent implements OnInit {
         this.loadRegions();
       }
     });
+  }
+  
+  /**
+   * Load lots from the server
+   */
+  loadLots(): void {
+    this.lotService.getAllLotEntities().subscribe({
+      next: (lots: Lot[]) => {
+        this.lots = lots;
+      },
+      error: (error: any) => {
+        console.error('Error loading lots:', error);
+      }
+    });
+  }
+  
+  /**
+   * Automatically select the corresponding lot when a city is entered/selected
+   */
+  autoSelectLotForVille(ville: string): void {
+    console.log('autoSelectLotForVille called with ville:', ville);
+    console.log('Current lots:', this.lots);
+    
+    if (!ville || ville.trim().length === 0) {
+      this.newStructure.lotId = null;
+      return;
+    }
+
+    // Find the lot that includes this city in its villes array
+    const normalizedVille = ville.trim().toLowerCase();
+    const correspondingLot = this.lots.find(lot => 
+      lot.villes && lot.villes.some(v => v.toLowerCase().includes(normalizedVille))
+    );
+
+    if (correspondingLot) {
+      console.log(`Auto-selecting lot ${correspondingLot.nomLot} for city ${ville}`);
+      this.newStructure.lotId = correspondingLot.id;
+    } else {
+      console.log(`No lot found for city ${ville}`);
+      this.newStructure.lotId = null;
+    }
   }
 
   /**
@@ -354,8 +407,11 @@ export class StructuresMefpComponent implements OnInit {
       nomCI: '',
       prenomCI: '',
       contactCI: '',
-      fonctionCI: ''
+      fonctionCI: '',
+      lotId: null
     };
+    // Auto-select lot based on selected ville
+    this.autoSelectLotForVille(this.selectedVille);
     this.showCreateModal = true;
   }
 
@@ -371,15 +427,34 @@ export class StructuresMefpComponent implements OnInit {
    */
   createStructure(): void {
     if (!this.newStructure.nom || !this.newStructure.categorie) {
-      alert('Veuillez remplir les champs obligatoires (nom et catégorie)');
+      this.toastService.show({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Veuillez remplir les champs obligatoires (nom et catégorie)'
+      });
       return;
     }
 
-    const structureData = {
+    const structureData: any = {
       ...this.newStructure,
       ville: this.selectedVille,
       region: this.selectedRegion
     };
+    
+    // Handle lot: construct lot object or null
+    if (structureData.lotId) {
+      const lotId = structureData.lotId;
+      const selectedLot = this.lots.find(lot => lot.id === lotId);
+      if (selectedLot) {
+        structureData.lot = {
+          id: selectedLot.id,
+          nomLot: selectedLot.nomLot,
+          codeLot: selectedLot.codeLot
+        };
+      }
+    }
+    // Remove lotId from the data sent to backend
+    delete structureData.lotId;
 
     this.structureService.createStructure(structureData).subscribe({
       next: (created: any) => {
@@ -394,11 +469,19 @@ export class StructuresMefpComponent implements OnInit {
           description: created.description
         });
         this.closeCreateModal();
-        alert('Structure créée avec succès !');
+        this.toastService.show({
+          type: 'success',
+          title: 'Succès',
+          message: 'Structure créée avec succès !'
+        });
       },
       error: (err: any) => {
         console.error('Error creating structure:', err);
-        alert('Erreur lors de la création de la structure');
+        this.toastService.show({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Erreur lors de la création de la structure'
+        });
       }
     });
   }
@@ -438,11 +521,19 @@ export class StructuresMefpComponent implements OnInit {
     this.structureService.deleteStructure(structure.id).subscribe({
       next: () => {
         this.structuresList = this.structuresList.filter(s => s.id !== structure.id);
-        alert('Structure supprimée avec succès !');
+        this.toastService.show({
+          type: 'success',
+          title: 'Succès',
+          message: 'Structure supprimée avec succès !'
+        });
       },
       error: (err: any) => {
         console.error('Error deleting structure:', err);
-        alert('Erreur lors de la suppression de la structure');
+        this.toastService.show({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Erreur lors de la suppression de la structure'
+        });
       }
     });
   }

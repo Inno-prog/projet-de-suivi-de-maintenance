@@ -472,11 +472,11 @@ public class PrestationController {
     @GetMapping("/count-all-items")
     @PreAuthorize("hasRole('PRESTATAIRE') or hasRole('ADMINISTRATEUR')")
     @Transactional(readOnly = true)
-    public ResponseEntity<java.util.Map<String, Long>> countAllItems() {
-        log.info("📊 Comptage des prestations pour tous les items");
+    public ResponseEntity<java.util.Map<String, Long>> countAllItems(@RequestParam("trimestre") String trimestre) {
+        log.info("📊 Comptage des prestations pour tous les items pour le trimestre: {}", trimestre);
 
         try {
-            java.util.Map<String, Long> itemCounts = prestationService.countAllByNomPrestation();
+            java.util.Map<String, Long> itemCounts = prestationService.countAllByNomPrestation(trimestre);
             log.info("✅ Nombre d'items avec comptage: {}", itemCounts.size());
             return ResponseEntity.ok(itemCounts);
         } catch (Exception e) {

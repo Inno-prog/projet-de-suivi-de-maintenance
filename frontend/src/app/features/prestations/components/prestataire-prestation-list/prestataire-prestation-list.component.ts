@@ -359,6 +359,9 @@ export class PrestatairePrestationListComponent implements OnInit {
     return prestation.id ? `/api/prestations/${prestation.id}/pdf` : undefined;
   }
 
+  // Cache to track which prestation IDs we've already attempted to fetch
+  private fetchedPrestationIds: Set<string> = new Set();
+
   getFicheForPrestation(prestation: Prestation): FichePrestation | undefined {
     if (!prestation || !prestation.id) {
       console.warn('Prestation invalide ou sans ID:', prestation);
@@ -399,9 +402,10 @@ export class PrestatairePrestationListComponent implements OnInit {
       return false;
     });
 
-    // Si pas trouvée dans la liste, essayer de la récupérer individuellement
-    if (!fiche) {
+    // Si pas trouvée dans la liste et si nous n'avons pas déjà tenté de la récupérer
+    if (!fiche && !this.fetchedPrestationIds.has(pIdStr)) {
       console.log(`Tentative de récupération individuelle de la fiche pour prestation ${pIdStr}`);
+      this.fetchedPrestationIds.add(pIdStr); // Marquer comme déjà fetché
       this.fichePrestationService.getFicheByPrestationId(pIdStr).subscribe({
         next: (fetchedFiche) => {
           console.log('Fiche récupérée individuellement:', fetchedFiche);

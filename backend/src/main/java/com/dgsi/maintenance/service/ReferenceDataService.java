@@ -7,13 +7,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.dgsi.maintenance.entity.Lot;
+import com.dgsi.maintenance.repository.LotRepository;
 
 /**
  * Service pour gérer les données de référence des régions et villes du Burkina Faso
  */
 @Service
 public class ReferenceDataService {
+    
+    @Autowired
+    private LotRepository lotRepository;
 
     private static final Map<String, List<String>> REGION_VILLES = new HashMap<>();
     private static final Map<String, String> VILLE_REGION = new HashMap<>();
@@ -212,6 +218,35 @@ public class ReferenceDataService {
                 }
             }
         }
+        return null;
+    }
+    
+    /**
+     * Attribuer automatiquement le lot à une structure en fonction de sa ville
+     */
+    public Lot assignLotFromVille(String ville) {
+        if (ville == null || ville.trim().isEmpty()) {
+            return null;
+        }
+        
+        List<Lot> allLots = lotRepository.findAll();
+        String normalizedVille = ville.trim().toLowerCase();
+        
+        // Chercher un lot qui contient cette ville dans sa liste de villes
+        for (Lot lot : allLots) {
+            List<String> lotVilles = lot.getVilles();
+            if (lotVilles != null && !lotVilles.isEmpty()) {
+                for (String lotVille : lotVilles) {
+                    String normalizedLotVille = lotVille.toLowerCase().trim();
+                    if (normalizedLotVille.equals(normalizedVille) || 
+                        normalizedVille.contains(normalizedLotVille) || 
+                        normalizedLotVille.contains(normalizedVille)) {
+                        return lot;
+                    }
+                }
+            }
+        }
+        
         return null;
     }
 }

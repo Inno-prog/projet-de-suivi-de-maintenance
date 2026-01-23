@@ -293,13 +293,19 @@ export class LotManagerComponent {
   }
 
   editLot(lot: Lot) {
-    this.showForm = true;
-    this.isEditing = true;
-    this.currentLot = lot;
-    this.lotForm.patchValue({
-      ...lot,
-      villes: lot.villes ? lot.villes.join(', ') : ''
-    });
+    console.log('editLot method called with lot:', lot);
+    try {
+      this.showForm = true;
+      this.isEditing = true;
+      this.currentLot = lot;
+      this.lotForm.patchValue({
+        ...lot,
+        villes: lot.villes ? lot.villes.join(', ') : ''
+      });
+      console.log('Form values after patch:', this.lotForm.value);
+    } catch (error) {
+      console.error('Error in editLot:', error);
+    }
   }
 
   cancelEdit() {

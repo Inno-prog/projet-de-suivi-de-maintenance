@@ -1328,13 +1328,60 @@ tfoot td {
   }
 }
 /* Proforma Table Base Styles */
+.proforma-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* 🔑 ALIGNEMENT STRICT */
+  font-size: 14px;
+}
+
+/* Largeurs fixes des colonnes pour alignement parfait */
+.proforma-table .item-col   { width: 45%; text-align: left; }
+.proforma-table .price-col  { width: 20%; text-align: right; }
+.proforma-table .qty-col    { width: 15%; text-align: center; }
+.proforma-table .amount-col { width: 20%; text-align: right; }
+
 .proforma-table th {
-  padding: 8px 6px 8px 12px;
+  padding: 12px;
   text-align: center;
+  background: #f8fafc;
+  font-weight: 600;
+  border-bottom: 2px solid #e5e7eb;
+  color: #374151;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.05em;
 }
 
 .proforma-table th:first-child {
+  text-align: left;
+}
+
+.proforma-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
+  color: #1f2937;
+}
+
+.proforma-table .item-desc {
+  text-align: left;
+  word-wrap: break-word;
+}
+
+.proforma-table .price-value {
+  text-align: right;
+  font-weight: 500;
+}
+
+.proforma-table .qty-value {
   text-align: center;
+  font-weight: 500;
+}
+
+.proforma-table .amount-value {
+  text-align: right;
+  font-weight: 500;
 }
 
 /* Proforma Invoice Responsive */

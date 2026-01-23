@@ -307,7 +307,7 @@
             <div class="selection-summary">
               <div class="summary-card">
                 <h4>📦 Lot sélectionné</h4>
-                <p class="summary-value">{{ prestationForm.get('lotSelection')?.value }}</p>
+                <p class="summary-value">{{ selectedLotName }}</p>
               </div>
               <div class="summary-card" *ngIf="selectedStructure">
                 <h4>🏢 Structure sélectionnée</h4>
@@ -379,7 +379,7 @@
                       [class.max-reached]="isItemMaxReached(item)"
                       (click)="onItemCardClick(item)">
                     <div class="item-header">
-                      <div class="item-number">{{ item.id }}</div>
+                      <div class="item-number">{{ item.idItem }}</div>
                       <div class="item-checkbox">
                         <input
                           type="checkbox"

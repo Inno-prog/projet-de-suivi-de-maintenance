@@ -261,6 +261,7 @@ export interface Item {
     quantiteMaxTrimestre: number;
     lot?: string;
     quantiteUtilisee?: number;
+    quantiteUtiliseeTrimestre?: number;
     equipements?: Equipement[];
    }
 

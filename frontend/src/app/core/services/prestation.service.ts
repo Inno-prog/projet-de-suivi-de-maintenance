@@ -252,8 +252,8 @@ export class PrestationService {
   }
 
   // COMPTER les prestations pour tous les items en une seule requête
-  getCountAllItems(): Observable<{ [nomItem: string]: number }> {
-    const url = `${this.apiUrl}/count-all-items`;
+  getCountAllItems(trimestre: string): Observable<{ [nomItem: string]: number }> {
+    const url = `${this.apiUrl}/count-all-items?trimestre=${trimestre}`;
     console.log(`🔍 GET ${url}`);
 
     return this.http.get<{ [nomItem: string]: number }>(url).pipe(

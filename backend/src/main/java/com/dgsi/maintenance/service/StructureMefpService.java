@@ -11,6 +11,7 @@ import com.dgsi.maintenance.dto.RegionHierarchyDto;
 import com.dgsi.maintenance.dto.RegionHierarchyDto.StructureInfoDto;
 import com.dgsi.maintenance.dto.RegionHierarchyDto.VilleHierarchyDto;
 import com.dgsi.maintenance.entity.StructureMefp;
+import com.dgsi.maintenance.entity.Lot;
 import com.dgsi.maintenance.repository.StructureMefpRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -62,6 +63,16 @@ public class StructureMefpService {
 
     public StructureMefp createStructure(StructureMefp structure) {
         logger.info("Creating new structure: " + structure.getNom());
+        
+        // Automatically assign lot from ville if not set
+        if (structure.getLot() == null && structure.getVille() != null && !structure.getVille().isEmpty()) {
+            Lot lot = referenceDataService.assignLotFromVille(structure.getVille());
+            if (lot != null) {
+                structure.setLot(lot);
+                logger.info("Auto-assigned lot: " + lot.getNomLot() + " for ville: " + structure.getVille());
+            }
+        }
+        
         StructureMefp savedStructure = structureMefpRepository.save(structure);
         logger.info("Structure created successfully with ID: " + savedStructure.getId());
         return savedStructure;
@@ -281,6 +292,15 @@ public class StructureMefpService {
             }
         }
         
+        // Automatically assign lot from ville if not set
+        if (structure.getLot() == null && structure.getVille() != null && !structure.getVille().isEmpty()) {
+            Lot lot = referenceDataService.assignLotFromVille(structure.getVille());
+            if (lot != null) {
+                structure.setLot(lot);
+                logger.info("Auto-assigned lot: " + lot.getNomLot() + " for ville: " + structure.getVille());
+            }
+        }
+        
         StructureMefp savedStructure = structureMefpRepository.save(structure);
         logger.info("Structure created successfully with ID: " + savedStructure.getId());
         return savedStructure;
@@ -310,7 +330,19 @@ public class StructureMefpService {
                 structure.setAdresseStructure(structureDetails.getAdresseStructure());
                 structure.setDescription(structureDetails.getDescription());
                 structure.setCategorie(structureDetails.getCategorie());
-                structure.setLot(structureDetails.getLot());
+                
+                // Automatically assign lot from ville if not set or ville has changed
+                if (structureDetails.getLot() == null && newVille != null && !newVille.isEmpty()) {
+                    Lot lot = referenceDataService.assignLotFromVille(newVille);
+                    if (lot != null) {
+                        structure.setLot(lot);
+                        logger.info("Auto-assigned lot: " + lot.getNomLot() + " for ville: " + newVille);
+                    }
+                } else {
+                    // If lot is provided, use it
+                    structure.setLot(structureDetails.getLot());
+                }
+                
                 structure.setNomCI(structureDetails.getNomCI());
                 structure.setPrenomCI(structureDetails.getPrenomCI());
                 structure.setContactCI(structureDetails.getContactCI());

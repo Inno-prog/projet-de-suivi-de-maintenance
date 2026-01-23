@@ -328,6 +328,16 @@
         <textarea id="description" [(ngModel)]="newStructure.description" rows="3" placeholder="Description de la structure"></textarea>
       </div>
 
+      <div class="form-group">
+        <label for="lotId">Lot</label>
+        <select id="lotId" [(ngModel)]="newStructure.lotId" class="form-control">
+          <option value="">Sélectionner un lot (optionnel)</option>
+          <option *ngFor="let lot of lots" [value]="lot.id">
+            {{ lot.nomLot }}
+          </option>
+        </select>
+      </div>
+
       <!-- Correspondant Informatique (CI) Fields -->
       <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 20px;">
         <h4 style="color: #1f2937; margin-bottom: 16px;">Correspondant Informatique (CI)</h4>

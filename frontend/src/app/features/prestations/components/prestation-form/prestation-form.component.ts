@@ -292,7 +292,6 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
 
         this.testLotMatching();
         this.updateFilteredItems();
-        this.loadItemPrestationsCounters(); // Charger les compteurs après le chargement des items
         this.loading = false;
         this.cdr.markForCheck();
       },
@@ -448,46 +447,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   // Flag pour éviter les appels multiples simultanés
   private isLoadingCounters = false;
   
-  loadItemPrestationsCounters(): void {
-    if (!this.items || this.items.length === 0 || this.isLoadingCounters) {
-      return;
-    }
 
-    this.isLoadingCounters = true;
-    console.log('🔄 Chargement des compteurs de quantités utilisées pour validation côté client');
-    console.log('📦 Items à traiter:', this.items.map(item => item.nomItem));
-
-    // Utiliser le nouveau endpoint pour récupérer tous les compteurs en une seule requête
-    this.prestationService.getCountAllItems().subscribe({
-      next: (itemCounts) => {
-        console.log('✅ Tous les compteurs récupérés:', itemCounts);
-        
-        // Mettre à jour les compteurs pour chaque item
-        this.items.forEach(item => {
-          if (item.nomItem) {
-            this.itemPrestationsCount[item.nomItem] = itemCounts[item.nomItem] || 0;
-            console.log(`📊 Nombre de prestations chargées pour "${item.nomItem}": ${this.itemPrestationsCount[item.nomItem]}/${item.quantiteMaxTrimestre || 0}`);
-          }
-        });
-        
-        this.isLoadingCounters = false;
-        console.log('✅ Chargement des compteurs de validation terminé');
-        console.log('📊 État des compteurs:', this.itemPrestationsCount);
-        this.cdr.markForCheck();
-      },
-      error: (error) => {
-        console.error('❌ Erreur chargement des compteurs:', error);
-        // Mettre tous les compteurs à 0 en cas d'erreur
-        this.items.forEach(item => {
-          if (item.nomItem) {
-            this.itemPrestationsCount[item.nomItem] = 0;
-          }
-        });
-        this.isLoadingCounters = false;
-        this.cdr.markForCheck();
-      }
-    });
-  }
 
   loadPrestataires(): void {
     // Only load prestataires if current user is not a prestataire
@@ -704,8 +664,6 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       this.updateTotalAmount();
     }
     
-    // Recharger les compteurs d'utilisation en temps réel avant d'ouvrir le popup
-    this.loadItemPrestationsCounters();
     this.showItemSelectionPopup = true;
     
     console.log('✅ Item selection popup opened, showItemSelectionPopup:', this.showItemSelectionPopup);
@@ -827,7 +785,8 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   }
 
   getItemPrestationsCount(item: Item): number {
-    return this.itemPrestationsCount[item.nomItem] || 0;
+    // Utiliser quantiteUtiliseeTrimestre si disponible, sinon quantiteUtilisee
+    return item.quantiteUtiliseeTrimestre ?? item.quantiteUtilisee ?? 0;
   }
 
   getItemProgressPercentage(item: Item): number {
@@ -1106,8 +1065,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
 
         console.log('✅ Prestation créée:', result);
 
-        // Rafraîchir les compteurs d'utilisation des items après création réussie
-        this.loadItemPrestationsCounters();
+
 
         // Afficher le message de succès
         this.toastService.show({
@@ -1200,6 +1158,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     if (trimestre) {
       this.prestationForm.patchValue({ trimestre });
       console.log(`📅 Trimestre détecté automatiquement: ${trimestre} pour le mois ${month}`);
+
     }
   }
 
@@ -1395,8 +1354,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
         const result = await this.prestationService.createPrestation(prestationData).toPromise();
         console.log('✅ Prestation créée:', result);
 
-        // Rafraîchir les compteurs d'utilisation des items après création réussie
-        this.loadItemPrestationsCounters();
+
 
         // Afficher le message de succès selon le type d'utilisateur
         if (this.isCurrentUserPrestataire) {

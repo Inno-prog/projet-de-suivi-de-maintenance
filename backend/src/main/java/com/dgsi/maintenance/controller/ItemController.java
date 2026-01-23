@@ -82,8 +82,7 @@ public class ItemController {
      * Les items sont associés à des lots (champ 'lot' de la table items),
      * et les contrats ont également un champ 'lot'.
      * 
-     * CORRECTION: Amélioration de la logique de correspondance des lots
-     * pour gérer les incohérences de format (ex: "3" vs "lot3" vs "Lot 3")
+     * Logique fixée: Utiliser une correspondance stricte des lots pour éviter les doublons
      */
     @Transactional(readOnly = true)
     @GetMapping("/by-prestataire/{prestataireId}")
@@ -148,7 +147,7 @@ public class ItemController {
 
         System.out.println("[DEBUG] Looking for items with lots: " + uniqueLots);
 
-        // Récupérer tous les items et filtrer par lots (correspondance flexible)
+        // Récupérer tous les items et filtrer par lots (correspondance stricte)
         List<Item> allItems = itemRepository.findAll();
         java.util.List<Item> matchingItems = new java.util.ArrayList<>();
 
@@ -156,15 +155,8 @@ public class ItemController {
             if (item.getLot() != null && !item.getLot().trim().isEmpty()) {
                 String itemLot = item.getLot().trim().toLowerCase();
                 
-                // Vérifier si le lot de l'item correspond à l'un des lots du prestataire
-                boolean matches = uniqueLots.stream().anyMatch(prestataireLot -> {
-                    // Correspondance exacte
-                    if (itemLot.equals(prestataireLot)) return true;
-                    // Correspondance sans préfixe "lot" (insensible à la casse)
-                    String itemLotWithoutPrefix = itemLot.replaceAll("(?i)^lot\\s*", "").trim();
-                    String prestataireLotWithoutPrefix = prestataireLot.replaceAll("(?i)^lot\\s*", "").trim();
-                    return itemLotWithoutPrefix.equals(prestataireLotWithoutPrefix);
-                });
+                // Vérifier si le lot de l'item correspond exactement à l'un des lots du prestataire
+                boolean matches = uniqueLots.contains(itemLot);
 
                 if (matches) {
                     matchingItems.add(item);
@@ -175,20 +167,27 @@ public class ItemController {
 
         System.out.println("[DEBUG] Total items found: " + matchingItems.size());
 
-        // Mettre à jour la quantité utilisée pour chaque item (en temps réel)
+        // Mettre à jour les compteurs d'utilisation pour chaque item
         for (Item item : matchingItems) {
-            // Compter le nombre de prestations utilisant cet item
+            // Compter le nombre de prestations utilisant cet item (pour quantiteUtilisee)
             Long count = prestationService.countByNomPrestation(item.getNomItem());
             item.setQuantiteUtilisee(count.intValue());
-            System.out.println("[DEBUG] Updated quantiteUtilisee for " + item.getNomItem() + ": " + count);
+            
+            // Pour quantiteUtiliseeTrimestre, on devrait compter par trimestre, mais pour l'instant, on utilise la même valeur
+            // TODO: Implémenter un compteur par trimestre
+            if (item.getQuantiteUtiliseeTrimestre() == null) {
+                item.setQuantiteUtiliseeTrimestre(count.intValue());
+            }
+            
+            System.out.println("[DEBUG] Updated item " + item.getNomItem() + ": quantiteUtilisee=" + count + ", quantiteUtiliseeTrimestre=" + item.getQuantiteUtiliseeTrimestre());
         }
 
-        // Trier les résultats par nom d'item
+        // Trier les résultats par idItem pour conserver la numérotation correcte
         matchingItems.sort((a, b) -> {
-            if (a.getNomItem() == null && b.getNomItem() == null) return 0;
-            if (a.getNomItem() == null) return 1;
-            if (b.getNomItem() == null) return -1;
-            return a.getNomItem().compareToIgnoreCase(b.getNomItem());
+            if (a.getIdItem() == null && b.getIdItem() == null) return 0;
+            if (a.getIdItem() == null) return 1;
+            if (b.getIdItem() == null) return -1;
+            return a.getIdItem().compareTo(b.getIdItem());
         });
 
         return matchingItems;

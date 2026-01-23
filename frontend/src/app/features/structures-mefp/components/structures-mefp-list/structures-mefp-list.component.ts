@@ -1132,6 +1132,11 @@ export class StructuresMefpListComponent implements OnInit {
       fonctionCI: ['']
     });
 
+    // Listen for changes to the ville field to auto-select the corresponding lot
+    this.structureForm.get('ville')?.valueChanges.subscribe((ville: string) => {
+      this.autoSelectLotForVille(ville);
+    });
+
     // Initialize confirmation service with the component
     setTimeout(() => {
       if (this.confirmationService) {
@@ -1139,6 +1144,30 @@ export class StructuresMefpListComponent implements OnInit {
         console.log('Confirmation service initialized for structures component');
       }
     });
+  }
+
+  /**
+   * Automatically select the corresponding lot when a city is entered/selected
+   */
+  autoSelectLotForVille(ville: string): void {
+    if (!ville || ville.trim().length === 0) {
+      this.structureForm.get('lotId')?.setValue(null);
+      return;
+    }
+
+    // Find the lot that includes this city in its villes array
+    const normalizedVille = ville.trim().toLowerCase();
+    const correspondingLot = this.lots.find(lot => 
+      lot.villes && lot.villes.some(v => v.toLowerCase().includes(normalizedVille))
+    );
+
+    if (correspondingLot) {
+      console.log(`Auto-selecting lot ${correspondingLot.nomLot} for city ${ville}`);
+      this.structureForm.get('lotId')?.setValue(correspondingLot.id);
+    } else {
+      console.log(`No lot found for city ${ville}`);
+      this.structureForm.get('lotId')?.setValue(null);
+    }
   }
 
   ngOnInit(): void {
@@ -1397,11 +1426,11 @@ export class StructuresMefpListComponent implements OnInit {
   openCreateStructureModal(): void {
     this.isEditing = false;
     this.currentStructure = null;
-    this.structureForm.reset({
+    const resetData = {
       nom: '',
       email: '',
       contact: '',
-      ville: '',
+      ville: this.currentVille, // Pre-fill with current city if in city-specific view
       adresseStructure: '',
       description: '',
       categorie: '',
@@ -1410,7 +1439,14 @@ export class StructuresMefpListComponent implements OnInit {
       prenomCI: '',
       contactCI: '',
       fonctionCI: ''
-    });
+    };
+    this.structureForm.reset(resetData);
+    
+    // If we're in a city-specific view, auto-select the corresponding lot
+    if (this.currentVille) {
+      this.autoSelectLotForVille(this.currentVille);
+    }
+    
     this.showStructureModal = true;
   }
 
