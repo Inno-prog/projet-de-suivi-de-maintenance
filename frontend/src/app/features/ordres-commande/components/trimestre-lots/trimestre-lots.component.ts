@@ -27,7 +27,7 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
              class="lot-card"
              (click)="selectLot(lot)">
           <div class="lot-header">
-            <div class="lot-number">Lot {{ lot.numero }}</div>
+            <div class="lot-number">{{ lot.numero }}</div>
             <div class="lot-status" [class]="lot.statusClass">
               {{ lot.status }}
             </div>
@@ -265,7 +265,7 @@ export class TrimestreLotsComponent implements OnInit {
     this.lotService.getActiveLots().subscribe({
       next: (lotsData: LotWithContractorDto[]) => {
         this.lots = lotsData.map(lot => ({
-          numero: lot.lot, // Display name like "lot9 (Ouaga2)"
+          numero: lot.lot, // Already normalized by backend: "Lot X"
           rawNumero: (lot as any).lotRaw, // Raw lot name like "lot9"
           ville: lot.villes.join(', '),
           villes: lot.villes,

@@ -147,7 +147,7 @@ public class ItemController {
 
         System.out.println("[DEBUG] Looking for items with lots: " + uniqueLots);
 
-        // Récupérer tous les items et filtrer par lots (correspondance stricte)
+        // Récupérer tous les items et filtrer par lots (correspondance flexible)
         List<Item> allItems = itemRepository.findAll();
         java.util.List<Item> matchingItems = new java.util.ArrayList<>();
 
@@ -155,8 +155,13 @@ public class ItemController {
             if (item.getLot() != null && !item.getLot().trim().isEmpty()) {
                 String itemLot = item.getLot().trim().toLowerCase();
                 
-                // Vérifier si le lot de l'item correspond exactement à l'un des lots du prestataire
-                boolean matches = uniqueLots.contains(itemLot);
+                // Vérifier si le lot de l'item correspond à l'un des lots du prestataire (correspondance flexible)
+                boolean matches = uniqueLots.stream().anyMatch(prestataireLot -> {
+                    // Correspondance exacte ou sans préfixe "Lot " (insensible à la casse)
+                    String normalizedItemLot = itemLot.replaceAll("(?i)^lot\\s*", "");
+                    String normalizedPrestataireLot = prestataireLot.replaceAll("(?i)^lot\\s*", "");
+                    return normalizedItemLot.equals(normalizedPrestataireLot);
+                });
 
                 if (matches) {
                     matchingItems.add(item);

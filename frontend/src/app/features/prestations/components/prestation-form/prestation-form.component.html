@@ -688,7 +688,7 @@
             <table class="summary-table">
               <tr>
                 <td class="label-cell">Lot sélectionné:</td>
-                <td class="value-cell">{{ getFormValue('lotSelection') }}</td>
+                <td class="value-cell">{{ selectedLotName || 'N/A' }}</td>
               </tr>
               <tr>
                 <td class="label-cell">Items couverts:</td>
@@ -746,10 +746,10 @@
                   </thead>
                   <tbody>
                     <tr *ngFor="let item of selectedItems" class="invoice-row">
-                      <td class="item-desc">{{ item.nomItem }}</td>
-                      <td class="price-value">{{ item.prix | number:'1.0-0' }} FCFA</td>
-                      <td class="qty-value">{{ getItemQuantity(item) }}</td>
-                      <td class="amount-value">{{ calculateItemAmount(item) | number:'1.0-0' }} FCFA</td>
+                      <td class="item-col">{{ item.nomItem }}</td>
+                      <td class="price-col">{{ item.prix | number:'1.0-0' }} FCFA</td>
+                      <td class="qty-col">{{ getItemQuantity(item) }}</td>
+                      <td class="amount-col">{{ calculateItemAmount(item) | number:'1.0-0' }} FCFA</td>
                     </tr>
                   </tbody>
                 </table>

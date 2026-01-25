@@ -20,15 +20,16 @@ public class LotUtils {
         if (raw == null) return null;
         String s = raw.replaceAll("[()]", " ").trim();
 
+        // Remove any occurrence of the word 'lot' (case-insensitive) first to avoid duplicates
+        s = s.replaceAll("(?i)\\blot\\b", "").trim();
+        s = s.replaceAll("\\s+", " ");
+
         // Try to find a numeric identifier
         Matcher m = DIGIT_PATTERN.matcher(s);
         if (m.find()) {
             return "Lot " + m.group(1);
         }
 
-        // Remove any occurrence of the word 'lot' (case-insensitive)
-        s = s.replaceAll("(?i)\\blot\\b", "").trim();
-        s = s.replaceAll("\\s+", " ");
         if (!s.isEmpty()) {
             // Capitalize first char
             String cap = s.substring(0, 1).toUpperCase() + (s.length() > 1 ? s.substring(1) : "");

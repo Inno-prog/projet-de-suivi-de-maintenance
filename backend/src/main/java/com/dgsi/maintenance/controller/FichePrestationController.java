@@ -125,6 +125,29 @@ public class FichePrestationController {
         return java.util.Collections.emptyList();
     }
 
+    @GetMapping("/prestataire/{prestataireId}")
+    public List<FichePrestation> getFichesByPrestataire(@PathVariable String prestataireId) {
+        System.out.println("Getting fiches for prestataire ID: " + prestataireId);
+
+        // Utiliser la relation JPA pour filtrer les fiches par prestataire ID
+        List<FichePrestation> fiches = ficheRepository.findByPrestataireId(prestataireId);
+
+        // Si pas de résultats, essayer aussi par nom (pour compatibilité avec anciennes données)
+        if (fiches.isEmpty()) {
+            Optional<com.dgsi.maintenance.entity.User> userOpt = userRepository.findById(prestataireId);
+            if (userOpt.isPresent() && userOpt.get() instanceof com.dgsi.maintenance.entity.Prestataire) {
+                com.dgsi.maintenance.entity.Prestataire prestataire =
+                    (com.dgsi.maintenance.entity.Prestataire) userOpt.get();
+                String nomEntreprise = prestataire.getStructure() != null ?
+                    prestataire.getStructure() : prestataire.getNom();
+                fiches = ficheRepository.findByNomPrestataire(nomEntreprise);
+            }
+        }
+
+        System.out.println("Found " + fiches.size() + " fiches for prestataire ID: " + prestataireId);
+        return fiches;
+    }
+
     /**
      * Dev-only: force validation without security, requires a secret query param.
      * Useful for local testing when Keycloak tokens are not available.

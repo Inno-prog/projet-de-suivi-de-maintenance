@@ -1236,6 +1236,10 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
   isEditingProfile = false;
   isEditingSettings = false;
 
+  // Settings properties
+  darkMode = false;
+  language = 'fr'; // 'fr' for French, 'en' for English
+
   // Profile details expansion state
   showProfileDetails = false;
 
@@ -1263,6 +1267,9 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
       qualification: ['']
     });
 
+    // Initialize settings from localStorage
+    this.initSettings();
+
   // Stabiliser le layout immédiatement (single pass). Avoid periodic inline style mutations.
   setTimeout(() => this.stabilizeLayout(), 0);
 
@@ -1280,6 +1287,58 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
     this.routerEventsSub = this.router.events.subscribe((ev: any) => {
       this.profileMenuOpen = false;
     });
+  }
+
+  // Initialize settings from localStorage
+  private initSettings(): void {
+    // Dark mode
+    const savedDarkMode = localStorage.getItem('darkMode');
+    this.darkMode = savedDarkMode === 'true';
+    this.applyDarkMode();
+
+    // Language
+    const savedLanguage = localStorage.getItem('language');
+    this.language = savedLanguage || 'fr';
+    this.applyLanguage();
+  }
+
+  // Toggle dark mode
+  toggleDarkMode(): void {
+    this.darkMode = !this.darkMode;
+    localStorage.setItem('darkMode', this.darkMode.toString());
+    this.applyDarkMode();
+  }
+
+  // Apply dark mode styles
+  private applyDarkMode(): void {
+    if (this.darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }
+
+  // Change language
+  changeLanguage(lang: string): void {
+    this.language = lang;
+    localStorage.setItem('language', lang);
+    this.applyLanguage();
+  }
+
+  // Apply language changes
+  private applyLanguage(): void {
+    // For now, we just update the UI - in a real app, we would use a translation service
+    console.log('Language changed to:', this.language);
+  }
+
+  // Get language label
+  getLanguageLabel(): string {
+    return this.language === 'fr' ? 'Français' : 'English';
+  }
+
+  // Get dark mode status
+  getDarkModeStatus(): string {
+    return this.darkMode ? 'Activé' : 'Désactivé';
   }
 
   ngOnDestroy(): void {

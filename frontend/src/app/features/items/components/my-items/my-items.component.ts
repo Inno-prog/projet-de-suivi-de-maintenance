@@ -440,32 +440,98 @@ import { ToastService } from '../../../../core/services/toast.service';
       box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
-    /* Text wrapping for table cells */
-    td:nth-child(2), td:nth-child(3) {
+    /* Table column alignment */
+    .table {
+      table-layout: fixed;
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    /* ID column (1st column) */
+    th:nth-child(1), td:nth-child(1) {
+      width: 80px;
+      text-align: center;
+      border: 1px solid #e5e7eb;
+      vertical-align: middle;
+    }
+
+    /* Name column (2nd column) */
+    th:nth-child(2), td:nth-child(2) {
+      width: 20%;
+      text-align: center;
       max-width: 200px;
       word-wrap: break-word;
       white-space: normal;
       overflow-wrap: break-word;
       word-break: break-word;
       line-height: 1.4;
-    }
-
-    td:nth-child(2) {
       font-weight: 600;
       color: #374151;
+      border: 1px solid #e5e7eb;
+      vertical-align: middle;
     }
 
     /* Description column (3rd column) */
-    td:nth-child(3) {
-      color: #6b7280;
-      font-style: italic;
+    th:nth-child(3), td:nth-child(3) {
+      width: 25%;
+      text-align: center;
       max-width: 250px;
       min-width: 150px;
+      word-wrap: break-word;
+      white-space: normal;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      line-height: 1.4;
+      color: #6b7280;
+      font-style: italic;
+      border: 1px solid #e5e7eb;
+      vertical-align: middle;
     }
 
-    /* Qté Utilisée/Max column (5th column) */
-    td:nth-child(5) {
+    /* Price column (4th column) */
+    th:nth-child(4), td:nth-child(4) {
+      width: 12%;
+      text-align: center;
+      border: 1px solid #e5e7eb;
+      vertical-align: middle;
+    }
+
+    /* Prestations Used column (5th column) */
+    th:nth-child(5), td:nth-child(5) {
+      width: 15%;
+      text-align: center;
       min-width: 120px;
+      border: 1px solid #e5e7eb;
+      vertical-align: middle;
+    }
+
+    /* Total Price column (6th column) */
+    th:nth-child(6), td:nth-child(6) {
+      width: 12%;
+      text-align: center;
+      border: 1px solid #e5e7eb;
+      vertical-align: middle;
+    }
+
+    /* Actions column (7th column) */
+    th:nth-child(7), td:nth-child(7) {
+      width: 8%;
+      text-align: center;
+      border: 1px solid #e5e7eb;
+      vertical-align: middle;
+    }
+
+    /* Header styling */
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+      color: #374151;
+      padding: 12px 8px;
+    }
+
+    /* Cell styling */
+    td {
+      padding: 12px 8px;
     }
   `]
 })

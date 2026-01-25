@@ -1336,14 +1336,30 @@ tfoot td {
 }
 
 /* Largeurs fixes des colonnes pour alignement parfait */
-.proforma-table .item-col   { width: 45%; text-align: left; }
-.proforma-table .price-col  { width: 20%; text-align: right; }
-.proforma-table .qty-col    { width: 15%; text-align: center; }
-.proforma-table .amount-col { width: 20%; text-align: right; }
+.proforma-table .item-col   { 
+  width: 45%; 
+  text-align: center !important; 
+  word-wrap: break-word;
+  vertical-align: middle;
+}
+.proforma-table .price-col  { 
+  width: 20%; 
+  text-align: center !important; 
+  vertical-align: middle;
+}
+.proforma-table .qty-col    { 
+  width: 15%; 
+  text-align: center !important; 
+  vertical-align: middle;
+}
+.proforma-table .amount-col { 
+  width: 20%; 
+  text-align: center !important; 
+  vertical-align: middle;
+}
 
 .proforma-table th {
   padding: 12px;
-  text-align: center;
   background: #f8fafc;
   font-weight: 600;
   border-bottom: 2px solid #e5e7eb;
@@ -1351,10 +1367,7 @@ tfoot td {
   text-transform: uppercase;
   font-size: 12px;
   letter-spacing: 0.05em;
-}
-
-.proforma-table th:first-child {
-  text-align: left;
+  vertical-align: middle;
 }
 
 .proforma-table td {
@@ -1362,25 +1375,6 @@ tfoot td {
   border-bottom: 1px solid #e5e7eb;
   vertical-align: middle;
   color: #1f2937;
-}
-
-.proforma-table .item-desc {
-  text-align: left;
-  word-wrap: break-word;
-}
-
-.proforma-table .price-value {
-  text-align: right;
-  font-weight: 500;
-}
-
-.proforma-table .qty-value {
-  text-align: center;
-  font-weight: 500;
-}
-
-.proforma-table .amount-value {
-  text-align: right;
   font-weight: 500;
 }
 

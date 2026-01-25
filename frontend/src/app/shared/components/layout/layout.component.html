@@ -163,11 +163,11 @@
                     </div>
                     <div class="setting-item-display">
                       <span><i class="fas fa-moon"></i> Mode sombre</span>
-                      <span class="setting-status">Désactivé</span>
+                      <span class="setting-status" [ngClass]="darkMode ? 'enabled' : ''">{{ getDarkModeStatus() }}</span>
                     </div>
                     <div class="setting-item-display">
                       <span><i class="fas fa-globe"></i> Langue</span>
-                      <span class="setting-value">Français</span>
+                      <span class="setting-value">{{ getLanguageLabel() }}</span>
                     </div>
                   </div>
                   <button class="btn btn-secondary btn-sm w-full" (click)="toggleEditSettings()">
@@ -202,7 +202,7 @@
                         <p>Activer le thème sombre</p>
                       </div>
                       <label class="switch">
-                        <input type="checkbox">
+                        <input type="checkbox" [checked]="darkMode" (change)="toggleDarkMode()">
                         <span class="slider round"></span>
                       </label>
                     </div>
@@ -212,7 +212,7 @@
                         <label>Langue</label>
                         <p>Sélectionnez votre langue</p>
                       </div>
-                      <select class="form-control lang-select">
+                      <select class="form-control lang-select" [value]="language" (change)="changeLanguage($any($event.target).value)">
                         <option value="fr">Français</option>
                         <option value="en">English</option>
                       </select>

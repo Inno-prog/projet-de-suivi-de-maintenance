@@ -1666,6 +1666,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            table-layout: fixed;
           }
           th {
             background: #007bff;
@@ -1673,9 +1674,14 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
             padding: 12px;
             font-weight: bold;
           }
-          th.price-col, td.price-col { text-align: center; }
-          th.qty-col, td.qty-col { text-align: center; }
-          th.amount-col, td.amount-col { text-align: right; }
+          th:first-child { width: 45%; text-align: left; }
+          th.price-col { width: 20%; text-align: right; }
+          th.qty-col { width: 15%; text-align: center; }
+          th.amount-col { width: 20%; text-align: right; }
+          td:first-child { width: 45%; text-align: left; }
+          td.price-col { width: 20%; text-align: right; }
+          td.qty-col { width: 15%; text-align: center; }
+          td.amount-col { width: 20%; text-align: right; }
           td {
             padding: 10px 12px;
             border-bottom: 1px solid #ddd;

@@ -2,10 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { Contrat, FichePrestation, RapportSuivi } from '../../core/models/business.models';
+import { Contrat, FichePrestation, Item } from '../../core/models/business.models';
 import { ContratService } from '../../core/services/contrat.service';
 import { FichePrestationService } from '../../core/services/fiche-prestation.service';
-import { RapportSuiviService } from '../../core/services/rapport-suivi.service';
+import { ItemService } from '../../core/services/item.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ToastService } from '../../core/services/toast.service';
 import { Router } from '@angular/router';
@@ -52,18 +52,18 @@ import { Router } from '@angular/router';
               </div>
               <div class="ml-4">
                 <h3 class="text-3xl font-bold text-gray-900">{{ fiches.length }}</h3>
-                <p class="text-gray-600">Mes Prestations</p>
+                <p class="text-gray-600">Prestations</p>
               </div>
             </div>
           </div>
           <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow">
             <div class="flex items-center">
-              <div class="p-3 rounded-full bg-orange-100">
-                <i class="fas fa-chart-line text-orange-600 text-2xl"></i>
+              <div class="p-3 rounded-full bg-purple-100">
+                <i class="fas fa-boxes-stacked text-purple-600 text-2xl"></i>
               </div>
               <div class="ml-4">
-                <h3 class="text-3xl font-bold text-gray-900">{{ rapports.length }}</h3>
-                <p class="text-gray-600">Rapports</p>
+                <h3 class="text-3xl font-bold text-gray-900">{{ items.length }}</h3>
+                <p class="text-gray-600">Items</p>
               </div>
             </div>
           </div>
@@ -104,13 +104,13 @@ export class PrestataireDashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   contrats: Contrat[] = [];
   fiches: FichePrestation[] = [];
-  rapports: RapportSuivi[] = [];
+  items: Item[] = [];
   currentUser: any = null;
 
   constructor(
     private contratService: ContratService,
     private ficheService: FichePrestationService,
-    private rapportService: RapportSuiviService,
+    private itemService: ItemService,
     private authService: AuthService,
     private toastService: ToastService,
     private router: Router
@@ -142,7 +142,7 @@ export class PrestataireDashboardComponent implements OnInit, OnDestroy {
           }
         });
 
-      this.ficheService.getAllFiches()
+      this.ficheService.getFichesByPrestataire(this.currentUser.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (fiches) => {
@@ -154,19 +154,17 @@ export class PrestataireDashboardComponent implements OnInit, OnDestroy {
           }
         });
 
-      if (this.currentUser?.nom) {
-        this.rapportService.getRapportsByPrestataire(this.currentUser.nom)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: (rapports) => {
-              this.rapports = rapports;
-            },
-            error: (error) => {
-              console.error('Erreur lors du chargement des rapports:', error);
-              this.rapports = [];
-            }
-          });
-      }
+      this.itemService.getItemsByPrestataire(this.currentUser.id.toString())
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (items) => {
+            this.items = items;
+          },
+          error: (error) => {
+            console.error('Erreur lors du chargement des items:', error);
+            this.items = [];
+          }
+        });
     }
   }
 
