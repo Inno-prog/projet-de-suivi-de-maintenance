@@ -85,6 +85,56 @@ public class FichePrestationController {
         return realFiches;
     }
 
+    @PostMapping("/dev/create-test")
+    public ResponseEntity<?> createTestFiche(@RequestParam(required = false) String secret) {
+        if (secret == null || !"dev-secret-please-change".equals(secret)) {
+            return ResponseEntity.status(403).body("Forbidden: missing or invalid dev secret");
+        }
+
+        try {
+            // Create test fiche for IT Solutions Burkina - Prestation 96
+            FichePrestation fiche1 = new FichePrestation();
+            fiche1.setIdPrestation("96");
+            fiche1.setNomPrestataire("IT Solutions Burkina");
+            fiche1.setNomItem("fourniture et remplacement de disk , reparation de pc , reparation de pc ");
+            fiche1.setDateRealisation(java.time.LocalDateTime.of(2026, 1, 15, 10, 0));
+            fiche1.setQuantite(1);
+            fiche1.setStatut(StatutFiche.VALIDE);
+
+            // Find prestataire
+            Optional<com.dgsi.maintenance.entity.User> userOpt = userRepository.findByEmail("itsolutions@gmail.com");
+            if (userOpt.isPresent() && userOpt.get() instanceof com.dgsi.maintenance.entity.Prestataire) {
+                fiche1.setPrestataire((com.dgsi.maintenance.entity.Prestataire) userOpt.get());
+            }
+
+            // Create test fiche for Digital Solutions - Prestation 92
+            FichePrestation fiche2 = new FichePrestation();
+            fiche2.setIdPrestation("92");
+            fiche2.setNomPrestataire("Digital Solutions");
+            fiche2.setNomItem("fourniture et remplacement de disk");
+            fiche2.setDateRealisation(java.time.LocalDateTime.of(2026, 1, 12, 14, 0));
+            fiche2.setQuantite(1);
+            fiche2.setStatut(StatutFiche.VALIDE);
+
+            // Find prestataire
+            Optional<com.dgsi.maintenance.entity.User> userOpt2 = userRepository.findByEmail("digitalsolutions@gmail.com");
+            if (userOpt2.isPresent() && userOpt2.get() instanceof com.dgsi.maintenance.entity.Prestataire) {
+                fiche2.setPrestataire((com.dgsi.maintenance.entity.Prestataire) userOpt2.get());
+            }
+
+            ficheRepository.save(fiche1);
+            ficheRepository.save(fiche2);
+
+            System.out.println("✅ Created test fiches for IT Solutions Burkina and Digital Solutions");
+            return ResponseEntity.ok(Map.of("success", true, "message", "Test fiches created successfully"));
+
+        } catch (Exception e) {
+            System.err.println("❌ Error creating test fiches: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @GetMapping
     // @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI') or hasRole('PRESTATAIRE')")
     public List<FichePrestation> getAllFiches() {
@@ -96,8 +146,8 @@ public class FichePrestationController {
                              auth.getAuthority().contains("AGENT_DGSI"));
 
         if (isAdminOrAgent) {
-            // Les administrateurs et agents DGSI voient toutes les fiches
-            return ficheRepository.findAll();
+            // Les administrateurs et agents DGSI ne voient que les fiches soumises (VALIDÉ ou REJETÉ)
+            return ficheRepository.findByStatut(StatutFiche.VALIDE);
         }
 
         // Pour les prestataires, filtrer uniquement leurs propres fiches
@@ -320,11 +370,11 @@ public class FichePrestationController {
     }
 
     /**
-     * Calcule le prochain numéro de fiche disponible.
-     * Réutilise les numéros des fiches supprimées en commençant par le plus petit.
+     * Calcule le prochain numéro de fiche disponible pour un trimestre et lot spécifique.
+     * Le format est T{trimestre}-L{lot}-{index}
      */
-    private int getNextAvailableNumero() {
-        return fichePrestationService.getNextAvailableNumero();
+    private String getNextAvailableNumero(int trimestre, int lot) {
+        return fichePrestationService.getNextAvailableNumero(trimestre, lot);
     }
 
     @PostMapping
@@ -360,9 +410,45 @@ public class FichePrestationController {
                         fiche.setDateRealisation(java.time.LocalDateTime.now());
                     }
 
-                    // Assigner un numéro de fiche séquentiel (réutilise les numéros supprimés)
-                    if (fiche.getNumeroFiche() == null) {
-                        int nextNumero = getNextAvailableNumero();
+                    // Assigner un numéro de fiche formaté T{trimestre}-L{lot}-{index}
+                    if (fiche.getNumeroFiche() == null && fiche.getIdPrestation() != null) {
+                        int trimestre = 1;
+                        int lot = 1;
+                        
+                        try {
+                            // Récupérer la prestation pour obtenir le trimestre et le lot
+                            Long prestationId = Long.parseLong(fiche.getIdPrestation());
+                            Optional<com.dgsi.maintenance.entity.Prestation> prestationOpt = prestationRepository.findById(prestationId);
+                            if (prestationOpt.isPresent()) {
+                                com.dgsi.maintenance.entity.Prestation prestation = prestationOpt.get();
+                                
+                                // Extraire le trimestre
+                                if (prestation.getTrimestre() != null) {
+                                    if (prestation.getTrimestre().equals("T1")) trimestre = 1;
+                                    else if (prestation.getTrimestre().equals("T2")) trimestre = 2;
+                                    else if (prestation.getTrimestre().equals("T3")) trimestre = 3;
+                                    else if (prestation.getTrimestre().equals("T4")) trimestre = 4;
+                                }
+                                
+                                // Extraire le lot à partir de la relation prestataire-contrat
+                                if (prestation.getNomPrestataire() != null) {
+                                    List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findByNomPrestataire(prestation.getNomPrestataire());
+                                    if (!contrats.isEmpty()) {
+                                        // Utiliser le premier contrat actif pour déterminer le lot
+                                        for (com.dgsi.maintenance.entity.Contrat contrat : contrats) {
+                                            if (contrat.getLot() != null && !contrat.getLot().trim().isEmpty()) {
+                                                lot = fichePrestationService.extractLotNumber(contrat.getLot());
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            System.err.println("[DEBUG] Error extracting trimestre/lot information: " + e.getMessage());
+                        }
+                        
+                        String nextNumero = getNextAvailableNumero(trimestre, lot);
                         fiche.setNumeroFiche(nextNumero);
                         System.out.println("[DEBUG] Assigned numeroFiche: " + nextNumero);
                     }
@@ -533,16 +619,55 @@ public class FichePrestationController {
                 return a.getNumeroFiche().compareTo(b.getNumeroFiche());
             });
 
-            int nextNumero = 1;
+            // Map to track the number of fiches per trimestre-lot combination
+            java.util.Map<String, Integer> trimestreLotCountMap = new java.util.HashMap<>();
             int updatedCount = 0;
 
             for (FichePrestation fiche : allFiches) {
-                if (fiche.getNumeroFiche() == null || fiche.getNumeroFiche() != nextNumero) {
-                    fiche.setNumeroFiche(nextNumero);
+                int trimestre = 1;
+                int lot = 1;
+                
+                // Try to extract trimestre and lot from the fiche's linked prestation
+                if (fiche.getIdPrestation() != null) {
+                    try {
+                        Long prestationId = Long.parseLong(fiche.getIdPrestation());
+                        Optional<com.dgsi.maintenance.entity.Prestation> prestationOpt = prestationRepository.findById(prestationId);
+                        if (prestationOpt.isPresent()) {
+                            com.dgsi.maintenance.entity.Prestation prestation = prestationOpt.get();
+                            
+                            // Extract trimestre
+                            if (prestation.getTrimestre() != null) {
+                                if (prestation.getTrimestre().equals("T1")) trimestre = 1;
+                                else if (prestation.getTrimestre().equals("T2")) trimestre = 2;
+                                else if (prestation.getTrimestre().equals("T3")) trimestre = 3;
+                                else if (prestation.getTrimestre().equals("T4")) trimestre = 4;
+                            }
+                            
+                            // Extract lot
+                            if (prestation.getNomPrestataire() != null) {
+                                List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findByNomPrestataire(prestation.getNomPrestataire());
+                                if (!contrats.isEmpty()) {
+                                    lot = fichePrestationService.extractLotNumber(contrats.get(0).getLot());
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.err.println("[DEBUG] Error extracting trimestre/lot for fiche " + fiche.getId() + ": " + e.getMessage());
+                    }
+                }
+                
+                // Generate the prefix and get the next available index
+                String prefix = String.format("T%d-L%d-", trimestre, lot);
+                int count = trimestreLotCountMap.getOrDefault(prefix, 0) + 1;
+                String formattedNumber = String.format("%s%02d", prefix, count);
+                trimestreLotCountMap.put(prefix, count);
+                
+                // Update the fiche if the number is null or different from expected
+                if (fiche.getNumeroFiche() == null || !fiche.getNumeroFiche().equals(formattedNumber)) {
+                    fiche.setNumeroFiche(formattedNumber);
                     ficheRepository.save(fiche);
                     updatedCount++;
                 }
-                nextNumero++;
             }
 
             Map<String, Object> result = new java.util.HashMap<>();
@@ -1177,21 +1302,56 @@ public class FichePrestationController {
         try {
             List<FichePrestation> allFiches = ficheRepository.findAll();
             int initializedCount = 0;
-            int nextNumero = 1;
+            
+            // Map to track the number of fiches per trimestre-lot combination
+            java.util.Map<String, Integer> trimestreLotCountMap = new java.util.HashMap<>();
 
             // Trier par ID pour préserver l'ordre de création
             allFiches.sort((a, b) -> a.getId().compareTo(b.getId()));
 
             for (FichePrestation fiche : allFiches) {
                 if (fiche.getNumeroFiche() == null) {
-                    // Trouver le prochain numéro disponible
-                    while (ficheRepository.existsByNumeroFiche(nextNumero)) {
-                        nextNumero++;
+                    int trimestre = 1;
+                    int lot = 1;
+                    
+                    // Try to extract trimestre and lot from the fiche's linked prestation
+                    if (fiche.getIdPrestation() != null) {
+                        try {
+                            Long prestationId = Long.parseLong(fiche.getIdPrestation());
+                            Optional<com.dgsi.maintenance.entity.Prestation> prestationOpt = prestationRepository.findById(prestationId);
+                            if (prestationOpt.isPresent()) {
+                                com.dgsi.maintenance.entity.Prestation prestation = prestationOpt.get();
+                                
+                                // Extract trimestre
+                                if (prestation.getTrimestre() != null) {
+                                    if (prestation.getTrimestre().equals("T1")) trimestre = 1;
+                                    else if (prestation.getTrimestre().equals("T2")) trimestre = 2;
+                                    else if (prestation.getTrimestre().equals("T3")) trimestre = 3;
+                                    else if (prestation.getTrimestre().equals("T4")) trimestre = 4;
+                                }
+                                
+                                // Extract lot
+                                if (prestation.getNomPrestataire() != null) {
+                                    List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findByNomPrestataire(prestation.getNomPrestataire());
+                                    if (!contrats.isEmpty()) {
+                                        lot = fichePrestationService.extractLotNumber(contrats.get(0).getLot());
+                                    }
+                                }
+                            }
+                        } catch (Exception e) {
+                            System.err.println("[DEBUG] Error extracting trimestre/lot for fiche " + fiche.getId() + ": " + e.getMessage());
+                        }
                     }
-                    fiche.setNumeroFiche(nextNumero);
+                    
+                    // Generate the prefix and get the next available index
+                    String prefix = String.format("T%d-L%d-", trimestre, lot);
+                    int count = trimestreLotCountMap.getOrDefault(prefix, 0) + 1;
+                    String formattedNumber = String.format("%s%02d", prefix, count);
+                    trimestreLotCountMap.put(prefix, count);
+                    
+                    fiche.setNumeroFiche(formattedNumber);
                     ficheRepository.save(fiche);
                     initializedCount++;
-                    nextNumero++;
                 }
             }
 
@@ -1199,6 +1359,82 @@ public class FichePrestationController {
             result.put("totalRecords", allFiches.size());
             result.put("recordsUpdated", initializedCount);
             result.put("message", "Initialisé numeroFiche pour " + initializedCount + " fiches");
+
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError()
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Admin endpoint pour réinitialiser TOUS les numéros de fiche à partir de 1.
+     * Cela numérote toutes les fiches avec le format T{trimestre}-L{lot}-{index}.
+     * Utile quand les numéros ont des trous ou sont mal séquencés.
+     */
+    @PostMapping("/reset-numeros")
+    @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    public ResponseEntity<?> resetAllNumeroFiche() {
+        try {
+            List<FichePrestation> allFiches = ficheRepository.findAll();
+            int updatedCount = 0;
+            
+            // Map to track the number of fiches per trimestre-lot combination
+            java.util.Map<String, Integer> trimestreLotCountMap = new java.util.HashMap<>();
+
+            // Trier par ID pour préserver l'ordre de création
+            allFiches.sort((a, b) -> a.getId().compareTo(b.getId()));
+
+            for (FichePrestation fiche : allFiches) {
+                int trimestre = 1;
+                int lot = 1;
+                
+                // Try to extract trimestre and lot from the fiche's linked prestation
+                if (fiche.getIdPrestation() != null) {
+                    try {
+                        Long prestationId = Long.parseLong(fiche.getIdPrestation());
+                        Optional<com.dgsi.maintenance.entity.Prestation> prestationOpt = prestationRepository.findById(prestationId);
+                        if (prestationOpt.isPresent()) {
+                            com.dgsi.maintenance.entity.Prestation prestation = prestationOpt.get();
+                            
+                            // Extract trimestre
+                            if (prestation.getTrimestre() != null) {
+                                if (prestation.getTrimestre().equals("T1")) trimestre = 1;
+                                else if (prestation.getTrimestre().equals("T2")) trimestre = 2;
+                                else if (prestation.getTrimestre().equals("T3")) trimestre = 3;
+                                else if (prestation.getTrimestre().equals("T4")) trimestre = 4;
+                            }
+                            
+                            // Extract lot
+                            if (prestation.getNomPrestataire() != null) {
+                                List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findByNomPrestataire(prestation.getNomPrestataire());
+                                if (!contrats.isEmpty()) {
+                                    lot = fichePrestationService.extractLotNumber(contrats.get(0).getLot());
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        System.err.println("[DEBUG] Error extracting trimestre/lot for fiche " + fiche.getId() + ": " + e.getMessage());
+                    }
+                }
+                
+                // Generate the prefix and get the next available index
+                String prefix = String.format("T%d-L%d-", trimestre, lot);
+                int count = trimestreLotCountMap.getOrDefault(prefix, 0) + 1;
+                String formattedNumber = String.format("%s%02d", prefix, count);
+                trimestreLotCountMap.put(prefix, count);
+                
+                fiche.setNumeroFiche(formattedNumber);
+                ficheRepository.save(fiche);
+                updatedCount++;
+            }
+
+            Map<String, Object> result = new java.util.HashMap<>();
+            result.put("totalRecords", allFiches.size());
+            result.put("recordsUpdated", updatedCount);
+            result.put("message", "Réinitialisé tous les numeroFiche avec le format T{trimestre}-L{lot}-{index}");
 
             return ResponseEntity.ok(result);
 

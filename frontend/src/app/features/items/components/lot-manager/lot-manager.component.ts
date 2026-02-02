@@ -293,19 +293,20 @@ export class LotManagerComponent {
   }
 
   editLot(lot: Lot) {
-    console.log('editLot method called with lot:', lot);
-    try {
-      this.showForm = true;
-      this.isEditing = true;
-      this.currentLot = lot;
-      this.lotForm.patchValue({
-        ...lot,
-        villes: lot.villes ? lot.villes.join(', ') : ''
-      });
-      console.log('Form values after patch:', this.lotForm.value);
-    } catch (error) {
-      console.error('Error in editLot:', error);
-    }
+    console.log('editLot called with:', lot);
+    this.showForm = true;
+    this.isEditing = true;
+    this.currentLot = lot;
+    this.lotForm.patchValue({
+      nomLot: lot.nomLot || '',
+      codeLot: lot.codeLot || '',
+      villes: lot.villes ? lot.villes.join(', ') : ''
+    });
+    console.log('Form after patch:', this.lotForm.value);
+    console.log('Form valid:', this.lotForm.valid);
+    console.log('Form errors:', this.lotForm.errors);
+    console.log('Nom Lot errors:', this.lotForm.get('nomLot')?.errors);
+    console.log('Code Lot errors:', this.lotForm.get('codeLot')?.errors);
   }
 
   cancelEdit() {
@@ -316,7 +317,15 @@ export class LotManagerComponent {
   }
 
   async onSubmit() {
-    if (this.lotForm.invalid) return;
+    console.log('onSubmit called');
+    console.log('Form valid:', this.lotForm.valid);
+    if (this.lotForm.invalid) {
+      console.log('Form is invalid');
+      console.log('Form errors:', this.lotForm.errors);
+      console.log('Nom Lot:', this.lotForm.get('nomLot')?.value, 'Valid:', this.lotForm.get('nomLot')?.valid, 'Errors:', this.lotForm.get('nomLot')?.errors);
+      console.log('Code Lot:', this.lotForm.get('codeLot')?.value, 'Valid:', this.lotForm.get('codeLot')?.valid, 'Errors:', this.lotForm.get('codeLot')?.errors);
+      return;
+    }
 
     const lotData = this.lotForm.value;
 

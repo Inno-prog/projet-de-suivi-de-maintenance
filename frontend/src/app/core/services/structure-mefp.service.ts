@@ -20,9 +20,19 @@ export interface StructureInfo {
   nom: string;
   categorie?: string;
   contact?: string;
+  contact1?: string;
+  contact2?: string;
+  contact3?: string;
   email?: string;
   adresseStructure?: string;
   description?: string;
+  nomCI?: string;
+  prenomCI?: string;
+  contactCI?: string;
+  fonctionCI?: string;
+  lot?: any;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 @Injectable({

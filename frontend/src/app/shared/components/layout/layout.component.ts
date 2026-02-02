@@ -6,6 +6,8 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfirmationService } from '../../../core/services/confirmation.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { TranslationService } from '../../../core/services/translation.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { ToastComponent } from '../toast/toast.component';
 import { ConfirmationComponent } from '../confirmation/confirmation.component';
@@ -33,7 +35,7 @@ export class ClickOutsideDirective {
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, SidebarComponent, ToastComponent, ConfirmationComponent, NotificationBellComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, SidebarComponent, ToastComponent, ConfirmationComponent, NotificationBellComponent, TranslatePipe],
   templateUrl: './layout.component.html',
   styleUrls: ['./modal-fix.css', './modal-visibility-fix.css'],
   styles: [`
@@ -1252,7 +1254,7 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
   private stabilizeInterval?: any;
   private layoutObserver?: MutationObserver;
 
-  constructor(private fb: FormBuilder, public authService: AuthService, private confirmationService: ConfirmationService, private toastService: ToastService, private elementRef: ElementRef, private router: Router) {
+  constructor(private fb: FormBuilder, public authService: AuthService, private confirmationService: ConfirmationService, private toastService: ToastService, private elementRef: ElementRef, private router: Router, private translationService: TranslationService) {
     this.currentUser = this.authService.getCurrentUser();
     this.checkScreenSize();
     console.log('LayoutComponent - Initial sidebarOpen:', this.sidebarOpen, 'isMobile:', this.isMobile);
@@ -1327,13 +1329,15 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
   // Apply language changes
   private applyLanguage(): void {
-    // For now, we just update the UI - in a real app, we would use a translation service
+    this.translationService.setLanguage(this.language);
     console.log('Language changed to:', this.language);
+    console.log('Current language in service:', this.translationService.getLanguage());
+    console.log('Test translation:', this.translationService.translate('dashboard'));
   }
 
   // Get language label
   getLanguageLabel(): string {
-    return this.language === 'fr' ? 'Français' : 'English';
+    return this.language === 'fr' ? this.translationService.translate('french') : this.translationService.translate('english');
   }
 
   // Get dark mode status

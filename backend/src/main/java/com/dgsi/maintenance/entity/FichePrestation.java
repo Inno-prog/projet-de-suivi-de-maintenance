@@ -70,7 +70,7 @@ public class FichePrestation {
     private Prestataire prestataire;
 
     @Column(name = "numero_fiche")
-    private Integer numeroFiche;
+    private String numeroFiche;
 
     @PrePersist
     @PreUpdate
@@ -143,6 +143,6 @@ public class FichePrestation {
     public Prestataire getPrestataire() { return prestataire; }
     public void setPrestataire(Prestataire prestataire) { this.prestataire = prestataire; }
 
-    public Integer getNumeroFiche() { return numeroFiche; }
-    public void setNumeroFiche(Integer numeroFiche) { this.numeroFiche = numeroFiche; }
+    public String getNumeroFiche() { return numeroFiche; }
+    public void setNumeroFiche(String numeroFiche) { this.numeroFiche = numeroFiche; }
 }

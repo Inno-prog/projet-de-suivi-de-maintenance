@@ -19,7 +19,8 @@ export enum StatutContrat {
   ACTIF = 'ACTIF',
   SUSPENDU = 'SUSPENDU',
   TERMINE = 'TERMINE',
-  EXPIRE = 'EXPIRE'
+  EXPIRE = 'EXPIRE',
+  RESILIE = 'RESILIE'
 }
 
 export interface PrestationOC {
@@ -145,6 +146,7 @@ export interface EvaluationTrimestrielle {
   trimestre: string;
   lot: string;
   prestataireNom: string;
+  prestataireEmail?: string; // Email du prestataire pour l'envoi de l'évaluation
   dateEvaluation: string;
   evaluateurNom: string;
   correspondantId: number;
@@ -165,6 +167,35 @@ export interface EvaluationTrimestrielle {
   obsDelaiIntervention?: string;
   obsVehicule?: string;
   obsTenue?: string;
+  // Exigences et observations pour le rapport PDF
+  exigence1?: string;
+  exigence2?: string;
+  exigence3?: string;
+  exigence4?: string;
+  exigence5?: string;
+  exigence6?: string;
+  exigence7?: string;
+  exigence8?: string;
+  exigence9?: string;
+  obs1?: string;
+  obs2?: string;
+  obs3?: string;
+  obs4?: string;
+  obs5?: string;
+  obs6?: string;
+  obs7?: string;
+  obs8?: string;
+  obs9?: string;
+  // Instances non résolues
+  instance1?: string;
+  direction1?: string;
+  dateDebut1?: string;
+  joursPenalite1?: number;
+  obsInstance1?: string;
+  // Signatures
+  signaturePrestataire?: string;
+  signatureDirection?: string;
+  signatureDGSI?: string;
   prestationsVerifiees?: string;
   instancesNonResolues?: string;
   observationsGenerales?: string;
@@ -203,6 +234,7 @@ export interface PrestationItem {
 export interface FichePrestation {
   id?: number;
   idPrestation: string;
+  numeroFiche?: string;  // Numéro de fiche formaté (T{trimestre}-L{lot}-{index})
   nomPrestataire: string;
   nomItem: string;
   nomStructure?: string;
@@ -321,6 +353,9 @@ export interface Prestation {
   observationsClient?: string;
   prenomStructure?: string;
   serviceStructure?: string;
+  // Timestamps
+  dateCreation?: string;
+  dateModification?: string;
 }
 
 export interface RapportSuivi {
@@ -346,7 +381,9 @@ export enum StatutRapport {
 export interface StructureMefp {
   id?: string;
   nom: string;
-  contact?: string;
+  contact1?: string;
+  contact2?: string;
+  contact3?: string;
   email?: string;
   ville?: string;
   adresseStructure?: string;

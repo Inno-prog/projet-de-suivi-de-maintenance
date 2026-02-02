@@ -220,6 +220,77 @@ public class LotController {
         }
     }
 
+    @GetMapping("/by-prestataire-nom/{prestataireNom}")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
+    public ResponseEntity<List<LotWithContractorDto>> getLotsByPrestataireNom(@PathVariable String prestataireNom) {
+        try {
+            // Get active contracts for this prestataire by name
+            List<com.dgsi.maintenance.entity.Contrat> contrats = contratRepository.findActiveContratsByNomPrestataire(prestataireNom);
+
+            System.out.println("🔍 Found " + contrats.size() + " active contracts for prestataire " + prestataireNom);
+
+            // Group contracts by lot name
+            java.util.Map<String, LotWithContractorDto> lotMap = new java.util.HashMap<>();
+
+            // Populate with contract data
+            for (com.dgsi.maintenance.entity.Contrat contrat : contrats) {
+                if (contrat.getLot() != null && !contrat.getLot().trim().isEmpty()) {
+                    String lotName = contrat.getLot();
+
+                    // Get or create DTO for this lot
+                    LotWithContractorDto dto = lotMap.get(lotName);
+                    if (dto == null) {
+                        dto = new LotWithContractorDto(lotName);
+                        lotMap.put(lotName, dto);
+                    }
+
+                    // Add ville if not null
+                    if (contrat.getVille() != null && !contrat.getVille().trim().isEmpty()) {
+                        dto.addVille(contrat.getVille());
+                    }
+
+                    // Add contract ID
+                    if (contrat.getIdContrat() != null && !contrat.getIdContrat().trim().isEmpty()) {
+                        dto.addContractId(contrat.getIdContrat());
+                    }
+
+                    System.out.println("📄 Contract: " + contrat.getIdContrat() + " - Lot: " + lotName + " - Prestataire: " + contrat.getNomPrestataire());
+                }
+            }
+
+            // Set fiches count to 0 (same as in getAllLots)
+            for (LotWithContractorDto dto : lotMap.values()) {
+                dto.setFichesCount(0);
+            }
+
+            // Convert to list and sort
+            List<LotWithContractorDto> result = lotMap.values().stream()
+                .sorted((a, b) -> {
+                    try {
+                        String aNum = a.getLot().replaceAll("[^0-9]", "");
+                        String bNum = b.getLot().replaceAll("[^0-9]", "");
+                        if (!aNum.isEmpty() && !bNum.isEmpty()) {
+                            return Integer.compare(Integer.parseInt(aNum), Integer.parseInt(bNum));
+                        }
+                    } catch (Exception e) {
+                        // Fall back to string comparison
+                    }
+                    return a.getLot().compareTo(b.getLot());
+                })
+                .collect(Collectors.toList());
+
+            System.out.println("📦 Returning " + result.size() + " lots for prestataire " + prestataireNom + ":");
+            for (LotWithContractorDto lot : result) {
+                System.out.println("  - Lot: " + lot.getLot() + " - Villes: " + lot.getVilles() + " - Contrats: " + lot.getContractIds());
+            }
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @GetMapping("/entities")
     @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('PRESTATAIRE') or hasRole('AGENT_DGSI')")
     public ResponseEntity<List<Lot>> getAllLotEntities() {

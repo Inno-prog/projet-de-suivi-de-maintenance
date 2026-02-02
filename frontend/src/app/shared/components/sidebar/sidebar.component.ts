@@ -5,11 +5,13 @@ import { Observable } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { StructureMefpService, RegionHierarchy, VilleHierarchy, StructureInfo } from '../../../core/services/structure-mefp.service';
 import { User } from '../../../core/models/auth.models';
+import { TranslationService } from '../../../core/services/translation.service';
+import { TranslatePipe } from '../../pipes/translate.pipe';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   template: `
     <div class="sidebar" [class.open]="isOpen" [class.collapsed]="!isOpen" [class.mobile-open]="isOpen">
 
@@ -34,44 +36,44 @@ import { User } from '../../../core/models/auth.models';
       <nav class="sidebar-nav">
         <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
           <span class="nav-icon">🏠</span>
-          <span class="nav-text">Tableau de bord</span>
+          <span class="nav-text">{{ 'dashboard' | translate }}</span>
         </a>
 
         <!-- Prestataire Section -->
         <div *ngIf="authService.isPrestataire()" class="nav-section" data-section="prestataire">
           <div class="section-header" (click)="toggleSection('prestataire')">
-            <span>Mes Services</span>
+            <span>{{ 'my_services' | translate }}</span>
             <svg [class.expanded]="sections['prestataire']" class="arrow-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <div class="sub-nav" [class.expanded]="sections['prestataire']">
-            <a routerLink="/prestataire-prestation-list" routerLinkActive="active" class="nav-item">📋 Mes fiches de prestations</a>
-            <a routerLink="/my-items" routerLinkActive="active" class="nav-item">🧰 Mes items</a>
-            <a [routerLink]="['/user', getCurrentUserId(), 'contrats']" routerLinkActive="active" class="nav-item">📝 Mes contrats</a>
-            <a [routerLink]="['/user', getCurrentUserId(), 'rapports-suivi']" routerLinkActive="active" class="nav-item">📊 Rapports de suivi</a>
+            <a routerLink="/prestataire-prestation-list" routerLinkActive="active" class="nav-item">📋 {{ 'my_prestation_sheets' | translate }}</a>
+            <a routerLink="/my-items" routerLinkActive="active" class="nav-item">🧰 {{ 'my_items' | translate }}</a>
+            <a [routerLink]="['/user', getCurrentUserId(), 'contrats']" routerLinkActive="active" class="nav-item">📝 {{ 'my_contracts' | translate }}</a>
+            <a [routerLink]="['/user', getCurrentUserId(), 'rapports-suivi']" routerLinkActive="active" class="nav-item">📊 {{ 'follow_up_reports' | translate }}</a>
           </div>
         </div>
 
         <!-- Administrator Section -->
         <div *ngIf="authService.isAdmin()" class="nav-section" data-section="admin">
           <div class="section-header" (click)="toggleSection('admin')">
-            <span>Administration</span>
+            <span>{{ 'administration' | translate }}</span>
             <svg [class.expanded]="sections['admin']" class="arrow-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <div class="sub-nav" [class.expanded]="sections['admin']">
-            <a routerLink="/users" routerLinkActive="active" class="nav-item">👥 Gestion des Utilisateurs</a>
-            <a routerLink="/contrats" routerLinkActive="active" class="nav-item">📄 Gestion des Contrats</a>
-            <a routerLink="/items" routerLinkActive="active" class="nav-item">🧰 Gestion des Items</a>
-            <a routerLink="/prestations" routerLinkActive="active" class="nav-item">📋 Prestations & Validation</a>
-            <a routerLink="/ordres-commande" routerLinkActive="active" class="nav-item">📦 Ordres de Commande</a>
+            <a routerLink="/users" routerLinkActive="active" class="nav-item">👥 {{ 'user_management' | translate }}</a>
+            <a routerLink="/contrats" routerLinkActive="active" class="nav-item">📄 {{ 'contract_management' | translate }}</a>
+            <a routerLink="/items" routerLinkActive="active" class="nav-item">🧰 {{ 'item_management' | translate }}</a>
+
+            <a routerLink="/ordres-commande" routerLinkActive="active" class="nav-item">📦 {{ 'orders' | translate }}</a>
             
             <!-- Simple Structures du MEFP link -->
             <a routerLink="/structures-mefp" routerLinkActive="active" class="nav-item structures-link">
               <span class="nav-icon">🏢</span>
-              <span class="nav-text">Structures MEFP</span>
+              <span class="nav-text">{{ 'structures_mefp' | translate }}</span>
             </a>
           </div>
         </div>
@@ -79,37 +81,37 @@ import { User } from '../../../core/models/auth.models';
         <!-- Rapports et Statistiques Section -->
         <div *ngIf="authService.isAdmin()" class="nav-section" data-section="rapports">
           <div class="section-header" (click)="toggleSection('rapports')">
-            <span>Rapports et Statistiques</span>
+            <span>{{ 'reports_stats' | translate }}</span>
             <svg [class.expanded]="sections['rapports']" class="arrow-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <div class="sub-nav" [class.expanded]="sections['rapports']">
-            <a routerLink="/rapports-suivi" routerLinkActive="active" class="nav-item">📊 Rapports de suivi</a>
-            <a routerLink="/statistiques" routerLinkActive="active" class="nav-item">📉 Statistiques</a>
-            <a routerLink="/evaluations" routerLinkActive="active" class="nav-item">⭐ Évaluations</a>
+            <a routerLink="/rapports-suivi" routerLinkActive="active" class="nav-item">📊 {{ 'follow_up_reports' | translate }}</a>
+            <a routerLink="/statistiques" routerLinkActive="active" class="nav-item">📉 {{ 'statistics' | translate }}</a>
+            <a routerLink="/evaluations" routerLinkActive="active" class="nav-item">⭐ {{ 'evaluations' | translate }}</a>
           </div>
         </div>
 
         <!-- Agent DGSI Section -->
         <div *ngIf="authService.isAgentDGSI()" class="nav-section" data-section="agent-dgsi">
           <div class="section-header" (click)="toggleSection('agent-dgsi')">
-            <span>Supervision</span>
+            <span>{{ 'supervision' | translate }}</span>
             <svg [class.expanded]="sections['agent-dgsi']" class="arrow-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
           <div class="sub-nav" [class.expanded]="sections['agent-dgsi']">
-            <a routerLink="/items" routerLinkActive="active" class="nav-item">🧰 Items et Lots</a>
-            <a routerLink="/équipements" routerLinkActive="active" class="nav-item">️ Équipements</a>
+            <a routerLink="/items" routerLinkActive="active" class="nav-item">🧰 {{ 'items_lots' | translate }}</a>
+            <a routerLink="/équipements" routerLinkActive="active" class="nav-item">️ {{ 'equipment' | translate }}</a>
             
             <!-- Simple Structures du MEFP link -->
             <a routerLink="/structures-mefp" routerLinkActive="active" class="nav-item structures-link">
               <span class="nav-icon">🏢</span>
-              <span class="nav-text">Structures MEFP</span>
+              <span class="nav-text">{{ 'structures_mefp' | translate }}</span>
             </a>
             
-            <a routerLink="/statistiques" routerLinkActive="active" class="nav-item">📊 Statistiques</a>
+            <a routerLink="/statistiques" routerLinkActive="active" class="nav-item">📊 {{ 'statistics' | translate }}</a>
           </div>
         </div>
 

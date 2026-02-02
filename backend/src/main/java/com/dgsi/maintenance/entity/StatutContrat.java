@@ -4,5 +4,6 @@ public enum StatutContrat {
     ACTIF,
     SUSPENDU,
     TERMINE,
-    EXPIRE
+    EXPIRE,
+    RESILIE
 }

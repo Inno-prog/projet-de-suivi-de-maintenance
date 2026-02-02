@@ -319,7 +319,7 @@
               <th>Prestataire</th>
               <th>Date</th>
               <th>Évaluateur</th>
-              <th>Note</th>
+
               <th>Statut</th>
               <th>Actions</th>
             </tr>
@@ -331,10 +331,7 @@
               <td>{{ evaluation.prestataireNom }}</td>
               <td>{{ formatDate(evaluation.dateEvaluation) }}</td>
               <td>{{ evaluation.evaluateurNom }}</td>
-              <td>
-                <span [ngClass]="getScoreClass(evaluation.noteFinale)">{{ (evaluation.noteFinale || 0) }}%</span>
-                <span *ngIf="evaluation.prestataireDeclasse" class="badge badge-danger">Déclassé</span>
-              </td>
+
               <td>
                 <span class="badge badge-info">{{ evaluation.statut }}</span>
               </td>
@@ -342,7 +339,7 @@
                 <div class="flex space-x-2">
                   <!-- Voir -->
                   <button
-                    class="bg-green-500 hover:bg-green-600 text-white p-2 rounded"
+                    class="btn-action btn-view"
                     title="Voir"
                     (click)="viewEvaluation(evaluation)"
                   >
@@ -351,7 +348,7 @@
 
                   <!-- Éditer -->
                   <button
-                    class="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded"
+                    class="btn-action btn-edit"
                     title="Éditer"
                     (click)="editEvaluation(evaluation)"
                     *ngIf="authService.isAdmin()"
@@ -361,7 +358,7 @@
 
                   <!-- Supprimer -->
                   <button
-                    class="bg-red-500 hover:bg-red-600 text-white p-2 rounded"
+                    class="btn-action btn-delete"
                     title="Supprimer"
                     (click)="deleteEvaluation(evaluation)"
                     *ngIf="authService.isAdmin()"

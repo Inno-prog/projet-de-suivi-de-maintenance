@@ -136,11 +136,15 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #ff6b35 0%, #1e3a8a 100%);
-  color: white;
+  background: transparent;
+  color: #ff6b35;
+  border: 1px solid #ff6b35;
 }
 
 .btn-primary:hover {
+  background: rgba(255, 107, 53, 0.1);
+  color: #e55a2b;
+  border-color: #e55a2b;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
 }

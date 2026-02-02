@@ -2,7 +2,7 @@
   <!-- Page Header -->
   <div class="page-header">
     <h1 class="page-title">
-      Structures du Ministère de l'Économie, des Finances et de la Prospection (MEFP)
+      Structures du Ministère de l'Économie, des Finances(MEF)
     </h1>
   </div>
 
@@ -48,29 +48,45 @@
       </div>
 
       <div class="regions-grid">
-        <div *ngFor="let region of regionsList; let i = index" 
-             class="region-card"
-             [style.--region-color]="region.color"
+        <div *ngFor="let region of regionsList; let i = index"
+             class="lot-selection-card card h-100 border-0 shadow-sm hover-lift cursor-pointer"
              (click)="goToVilles(region.nom)"
              [style.animation-delay]="i * 50 + 'ms'">
-          <div class="region-card-header" [style.background]="'linear-gradient(135deg, ' + region.color + ' 0%, ' + region.color + 'cc 100%)'">
-            <span class="region-icon">📍</span>
-            <h3>{{ region.nom }}</h3>
-          </div>
-          <div class="region-card-body">
-            <div class="region-stats">
-              <div class="region-stat">
-                <span class="stat-value">{{ region.villes }}</span>
-                <span class="stat-label">Villes</span>
-              </div>
-              <div class="region-stat">
-                <span class="stat-value">{{ region.structures }}</span>
-                <span class="stat-label">Structures</span>
+          <div class="card-body d-flex flex-column text-center p-4">
+            <!-- REGION ICON (HOUSE) - Same design as lot icon -->
+            <div class="lot-icon mx-auto mb-3 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+              <i class="fa-solid fa-house-chimney fa-xl"></i>
+            </div>
+
+            <!-- Region name with location icon -->
+            <h5 class="card-title fw-bold text-primary mb-2">
+              <i class="fa-solid fa-map-marker-alt me-2"></i>{{ region.nom }}
+            </h5>
+
+            <!-- Region description (villes) removed per design request -->
+
+            <!-- Stats Grid - Same as lot card -->
+            <div class="lot-stats-grid mt-auto">
+              <div class="row g-2">
+                <div class="col-6">
+                  <div class="stat-box p-2 bg-light rounded text-center">
+                    <div class="fw-bold text-primary">{{ region.villes }}</div>
+                    <small class="text-muted">Villes</small>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="stat-box p-2 bg-light rounded text-center">
+                    <div class="fw-bold text-success">{{ region.structures }}</div>
+                    <small class="text-muted">Structures</small>
+                  </div>
+                </div>
               </div>
             </div>
-            <button class="view-btn">
-              Voir les villes →
-            </button>
+
+            <!-- Action -->
+            <div class="mt-3">
+              <small class="text-primary"><i class="fa-solid fa-mouse-pointer me-1"></i>Cliquez pour voir les villes</small>
+            </div>
           </div>
         </div>
       </div>
@@ -162,7 +178,12 @@
                   {{ structure.categorie || 'N/A' }}
                 </span>
               </td>
-              <td class="td-contact">{{ structure.contact || '-' }}</td>
+              <td class="td-contact">
+                <div *ngIf="structure.contact1">{{ structure.contact1 }}</div>
+                <div *ngIf="structure.contact2">{{ structure.contact2 }}</div>
+                <div *ngIf="structure.contact3">{{ structure.contact3 }}</div>
+                <div *ngIf="!structure.contact1 && !structure.contact2 && !structure.contact3">-</div>
+              </td>
               <td class="td-email">{{ structure.email || '-' }}</td>
               <td class="td-actions">
                 <div class="action-buttons">
@@ -204,70 +225,102 @@
       <button class="close-btn" (click)="closeViewModal()">×</button>
     </div>
     <div class="modal-body" *ngIf="selectedStructure">
-      <!-- Basic Information -->
-      <div class="form-group">
-        <label><strong>Nom de la structure:</strong></label>
-        <p>{{ selectedStructure.nom }}</p>
+      <!-- Header Section -->
+      <div class="structure-header">
+        <div class="structure-icon-large">🏢</div>
+        <div class="structure-main-info">
+          <h4 class="structure-name">{{ selectedStructure.nom }}</h4>
+          <span class="category-badge" [ngClass]="getCategoryClass(selectedStructure.categorie)">
+            {{ selectedStructure.categorie || 'Non spécifiée' }}
+          </span>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label><strong>Catégorie:</strong></label>
-        <span class="category-badge" [ngClass]="getCategoryClass(selectedStructure.categorie)">
-          {{ selectedStructure.categorie }}
-        </span>
-      </div>
+      <!-- Main Details Grid -->
+      <div class="details-grid">
+        <!-- Contact Information -->
+        <div class="detail-section">
+          <div class="section-header">
+            <span class="section-icon">📞</span>
+            <h5>Coordonnées</h5>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Contact 1</span>
+            <span class="detail-value">{{ selectedStructure.contact1 || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Contact 2</span>
+            <span class="detail-value">{{ selectedStructure.contact2 || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Contact 3</span>
+            <span class="detail-value">{{ selectedStructure.contact3 || 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Email</span>
+            <span class="detail-value email-value">{{ selectedStructure.email || 'Non spécifié' }}</span>
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label><strong>Contact:</strong></label>
-        <p>{{ selectedStructure.contact || 'Non spécifié' }}</p>
-      </div>
+        <!-- Location Information -->
+        <div class="detail-section">
+          <div class="section-header">
+            <span class="section-icon">📍</span>
+            <h5>Localisation</h5>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Ville</span>
+            <span class="detail-value">{{ selectedStructure.ville || 'Non spécifiée' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Région</span>
+            <span class="detail-value">{{ selectedStructure.region || 'Non spécifiée' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Adresse</span>
+            <span class="detail-value">{{ selectedStructure.adresseStructure || 'Non spécifiée' }}</span>
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label><strong>Email:</strong></label>
-        <p>{{ selectedStructure.email || 'Non spécifié' }}</p>
-      </div>
+        <!-- Correspondant Informatique -->
+        <div class="detail-section">
+          <div class="section-header">
+            <span class="section-icon">💻</span>
+            <h5>Correspondant Informatique</h5>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Nom complet</span>
+            <span class="detail-value">{{ selectedStructure.prenomCI && selectedStructure.nomCI ? selectedStructure.prenomCI + ' ' + selectedStructure.nomCI : (selectedStructure.nomCI ? selectedStructure.nomCI : (selectedStructure.prenomCI ? selectedStructure.prenomCI : 'Non spécifié')) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Fonction</span>
+            <span class="detail-value">{{ selectedStructure.fonctionCI || 'Non spécifiée' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Contact</span>
+            <span class="detail-value">{{ selectedStructure.contactCI || 'Non spécifié' }}</span>
+          </div>
+        </div>
 
-      <div class="form-group">
-        <label><strong>Adresse:</strong></label>
-        <p>{{ selectedStructure.adresseStructure || 'Non spécifiée' }}</p>
-      </div>
-
-      <div class="form-group">
-        <label><strong>Description:</strong></label>
-        <p>{{ selectedStructure.description || 'Aucune description' }}</p>
-      </div>
-
-      <!-- Location Information -->
-      <div class="form-group">
-        <label><strong>Localisation:</strong></label>
-        <p>{{ selectedStructure.ville }}, {{ selectedStructure.region }}</p>
-      </div>
-
-      <!-- Correspondant Informatique (CI) Information -->
-      <div class="form-group" *ngIf="selectedStructure.nomCI || selectedStructure.prenomCI">
-        <label><strong>Correspondant Informatique:</strong></label>
-        <p>{{ selectedStructure.prenomCI }} {{ selectedStructure.nomCI }}</p>
-      </div>
-
-      <div class="form-group" *ngIf="selectedStructure.fonctionCI">
-        <label><strong>Fonction CI:</strong></label>
-        <p>{{ selectedStructure.fonctionCI }}</p>
-      </div>
-
-      <div class="form-group" *ngIf="selectedStructure.contactCI">
-        <label><strong>Contact CI:</strong></label>
-        <p>{{ selectedStructure.contactCI }}</p>
-      </div>
-
-      <!-- Timestamps -->
-      <div class="form-group" *ngIf="selectedStructure.createdAt">
-        <label><strong>Créé le:</strong></label>
-        <p>{{ selectedStructure.createdAt | date:'dd/MM/yyyy à HH:mm' }}</p>
-      </div>
-
-      <div class="form-group" *ngIf="selectedStructure.updatedAt">
-        <label><strong>Modifié le:</strong></label>
-        <p>{{ selectedStructure.updatedAt | date:'dd/MM/yyyy à HH:mm' }}</p>
+        <!-- Additional Information -->
+        <div class="detail-section">
+          <div class="section-header">
+            <span class="section-icon">📋</span>
+            <h5>Informations</h5>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Description</span>
+            <span class="detail-value description-value">{{ selectedStructure.description || 'Aucune description' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Créé le</span>
+            <span class="detail-value">{{ selectedStructure.createdAt ? (selectedStructure.createdAt | date:'dd/MM/yyyy à HH:mm') : 'Non spécifié' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Modifié le</span>
+            <span class="detail-value">{{ selectedStructure.updatedAt ? (selectedStructure.updatedAt | date:'dd/MM/yyyy à HH:mm') : 'Non spécifié' }}</span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -309,8 +362,18 @@
       </div>
 
       <div class="form-group">
-        <label for="contact">Contact</label>
-        <input type="text" id="contact" [(ngModel)]="newStructure.contact" placeholder="Ex: 70 00 00 01">
+        <label for="contact1">Contact 1</label>
+        <input type="text" id="contact1" [(ngModel)]="newStructure.contact1" placeholder="Ex: 70 00 00 01">
+      </div>
+
+      <div class="form-group">
+        <label for="contact2">Contact 2</label>
+        <input type="text" id="contact2" [(ngModel)]="newStructure.contact2" placeholder="Ex: 70 00 00 02">
+      </div>
+
+      <div class="form-group">
+        <label for="contact3">Contact 3</label>
+        <input type="text" id="contact3" [(ngModel)]="newStructure.contact3" placeholder="Ex: 70 00 00 03">
       </div>
 
       <div class="form-group">
@@ -366,6 +429,110 @@
     <div class="modal-footer">
       <button class="cancel-btn" (click)="closeCreateModal()">Annuler</button>
       <button class="submit-btn" (click)="createStructure()">Créer la structure</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Structure Modal -->
+<div *ngIf="showEditModal" class="modal-overlay" (click)="closeEditModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>✏️ Modifier une structure</h3>
+      <button class="close-btn" (click)="closeEditModal()">×</button>
+    </div>
+    <div class="modal-body" *ngIf="editStructureData">
+      <div class="location-info">
+        <p><strong>Localisation:</strong> {{ selectedVille }}, {{ selectedRegion }}</p>
+      </div>
+      
+      <div class="form-group">
+        <label for="edit-nom">Nom de la structure *</label>
+        <input type="text" id="edit-nom" [(ngModel)]="editStructureData.nom" placeholder="Ex: Direction Générale des Impôts">
+      </div>
+
+      <div class="form-group">
+        <label for="edit-categorie">Catégorie *</label>
+        <select id="edit-categorie" [(ngModel)]="editStructureData.categorie">
+          <option value="">Sélectionner une catégorie</option>
+          <option value="Direction">Direction</option>
+          <option value="Service">Service</option>
+          <option value="Cabinet">Cabinet</option>
+          <option value="Inspection">Inspection</option>
+          <option value="Cellule">Cellule</option>
+          <option value="Bureau">Bureau</option>
+          <option value="Agence">Agence</option>
+          <option value="Centre">Centre</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="edit-contact1">Contact 1</label>
+        <input type="text" id="edit-contact1" [(ngModel)]="editStructureData.contact1" placeholder="Ex: 70 00 00 01">
+      </div>
+
+      <div class="form-group">
+        <label for="edit-contact2">Contact 2</label>
+        <input type="text" id="edit-contact2" [(ngModel)]="editStructureData.contact2" placeholder="Ex: 70 00 00 02">
+      </div>
+
+      <div class="form-group">
+        <label for="edit-contact3">Contact 3</label>
+        <input type="text" id="edit-contact3" [(ngModel)]="editStructureData.contact3" placeholder="Ex: 70 00 00 03">
+      </div>
+
+      <div class="form-group">
+        <label for="edit-email">Email</label>
+        <input type="email" id="edit-email" [(ngModel)]="editStructureData.email" placeholder="Ex: contact@structure.gov.bf">
+      </div>
+
+      <div class="form-group">
+        <label for="edit-adresse">Adresse</label>
+        <input type="text" id="edit-adresse" [(ngModel)]="editStructureData.adresseStructure" placeholder="Adresse physique">
+      </div>
+
+      <div class="form-group">
+        <label for="edit-description">Description</label>
+        <textarea id="edit-description" [(ngModel)]="editStructureData.description" rows="3" placeholder="Description de la structure"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="edit-lotId">Lot</label>
+        <select id="edit-lotId" [(ngModel)]="editStructureData.lotId" class="form-control">
+          <option value="">Sélectionner un lot (optionnel)</option>
+          <option *ngFor="let lot of lots" [value]="lot.id">
+            {{ lot.nomLot }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Correspondant Informatique (CI) Fields -->
+      <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 20px;">
+        <h4 style="color: #1f2937; margin-bottom: 16px;">Correspondant Informatique (CI)</h4>
+
+        <div class="form-group">
+          <label for="edit-nomCI">Nom du CI</label>
+          <input type="text" id="edit-nomCI" [(ngModel)]="editStructureData.nomCI" placeholder="Nom du correspondant informatique">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-prenomCI">Prénom du CI</label>
+          <input type="text" id="edit-prenomCI" [(ngModel)]="editStructureData.prenomCI" placeholder="Prénom du correspondant informatique">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-contactCI">Contact du CI</label>
+          <input type="text" id="edit-contactCI" [(ngModel)]="editStructureData.contactCI" placeholder="Numéro de téléphone du CI">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-fonctionCI">Fonction du CI</label>
+          <input type="text" id="edit-fonctionCI" [(ngModel)]="editStructureData.fonctionCI" placeholder="Ex: Informaticien, Technicien réseau">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="cancel-btn" (click)="closeEditModal()">Annuler</button>
+      <button class="submit-btn" (click)="saveEditStructure()">Enregistrer les modifications</button>
     </div>
   </div>
 </div>

@@ -148,6 +148,11 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'evaluations/edit/:id',
+    loadComponent: () => import('./features/evaluation/evaluation-form.component').then(m => m.EvaluationFormComponent),
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'fiches-prestation',
     loadComponent: () => import('./features/fiches-prestation/components/fiche-list/fiche-list.component').then(m => m.FicheListComponent),
     canActivate: [AuthGuard],

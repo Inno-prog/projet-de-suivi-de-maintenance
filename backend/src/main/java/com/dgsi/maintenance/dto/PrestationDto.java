@@ -32,4 +32,6 @@ public class PrestationDto {
     private String fonctionCi;
     private String description;
     private List<String> itemsNames; // Noms des items utilisés
+    private LocalDateTime dateCreation;
+    private LocalDateTime dateModification;
 }

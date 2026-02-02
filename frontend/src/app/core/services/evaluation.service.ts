@@ -33,8 +33,8 @@ export class EvaluationService {
     return this.http.delete(`${this.API_URL}/${id}`);
   }
 
-  getEvaluationsByPrestataire(prestataireId: number): Observable<EvaluationTrimestrielle[]> {
-    return this.http.get<EvaluationTrimestrielle[]>(`${this.API_URL}/prestataire/${prestataireId}`);
+  getEvaluationsByPrestataire(): Observable<EvaluationTrimestrielle[]> {
+    return this.http.get<EvaluationTrimestrielle[]>(`${this.API_URL}/prestataire`);
   }
 
   getEvaluationsByStatut(statut: string): Observable<EvaluationTrimestrielle[]> {
@@ -45,5 +45,21 @@ export class EvaluationService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<string>(`${this.API_URL}/files/upload`, formData);
+  }
+
+  /**
+   * Génère et télécharge le PDF d'une évaluation trimestrielle
+   */
+  generateEvaluationPdf(id: number): Observable<Blob> {
+    return this.http.get(`${environment.apiUrl}/reports/evaluations/${id}/pdf`, {
+      responseType: 'blob'
+    });
+  }
+  
+  /**
+   * Envoie un email d'évaluation au prestataire
+   */
+  sendEvaluationEmail(id: number): Observable<any> {
+    return this.http.post(`${this.API_URL}/${id}/send-email`, {});
   }
 }

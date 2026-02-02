@@ -40,13 +40,17 @@ export class StructuresMefpComponent implements OnInit {
   structuresLoading = false;
   showCreateModal = false;
   showViewModal = false;
+  showEditModal = false;
   selectedStructure: any = null;
+  editStructureData: any = null;
   
   // New structure form
   newStructure = {
     nom: '',
     categorie: '',
-    contact: '',
+    contact1: '',
+    contact2: '',
+    contact3: '',
     email: '',
     adresseStructure: '',
     description: '',
@@ -60,13 +64,8 @@ export class StructuresMefpComponent implements OnInit {
   // Lots data
   lots: Lot[] = [];
 
-  // Region colors for visual distinction
-  private regionColors: string[] = [
-    '#3b82f6', '#8b5cf6', '#ec4899', '#f97316', 
-    '#14b8a6', '#eab308', '#22c55e', '#6366f1',
-    '#f43f5e', '#06b6d4', '#84cc16', '#d946ef',
-    '#f59e0b', '#10b981', '#6366f1', '#ef4444', '#0ea5e9'
-  ];
+  // Region color - same as sidebar color
+  private regionColor: string = 'rgb(28, 82, 118)';
 
   constructor(
     private structureService: StructureMefpService,
@@ -175,11 +174,11 @@ export class StructuresMefpComponent implements OnInit {
     this.structureService.getHierarchy().subscribe({
       next: (data: RegionHierarchy[]) => {
         this.hierarchy = data;
-        this.regionsList = data.map((region, index) => ({
+        this.regionsList = data.map((region) => ({
           nom: region.nom,
           villes: region.villes.length,
           structures: region.villes.reduce((total, ville) => total + ville.structures.length, 0),
-          color: this.regionColors[index % this.regionColors.length]
+          color: this.regionColor
         }));
         this.loading = false;
       },
@@ -197,23 +196,23 @@ export class StructuresMefpComponent implements OnInit {
    */
   loadMockRegions(): void {
     this.regionsList = [
-      { nom: 'Centre', villes: 4, structures: 15, color: '#3b82f6' },
-      { nom: 'Guiriko', villes: 4, structures: 8, color: '#8b5cf6' },
-      { nom: 'Kadiogo', villes: 4, structures: 12, color: '#ec4899' },
-      { nom: 'Nando', villes: 4, structures: 6, color: '#f97316' },
-      { nom: 'Kuilsé', villes: 4, structures: 5, color: '#14b8a6' },
-      { nom: 'Nakambé', villes: 4, structures: 7, color: '#eab308' },
-      { nom: 'Bankui', villes: 5, structures: 3, color: '#22c55e' },
-      { nom: 'Yaadga', villes: 3, structures: 4, color: '#6366f1' },
-      { nom: 'Soum', villes: 3, structures: 2, color: '#f43f5e' },
-      { nom: 'Liptako', villes: 3, structures: 2, color: '#06b6d4' },
-      { nom: 'Goulmou', villes: 4, structures: 3, color: '#84cc16' },
-      { nom: 'Djôrô', villes: 4, structures: 2, color: '#d946ef' },
-      { nom: 'Oubri', villes: 3, structures: 3, color: '#f59e0b' },
-      { nom: 'Nazinon', villes: 3, structures: 4, color: '#10b981' },
-      { nom: 'Tapoa', villes: 2, structures: 1, color: '#6366f1' },
-      { nom: 'Sourou', villes: 3, structures: 2, color: '#ef4444' },
-      { nom: 'Sirba', villes: 3, structures: 2, color: '#0ea5e9' }
+      { nom: 'Centre', villes: 4, structures: 15, color: this.regionColor },
+      { nom: 'Guiriko', villes: 4, structures: 8, color: this.regionColor },
+      { nom: 'Kadiogo', villes: 4, structures: 12, color: this.regionColor },
+      { nom: 'Nando', villes: 4, structures: 6, color: this.regionColor },
+      { nom: 'Kuilsé', villes: 4, structures: 5, color: this.regionColor },
+      { nom: 'Nakambé', villes: 4, structures: 7, color: this.regionColor },
+      { nom: 'Bankui', villes: 5, structures: 3, color: this.regionColor },
+      { nom: 'Yaadga', villes: 3, structures: 4, color: this.regionColor },
+      { nom: 'Soum', villes: 3, structures: 2, color: this.regionColor },
+      { nom: 'Liptako', villes: 3, structures: 2, color: this.regionColor },
+      { nom: 'Goulmou', villes: 4, structures: 3, color: this.regionColor },
+      { nom: 'Djôrô', villes: 4, structures: 2, color: this.regionColor },
+      { nom: 'Oubri', villes: 3, structures: 3, color: this.regionColor },
+      { nom: 'Nazinon', villes: 3, structures: 4, color: this.regionColor },
+      { nom: 'Tapoa', villes: 2, structures: 1, color: this.regionColor },
+      { nom: 'Sourou', villes: 3, structures: 2, color: this.regionColor },
+      { nom: 'Sirba', villes: 3, structures: 2, color: this.regionColor }
     ];
     this.loading = false;
   }
@@ -281,7 +280,9 @@ export class StructuresMefpComponent implements OnInit {
           id: s.id,
           nom: s.nom,
           categorie: s.categorie,
-          contact: s.contact,
+          contact1: s.contact1,
+          contact2: s.contact2,
+          contact3: s.contact3,
           email: s.email,
           ville: s.ville,
           region: s.region,
@@ -400,7 +401,9 @@ export class StructuresMefpComponent implements OnInit {
     this.newStructure = {
       nom: '',
       categorie: '',
-      contact: '',
+      contact1: '',
+      contact2: '',
+      contact3: '',
       email: '',
       adresseStructure: '',
       description: '',
@@ -463,7 +466,9 @@ export class StructuresMefpComponent implements OnInit {
           id: created.id,
           nom: created.nom,
           categorie: created.categorie,
-          contact: created.contact,
+          contact1: created.contact1,
+          contact2: created.contact2,
+          contact3: created.contact3,
           email: created.email,
           adresseStructure: created.adresseStructure,
           description: created.description
@@ -503,11 +508,98 @@ export class StructuresMefpComponent implements OnInit {
   }
 
   /**
-   * Edit a structure
+   * Open edit structure modal
    */
   editStructure(structure: StructureInfo): void {
     console.log('Edit structure:', structure);
-    // TODO: Implement edit functionality
+    // Create a copy of the structure data for editing
+    this.editStructureData = {
+      id: structure.id,
+      nom: structure.nom,
+      categorie: structure.categorie,
+      contact1: structure.contact1,
+      contact2: structure.contact2,
+      contact3: structure.contact3,
+      email: structure.email,
+      adresseStructure: structure.adresseStructure,
+      description: structure.description,
+      nomCI: structure.nomCI,
+      prenomCI: structure.prenomCI,
+      contactCI: structure.contactCI,
+      fonctionCI: structure.fonctionCI,
+      lotId: structure.lot?.id || null
+    };
+    this.showEditModal = true;
+  }
+
+  /**
+   * Close edit structure modal
+   */
+  closeEditModal(): void {
+    this.showEditModal = false;
+    this.editStructureData = null;
+  }
+
+  /**
+   * Save edited structure
+   */
+  saveEditStructure(): void {
+    if (!this.editStructureData.nom || !this.editStructureData.categorie) {
+      this.toastService.show({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Veuillez remplir les champs obligatoires (nom et catégorie)'
+      });
+      return;
+    }
+
+    const structureData: any = {
+      ...this.editStructureData,
+      ville: this.selectedVille,
+      region: this.selectedRegion
+    };
+    
+    // Handle lot: construct lot object or null
+    if (structureData.lotId) {
+      const lotId = structureData.lotId;
+      const selectedLot = this.lots.find(lot => lot.id === lotId);
+      if (selectedLot) {
+        structureData.lot = {
+          id: selectedLot.id,
+          nomLot: selectedLot.nomLot,
+          codeLot: selectedLot.codeLot
+        };
+      }
+    }
+    // Remove lotId from the data sent to backend
+    delete structureData.lotId;
+
+    this.structureService.updateStructure(this.editStructureData.id, structureData).subscribe({
+      next: (updated: any) => {
+        // Update the local list
+        const index = this.structuresList.findIndex(s => s.id === updated.id);
+        if (index !== -1) {
+          this.structuresList[index] = {
+            ...this.structuresList[index],
+            ...updated
+          };
+        }
+        this.closeEditModal();
+        this.toastService.show({
+          type: 'success',
+          title: 'Succès',
+          message: 'Structure modifiée avec succès !'
+        });
+      },
+      error: (err: any) => {
+        console.error('Error updating structure:', err);
+        this.toastService.show({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Erreur lors de la modification de la structure'
+        });
+      }
+    });
   }
 
   /**

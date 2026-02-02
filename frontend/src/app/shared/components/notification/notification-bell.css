@@ -1,0 +1,602 @@
+/* ============================================
+   NOTIFICATION BELL & DROPDOWN STYLES
+   Modern design with gradients, shadows, and animations
+   ============================================ */
+
+/* Container for the notification bell */
+.notification-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   BELL BUTTON STYLES
+   ============================================ */
+
+app-notification-bell .relative,
+.notification-bell-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+app-notification-bell button,
+.notification-bell-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+app-notification-bell button:hover,
+.notification-bell-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 
+    0 8px 20px rgba(245, 158, 11, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+app-notification-bell button:focus,
+.notification-bell-btn:focus {
+  outline: none;
+  box-shadow: 
+    0 0 0 4px rgba(245, 158, 11, 0.3),
+    0 4px 15px rgba(245, 158, 11, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+app-notification-bell button:active,
+.notification-bell-btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 
+    0 2px 8px rgba(245, 158, 11, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Bell icon */
+app-notification-bell .bell-icon,
+.bell-icon {
+  font-size: 24px;
+  line-height: 1;
+  color: #f59e0b;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================
+   NOTIFICATION BADGE
+   ============================================ */
+
+app-notification-bell span[class*="absolute"],
+.notification-badge {
+  position: absolute !important;
+  top: -4px;
+  right: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  box-shadow: 
+    0 3px 8px rgba(0, 0, 0, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  animation: pulse-badge 2s infinite;
+}
+
+app-notification-bell span.bg-red-600,
+.notification-badge.unread {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
+}
+
+app-notification-bell span.bg-slate-300,
+.notification-badge.empty {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%) !important;
+  color: #1e293b !important;
+  animation: none;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 
+      0 3px 8px rgba(0, 0, 0, 0.2),
+      0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 
+      0 5px 12px rgba(239, 68, 68, 0.4),
+      0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* ============================================
+   NOTIFICATION DROPDOWN PANEL
+   ============================================ */
+
+app-notification-bell div[role="dialog"],
+.notification-dropdown {
+  position: absolute !important;
+  right: 0;
+  top: calc(100% + 12px);
+  width: 380px;
+  max-height: 480px;
+  overflow: hidden;
+  background: transparent !important;
+  border-radius: 20px;
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.2),
+    0 10px 25px rgba(0, 0, 0, 0.15),
+    0 5px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: 9999 !important;
+  animation: slideDown 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================
+   DROPDOWN HEADER
+   ============================================ */
+
+app-notification-bell .p-3,
+.notification-dropdown-header {
+  background: transparent !important;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 18px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+app-notification-bell .p-3 strong,
+.notification-dropdown-header .title {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+app-notification-bell .flex.gap-2.items-center,
+.notification-header-actions {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+/* Mark all as read button */
+app-notification-bell button:first-child,
+.notification-mark-all-btn {
+  padding: 8px 16px !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 
+    0 3px 8px rgba(16, 185, 129, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+app-notification-bell button:first-child:hover,
+.notification-mark-all-btn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 
+    0 5px 12px rgba(16, 185, 129, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+app-notification-bell button:first-child:active,
+.notification-mark-all-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* Close button */
+app-notification-bell button:last-child,
+.notification-close-btn {
+  padding: 8px 16px !important;
+  background: white !important;
+  color: #64748b !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+app-notification-bell button:last-child:hover,
+.notification-close-btn:hover {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+/* ============================================
+   NOTIFICATION LIST
+   ============================================ */
+
+app-notification-bell ul,
+.notification-list {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  max-height: 380px !important;
+  overflow-y: auto !important;
+}
+
+/* Scrollbar styling */
+app-notification-bell ul::-webkit-scrollbar,
+.notification-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+app-notification-bell ul::-webkit-scrollbar-track,
+.notification-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+app-notification-bell ul::-webkit-scrollbar-thumb,
+.notification-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+app-notification-bell ul::-webkit-scrollbar-thumb:hover,
+.notification-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============================================
+   NOTIFICATION ITEM
+   ============================================ */
+
+app-notification-bell li,
+.notification-list-item {
+  border-bottom: 1px solid #f1f5f9 !important;
+  transition: background-color 0.2s ease !important;
+}
+
+app-notification-bell li:last-child,
+.notification-list-item:last-child {
+  border-bottom: none !important;
+}
+
+app-notification-bell li:hover,
+.notification-list-item:hover {
+  background: linear-gradient(90deg, #fff7ed 0%, #fef3c7 50%, #f8fafc 100%) !important;
+}
+
+/* Notification link/click area */
+app-notification-bell li a,
+.notification-link {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 14px !important;
+  padding: 16px 20px !important;
+  text-decoration: none !important;
+  color: inherit !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer;
+}
+
+/* ============================================
+   NOTIFICATION ICON
+   ============================================ */
+
+app-notification-bell .flex-shrink-0,
+.notification-icon-wrapper {
+  flex-shrink: 0 !important;
+}
+
+app-notification-bell .inline-flex.items-center.justify-center.h-9.w-9.rounded-full,
+.notification-icon-circle {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 14px !important;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  color: white !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 
+    0 4px 12px rgba(249, 115, 22, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
+
+app-notification-bell .inline-flex.items-center.justify-center.h-9.w-9.rounded-full mat-icon,
+.notification-icon-circle mat-icon {
+  font-size: 22px !important;
+  line-height: 1 !important;
+  color: white !important;
+}
+
+/* ============================================
+   NOTIFICATION CONTENT
+   ============================================ */
+
+app-notification-bell .flex-1.min-w-0,
+.notification-content {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+app-notification-bell .text-sm.font-medium,
+.notification-title {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  margin-bottom: 4px !important;
+  display: block !important;
+  line-height: 1.4;
+}
+
+app-notification-bell .text-xs.text-slate-400,
+.notification-time {
+  font-size: 11px !important;
+  color: #94a3b8 !important;
+  margin-left: 8px !important;
+  white-space: nowrap;
+}
+
+app-notification-bell .text-sm.text-slate-500,
+.notification-body {
+  font-size: 13px !important;
+  color: #64748b !important;
+  display: block !important;
+  margin-top: 4px !important;
+  line-height: 1.5;
+}
+
+/* ============================================
+   NOTIFICATION ACTIONS
+   ============================================ */
+
+app-notification-bell .mt-2.flex.gap-2.items-center,
+.notification-actions {
+  margin-top: 12px !important;
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+app-notification-bell .mt-2.flex.gap-2.items-center button,
+.notification-action-btn {
+  padding: 6px 12px !important;
+  background: white !important;
+  color: #475569 !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+app-notification-bell .mt-2.flex.gap-2.items-center button:hover,
+.notification-action-btn:hover {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%) !important;
+  border-color: #cbd5e1 !important;
+  color: #1e293b !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
+app-notification-bell .mt-2.flex.gap-2.items-center button:active,
+.notification-action-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+
+app-notification-bell .p-6.text-center.text-sm.text-slate-500,
+.notification-empty {
+  padding: 48px 24px !important;
+  text-align: center !important;
+  color: #94a3b8 !important;
+  font-size: 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 200px;
+}
+
+app-notification-bell .p-6.text-center.text-sm.text-slate-500 mat-icon,
+.notification-empty mat-icon {
+  font-size: 56px !important;
+  color: #cbd5e1 !important;
+  margin-bottom: 16px !important;
+  opacity: 0.7 !important;
+}
+
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
+
+.dark app-notification-bell button,
+.dark .notification-bell-btn {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
+  box-shadow: 
+    0 4px 15px rgba(249, 115, 22, 0.5),
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+.dark app-notification-bell button:hover,
+.dark .notification-bell-btn:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%) !important;
+}
+
+.dark app-notification-bell div[role="dialog"],
+.dark .notification-dropdown {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.5),
+    0 10px 25px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark app-notification-bell .p-3,
+.dark .notification-dropdown-header {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%) !important;
+  border-bottom-color: #334155 !important;
+}
+
+.dark app-notification-bell .p-3 strong,
+.dark .notification-dropdown-header .title {
+  color: #f1f5f9 !important;
+}
+
+.dark app-notification-bell li,
+.dark .notification-list-item {
+  border-bottom-color: #334155 !important;
+}
+
+.dark app-notification-bell li:hover,
+.dark .notification-list-item:hover {
+  background: linear-gradient(90deg, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0.05) 50%, #1e293b 100%) !important;
+}
+
+.dark app-notification-bell .text-sm.font-medium,
+.dark .notification-title {
+  color: #f1f5f9 !important;
+}
+
+.dark app-notification-bell .text-sm.text-slate-500,
+.dark .notification-body {
+  color: #94a3b8 !important;
+}
+
+.dark app-notification-bell .text-xs.text-slate-400,
+.dark .notification-time {
+  color: #64748b !important;
+}
+
+.dark app-notification-bell .mt-2.flex.gap-2.items-center button,
+.dark .notification-action-btn {
+  background: #334155 !important;
+  color: #cbd5e1 !important;
+  border-color: #475569 !important;
+}
+
+.dark app-notification-bell .mt-2.flex.gap-2.items-center button:hover,
+.dark .notification-action-btn:hover {
+  background: #475569 !important;
+  border-color: #64748b !important;
+  color: #f1f5f9 !important;
+}
+
+.dark app-notification-bell button:last-child,
+.dark .notification-close-btn {
+  background: #1e293b !important;
+  color: #94a3b8 !important;
+  border-color: #475569 !important;
+}
+
+.dark app-notification-bell button:last-child:hover,
+.dark .notification-close-btn:hover {
+  background: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+.dark app-notification-bell .p-6.text-center.text-sm.text-slate-500,
+.dark .notification-empty {
+  color: #64748b !important;
+}
+
+.dark app-notification-bell .p-6.text-center.text-sm.text-slate-500 mat-icon,
+.dark .notification-empty mat-icon {
+  color: #475569 !important;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 480px) {
+  app-notification-bell div[role="dialog"],
+  .notification-dropdown {
+    width: calc(100vw - 32px) !important;
+    right: -60px !important;
+    max-height: 60vh !important;
+  }
+  
+  app-notification-bell ul,
+  .notification-list {
+    max-height: calc(60vh - 80px) !important;
+  }
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+/* Animation when notification is added */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+app-notification-bell li.new,
+.notification-list-item.new {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Animation for unread indicator */
+@keyframes ring {
+  0%, 100% { transform: rotate(0); }
+  10%, 30%, 50%, 70%, 90% { transform: rotate(10deg); }
+  20%, 40%, 60%, 80% { transform: rotate(-10deg); }
+}
+
+app-notification-bell:has(.bg-red-600) .bell-icon,
+.notification-wrapper:has(.unread) .bell-icon.ringing {
+  animation: ring 0.5s ease-in-out 2;
+}
+

@@ -50,10 +50,33 @@ public class ItemService {
     }
 
     /**
-     * Récupérer un item par nom
+     * Récupérer un item par nom et lot
+     * Permet de distinguer les items avec le même nom mais appartenant à des lots différents
+     */
+    public Item getItemByNomItemAndLot(String nomItem, String lot) {
+        List<Item> items = itemRepository.findByNomItemContainingIgnoreCase(nomItem);
+        if (items.isEmpty()) {
+            return null;
+        }
+        
+        // Rechercher l'item correspondant au lot spécifié
+        for (Item item : items) {
+            if (item.getLot() != null && item.getLot().equalsIgnoreCase(lot)) {
+                return item;
+            }
+        }
+        
+        // Si aucun item ne correspond au lot, retourner le premier
+        return items.get(0);
+    }
+    
+    /**
+     * Récupérer un item par nom (version par défaut sans lot)
+     * Si plusieurs items ont le même nom, retourne le premier
      */
     public Item getItemByNomItem(String nomItem) {
-        return itemRepository.findByNomItem(nomItem).orElse(null);
+        List<Item> items = itemRepository.findByNomItemContainingIgnoreCase(nomItem);
+        return items.isEmpty() ? null : items.get(0);
     }
 
     /**

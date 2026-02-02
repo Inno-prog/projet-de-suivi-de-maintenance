@@ -10,14 +10,15 @@ import { Subscription } from 'rxjs';
   selector: 'app-notification-bell',
   standalone: true,
   imports: [CommonModule, MatIconModule],
+  styleUrls: ['./notification-bell.css'],
   template: `
-  <div class="relative" (keydown.escape)="close()" tabindex="0">
+  <div class="notification-wrapper relative" (keydown.escape)="close()" tabindex="0">
     <!-- Bell button -->
       <button
       (click)="toggle()"
       aria-haspopup="true"
       [attr.aria-expanded]="open"
-      class="relative inline-flex items-center justify-center p-2 rounded-full hover:bg-yellow-100/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition text-yellow-500 hover:text-yellow-600 shadow-lg hover:shadow-xl"
+      class="notification-bell-btn"
       title="Notifications"
     >
       <!-- Material bell icon -->
@@ -33,38 +34,38 @@ import { Subscription } from 'rxjs';
     </button>
 
     <!-- Dropdown -->
-    <div *ngIf="open" class="absolute right-0 mt-3 w-80 max-h-96 overflow-auto bg-white shadow-2xl rounded-2xl ring-1 ring-black ring-opacity-5 z-50 transition transform origin-top-right animate-in"
-         role="dialog" aria-label="Notifications panel">
-      <div class="p-3 border-b flex items-center justify-between">
-        <strong class="text-sm">Notifications</strong>
-        <div class="flex gap-2 items-center">
-          <button (click)="markAll()" class="text-xs px-2 py-1 rounded-md hover:bg-slate-100">Tout marquer lu</button>
-          <button (click)="close()" class="text-xs px-2 py-1 rounded-md hover:bg-slate-100">Fermer</button>
+    <div *ngIf="open" class="notification-dropdown" role="dialog" aria-label="Notifications panel">
+      <div class="notification-dropdown-header">
+        <strong class="title">Notifications</strong>
+        <div class="notification-header-actions">
+          <button (click)="markAll()" class="notification-mark-all-btn">Tout marquer lu</button>
+          <button (click)="close()" class="notification-close-btn">Fermer</button>
         </div>
       </div>
 
       <ng-container *ngIf="(notifications$ | async) as notifs">
-        <div *ngIf="notifs.length === 0" class="p-6 text-center text-sm text-slate-500">
-          Aucune notification
+        <div *ngIf="notifs.length === 0" class="notification-empty">
+          <mat-icon>notifications_none</mat-icon>
+          <p>Aucune notification</p>
         </div>
 
-        <ul class="divide-y">
-          <li *ngFor="let n of notifs" class="px-3 py-2 hover:bg-slate-50">
-            <a (click)="openNotification(n)" class="flex gap-3 items-start cursor-pointer">
-              <div class="flex-shrink-0">
-                <span class="inline-flex items-center justify-center h-9 w-9 rounded-full ring-1 ring-slate-100 text-sm">
+        <ul class="notification-list">
+          <li *ngFor="let n of notifs" class="notification-list-item">
+            <a (click)="openNotification(n)" class="notification-link">
+              <div class="notification-icon-wrapper">
+                <div class="notification-icon-circle">
                   <mat-icon>notifications</mat-icon>
-                </span>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between">
-                  <p class="text-sm font-medium truncate">{{ n.title }}</p>
-                  <p class="text-xs text-slate-400 ml-2">{{ n.time ? (n.time | date:'short') : '' }}</p>
                 </div>
-                <p class="text-sm text-slate-500 truncate">{{ n.body }}</p>
-                <div class="mt-2 flex gap-2 items-center">
-                  <button *ngIf="!n.read" (click)="markRead(n, $event)" class="text-xs px-2 py-0.5 rounded-md border border-slate-200 hover:bg-slate-50">Marquer lu</button>
-                  <button (click)="remove(n, $event)" class="text-xs px-2 py-0.5 rounded-md border border-slate-200 hover:bg-slate-50">Supprimer</button>
+              </div>
+              <div class="notification-content">
+                <div class="flex items-center justify-between">
+                  <p class="notification-title">{{ n.title }}</p>
+                  <p class="notification-time">{{ n.time ? (n.time | date:'short') : '' }}</p>
+                </div>
+                <p class="notification-body">{{ n.body }}</p>
+                <div class="notification-actions">
+                  <button *ngIf="!n.read" (click)="markRead(n, $event)" class="notification-action-btn">Marquer lu</button>
+                  <button (click)="remove(n, $event)" class="notification-action-btn">Supprimer</button>
                 </div>
               </div>
             </a>
@@ -74,12 +75,7 @@ import { Subscription } from 'rxjs';
 
     </div>
   </div>
-  `,
-  styles: [`
-    /* Petite animation d'apparition */
-    .animate-in { animation: pop 160ms cubic-bezier(.2,.8,.2,1); }
-    @keyframes pop { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: scale(1); } }
-  `]
+  `
 })
 export class NotificationBellComponent implements OnInit, OnDestroy {
   open = false;

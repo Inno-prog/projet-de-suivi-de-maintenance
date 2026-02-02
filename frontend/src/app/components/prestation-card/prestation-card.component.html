@@ -1,12 +1,12 @@
 <div class="prestation-card">
   <!-- Header avec gradient -->
   <div class="card-header">
-    <div class="header-logo">
-      <img src="assets/logoFinal.png" alt="MainTrack Pro Logo" class="logo-image">
-    </div>
     <div class="header-info">
       <h2 class="brand-title">MainTrack Pro</h2>
       <p class="brand-subtitle">Acteurs de maintenance Pro</p>
+    </div>
+    <div class="header-logo">
+      <img src="assets/logoFinal.png" alt="MainTrack Pro Logo" class="logo-image">
     </div>
   </div>
 
@@ -84,8 +84,8 @@
       <span>Télécharger</span>
     </button>
 
-    <!-- BOUTONS ADMIN -->
-    <ng-container *ngIf="isAdmin()">
+    <!-- BOUTONS ADMIN (uniquement pour les admins, pas pour les prestataires) -->
+    <ng-container *ngIf="isAdmin() && !isPrestataire()">
       <button class="action-btn validate-btn" (click)="onValidateClick()" [disabled]="!canValidate()" [class.disabled]="!canValidate()">
         <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>

@@ -84,7 +84,9 @@ public class StructureMefpService {
             .map(structure -> {
                 logger.info("Found existing structure: " + structure.getNom());
                 structure.setNom(structureDetails.getNom());
-                structure.setContact(structureDetails.getContact());
+                structure.setContact1(structureDetails.getContact1());
+                structure.setContact2(structureDetails.getContact2());
+                structure.setContact3(structureDetails.getContact3());
                 structure.setEmail(structureDetails.getEmail());
                 structure.setVille(structureDetails.getVille());
                 structure.setRegion(structureDetails.getRegion());
@@ -219,7 +221,9 @@ public class StructureMefpService {
                             s.getId(),
                             s.getNom(),
                             s.getCategorie(),
-                            s.getContact(),
+                            s.getContact1(),
+                            s.getContact2(),
+                            s.getContact3(),
                             s.getEmail(),
                             s.getAdresseStructure(),
                             s.getDescription()
@@ -316,7 +320,9 @@ public class StructureMefpService {
             .map(structure -> {
                 logger.info("Found existing structure: " + structure.getNom());
                 structure.setNom(structureDetails.getNom());
-                structure.setContact(structureDetails.getContact());
+                structure.setContact1(structureDetails.getContact1());
+                structure.setContact2(structureDetails.getContact2());
+                structure.setContact3(structureDetails.getContact3());
                 structure.setEmail(structureDetails.getEmail());
                 structure.setVille(structureDetails.getVille());
                 // Automatically assign region from ville if changed or not set

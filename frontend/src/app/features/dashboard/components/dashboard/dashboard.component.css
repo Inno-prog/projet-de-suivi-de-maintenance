@@ -262,14 +262,18 @@
 }
 
 .welcome-card {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  text-align: left;
 }
 
 .welcome-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .welcome-title {
@@ -289,43 +293,38 @@
   text-shadow: 0 2px 4px rgba(249,115,22,0.3);
 }
 
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
+.welcome-subtitle {
+  font-size: 1.1rem;
+  color: #6b7280;
+  margin: 0;
+  font-weight: 400;
 }
 
-.greeting {
-  font-size: 1rem;
+.welcome-footer {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.current-time {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f97316;
+}
+
+.current-date {
+  font-size: 0.95rem;
   color: #6b7280;
   font-weight: 500;
 }
 
-.user-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1f2937;
-  background: linear-gradient(135deg, #1e4d7b 0%, #2d5a8a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.welcome-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.role-badge {
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 2px solid rgba(249,115,22,0.2);
-  background: linear-gradient(135deg, #fff7ed 0%, #fee2e2 100%);
-  color: #991b1b;
-}
-
-/* Statistics Cards Styles */
+/* Statistics Cards Styles - Colorful Theme */
 .stats-container {
   width: 100%;
   max-width: 1200px;
@@ -337,7 +336,7 @@
   gap: 15px;
 }
 
-/* Carte de statistiques */
+/* Carte de statistiques - Colorful Theme */
 .stat-card {
   background: white;
   border-radius: 12px;
@@ -404,13 +403,13 @@
 .card-number {
   font-size: 28px;
   font-weight: 700;
-  color: #2c3e50;
+  color: #000000 !important;
   line-height: 1;
   letter-spacing: -0.5px;
 }
 
 .card-number.percentage {
-  color: #ff9500;
+  color: #000000 !important;
 }
 
 /* Barre de progression */
@@ -432,21 +431,21 @@
   transition: width 1s ease;
 }
 
-/* Remplissage spécifique pour chaque carte */
-.stat-card:nth-child(1) .progress-fill {
-  background: linear-gradient(90deg, #667eea, #764ba2);
+/* Remplissage coloré basé sur la couleur de la carte */
+.stat-card[style*="--card-color: #ff6b6b"] .progress-fill {
+  background: #f0f0f0 !important;
 }
 
-.stat-card:nth-child(2) .progress-fill {
-  background: linear-gradient(90deg, #f093fb, #f5576c);
+.stat-card[style*="--card-color: #4dabf7"] .progress-fill {
+  background: #f0f0f0 !important;
 }
 
-.stat-card:nth-child(3) .progress-fill {
-  background: linear-gradient(90deg, #4facfe, #00f2fe);
+.stat-card[style*="--card-color: #ffd43b"] .progress-fill {
+  background: #f0f0f0 !important;
 }
 
-.stat-card:nth-child(4) .progress-fill {
-  background: linear-gradient(90deg, #43e97b, #38f9d7);
+.stat-card[style*="--card-color: #51cf66"] .progress-fill {
+  background: #f0f0f0 !important;
 }
 
 .progress-label {
@@ -498,7 +497,7 @@
   font-weight: 500;
 }
 
-/* Icônes des cartes */
+/* Icônes des cartes - Colorful Theme */
 .card-icon {
   position: absolute;
   top: 15px;
@@ -510,28 +509,15 @@
   align-items: center;
   justify-content: center;
   font-size: 18px;
-  color: white;
+  color: #1f2937;
   opacity: 0.9;
+  background: #f0f0f0 !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.product-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.order-icon {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.customer-icon {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.review-icon {
-  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-}
-
-/* Éléments décoratifs */
-.stat-card::before {
+/* Éléments décoratifs colorés */
+.stat-card[style*="--card-color: #ff6b6b"]::before {
   content: '';
   position: absolute;
   top: 0;
@@ -539,22 +525,44 @@
   right: 0;
   height: 4px;
   border-radius: 20px 20px 0 0;
+  background: #ff6b6b;
+  border-bottom: 1px solid #ff6b6b;
 }
 
-.stat-card:nth-child(1)::before {
-  background: linear-gradient(90deg, #667eea, #764ba2);
+.stat-card[style*="--card-color: #4dabf7"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 20px 20px 0 0;
+  background: #4dabf7;
+  border-bottom: 1px solid #4dabf7;
 }
 
-.stat-card:nth-child(2)::before {
-  background: linear-gradient(90deg, #f093fb, #f5576c);
+.stat-card[style*="--card-color: #ffd43b"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 20px 20px 0 0;
+  background: #ffd43b;
+  border-bottom: 1px solid #ffd43b;
 }
 
-.stat-card:nth-child(3)::before {
-  background: linear-gradient(90deg, #4facfe, #00f2fe);
-}
-
-.stat-card:nth-child(4)::before {
-  background: linear-gradient(90deg, #43e97b, #38f9d7);
+.stat-card[style*="--card-color: #51cf66"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 20px 20px 0 0;
+  background: #51cf66;
+  border-bottom: 1px solid #51cf66;
 }
 
 /* Responsive */
@@ -681,9 +689,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #fff7ed 0%, #fee2e2 100%);
+  /* Use off-white circle background (blanc-salé) for stat icons */
+  background: #f3f2e8 !important;
   border-radius: 10px;
-  border: 2px solid rgba(249,115,22,0.2);
+  border: 2px solid rgba(0,0,0,0.04);
 }
 
 .stat-content {
@@ -693,9 +702,15 @@
 .stat-number {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1e4d7b;
+  color: #000 !important; /* force black for admin dashboard stat numbers */
   margin-bottom: 0.25rem;
   line-height: 1;
+}
+
+/* Ensure any SVG circle inside stat-cards is also off-white so inline SVGs match */
+.stat-card .stat-icon svg circle,
+.stat-card .stat-icon svg ellipse {
+  fill: #f3f2e8 !important;
 }
 
 .stat-label {
@@ -891,14 +906,15 @@
 }
 
 .view-btn {
-  background: linear-gradient(135deg, #fff7ed 0%, #fee2e2 100%);
+  background: transparent;
   color: #991b1b;
+  border: 2px solid #991b1b;
 }
 
 .edit-btn {
-  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  background: transparent;
   color: #1e4d7b;
-  border-color: #93c5fd;
+  border-color: #1e4d7b;
 }
 
 .action-btn:hover {

@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import com.dgsi.maintenance.entity.FichePrestation;
 import com.dgsi.maintenance.repository.FichePrestationRepository;
 import com.dgsi.maintenance.repository.OrdreCommandeRepository;
 import com.dgsi.maintenance.repository.PrestationRepository;
+import com.dgsi.maintenance.service.FichePrestationService;
 import com.dgsi.maintenance.util.LotUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +36,9 @@ public class OrdreCommandeController {
     
     @Autowired
     private PrestationRepository prestationRepository;
+    
+    @Autowired
+    private FichePrestationService fichePrestationService;
     
     // Injection optionnelle du ContratRepository
     private com.dgsi.maintenance.repository.ContratRepository contratRepository;
@@ -125,10 +130,14 @@ public class OrdreCommandeController {
                             }
                         }
                         
-                        // Compter les fiches
+                        // Compter les fiches - toutes les fiches validées pour ce prestataire et trimestre
                         List<FichePrestation> fiches = fichePrestationRepository.findAll().stream()
-                            .filter(f -> f.getIdPrestation() != null && prestationsPrestataire.stream()
-                                .anyMatch(p -> p.getId().toString().equals(f.getIdPrestation())))
+                            .filter(f -> f.getStatut() == com.dgsi.maintenance.entity.StatutFiche.VALIDE && 
+                                         f.getNomPrestataire() != null && 
+                                         f.getNomPrestataire().equals(prestataire) &&
+                                         f.getIdPrestation() != null && 
+                                         prestationsPrestataire.stream()
+                                            .anyMatch(p -> p.getId().toString().equals(f.getIdPrestation())))
                             .collect(Collectors.toList());
                         
                         // Calculer montant
@@ -164,6 +173,40 @@ public class OrdreCommandeController {
         }
     }
 
+    /**
+     * Normalise un nom de lot pour comparaison :
+     * - Supprime les parenthèses
+     * - Normalise les espaces
+     * - Supprime le préfixe "lot" (insensible à la casse)
+     * - Convertit en minuscules
+     * - Retourne la valeur exacte après normalisation (pas de substring matching)
+     */
+    private String normalizeLotForComparison(String lotName) {
+        if (lotName == null) return "";
+        // Supprimer les parenthèses et leurs contenus pour éviter les "(Zone 1)" etc.
+        String normalized = lotName.replaceAll("[()]", " ").trim();
+        // Supprimer le préfixe "lot" (insensible à la casse) et les espaces multiples
+        normalized = normalized.replaceAll("(?i)^lot\\s*", "").replaceAll("\\s+", " ").trim().toLowerCase();
+        return normalized;
+    }
+
+    /**
+     * Vérifie si deux noms de lots correspondent EXACTEMENT.
+     * Ne fait PAS de matching par sous-chaîne pour éviter les faux positifs.
+     * Exemple: "Lot 4" ne doit PAS matcher "Lot 14" ou "Lot 24"
+     */
+    private boolean lotsMatch(String lot1, String lot2) {
+        if (lot1 == null || lot2 == null) return false;
+        String norm1 = normalizeLotForComparison(lot1);
+        String norm2 = normalizeLotForComparison(lot2);
+        
+        // Si les deux sont vides ou null après normalisation, ils ne correspondent pas
+        if (norm1.isEmpty() && norm2.isEmpty()) return false;
+        
+        // Comparaison EXACTE après normalisation (pas de contains, pas de substring)
+        return norm1.equals(norm2);
+    }
+
     @GetMapping("/trimestre/{trimestre}/lot/{lotId}/fiches")
     public ResponseEntity<?> getFichesByLot(@PathVariable Integer trimestre, @PathVariable String lotId) {
         try {
@@ -183,13 +226,9 @@ public class OrdreCommandeController {
                     List<com.dgsi.maintenance.entity.Contrat> allContrats = contratRepository.findAll();
                     log.info("🔍 DEBUG - Tous les contrats ({}) :", allContrats.size());
                     allContrats.forEach(c -> {
-                        String lotName = c.getLot();
-                        if (lotName == null && c.getLotEntity() != null) {
-                                lotName = sanitizeLotName(c.getLotEntity().getNomLot());
-                        }
-                        log.info("  - Contrat: {} - Prestataire: {} - Lot: {} - LotEntity: {}",
-                            c.getIdContrat(), c.getNomPrestataire(), c.getLot(),
-                            c.getLotEntity() != null ? c.getLotEntity().getNomLot() : "null");
+                        String contractLot = c.getLot();
+                        log.info("  - Contrat: {} - Prestataire: {} - Lot: {}",
+                            c.getIdContrat(), c.getNomPrestataire(), contractLot);
                     });
                 }
 
@@ -200,14 +239,10 @@ public class OrdreCommandeController {
                             .filter(c -> {
                                 String contractLotName = c.getLot();
                                 if (contractLotName == null && c.getLotEntity() != null) {
-                                    contractLotName = sanitizeLotName(c.getLotEntity().getNomLot());
+                                    contractLotName = c.getLotEntity().getNomLot();
                                 }
-                                return contractLotName != null && (
-                                    lotNom.equals(contractLotName) ||
-                                    lotNom.equalsIgnoreCase(contractLotName) ||
-                                    ("Lot " + lotNom).equalsIgnoreCase(contractLotName) ||
-                                    lotNom.equalsIgnoreCase("Lot " + contractLotName)
-                                );
+                                // Use normalized exact matching to avoid false positives (Lot 1 vs Lot 14)
+                                return contractLotName != null && lotsMatch(contractLotName, lotNom);
                             })
                             .map(c -> c.getNomPrestataire())
                             .distinct()
@@ -227,7 +262,7 @@ public class OrdreCommandeController {
                     // Debug: Log all prestations
                     List<com.dgsi.maintenance.entity.Prestation> allPrestations = prestationRepository.findAll();
                     log.info("🔍 DEBUG - Toutes les prestations ({}) :", allPrestations.size());
-                    allPrestations.forEach(p -> log.info("  - Prestation: {} - Prestataire: {} - Trimestre: {} - Statut: {}", p.getId(), p.getNomPrestataire(), p.getTrimestre(), p.getStatut()));
+                    allPrestations.forEach(p -> log.info("  - Prestation: {} - Prestataire: {} - Trimestre: {}", p.getId(), p.getNomPrestataire(), p.getTrimestre()));
 
                     List<com.dgsi.maintenance.entity.Prestation> prestationsTrimestre = prestationRepository.findAll().stream()
                         .filter(p -> p.getTrimestre() != null && (
@@ -264,6 +299,32 @@ public class OrdreCommandeController {
                 log.warn("⚠️ Erreur récupération fiches: {}", e.getMessage());
             }
 
+            // Formater les numéros de fiche pour l'affichage
+            int lotNumber = 1;
+            try {
+                lotNumber = extractLotNumber(lotNom);
+            } catch (Exception e) {
+                log.warn("⚠️ Impossible d'extraire le numéro de lot de '{}', utilisant 1 par défaut", lotNom);
+            }
+            
+            List<FichePrestation> formattedFiches = new ArrayList<>();
+            for (FichePrestation fiche : fiches) {
+                if (fiche.getNumeroFiche() == null) {
+                    // Utiliser la logique existante du service pour générer le numéro de fiche
+                    String formattedNumber = String.format("T%d-L%d-%02d", trimestre, lotNumber, 
+                        fichePrestationService.getNextAvailableNumero(trimestre, lotNumber));
+                    fiche.setNumeroFiche(formattedNumber);
+                    // Enregistrer le numéro généré dans la base de données
+                    try {
+                        fichePrestationRepository.save(fiche);
+                        log.debug("🔧 Numéro de fiche généré et enregistré: {}", formattedNumber);
+                    } catch (Exception e) {
+                        log.warn("⚠️ Impossible d'enregistrer le numéro de fiche pour l'ID {}", fiche.getId());
+                    }
+                }
+                formattedFiches.add(fiche);
+            }
+
             // Préparer la réponse
             Map<String, Object> response = new HashMap<>();
 
@@ -274,15 +335,47 @@ public class OrdreCommandeController {
             lotInfo.put("nombrePrestataires", prestatairesLot.size());
 
             response.put("lotInfo", lotInfo);
-            response.put("fiches", fiches);
+            response.put("fiches", formattedFiches);
 
             log.info("✅ Retour de {} fiches pour lot {} - T{} ({} prestataires)",
-                    fiches.size(), lotId, trimestre, prestatairesLot.size());
+                    formattedFiches.size(), lotId, trimestre, prestatairesLot.size());
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             log.error("❌ Erreur lors de la récupération des fiches pour lot {} - T{}", lotId, trimestre, e);
             return ResponseEntity.internalServerError().body("Erreur: " + e.getMessage());
+        }
+    }
+    
+    private int trimestreToNumero(String trimestre) {
+        switch (trimestre) {
+            case "T1": return 1;
+            case "T2": return 2;
+            case "T3": return 3;
+            default: return 4;
+        }
+    }
+    
+    /**
+     * Extrait le numéro de lot à partir d'un nom de lot normalisé ou brut.
+     * @param rawLotName Nom de lot tel que "Lot 1", "LOT01", "lot 2 (test)"
+     * @return Numéro de lot sous forme d'entier
+     */
+    private int extractLotNumber(String rawLotName) {
+        if (rawLotName == null) {
+            return 1;
+        }
+        
+        // Supprimer les caractères non numériques sauf les chiffres
+        String normalized = rawLotName.replaceAll("[^0-9]", "");
+        if (normalized.isEmpty()) {
+            return 1;
+        }
+        
+        try {
+            return Integer.parseInt(normalized);
+        } catch (NumberFormatException e) {
+            return 1;
         }
     }
 

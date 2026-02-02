@@ -1,4 +1,8 @@
+/* stylelint-disable at-rule-no-unknown */
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
+/* stylelint-enable at-rule-no-unknown */
+
+/* Tailwind CSS - These directives are processed by the Tailwind build pipeline */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -27,223 +31,9 @@
   transform: none !important;
   margin: 0 auto !important;
   max-width: 700px !important;
-  width: 100% !important;
-}
-
-.modal-dialog.modal-lg {
-  max-width: 900px !important;
-  width: 90% !important;
-}
-
-.modal-content {
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35) !important;
-  border-radius: 12px !important;
-}
-
-.modal-backdrop {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 9998 !important;
-  margin: 0 !important;
-}
-
-.form-overlay {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 9999 !important;
-  margin: 0 !important;
-  padding: 20px !important;
-}
-
-.form-container {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: none !important;
-  width: 100% !important;
-  max-width: 750px !important;
-  margin: 0 auto !important;
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35) !important;
-  border-radius: 12px !important;
-}
-
-/* Global Styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Ensure the document and root app element fill the viewport */
-html, body {
-  height: 100%;
-  width: 100%;
-  min-height: 100%;
-  overflow: auto;
-  margin: 0;
-  padding: 0;
-}
-
-app-root {
-  display: block;
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-}
-
-/* ============================================
-   AGGRESSIVE MODAL AND FORM POSITIONING FIX
-   These styles override Bootstrap and Angular inline styles
-   ============================================ */
-
-/* ULTRA AGGRESSIVE - Force all modals to be fixed and centered */
-.modal.show,
-.modal.fade.show,
-.modal.in,
-div.modal[style*="display: block"],
-div.modal[style*="display:block"],
-.modal.show.d-block {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 9999 !important;
-  margin: 0 !important;
-  padding: 20px !important;
-  box-sizing: border-box !important;
-  overflow: auto !important;
-  background: transparent !important;
-}
-
-/* ULTRA AGGRESSIVE - Force modal dialog */
-.modal-dialog,
-.modal-dialog.modal-lg {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: none !important;
-  margin: 0 auto !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  max-width: 700px !important;
-  width: 90% !important;
-}
-
-.modal-dialog.modal-lg {
-  max-width: 900px !important;
-}
-
-/* ULTRA AGGRESSIVE - Force modal content */
-.modal-content {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: none !important;
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35) !important;
-  border-radius: 12px !important;
-  margin: 0 auto !important;
-}
-
-/* ULTRA AGGRESSIVE - Force modal backdrop */
-.modal-backdrop,
-.modal-backdrop.fade,
-.modal-backdrop.show {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 9998 !important;
-  margin: 0 !important;
-  background: rgba(0, 0, 0, 0.6) !important;
-  opacity: 0.6 !important;
-}
-
-/* ULTRA AGGRESSIVE - Force form overlays */
-.form-overlay,
-div.form-overlay {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 9999 !important;
-  margin: 0 !important;
-  padding: 20px !important;
-  background: rgba(0, 0, 0, 0.6) !important;
-  box-sizing: border-box !important;
-}
-
-/* ULTRA AGGRESSIVE - Force form containers */
-.form-container,
-div.form-container {
-  position: relative !important;
-  top: auto !important;
-  left: auto !important;
-  right: auto !important;
-  bottom: auto !important;
-  transform: none !important;
-  margin: 0 auto !important;
-  margin-left: auto !important;
-  margin-right: auto !important;
-  width: 100% !important;
-  max-width: 750px !important;
-  max-height: calc(100vh - 40px) !important;
-  overflow-y: auto !important;
-  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.35) !important;
-  border-radius: 12px !important;
-  background: white !important;
-}
-
-/* Remove any top margin from modal content */
-.modal-content {
-  margin-top: 0 !important;
-}
-
-/* Ensure modal body can scroll */
-.modal-body {
-  max-height: calc(100vh - 200px) !important;
-  overflow-y: auto !important;
-}
-
-/* Prevent fade transition from affecting positioning */
-.modal.fade .modal-dialog {
-  transition: none !important;
-  transform: none !important;
-}
-
-/* Override any inline transform styles */
-[style*="transform: translate"] {
-  transform: none !important;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-  .modal-dialog,
-  .modal-dialog.modal-lg {
-    width: 95% !important;
+  /* Notification styles were previously added here but caused unintended global overrides.
+     Removed to restore component-scoped notification styles. If needed, reintroduce
+     smaller, targeted overrides instead of broad selectors. */
     max-width: none !important;
   }
   
@@ -257,6 +47,41 @@ div.form-container {
   .form-overlay {
     padding: 10px !important;
   }
+ 
+
+/* === Global: Outlined action buttons (no filled backgrounds) === */
+/* Applies to common edit/modify buttons across the app. We prefer a transparent background,
+   a colored border and colored icon/text. Hover applies a very light tint. */
+button.edit-btn,
+.action-btn.edit,
+.action-btn.edit-btn,
+.edit-btn,
+button[title="Modifier"],
+button[title="Editer"],
+button[title="Éditer"] {
+  background-color: transparent !important;
+  color: #1e40af !important; /* primary blue for edit */
+  border: 1px solid rgba(99,102,241,0.25) !important; /* light blue border */
+  box-shadow: none !important;
+}
+
+button.edit-btn:hover,
+.action-btn.edit:hover,
+.action-btn.edit-btn:hover,
+.edit-btn:hover,
+button[title="Modifier"]:hover,
+button[title="Editer"]:hover,
+button[title="Éditer"]:hover {
+  background-color: rgba(30,64,175,0.06) !important; /* light blue tint */
+}
+
+/* Ensure icons inside outlined buttons inherit the color */
+button[title="Modifier"] i,
+button[title="Editer"] i,
+button[title="Éditer"] i,
+.action-btn.edit i,
+.edit-btn i {
+  color: inherit !important;
 }
 
 
@@ -267,6 +92,29 @@ div.form-container {
   height: 100vh !important;
   width: 100vw !important;
   overflow: hidden !important;
+}
+
+/* Global: make stat numbers black and stat-card circles off-white (blanc-salé) */
+.stat-number,
+.card-number,
+.stat-value {
+  color: #000 !important;
+}
+
+/* Replace colored SVG circle fills in stat-cards with an off-white background while
+   keeping strokes/paths in their theme color. */
+.stat-card .stat-icon svg circle,
+.stat-card .stat-icon svg ellipse,
+.card-icon svg circle,
+.card-icon svg ellipse {
+  fill: #f3f2e8 !important; /* blanc-salé */
+}
+
+/* For any inline icon backgrounds used as .stat-icon-bg, force an off-white circle */
+.stat-icon-bg,
+.card-icon {
+  background: #f3f2e8 !important;
+  border-color: #d1d5db !important;
 }
 
 .app-layout.stable-layout app-sidebar {
@@ -681,14 +529,16 @@ p {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: white;
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
   box-shadow: 
     0 4px 12px rgba(249, 115, 22, 0.3),
     0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover:not(:disabled) {
+  background: rgba(249, 115, 22, 0.1);
   transform: translateY(-1px);
   box-shadow: 
     0 6px 16px rgba(249, 115, 22, 0.4),
@@ -696,12 +546,13 @@ p {
 }
 
 .btn-secondary {
-  background-color: var(--secondary);
-  color: white;
+  background: transparent;
+  color: var(--secondary);
+  border: 1px solid var(--secondary);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background-color: var(--secondary-dark);
+  background: rgba(107, 114, 128, 0.1);
   transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
@@ -720,21 +571,27 @@ p {
 }
 
 .btn-success {
-  background-color: var(--success);
-  color: white;
+  background: transparent;
+  color: var(--success);
+  border: 1px solid var(--success);
 }
 
 .btn-success:hover:not(:disabled) {
-  background-color: #059669;
+  background: rgba(34, 197, 94, 0.1);
+  color: #059669;
+  border-color: #059669;
 }
 
 .btn-danger {
-  background-color: var(--error);
-  color: white;
+  background: transparent;
+  color: var(--error);
+  border: 1px solid var(--error);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background-color: #dc2626;
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border-color: #dc2626;
 }
 
 /* Form Styles */
@@ -1546,3 +1403,5 @@ body > .modal.show,
     max-height: 95vh !important;
   }
 }
+
+/* Styles de notification supprimés - voir notification-bell.css */

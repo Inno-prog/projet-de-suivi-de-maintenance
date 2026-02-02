@@ -1,16 +1,6 @@
 <!-- Admin Dashboard Layout -->
 <div *ngIf="isAdmin" class="admin-dashboard">
-  <!-- Google Maps Background -->
-  <div class="map-background">
-    <iframe 
-      id="google-map"
-      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.5932023843613!2d-1.5334512240710387!3d12.36865458757334!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9e1c754a5a85%3A0x3534a28a2ef20271!2sOuagadougou%2C%20Burkina%20Faso!5e0!3m2!1sfr!2sbf!4v1705846800000!5m2!1sfr!2sbf" 
-      allowfullscreen="" 
-      loading="lazy" 
-      referrerpolicy="no-referrer-when-downgrade"
-      title="Carte de Ouagadougou"
-    ></iframe>
-  </div>
+
 
   <!-- Header with Hamburger and Search -->
   <header class="dashboard-header">
@@ -73,12 +63,7 @@
       <div class="welcome-section">
         <div class="welcome-card">
           <div class="welcome-content">
-            <h2 class="welcome-title">Bienvenue sur <span class="brand-highlight">MainTrack Pro</span></h2>
-            <div class="user-info">
-              <span class="greeting">Bonjour</span>
-              <span class="user-name">{{ currentUser?.nom }}</span>
-              <span class="role-badge" [class]="getRoleClass()">{{ getRoleDisplayName() }}</span>
-            </div>
+            <h2 class="welcome-title">Bienvenue dans le tableau de bord administrateur</h2>
           </div>
         </div>
       </div>

@@ -28,12 +28,12 @@ public interface FichePrestationRepository extends JpaRepository<FichePrestation
 
     // Get all used numero_fiche values
     @Query("SELECT f.numeroFiche FROM FichePrestation f WHERE f.numeroFiche IS NOT NULL ORDER BY f.numeroFiche")
-    List<Integer> findAllUsedNumeros();
+    List<String> findAllUsedNumeros();
 
-    // Find the maximum numero_fiche used
-    @Query("SELECT COALESCE(MAX(f.numeroFiche), 0) FROM FichePrestation f")
-    int findMaxNumeroFiche();
+    // Find the maximum index for a specific trimestre and lot
+    @Query("SELECT COUNT(f) FROM FichePrestation f WHERE f.numeroFiche LIKE CONCAT(:prefix, '%')")
+    long countFichesByPrefix(@Param("prefix") String prefix);
 
     // Check if a specific numero is already used
-    boolean existsByNumeroFiche(Integer numeroFiche);
+    boolean existsByNumeroFiche(String numeroFiche);
 }

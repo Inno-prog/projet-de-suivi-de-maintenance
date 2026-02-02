@@ -46,7 +46,8 @@ export class ContratFormComponent implements OnInit, OnDestroy {
     { value: StatutContrat.ACTIF, label: 'Actif' },
     { value: StatutContrat.SUSPENDU, label: 'Suspendu' },
     { value: StatutContrat.TERMINE, label: 'Terminé' },
-    { value: StatutContrat.EXPIRE, label: 'Expiré' }
+    { value: StatutContrat.EXPIRE, label: 'Expiré' },
+    { value: StatutContrat.RESILIE, label: 'Résilié' }
   ];
 
   // Mapping des lots aux villes

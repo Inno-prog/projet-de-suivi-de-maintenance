@@ -55,18 +55,24 @@ public class ReportController {
     @GetMapping(value = "/evaluations/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> generateEvaluationReportPdf(@PathVariable Long id) {
         try {
+            System.out.println("Generating PDF for evaluation id: " + id);
             Optional<EvaluationTrimestrielle> evaluationOpt = evaluationService.getEvaluationById(id);
             if (!evaluationOpt.isPresent()) {
+                System.out.println("Evaluation not found for id: " + id);
                 return ResponseEntity.notFound().build();
             }
 
             EvaluationTrimestrielle evaluation = evaluationOpt.get();
+            System.out.println("Found evaluation: " + evaluation);
+            
             Map<String, Object> vars = new HashMap<>();
             vars.put("evaluation", evaluation);
             vars.put("generatedAt", LocalDateTime.now().toString());
 
             // templateName corresponds to resources/templates/report_evaluation.html (without extension)
+            System.out.println("Generating PDF with template report_evaluation");
             byte[] pdf = pdfReportService.generatePdf("report_evaluation", vars);
+            System.out.println("PDF generation successful, size: " + pdf.length + " bytes");
 
             String fileName = "rapport-evaluation-" + evaluation.getLot() + "-" + evaluation.getTrimestre() + ".pdf";
 
@@ -75,8 +81,9 @@ public class ReportController {
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(pdf);
         } catch (Exception e) {
+            System.err.println("Error generating evaluation PDF for id: " + id);
             e.printStackTrace();
-            return ResponseEntity.status(500).build();
+            return ResponseEntity.status(500).body(("Error generating PDF: " + e.getMessage()).getBytes());
         }
     }
 }

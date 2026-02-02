@@ -2,6 +2,10 @@ package com.dgsi.maintenance.entity;
 
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.hibernate.annotations.Type;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,8 +30,12 @@ public class EvaluationTrimestrielle {
     @Column(name = "prestataire_nom", length = 200)
     private String prestataireNom;
     
+    @Column(name = "prestataire_email", length = 200)
+    private String prestataireEmail;
+    
     @Column(name = "date_evaluation")
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateEvaluation;
     
     @Column(name = "evaluateur_nom", length = 200)
@@ -36,7 +44,7 @@ public class EvaluationTrimestrielle {
     @Column(name = "correspondant_id")
     private Long correspondantId;
     
-    @Column(name = "techniciens_liste", columnDefinition = "JSON")
+    @Column(name = "techniciens_liste", columnDefinition = "TEXT")
     private String techniciensListe;
 
     @Column(name = "techniciens_certifies")
@@ -87,10 +95,90 @@ public class EvaluationTrimestrielle {
     @Column(name = "obs_tenue", length = 500)
     private String obsTenue;
 
-    @Column(name = "prestations_verifiees", columnDefinition = "JSON")
+    @Column(name = "exigence1", length = 500)
+    private String exigence1;
+
+    @Column(name = "exigence2", length = 500)
+    private String exigence2;
+
+    @Column(name = "exigence3", length = 500)
+    private String exigence3;
+
+    @Column(name = "exigence4", length = 500)
+    private String exigence4;
+
+    @Column(name = "exigence5", length = 500)
+    private String exigence5;
+
+    @Column(name = "exigence6", length = 500)
+    private String exigence6;
+
+    @Column(name = "exigence7", length = 500)
+    private String exigence7;
+
+    @Column(name = "exigence8", length = 500)
+    private String exigence8;
+
+    @Column(name = "exigence9", length = 500)
+    private String exigence9;
+
+    @Column(name = "obs1", length = 500)
+    private String obs1;
+
+    @Column(name = "obs2", length = 500)
+    private String obs2;
+
+    @Column(name = "obs3", length = 500)
+    private String obs3;
+
+    @Column(name = "obs4", length = 500)
+    private String obs4;
+
+    @Column(name = "obs5", length = 500)
+    private String obs5;
+
+    @Column(name = "obs6", length = 500)
+    private String obs6;
+
+    @Column(name = "obs7", length = 500)
+    private String obs7;
+
+    @Column(name = "obs8", length = 500)
+    private String obs8;
+
+    @Column(name = "obs9", length = 500)
+    private String obs9;
+
+    @Column(name = "instance1", length = 500)
+    private String instance1;
+
+    @Column(name = "direction1", length = 500)
+    private String direction1;
+
+    @Column(name = "date_debut1")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate dateDebut1;
+
+    @Column(name = "jours_penalite1")
+    private Integer joursPenalite1;
+
+    @Column(name = "obs_instance1", length = 500)
+    private String obsInstance1;
+
+    @Column(name = "signature_prestataire", length = 200)
+    private String signaturePrestataire;
+
+    @Column(name = "signature_direction", length = 200)
+    private String signatureDirection;
+
+    @Column(name = "signature_dgsi", length = 200)
+    private String signatureDGSI;
+
+    @Column(name = "prestations_verifiees", length = 500)
     private String prestationsVerifiees;
     
-    @Column(name = "instances_non_resolues", columnDefinition = "JSON")
+    @Column(name = "instances_non_resolues", length = 500)
     private String instancesNonResolues;
     
     @Column(name = "observations_generales", columnDefinition = "TEXT")
@@ -105,7 +193,7 @@ public class EvaluationTrimestrielle {
     @Column(name = "signature_evaluateur")
     private String signatureEvaluateur;
     
-    @Column(name = "preuves", columnDefinition = "JSON")
+    @Column(name = "preuves", length = 500)
     private String preuves;
     
     @Column(name = "statut", length = 50)
@@ -161,6 +249,9 @@ public class EvaluationTrimestrielle {
 
     public String getPrestataireNom() { return prestataireNom; }
     public void setPrestataireNom(String prestataireNom) { this.prestataireNom = prestataireNom; }
+
+    public String getPrestataireEmail() { return prestataireEmail; }
+    public void setPrestataireEmail(String prestataireEmail) { this.prestataireEmail = prestataireEmail; }
 
     public LocalDate getDateEvaluation() { return dateEvaluation; }
     public void setDateEvaluation(LocalDate dateEvaluation) { this.dateEvaluation = dateEvaluation; }
@@ -260,6 +351,84 @@ public class EvaluationTrimestrielle {
 
     public LocalDateTime getDateModification() { return dateModification; }
     public void setDateModification(LocalDateTime dateModification) { this.dateModification = dateModification; }
+
+    public String getExigence1() { return exigence1; }
+    public void setExigence1(String exigence1) { this.exigence1 = exigence1; }
+
+    public String getExigence2() { return exigence2; }
+    public void setExigence2(String exigence2) { this.exigence2 = exigence2; }
+
+    public String getExigence3() { return exigence3; }
+    public void setExigence3(String exigence3) { this.exigence3 = exigence3; }
+
+    public String getExigence4() { return exigence4; }
+    public void setExigence4(String exigence4) { this.exigence4 = exigence4; }
+
+    public String getExigence5() { return exigence5; }
+    public void setExigence5(String exigence5) { this.exigence5 = exigence5; }
+
+    public String getExigence6() { return exigence6; }
+    public void setExigence6(String exigence6) { this.exigence6 = exigence6; }
+
+    public String getExigence7() { return exigence7; }
+    public void setExigence7(String exigence7) { this.exigence7 = exigence7; }
+
+    public String getExigence8() { return exigence8; }
+    public void setExigence8(String exigence8) { this.exigence8 = exigence8; }
+
+    public String getExigence9() { return exigence9; }
+    public void setExigence9(String exigence9) { this.exigence9 = exigence9; }
+
+    public String getObs1() { return obs1; }
+    public void setObs1(String obs1) { this.obs1 = obs1; }
+
+    public String getObs2() { return obs2; }
+    public void setObs2(String obs2) { this.obs2 = obs2; }
+
+    public String getObs3() { return obs3; }
+    public void setObs3(String obs3) { this.obs3 = obs3; }
+
+    public String getObs4() { return obs4; }
+    public void setObs4(String obs4) { this.obs4 = obs4; }
+
+    public String getObs5() { return obs5; }
+    public void setObs5(String obs5) { this.obs5 = obs5; }
+
+    public String getObs6() { return obs6; }
+    public void setObs6(String obs6) { this.obs6 = obs6; }
+
+    public String getObs7() { return obs7; }
+    public void setObs7(String obs7) { this.obs7 = obs7; }
+
+    public String getObs8() { return obs8; }
+    public void setObs8(String obs8) { this.obs8 = obs8; }
+
+    public String getObs9() { return obs9; }
+    public void setObs9(String obs9) { this.obs9 = obs9; }
+
+    public String getInstance1() { return instance1; }
+    public void setInstance1(String instance1) { this.instance1 = instance1; }
+
+    public String getDirection1() { return direction1; }
+    public void setDirection1(String direction1) { this.direction1 = direction1; }
+
+    public LocalDate getDateDebut1() { return dateDebut1; }
+    public void setDateDebut1(LocalDate dateDebut1) { this.dateDebut1 = dateDebut1; }
+
+    public Integer getJoursPenalite1() { return joursPenalite1; }
+    public void setJoursPenalite1(Integer joursPenalite1) { this.joursPenalite1 = joursPenalite1; }
+
+    public String getObsInstance1() { return obsInstance1; }
+    public void setObsInstance1(String obsInstance1) { this.obsInstance1 = obsInstance1; }
+
+    public String getSignaturePrestataire() { return signaturePrestataire; }
+    public void setSignaturePrestataire(String signaturePrestataire) { this.signaturePrestataire = signaturePrestataire; }
+
+    public String getSignatureDirection() { return signatureDirection; }
+    public void setSignatureDirection(String signatureDirection) { this.signatureDirection = signatureDirection; }
+
+    public String getSignatureDGSI() { return signatureDGSI; }
+    public void setSignatureDGSI(String signatureDGSI) { this.signatureDGSI = signatureDGSI; }
 
     public Long getUtilisateurCreation() { return utilisateurCreation; }
     public void setUtilisateurCreation(Long utilisateurCreation) { this.utilisateurCreation = utilisateurCreation; }

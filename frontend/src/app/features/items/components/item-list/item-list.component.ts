@@ -845,24 +845,24 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
     /* Material Design Statistics Cards */
     .stats-overview {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin-bottom: 3rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
     }
 
     .stat-card {
       background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
       backdrop-filter: blur(20px);
       border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 20px;
+      border-radius: 16px;
       box-shadow:
         0 16px 32px rgba(0, 0, 0, 0.1),
         0 6px 12px rgba(0, 0, 0, 0.06),
         inset 0 1px 0 rgba(255, 255, 255, 0.8);
-      padding: 1.5rem;
+      padding: 1rem;
       display: flex;
       align-items: center;
-      gap: 1.25rem;
+      gap: 1rem;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       overflow: hidden;
@@ -899,9 +899,9 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
     }
 
     .stat-icon-bg {
-      width: 80px;
-      height: 80px;
-      border-radius: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -910,25 +910,33 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
     }
 
     /* Icon backgrounds with gradients */
+    /* Use off-white circular backgrounds for stat icons and color the icon itself
+       so the circle appears 'blanc-salé' while the icon shows the theme color. */
     .total-items-card .stat-icon-bg {
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+      background: #f3f2e8;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
     }
 
     .active-lots-card .stat-icon-bg {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+      background: #f3f2e8;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
     }
 
     .total-value-card .stat-icon-bg {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      box-shadow: 0 8px 16px rgba(245, 158, 11, 0.3);
+      background: #f3f2e8;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
     }
 
     .prestations-card .stat-icon-bg {
-      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-      box-shadow: 0 8px 16px rgba(139, 92, 246, 0.3);
+      background: #f3f2e8;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
     }
+
+    /* Color the icons (not the circle) to match the previous theme colors */
+    .total-items-card .stat-icon { color: #1d4ed8; }
+    .active-lots-card .stat-icon { color: #059669; }
+    .total-value-card .stat-icon { color: #d97706; }
+    .prestations-card .stat-icon { color: #7c3aed; }
 
     .stat-icon {
       width: 36px;
@@ -954,10 +962,10 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
     }
 
     .stat-number {
-      font-size: 3rem;
+      font-size: 2rem;
       font-weight: 800;
       line-height: 1;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.25rem;
       background: linear-gradient(135deg, #1e293b 0%, #374151 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -965,7 +973,7 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
     }
 
     .stat-label {
-      font-size: 1.25rem;
+      font-size: 1rem;
       font-weight: 700;
       color: #374151;
       margin-bottom: 0.25rem;
@@ -1152,13 +1160,9 @@ export class ItemListComponent implements OnInit {
   }
 
   loadTotalPrestations() {
-    this.prestationService.getAllPrestations(0, 1).subscribe({
-      next: (prestationResponse) => {
-        if (prestationResponse && typeof prestationResponse === 'object' && 'totalElements' in prestationResponse) {
-          this.totalPrestations = prestationResponse.totalElements;
-        } else {
-          this.totalPrestations = 0;
-        }
+    this.prestationService.getPrestationsCount().subscribe({
+      next: (count) => {
+        this.totalPrestations = count;
       },
       error: () => {
         this.totalPrestations = 0;

@@ -191,6 +191,26 @@ interface Stats {
       color: #93c5fd;
     }
 
+    /* Updated styles for white circles and black numbers */
+    .bg-blue-100 {
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+    }
+
+    .bg-green-100 {
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+    }
+
+    .bg-orange-100 {
+      background-color: #ffffff;
+      border: 1px solid #e5e7eb;
+    }
+
+    .text-gray-900 {
+      color: #000000;
+    }
+
     .relative {
       position: relative;
     }

@@ -6,7 +6,9 @@
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/ItemDataInitializer.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/JacksonConfig.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/LotDataInitializer.java
+/home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/SoftlinkDigitalSolutionsFix.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/TransactionConfig.java
+/home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/UpdateFicheNumerationFix.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/AuthController.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/ContratController.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/EquipementController.java

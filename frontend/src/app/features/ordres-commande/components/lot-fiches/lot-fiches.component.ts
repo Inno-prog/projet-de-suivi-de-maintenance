@@ -95,7 +95,7 @@ import { ToastService } from '../../../../core/services/toast.service';
           </thead>
           <tbody>
             <tr *ngFor="let fiche of fiches" class="fiche-row">
-              <td class="fiche-id">{{ fiche.idPrestation }}</td>
+              <td class="fiche-id">{{ fiche.numeroFiche }}</td>
               <td class="prestataire">{{ (fiche.nomPrestataire || '').trim() }}</td>
               <td class="structure">{{ fiche.nomStructure || fiche.nomItem }}</td>
               <td class="date">{{ formatDate(fiche.dateRealisation) }}</td>
@@ -104,7 +104,7 @@ import { ToastService } from '../../../../core/services/toast.service';
                   {{ getStatusLabel(fiche.statut) }}
                 </span>
               </td>
-              <td class="actions">
+               <td class="actions">
                 <button mat-icon-button class="btn-action btn-view" (click)="viewFiche(fiche)" title="Voir">
                   <mat-icon>visibility</mat-icon>
                 </button>
@@ -113,6 +113,12 @@ import { ToastService } from '../../../../core/services/toast.service';
                 </button>
                 <button mat-icon-button class="btn-action btn-pdf" (click)="downloadFichePdf(fiche)" title="Télécharger PDF">
                   <mat-icon>download</mat-icon>
+                </button>
+                <button mat-icon-button class="btn-action btn-validate" (click)="validerFiche(fiche)" title="Valider" *ngIf="fiche.statut !== 'VALIDE'">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button mat-icon-button class="btn-action btn-reject" (click)="rejeterFiche(fiche)" title="Rejeter" *ngIf="fiche.statut !== 'REJETE'">
+                  <mat-icon>close</mat-icon>
                 </button>
                 <button mat-icon-button class="btn-action btn-delete" (click)="deleteFiche(fiche)" title="Supprimer">
                   <mat-icon>delete</mat-icon>
@@ -142,7 +148,7 @@ import { ToastService } from '../../../../core/services/toast.service';
               <div *ngIf="selectedFiche" class="fiche-details">
                 <div class="detail-row">
                   <label>N° Fiche:</label>
-                  <span>{{ selectedFiche.idPrestation }}</span>
+                  <span>{{ selectedFiche.numeroFiche }}</span>
                 </div>
                 <div class="detail-row">
                   <label>Prestataire:</label>
@@ -411,34 +417,40 @@ import { ToastService } from '../../../../core/services/toast.service';
 
     .btn-action {
       padding: 4px;
-      border: none;
+      /* Use currentColor for border so colored icons set the border color automatically */
+      border: 1px solid currentColor;
       border-radius: 4px;
       cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .btn-view {
-      background: #e3f2fd;
-      color: #1976d2;
-    }
-
-    .btn-view:hover {
-      background: #bbdefb;
-    }
-
-    .btn-pdf {
-      background: #dc3545;
-      color: white;
-      width: 32px;
-      height: 32px;
-      display: flex;
+      transition: all 0.15s ease;
+      background: transparent !important;
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
     }
 
-    .btn-pdf:hover {
-      background: #c82333;
+    .btn-view {
+      color: #1976d2;
     }
+    .btn-view:hover { background: rgba(25,118,210,0.06); }
+
+    .btn-pdf {
+      color: #dc3545;
+    }
+    .btn-pdf:hover { background: rgba(220,53,69,0.06); }
+
+    .btn-validate { color: #155724; }
+    .btn-validate:hover { background: rgba(21,87,36,0.06); }
+
+    .btn-reject { color: #721c24; }
+    .btn-reject:hover { background: rgba(114,28,36,0.06); }
+
+    .btn-print { color: #ffc107; }
+    .btn-print:hover { background: rgba(255,193,7,0.06); }
+
+    .btn-delete { color: #dc3545; }
+    .btn-delete:hover { background: rgba(220,53,69,0.06); }
 
     .loading-spinner {
       width: 40px;
@@ -1038,7 +1050,7 @@ export class LotFichesComponent implements OnInit {
     });
   }
 
-  deleteFiche(fiche: any): void {
+   deleteFiche(fiche: any): void {
     if (!fiche.id) {
       this.toastService.show({
         type: 'error',
@@ -1072,6 +1084,90 @@ export class LotFichesComponent implements OnInit {
           type: 'error',
           title: 'Erreur',
           message: 'Impossible de supprimer la fiche'
+        });
+      }
+    });
+  }
+
+  validerFiche(fiche: any): void {
+    if (!fiche.id) {
+      this.toastService.show({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Impossible de valider cette fiche : ID manquant'
+      });
+      return;
+    }
+
+    // Show confirmation dialog
+    const confirmed = confirm(`Êtes-vous sûr de vouloir valider la fiche ${fiche.idPrestation} ?`);
+    
+    if (!confirmed) {
+      return;
+    }
+
+    this.fichePrestationService.validerFiche(fiche.id).subscribe({
+      next: (updatedFiche) => {
+        // Update fiche in local list
+        const index = this.fiches.findIndex(f => f.id === fiche.id);
+        if (index !== -1) {
+          this.fiches[index] = updatedFiche;
+        }
+        
+        this.toastService.show({
+          type: 'success',
+          title: 'Succès',
+          message: 'Fiche validée avec succès'
+        });
+      },
+      error: (error) => {
+        console.error('Erreur lors de la validation de la fiche:', error);
+        this.toastService.show({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Impossible de valider la fiche'
+        });
+      }
+    });
+  }
+
+  rejeterFiche(fiche: any): void {
+    if (!fiche.id) {
+      this.toastService.show({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Impossible de rejeter cette fiche : ID manquant'
+      });
+      return;
+    }
+
+    // Show confirmation dialog
+    const confirmed = confirm(`Êtes-vous sûr de vouloir rejeter la fiche ${fiche.idPrestation} ?`);
+    
+    if (!confirmed) {
+      return;
+    }
+
+    this.fichePrestationService.rejeterFiche(fiche.id).subscribe({
+      next: (updatedFiche) => {
+        // Update fiche in local list
+        const index = this.fiches.findIndex(f => f.id === fiche.id);
+        if (index !== -1) {
+          this.fiches[index] = updatedFiche;
+        }
+        
+        this.toastService.show({
+          type: 'success',
+          title: 'Succès',
+          message: 'Fiche rejetée avec succès'
+        });
+      },
+      error: (error) => {
+        console.error('Erreur lors du rejet de la fiche:', error);
+        this.toastService.show({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Impossible de rejeter la fiche'
         });
       }
     });

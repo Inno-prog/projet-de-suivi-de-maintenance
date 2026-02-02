@@ -53,7 +53,7 @@
                   </div>
                   <button class="btn-details-toggle" (click)="toggleProfileDetails()" [class.expanded]="showProfileDetails">
                     <i class="fas fa-chevron-down"></i>
-                    <span>Détails profil</span>
+                    <span>{{ 'profile_details' | translate }}</span>
                   </button>
                 </div>
 
@@ -82,9 +82,9 @@
               <!-- Section 2: Profile Management -->
               <div class="profile-management-section">
                 <div class="section-header">
-                  <h4><i class="fas fa-user"></i> Mon Profil</h4>
+                  <h4><i class="fas fa-user"></i> {{ 'my_profile' | translate }}</h4>
                   <button class="btn btn-primary btn-sm" (click)="toggleEditProfile()">
-                    <i class="fas fa-edit"></i> Modifier
+                    <i class="fas fa-edit"></i> {{ 'edit' | translate }}
                   </button>
                 </div>
               </div>
@@ -155,30 +155,30 @@
               <!-- Section 3: Settings and Logout -->
               <div class="settings-logout-section">
                 <div class="settings-display" *ngIf="!isEditingSettings">
-                  <h4><i class="fas fa-cog"></i> Paramètres</h4>
+                  <h4><i class="fas fa-cog"></i> {{ 'settings' | translate }}</h4>
                   <div class="settings-list">
                     <div class="setting-item-display">
-                      <span><i class="fas fa-bell"></i> Notifications</span>
+                      <span><i class="fas fa-bell"></i> {{ 'notifications' | translate }}</span>
                       <span class="setting-status enabled">Activé</span>
                     </div>
                     <div class="setting-item-display">
-                      <span><i class="fas fa-moon"></i> Mode sombre</span>
+                      <span><i class="fas fa-moon"></i> {{ 'dark_mode' | translate }}</span>
                       <span class="setting-status" [ngClass]="darkMode ? 'enabled' : ''">{{ getDarkModeStatus() }}</span>
                     </div>
                     <div class="setting-item-display">
-                      <span><i class="fas fa-globe"></i> Langue</span>
+                      <span><i class="fas fa-globe"></i> {{ 'language' | translate }}</span>
                       <span class="setting-value">{{ getLanguageLabel() }}</span>
                     </div>
                   </div>
                   <button class="btn btn-secondary btn-sm w-full" (click)="toggleEditSettings()">
-                    <i class="fas fa-sliders-h"></i> Gérer les paramètres
+                    <i class="fas fa-sliders-h"></i> {{ 'manage_settings' | translate }}
                   </button>
                 </div>
 
                 <!-- Settings Edit Form -->
                 <div class="settings-edit-form" *ngIf="isEditingSettings">
                   <div class="settings-form-header">
-                    <h4><i class="fas fa-cog"></i> Paramètres</h4>
+                    <h4><i class="fas fa-cog"></i> {{ 'settings' | translate }}</h4>
                     <button class="close-form-btn" (click)="cancelEditSettings()">
                       <i class="fas fa-times"></i>
                     </button>
@@ -187,8 +187,8 @@
                   <div class="settings-content">
                     <div class="setting-item">
                       <div class="setting-info">
-                        <label>Notifications en temps réel</label>
-                        <p>Recevez des notifications instantanées</p>
+                        <label>{{ 'real_time_notifications' | translate }}</label>
+                        <p>{{ 'receive_instant_notifications' | translate }}</p>
                       </div>
                       <label class="switch">
                         <input type="checkbox" checked>
@@ -198,8 +198,8 @@
 
                     <div class="setting-item">
                       <div class="setting-info">
-                        <label>Mode sombre</label>
-                        <p>Activer le thème sombre</p>
+                        <label>{{ 'dark_mode' | translate }}</label>
+                        <p>{{ 'enable_dark_theme' | translate }}</p>
                       </div>
                       <label class="switch">
                         <input type="checkbox" [checked]="darkMode" (change)="toggleDarkMode()">
@@ -209,18 +209,18 @@
 
                     <div class="setting-item">
                       <div class="setting-info">
-                        <label>Langue</label>
-                        <p>Sélectionnez votre langue</p>
+                        <label>{{ 'language' | translate }}</label>
+                        <p>{{ 'select_language' | translate }}</p>
                       </div>
                       <select class="form-control lang-select" [value]="language" (change)="changeLanguage($any($event.target).value)">
-                        <option value="fr">Français</option>
-                        <option value="en">English</option>
+                        <option value="fr">{{ 'french' | translate }}</option>
+                        <option value="en">{{ 'english' | translate }}</option>
                       </select>
                     </div>
 
                     <div class="form-actions">
-                      <button type="button" class="btn btn-secondary" (click)="cancelEditSettings()">Annuler</button>
-                      <button type="button" class="btn btn-primary" (click)="saveInlineSettings($event)">Enregistrer</button>
+                      <button type="button" class="btn btn-secondary" (click)="cancelEditSettings()">{{ 'cancel' | translate }}</button>
+                      <button type="button" class="btn btn-primary" (click)="saveInlineSettings($event)">{{ 'save' | translate }}</button>
                     </div>
                   </div>
                 </div>
@@ -229,7 +229,7 @@
                 <div class="logout-section">
                   <button class="menu-item logout" (click)="logout()">
                     <i class="fas fa-sign-out-alt menu-icon"></i>
-                    <span>Déconnexion</span>
+                    <span>{{ 'logout' | translate }}</span>
                   </button>
                 </div>
               </div>

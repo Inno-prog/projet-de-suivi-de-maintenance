@@ -1,11 +1,11 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EvaluationService } from '../../core/services/evaluation.service';
 import { EvaluationTrimestrielle } from '../../core/models/business.models';
 import { ToastService } from '../../core/services/toast.service';
-import { PrestationPdfService } from '../../core/services/prestation-pdf.service';
+import { UserService } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-evaluation-form',
@@ -13,10 +13,10 @@ import { PrestationPdfService } from '../../core/services/prestation-pdf.service
   imports: [CommonModule, ReactiveFormsModule],
   template: `
     <div class="container">
-        <div class="page-header">
-          <h1>Évaluation du Prestataire</h1>
-          <p *ngIf="prestataireNom">Prestataire: {{ prestataireNom }} - {{ nomItem }}</p>
-        </div>
+      <div class="page-header">
+        <h1>Évaluation du Prestataire</h1>
+        <p *ngIf="prestataireNom">Prestataire: {{ prestataireNom }}</p>
+      </div>
       
       <form [formGroup]="evaluationForm" (ngSubmit)="onSubmit()">
         <div class="row">
@@ -42,8 +42,13 @@ import { PrestationPdfService } from '../../core/services/prestation-pdf.service
 
           <div class="col-md-6">
             <div class="mb-3">
-              <label class="form-label">Lot *</label>
-              <input type="text" class="form-control" formControlName="lot" placeholder="Ex: Lot 1">
+              <label class="form-label">Nom du prestataire *</label>
+              <select class="form-control" formControlName="prestataireNom" (change)="onPrestataireChange($event)">
+                <option value="">Sélectionner un prestataire</option>
+                <option *ngFor="let prestataire of prestataires" [value]="prestataire.nom">
+                  {{ prestataire.nom }}
+                </option>
+              </select>
             </div>
           </div>
         </div>
@@ -51,11 +56,16 @@ import { PrestationPdfService } from '../../core/services/prestation-pdf.service
         <div class="row">
           <div class="col-md-6">
             <div class="mb-3">
-              <label class="form-label">Nom du prestataire *</label>
-              <input type="text" class="form-control" formControlName="nomPrestataire" placeholder="Ex: Geraldo Service">
+              <label class="form-label">Lot *</label>
+              <select class="form-control" formControlName="lot">
+                <option value="">Sélectionner un lot</option>
+                <option *ngFor="let lot of availableLots" [value]="lot">
+                  {{ lot }}
+                </option>
+              </select>
             </div>
           </div>
-          
+
           <div class="col-md-6">
             <div class="mb-3">
               <label class="form-label">Date d'évaluation *</label>
@@ -64,130 +74,106 @@ import { PrestationPdfService } from '../../core/services/prestation-pdf.service
           </div>
         </div>
 
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Structure (Direction) *</label>
+              <select class="form-control" formControlName="direction1">
+                <option value="">Sélectionner une structure</option>
+                <option *ngFor="let structure of structures" [value]="structure">
+                  {{ structure }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <h4>III. EXIGENCES À SATISFAIRE</h4>
 
-        <table class="evaluation-table">
-          <thead>
-            <tr>
-              <th>N°</th>
-              <th>Exigences du DAO</th>
-              <th>Prestataire</th>
-              <th>Observations</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>Vérification des techniciens avec chef de site certifié ITIL Foundation</td>
-              <td>
-                <div class="checkbox-container">
-                  <input type="checkbox" formControlName="techniciensCertifies" (change)="calculerScore()">
-                  <label>Liste effective fournie</label>
-                </div>
-              </td>
-              <td>
-                <input type="text" class="form-control form-control-sm" formControlName="obsTechniciens" placeholder="RAS">
-              </td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Transmission du rapport d'intervention trimestriel</td>
-              <td>
-                <div class="checkbox-container">
-                  <input type="checkbox" formControlName="rapportInterventionTransmis" (change)="calculerScore()">
-                  <label>Transmis</label>
-                </div>
-              </td>
-              <td>
-                <input type="text" class="form-control form-control-sm" formControlName="obsRapport" placeholder="A transmettre au plus tard le...">
-              </td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Remplissage quotidien du registre et fiches d'interventions</td>
-              <td>
-                <div class="checkbox-container">
-                  <input type="checkbox" formControlName="registreRempli" (change)="calculerScore()">
-                  <label>Effectué</label>
-                </div>
-              </td>
-              <td>
-                <input type="text" class="form-control form-control-sm" formControlName="obsRegistre" placeholder="RAS">
-              </td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>Respect des horaires d'intervention</td>
-              <td>
-                <div class="checkbox-container">
-                  <input type="checkbox" formControlName="horairesRespectes" (change)="calculerScore()">
-                  <label>Respectés</label>
-                </div>
-              </td>
-              <td>
-                <input type="text" class="form-control form-control-sm" formControlName="obsHoraires" placeholder="RAS">
-              </td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td>Respect du délai de réaction (4h)</td>
-              <td>
-                <div class="checkbox-container">
-                  <input type="checkbox" formControlName="delaiReactionRespecte" (change)="calculerScore()">
-                  <label>Respecté</label>
-                </div>
-              </td>
-              <td>
-                <input type="text" class="form-control form-control-sm" formControlName="obsDelaiReaction" placeholder="RAS">
-              </td>
-            </tr>
-            <tr>
-              <td>6</td>
-              <td>Respect du délai d'intervention (24h)</td>
-              <td>
-                <div class="checkbox-container">
-                  <input type="checkbox" formControlName="delaiInterventionRespecte" (change)="calculerScore()">
-                  <label>Respecté</label>
-                </div>
-              </td>
-              <td>
-                <input type="text" class="form-control form-control-sm" formControlName="obsDelaiIntervention" placeholder="RAS">
-              </td>
-            </tr>
-            <tr>
-              <td>7</td>
-              <td>Disponibilité du véhicule de service</td>
-              <td>
-                <div class="checkbox-container">
-                  <input type="checkbox" formControlName="vehiculeDisponible" (change)="calculerScore()">
-                  <label>Disponible</label>
-                </div>
-              </td>
-              <td>
-                <input type="text" class="form-control form-control-sm" formControlName="obsVehicule" placeholder="RAS">
-              </td>
-            </tr>
-            <tr>
-              <td>8</td>
-              <td>Disponibilité de la tenue réglementaire</td>
-              <td>
-                <div class="checkbox-container">
-                  <input type="checkbox" formControlName="tenueDisponible" (change)="calculerScore()">
-                  <label>Disponible</label>
-                </div>
-              </td>
-              <td>
-                <input type="text" class="form-control form-control-sm" formControlName="obsTenue" placeholder="RAS">
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="exigences-grid">
+          <div class="exigence-item" *ngFor="let item of exigencesList; let i = index">
+            <div class="exigence-header">
+              <span class="exigence-number">{{ i + 1 }}</span>
+              <span class="exigence-label">{{ item.label }}</span>
+            </div>
+            <div class="exigence-content">
+              <div class="mb-3">
+                <label class="form-label">Exigences satisfaites par le prestataire</label>
+                <input type="text" class="form-control" [formControlName]="item.exigenceControl" placeholder="Renseignez les exigences satisfaites">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Observations</label>
+                <input type="text" class="form-control" [formControlName]="item.obsControl" placeholder="RAS">
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <div class="score-section">
-          <div class="score-display">
-            <h3>Score: {{ scoreGlobal }}/8</h3>
-            <div class="recommandation" [class]="'rec-' + recommandation.toLowerCase()">
-              {{ getRecommandationText() }}
+        <h4>IV. INSTANCES DE MAINTENANCE NON RÉSOLUES AU COURS DU TRIMESTRE</h4>
+
+        <div class="instances-container">
+          <div class="instance-item">
+            <div class="instance-header">
+              <span class="instance-number">1</span>
+            </div>
+            <div class="instance-content">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Instances non résolues</label>
+                    <input type="text" class="form-control" formControlName="instance1" placeholder="RAS">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="mb-3">
+                    <label class="form-label">Direction</label>
+                    <input type="text" class="form-control" formControlName="direction1" placeholder="DREP/Cas">
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">Date de début de la panne</label>
+                    <input type="date" class="form-control" formControlName="dateDebut1">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">Nombre de jours de pénalité</label>
+                    <input type="number" class="form-control" formControlName="joursPenalite1" placeholder="RAS">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="mb-3">
+                    <label class="form-label">Observations</label>
+                    <input type="text" class="form-control" formControlName="obsInstance1" placeholder="RAS">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h4>V. APPRÉCIATION DU REPRÉSENTANT DE LA STRUCTURE</h4>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">Signature du prestataire</label>
+              <input type="text" class="form-control" formControlName="signaturePrestataire" placeholder="Nom du signataire">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">Signature de la direction</label>
+              <input type="text" class="form-control" formControlName="signatureDirection" placeholder="Nom du signataire">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="mb-3">
+              <label class="form-label">Signature de la DGSI</label>
+              <input type="text" class="form-control" formControlName="signatureDGSI" placeholder="Nom du signataire">
             </div>
           </div>
         </div>
@@ -202,22 +188,6 @@ import { PrestationPdfService } from '../../core/services/prestation-pdf.service
           <label class="form-label elegant-label">Appréciation du représentant</label>
           <textarea class="form-control elegant-textarea" rows="3" formControlName="appreciationRepresentant"
                     placeholder="Saisissez votre appréciation personnelle..."></textarea>
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label">Statut</label>
-          <div class="custom-select-container">
-            <div class="custom-select" (click)="toggleStatutDropdown()" [class.open]="showStatutDropdown">
-              <span class="selected-text">{{ getStatutDisplayText() }}</span>
-              <span class="dropdown-arrow">▼</span>
-            </div>
-            <div class="dropdown-overlay" *ngIf="showStatutDropdown" (click)="showStatutDropdown = false"></div>
-            <div class="custom-dropdown" *ngIf="showStatutDropdown">
-              <div class="dropdown-option" (click)="selectStatut('Brouillon')">Brouillon</div>
-              <div class="dropdown-option" (click)="selectStatut('Validé')">Validé</div>
-              <div class="dropdown-option" (click)="selectStatut('Transmis')">Transmis</div>
-            </div>
-          </div>
         </div>
 
         <!-- Success message and download section -->
@@ -244,7 +214,7 @@ import { PrestationPdfService } from '../../core/services/prestation-pdf.service
           </button>
         </div>
       </form>
-      </div>
+    </div>
   `,
   styles: [`
     .container {
@@ -256,6 +226,95 @@ import { PrestationPdfService } from '../../core/services/prestation-pdf.service
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       border: 1px solid #f1f5f9;
       transition: all 0.3s ease;
+    }
+
+    .exigences-grid {
+      display: grid;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .exigence-item {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    .exigence-item:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+    }
+
+    .exigence-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .exigence-number {
+      background: #3b82f6;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      flex-shrink: 0;
+    }
+
+    .exigence-label {
+      flex: 1;
+      font-weight: 600;
+      color: #1e293b;
+      line-height: 1.5;
+    }
+
+    .exigence-content {
+      padding-left: 42px;
+    }
+
+    .instances-container {
+      margin: 2rem 0;
+    }
+
+    .instance-item {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    .instance-item:hover {
+      border-color: #3b82f6;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+    }
+
+    .instance-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .instance-number {
+      background: #ef4444;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      flex-shrink: 0;
     }
 
     .page-header {
@@ -323,25 +382,6 @@ import { PrestationPdfService } from '../../core/services/prestation-pdf.service
       background: #f1f5f9;
     }
 
-    .checkbox-container {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .checkbox-container input[type="checkbox"] {
-      width: 1.2rem;
-      height: 1.2rem;
-      accent-color: #10b981;
-    }
-
-    .checkbox-container label {
-      font-weight: 500;
-      margin: 0;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-
     .form-control-sm {
       border: 1px solid #d1d5db;
       border-radius: 6px;
@@ -362,46 +402,6 @@ import { PrestationPdfService } from '../../core/services/prestation-pdf.service
     .form-control-sm::placeholder {
       color: #9ca3af;
       font-style: italic;
-    }
-
-    .score-section {
-      background: #f8fafc;
-      padding: 2rem;
-      border-radius: 12px;
-      margin: 2rem 0;
-      text-align: center;
-    }
-
-    .score-display h3 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      color: #1f2937;
-    }
-
-    .recommandation {
-      padding: 1rem 2rem;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      text-transform: uppercase;
-    }
-
-    .rec-maintenir {
-      background: #dcfce7;
-      color: #166534;
-      border: 2px solid #10b981;
-    }
-
-    .rec-formation {
-      background: #fef3c7;
-      color: #92400e;
-      border: 2px solid #f59e0b;
-    }
-
-    .rec-declasser {
-      background: #fecaca;
-      color: #991b1b;
-      border: 2px solid #ef4444;
     }
 
     .success-section {
@@ -498,212 +498,74 @@ import { PrestationPdfService } from '../../core/services/prestation-pdf.service
       transition: all 0.3s ease;
       box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
     }
-
-    .elegant-submit:hover:not(:disabled) {
-      background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
-      transform: translateY(-2px);
-      box-shadow: 0 6px 8px rgba(37, 99, 235, 0.3);
-    }
-
-    .elegant-submit:disabled {
-      background: #9ca3af;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .elegant-label {
-      font-weight: 600;
-      color: #374151;
-      font-size: 1rem;
-      margin-bottom: 0.75rem;
-      display: block;
-      letter-spacing: 0.025em;
-    }
-
-    .elegant-textarea {
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      font-size: 0.95rem;
-      line-height: 1.6;
-      color: #374151;
-      background: #ffffff;
-      transition: all 0.3s ease;
-      resize: vertical;
-      min-height: 120px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .elegant-textarea:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1), 0 4px 8px rgba(0, 0, 0, 0.12);
-      background: #fefefe;
-    }
-
-    .elegant-textarea::placeholder {
-      color: #9ca3af;
-      font-style: italic;
-      opacity: 0.8;
-    }
-
-    .elegant-textarea:hover {
-      border-color: #d1d5db;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-    }
-
-    .custom-select-container {
-      position: relative;
-    }
-
-    .custom-select {
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 0.875rem 1rem;
-      background: #ffffff;
-      cursor: pointer;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all 0.3s ease;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    }
-
-    .custom-select:hover {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    .custom-select.open {
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1), 0 4px 8px rgba(0, 0, 0, 0.12);
-    }
-
-    .selected-text {
-      color: #374151;
-      font-weight: 500;
-    }
-
-    .dropdown-arrow {
-      color: #6b7280;
-      font-size: 0.75rem;
-      transition: transform 0.3s ease;
-    }
-
-    .custom-select.open .dropdown-arrow {
-      transform: rotate(180deg);
-    }
-
-    .custom-dropdown {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-      border: 1px solid #e5e7eb;
-      z-index: 1001;
-      min-width: 300px;
-      overflow: hidden;
-      animation: dropdownFadeIn 0.3s ease-out;
-    }
-
-    @keyframes dropdownFadeIn {
-      from {
-        opacity: 0;
-        transform: translate(-50%, -40%);
-      }
-      to {
-        opacity: 1;
-        transform: translate(-50%, -50%);
-      }
-    }
-
-    .dropdown-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      animation: overlayFadeIn 0.3s ease-out;
-    }
-
-    @keyframes overlayFadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    .dropdown-option {
-      padding: 1rem 1.5rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border-bottom: 1px solid #f3f4f6;
-      text-align: center;
-      font-weight: 500;
-      color: #374151;
-    }
-
-    .dropdown-option:last-child {
-      border-bottom: none;
-    }
-
-    .dropdown-option:hover {
-      background: #f8fafc;
-      color: #2563eb;
-    }
-
-    .dropdown-option:first-child {
-      background: #f1f5f9;
-      color: #6b7280;
-      font-style: italic;
-    }
-
-    .dropdown-option:first-child:hover {
-      background: #e2e8f0;
-      color: #4b5563;
-    }
-
-    @media (max-width: 768px) {
-      .criteres-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .form-actions {
-        flex-direction: column;
-        gap: 1rem;
-      }
-
-      .elegant-textarea {
-        padding: 0.875rem 1rem;
-        font-size: 0.9rem;
-      }
-    }
   `]
 })
 export class EvaluationFormComponent implements OnInit {
-  evaluationForm: FormGroup;
-
-  prestataireNom = '';
-  nomItem = '';
-  scoreGlobal = 0;
-  recommandation = 'MAINTENIR';
+  evaluationForm!: FormGroup;
+  prestataireNom: string = '';
+  nomItem: string = '';
   evaluationId: number | null = null;
-  isSubmitted = false;
-  showTrimestreDropdown = false;
-  showStatutDropdown = false;
+  isSubmitted: boolean = false;
+  showTrimestreDropdown: boolean = false;
+  prestataires: any[] = [];
+  availableLots: string[] = [];
+  structures: string[] = [];
+  
+  // Mapping prestataire -> lots
+  prestataireLotsMap: { [key: string]: string[] } = {};
+  
+  exigencesList = [
+    {
+      label: 'Vérification des techniciens ayant les profils demandés et retenus avec un chef de site certifié ITIL Foundation',
+      exigenceControl: 'exigence1',
+      obsControl: 'obs1'
+    },
+    {
+      label: 'Transmission du rapport d\'intervention de maintenance du trimestre évalué',
+      exigenceControl: 'exigence2',
+      obsControl: 'obs2'
+    },
+    {
+      label: 'Remplissage quotidien du registre de suivi et des fiches d\'interventions',
+      exigenceControl: 'exigence3',
+      obsControl: 'obs3'
+    },
+    {
+      label: 'Respect des horaires de travail de l\'administration par les techniciens sur le site. 07h30 à 12h30 et 13h00 à 16h00 du lundi au jeudi; 07h30 à 12h30 et 13h30 à 16h30 le vendredi',
+      exigenceControl: 'exigence4',
+      obsControl: 'obs4'
+    },
+    {
+      label: 'Respect du délai de réaction de trois heures (3h)',
+      exigenceControl: 'exigence5',
+      obsControl: 'obs5'
+    },
+    {
+      label: 'Respect du délai d\'intervention de trois jours (72h)',
+      exigenceControl: 'exigence6',
+      obsControl: 'obs6'
+    },
+    {
+      label: 'Disponibilité d\'un véhicule utilitaire pour le lot concerné',
+      exigenceControl: 'exigence7',
+      obsControl: 'obs7'
+    },
+    {
+      label: 'Disponibilité des tenues de travail des techniciens avec le nom de la société et du technicien',
+      exigenceControl: 'exigence8',
+      obsControl: 'obs8'
+    },
+    {
+      label: 'Vérification de la liste des prestations réalisées dans le trimestre (maintenance préventive et curative)',
+      exigenceControl: 'exigence9',
+      obsControl: 'obs9'
+    }
+  ];
 
   constructor(
     private fb: FormBuilder,
     private evaluationService: EvaluationService,
-    private pdfService: PrestationPdfService,
+    private userService: UserService,
     private route: ActivatedRoute,
     private router: Router,
     private toastService: ToastService
@@ -711,83 +573,108 @@ export class EvaluationFormComponent implements OnInit {
     this.evaluationForm = this.fb.group({
       trimestre: ['', Validators.required],
       lot: ['', Validators.required],
-      nomPrestataire: ['', Validators.required],
-      prestataireNom: [''],
+      prestataireNom: ['', Validators.required],
+      prestataireEmail: [''], // Champ pour l'email du prestataire
       dateEvaluation: ['', Validators.required],
-      evaluateurId: [1],
-      correspondantId: [1],
-      techniciensCertifies: [false],
-      rapportInterventionTransmis: [false],
-      registreRempli: [false],
-      horairesRespectes: [false],
-      delaiReactionRespecte: [false],
-      delaiInterventionRespecte: [false],
-      vehiculeDisponible: [false],
-      tenueDisponible: [false],
-      obsTechniciens: ['RAS'],
-      obsRapport: ['A transmettre au plus tard le ' + this.getDeadlineDate('')],
-      obsRegistre: ['RAS'],
-      obsHoraires: ['RAS'],
-      obsDelaiReaction: ['RAS'],
-      obsDelaiIntervention: ['RAS'],
-      obsVehicule: ['RAS'],
-      obsTenue: ['RAS'],
+      exigence1: [''],
+      exigence2: [''],
+      exigence3: [''],
+      exigence4: [''],
+      exigence5: [''],
+      exigence6: [''],
+      exigence7: [''],
+      exigence8: [''],
+      exigence9: [''],
+      obs1: [''],
+      obs2: [''],
+      obs3: [''],
+      obs4: [''],
+      obs5: [''],
+      obs6: [''],
+      obs7: [''],
+      obs8: [''],
+      obs9: [''],
+      instance1: [''],
+      direction1: [''],
+      dateDebut1: [''],
+      joursPenalite1: [''],
+      obsInstance1: [''],
+      signaturePrestataire: [''],
+      signatureDirection: [''],
+      signatureDGSI: [''],
       observationsGenerales: [''],
-      appreciationRepresentant: [''],
-      statut: ['Brouillon']
+      appreciationRepresentant: ['']
     });
   }
 
   ngOnInit(): void {
-    // Récupérer les paramètres de l'URL
+    // Vérifier si on est en mode édition (route avec id)
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.evaluationId = Number(id);
+      this.loadEvaluation();
+    }
+
     this.route.queryParams.subscribe(params => {
       if (params['prestataire']) {
         this.prestataireNom = params['prestataire'];
         this.nomItem = params['nomItem'] || '';
         
-        // Pré-remplir le formulaire
         this.evaluationForm.patchValue({
           prestataireNom: this.prestataireNom,
-          nomPrestataire: this.prestataireNom,
-          lot: params['contratId'] || '',
           dateEvaluation: new Date().toISOString().split('T')[0]
         });
       }
     });
-  }
 
-  calculerScore(): void {
-    const criteres = [
-      this.evaluationForm.get('techniciensCertifies')?.value,
-      this.evaluationForm.get('rapportInterventionTransmis')?.value,
-      this.evaluationForm.get('registreRempli')?.value,
-      this.evaluationForm.get('horairesRespectes')?.value,
-      this.evaluationForm.get('delaiReactionRespecte')?.value,
-      this.evaluationForm.get('delaiInterventionRespecte')?.value,
-      this.evaluationForm.get('vehiculeDisponible')?.value,
-      this.evaluationForm.get('tenueDisponible')?.value
+    // Charger la liste des prestataires
+    this.userService.getAllPrestataires().subscribe({
+      next: (data) => {
+        this.prestataires = data;
+        console.log('Prestataires:', data);
+        
+        // Initialiser le mapping prestataire -> lots avec les données réelles des prestataires
+        this.prestataireLotsMap = data.reduce((map: { [key: string]: string[] }, prestataire: any) => {
+          map[prestataire.nom] = this.getDefaultLotsForPrestataire(prestataire.nom);
+          return map;
+        }, {});
+        console.log('Prestataire lots map:', this.prestataireLotsMap);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des prestataires:', error);
+      }
+    });
+
+    // Charger la liste des structures (exemple)
+    this.structures = [
+      'Direction Régionale de l\'Économie et de la Planification des Cascades (DREP/Cas)',
+      'BCMP',
+      'Direction Générale des Systèmes d\'Information (DGSI)',
+      'Autre'
     ];
-
-    this.scoreGlobal = criteres.filter(c => c).length;
-
-    // Déterminer la recommandation
-    if (this.scoreGlobal >= 7) {
-      this.recommandation = 'MAINTENIR';
-    } else if (this.scoreGlobal >= 5) {
-      this.recommandation = 'FORMATION';
-    } else {
-      this.recommandation = 'DECLASSER';
-    }
   }
 
-  getDeadlineDate(trimestre: string): string {
-    const deadlineMap: { [key: string]: string } = {
-      'T1': '1er Avril 2025',
-      'T2': '1er Juillet 2025',
-      'T3': '1er Octobre 2025',
-      'T4': '1er Janvier 2026'
-    };
-    return deadlineMap[trimestre] || 'Date à définir';
+  loadEvaluation(): void {
+    if (this.evaluationId) {
+      this.evaluationService.getEvaluationById(this.evaluationId).subscribe({
+        next: (evaluation) => {
+          console.log('Évaluation chargée:', evaluation);
+          this.evaluationForm.patchValue(evaluation);
+          // Mettre à jour la variable prestataireNom pour l'affichage
+          this.prestataireNom = evaluation.prestataireNom;
+          // Charger les lots du prestataire
+          this.availableLots = this.prestataireLotsMap[evaluation.prestataireNom] || [];
+        },
+        error: (error) => {
+          console.error('Erreur lors du chargement de l\'évaluation:', error);
+          this.toastService.show({
+            type: 'error',
+            title: 'Erreur',
+            message: 'Erreur lors du chargement de l\'évaluation'
+          });
+        }
+      });
+    }
   }
 
   toggleTrimestreDropdown(): void {
@@ -800,99 +687,151 @@ export class EvaluationFormComponent implements OnInit {
   }
 
   getTrimestreDisplayText(): string {
-    const value = this.evaluationForm.get('trimestre')?.value;
-    return value || 'Sélectionner...';
+    const trimestre = this.evaluationForm.get('trimestre')?.value;
+    const trimestreMap: { [key: string]: string } = {
+      'T1': 'T1',
+      'T2': 'T2',
+      'T3': 'T3',
+      'T4': 'T4'
+    };
+    return trimestreMap[trimestre] || 'Sélectionner un trimestre';
   }
 
-  toggleStatutDropdown(): void {
-    this.showStatutDropdown = !this.showStatutDropdown;
+  getDefaultLotsForPrestataire(prestataireNom: string): string[] {
+    // Logique de détermination des lots par prestataire
+    // Pour l'exemple, on attribue des lots par défaut
+    const lots = ['Lot 1', 'Lot 2', 'Lot 3', 'Lot 4', 'Lot 5', 'Lot 6', 'Lot 7', 'Lot 8', 'Lot 9', 'Lot 10'];
+    // Attribuer un lot basé sur le nom du prestataire pour des tests
+    const index = prestataireNom.charCodeAt(0) % 10;
+    return [lots[index]];
   }
 
-  selectStatut(value: string): void {
-    this.evaluationForm.patchValue({ statut: value });
-    this.showStatutDropdown = false;
-  }
-
-  getStatutDisplayText(): string {
-    const value = this.evaluationForm.get('statut')?.value;
-    return value || 'Brouillon';
-  }
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event): void {
-    const target = event.target as HTMLElement;
-    const clickedInsideTrimestre = target.closest('.custom-select-container');
-    const clickedInsideStatut = target.closest('.custom-select-container');
-
-    if (!clickedInsideTrimestre) {
-      this.showTrimestreDropdown = false;
+  onPrestataireChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const prestataireNom = target.value;
+    console.log('Prestataire sélectionné:', prestataireNom);
+    
+    // Trouver le prestataire sélectionné pour récupérer son email
+    const selectedPrestataire = this.prestataires.find(p => p.nom === prestataireNom);
+    if (selectedPrestataire && selectedPrestataire.email) {
+      this.evaluationForm.patchValue({ prestataireEmail: selectedPrestataire.email });
     }
-    if (!clickedInsideStatut) {
-      this.showStatutDropdown = false;
-    }
-  }
-
-  getRecommandationText(): string {
-    switch (this.recommandation) {
-      case 'MAINTENIR': return 'MAINTENIR LE PRESTATAIRE';
-      case 'FORMATION': return 'FORMATION REQUISE';
-      case 'DECLASSER': return 'DÉCLASSER LE PRESTATAIRE';
-      default: return '';
-    }
+    
+    // Charger les lots du prestataire
+    this.availableLots = this.prestataireLotsMap[prestataireNom] || [];
+    this.evaluationForm.patchValue({ lot: '' });
   }
 
   onSubmit(): void {
     if (this.evaluationForm.valid) {
-      const formValue = this.evaluationForm.value;
-      const evaluation = {
-        ...formValue,
-        scoreGlobal: this.scoreGlobal,
-        recommandation: this.recommandation,
-        prestataireNom: formValue.nomPrestataire // Use the form field value
-      };
+      const evaluationData = this.evaluationForm.value;
+      
+      // Add default status if not provided
+      if (!evaluationData.statut) {
+        evaluationData.statut = 'BROUILLON';
+      }
+      
+      console.log('=== Données du formulaire ===');
+      console.log('Form valid:', this.evaluationForm.valid);
+      console.log('Form values:', this.evaluationForm.value);
+      console.log('prestataireNom field value:', this.evaluationForm.get('prestataireNom')?.value);
+      console.log('prestataireNom field valid:', this.evaluationForm.get('prestataireNom')?.valid);
+      console.log('================================');
+      
+      console.log('Envoi des données d\'évaluation:', JSON.stringify(evaluationData, null, 2));
+      
+      if (this.evaluationId) {
+        // Mode édition
+        this.evaluationService.updateEvaluation(this.evaluationId, evaluationData as EvaluationTrimestrielle).subscribe({
+          next: (evaluation) => {
+            console.log('Évaluation mise à jour avec succès:', evaluation);
+            this.evaluationId = evaluation.id || null;
+            this.isSubmitted = true;
+            this.toastService.show({
+              type: 'success',
+              title: 'Succès',
+              message: 'Évaluation mise à jour avec succès'
+            });
+          },
+          error: (error) => {
+            console.error('Erreur lors de la mise à jour de l\'évaluation:', error);
+            console.error('Détails de l\'erreur:', error.error || error.message);
+            this.toastService.show({
+              type: 'error',
+              title: 'Erreur',
+              message: error.error?.message || 'Erreur lors de la mise à jour de l\'évaluation'
+            });
+          }
+        });
+      } else {
+        // Mode création
+        this.evaluationService.createEvaluation(evaluationData as EvaluationTrimestrielle).subscribe({
+          next: (evaluation) => {
+            console.log('Évaluation créée avec succès:', evaluation);
+            this.evaluationId = evaluation.id || null;
+            this.isSubmitted = true;
+            this.toastService.show({
+              type: 'success',
+              title: 'Succès',
+              message: 'Évaluation enregistrée avec succès'
+            });
+          },
+          error: (error) => {
+            console.error('Erreur lors de l\'enregistrement de l\'évaluation:', error);
+            console.error('Détails de l\'erreur:', error.error || error.message);
+            this.toastService.show({
+              type: 'error',
+              title: 'Erreur',
+              message: error.error?.message || 'Erreur lors de l\'enregistrement de l\'évaluation'
+            });
+          }
+        });
+      }
+    } else {
+      console.warn('Formulaire invalide:', this.evaluationForm.errors);
+      console.warn('Form controls status:', Object.keys(this.evaluationForm.controls).map(key => ({
+        key,
+        valid: this.evaluationForm.controls[key].valid,
+        errors: this.evaluationForm.controls[key].errors,
+        value: this.evaluationForm.controls[key].value
+      })));
+      this.toastService.show({
+        type: 'error',
+        title: 'Erreur',
+        message: 'Veuillez remplir tous les champs obligatoires'
+      });
+    }
+  }
 
-      this.evaluationService.createEvaluation(evaluation).subscribe({
-        next: (response: any) => {
-          this.evaluationId = response.id;
-          this.isSubmitted = true;
-          this.toastService.show({
-            type: 'success',
-            title: 'Évaluation enregistrée',
-            message: `Recommandation: ${this.getRecommandationText()}`
-          });
-          // Don't navigate away, stay on the form to allow download
+  downloadEvaluation(): void {
+    if (this.evaluationId) {
+      this.evaluationService.generateEvaluationPdf(this.evaluationId).subscribe({
+        next: (blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          const lot = this.evaluationForm.get('lot')?.value || 'lot';
+          const trimestre = this.getTrimestreDisplayText().toLowerCase();
+          const nomPrestataire = this.evaluationForm.get('prestataireNom')?.value.replace(/\s+/g, '_') || 'prestataire';
+          a.download = `rapport-evaluation-${nomPrestataire}-${trimestre}-${lot}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
         },
         error: (error) => {
-          console.error('Erreur:', error);
+          console.error('Erreur lors du téléchargement du PDF:', error);
           this.toastService.show({
             type: 'error',
             title: 'Erreur',
-            message: 'Erreur lors de l\'enregistrement'
+            message: 'Erreur lors du téléchargement du PDF'
           });
         }
       });
     }
   }
 
-  downloadEvaluation(): void {
-    // Temporarily disabled - PDF generation service removed
-    this.toastService.show({
-      type: 'info',
-      title: 'Fonctionnalité temporairement indisponible',
-      message: 'Le téléchargement d\'évaluation sera bientôt réactivé'
-    });
-  }
-
   retour(): void {
-    this.router.navigate(['/prestations-dashboard']);
-  }
-
-  onReset(): void {
-    this.evaluationForm.reset({
-      prestataireId: 1,
-      evaluateurId: 1,
-      correspondantId: 1,
-      statut: 'Brouillon'
-    });
+    this.router.navigate(['/evaluations']);
   }
 }

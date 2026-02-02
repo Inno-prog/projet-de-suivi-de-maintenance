@@ -17,10 +17,7 @@ import { EvaluationTrimestrielle } from '../../core/models/business.models';
       <section class="section">
         <h3>I. INTRODUCTION</h3>
         <p>
-          Le Ministère de l'Économie et des Finances (MEF) signe annuellement des contrats
-          de maintenance informatique avec des prestataires privés.
-          Une évaluation trimestrielle est réalisée pour vérifier si les prestations attendues
-          sont respectées conformément aux contrats.
+          Le Ministère de l'Économie et des Finances (MEF) signe annuellement des contrats de maintenance informatique avec des prestataires privés, spécialisés dans le domaine. Ces contrats couvrent en général, la maintenance préventive et curative des équipements informatiques, pièces et main-d'œuvre y comprises et le support bureautique. Au cours de l'exécution de ces contrats de maintenance, une évaluation trimestrielle est réalisée par les équipes techniques de la DGSI et les correspondants informatiques des structures bénéficiaires. L'évaluation consiste à vérifier sur le terrain si les prestations attendues ont été respectées conformément aux exigences des contrats de maintenance. C'est ainsi, que nous procéderons à l'évaluation du {{ getTrimestreText(evaluation.trimestre).toLowerCase() }} ({{ getPeriodeText(evaluation.trimestre) }} {{ getYear(evaluation.dateEvaluation) }}) du lot {{ evaluation.lot }}.
         </p>
       </section>
 
@@ -129,7 +126,7 @@ import { EvaluationTrimestrielle } from '../../core/models/business.models';
       </section>
 
       <section class="section">
-        <h3>V. APPRÉCIATIONS</h3>
+        <h3>V. APPRÉCIATION DU REPRÉSENTANT DE LA STRUCTURE</h3>
         <div class="appreciations">
           <div class="observation-section" *ngIf="evaluation.observationsGenerales">
             <h4>Observations générales :</h4>
@@ -139,11 +136,6 @@ import { EvaluationTrimestrielle } from '../../core/models/business.models';
           <div class="appreciation-section" *ngIf="evaluation.appreciationRepresentant">
             <h4>Appréciation du représentant :</h4>
             <p>{{ evaluation.appreciationRepresentant }}</p>
-          </div>
-
-          <div class="score-section">
-            <h4>Note finale : {{ evaluation.noteFinale || calculateScore() }}/8</h4>
-            <p>Recommandation : {{ getRecommandationText() }}</p>
           </div>
 
           <div class="signatures">
@@ -349,6 +341,12 @@ export class EvaluationReportComponent implements OnInit {
       month: '2-digit',
       year: 'numeric'
     });
+  }
+
+  getYear(dateString: string): number {
+    if (!dateString) return new Date().getFullYear();
+    const date = new Date(dateString);
+    return date.getFullYear();
   }
 
   calculateScore(): number {

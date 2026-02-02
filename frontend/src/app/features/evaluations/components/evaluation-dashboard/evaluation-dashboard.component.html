@@ -1,19 +1,19 @@
 <div class="dashboard-container">
+  <!-- Page Title -->
+  <div class="page-header">
+    <h1 class="page-title">📋 Listes des Évaluations</h1>
+    <p class="page-subtitle">Consultez et gérez les évaluations trimestrielles des prestataires</p>
+  </div>
+
   <!-- Header -->
-  <div class="dashboard-header">
-    <div class="header-content">
-      <div>
-        <h1 class="header-title">📋 Évaluations Trimestrielles</h1>
-        <p class="header-subtitle">Bilan trimestriel des prestations de maintenance</p>
-      </div>
-      <button
-        class="btn btn-primary"
-        *ngIf="authService.isAdmin() || authService.isAgentDGSI()"
-        (click)="showCreateForm = true"
-      >
-        ➕ Nouvelle Évaluation
-      </button>
-    </div>
+  <div class="header-actions" style="margin-bottom: 2rem; text-align: right;">
+    <button
+      class="btn btn-primary btn-new-evaluation"
+      *ngIf="authService.isAdmin() || authService.isAgentDGSI()"
+      (click)="navigateToNewEvaluation()"
+    >
+      ➕ Nouvelle Évaluation
+    </button>
   </div>
 
   <!-- Evaluations List -->
@@ -28,198 +28,53 @@
           <div class="evaluation-details">
             <span class="detail-item">🏢 {{ evaluation.lot }}</span>
             <span class="detail-item">📅 {{ evaluation.trimestre }}</span>
-            <span class="detail-item">📊 Note: {{ evaluation.noteFinale || 0 }}/8</span>
             <span class="detail-item">📅 {{ formatDate(evaluation.dateEvaluation) }}</span>
           </div>
-        </div>
         <div class="evaluation-actions">
           <button
-            class="btn btn-primary"
-            (click)="viewReport(evaluation)"
+            class="btn-action btn-view"
+            (click)="viewPdf(evaluation)"
+            title="Voir PDF"
           >
-            👁️ Voir Rapport
+            <i class="fa-solid fa-eye"></i>
           </button>
           <button
-            class="btn btn-success"
-            (click)="generatePdf(evaluation)"
+            class="btn-action btn-pdf"
+            (click)="downloadPdf(evaluation)"
+            title="Télécharger PDF"
           >
-            📄 Générer PDF
+            <i class="fa-solid fa-file-pdf"></i>
+          </button>
+          <button
+            class="btn-action btn-email"
+            (click)="sendEmailWithPdf(evaluation)"
+            title="Envoyer par Mail"
+          >
+            <i class="fa-solid fa-envelope"></i>
+          </button>
+          <button
+            class="btn-action btn-edit"
+            (click)="editEvaluation(evaluation)"
+            title="Modifier"
+          >
+            <i class="fa-solid fa-pen-to-square"></i>
+          </button>
+          <button
+            class="btn-action btn-delete"
+            (click)="deleteEvaluation(evaluation)"
+            title="Supprimer"
+          >
+            <i class="fa-solid fa-trash"></i>
           </button>
         </div>
-      </div>
     </div>
 
     <div class="no-data" *ngIf="evaluations.length === 0">
       <p>📭 Aucune évaluation disponible</p>
       <p>Créez votre première évaluation trimestrielle</p>
     </div>
-  </div>
 
   <!-- Loading State -->
   <div class="loading" *ngIf="loading">
     <p>⏳ Chargement des évaluations...</p>
   </div>
-
-  <!-- Create Evaluation Modal -->
-  <div class="modal-overlay" *ngIf="showCreateForm" (click)="showCreateForm = false">
-    <div class="modal-content form-modal" (click)="$event.stopPropagation()">
-      <form [formGroup]="evaluationForm" (ngSubmit)="onSubmit()" class="evaluation-form">
-        <h2 class="form-title">Créer une Évaluation Trimestrielle</h2>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="lot">Lot *</label>
-            <input
-              type="text"
-              id="lot"
-              formControlName="lot"
-              placeholder="Ex: Lot A"
-              class="line-input"
-              [class.error]="evaluationForm.get('lot')?.invalid && evaluationForm.get('lot')?.touched"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="trimestre">Trimestre *</label>
-            <select
-              id="trimestre"
-              formControlName="trimestre"
-              class="line-input"
-              [class.error]="evaluationForm.get('trimestre')?.invalid && evaluationForm.get('trimestre')?.touched"
-            >
-              <option value="">Sélectionnez un trimestre</option>
-              <option value="T1">T1 - Janvier à Mars</option>
-              <option value="T2">T2 - Avril à Juin</option>
-              <option value="T3">T3 - Juillet à Septembre</option>
-              <option value="T4">T4 - Octobre à Décembre</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="dateEvaluation">Date d'Évaluation *</label>
-            <input
-              type="date"
-              id="dateEvaluation"
-              formControlName="dateEvaluation"
-              class="line-input"
-              [class.error]="evaluationForm.get('dateEvaluation')?.invalid && evaluationForm.get('dateEvaluation')?.touched"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="prestataireNom">Prestataire *</label>
-            <input
-              type="text"
-              id="prestataireNom"
-              formControlName="prestataireNom"
-              placeholder="Nom du prestataire"
-              class="line-input"
-              [class.error]="evaluationForm.get('prestataireNom')?.invalid && evaluationForm.get('prestataireNom')?.touched"
-            />
-          </div>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="evaluateurNom">Évaluateur *</label>
-            <input
-              type="text"
-              id="evaluateurNom"
-              formControlName="evaluateurNom"
-              placeholder="Nom de l'évaluateur"
-              class="line-input"
-              [class.error]="evaluationForm.get('evaluateurNom')?.invalid && evaluationForm.get('evaluateurNom')?.touched"
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="correspondantId">Agent DGSI *</label>
-            <input
-              type="number"
-              id="correspondantId"
-              formControlName="correspondantId"
-              placeholder="ID de l'agent"
-              class="line-input"
-              [class.error]="evaluationForm.get('correspondantId')?.invalid && evaluationForm.get('correspondantId')?.touched"
-            />
-          </div>
-        </div>
-
-        <div class="criteria-section">
-          <h3>Critères d'Évaluation</h3>
-          <div class="criteria-grid">
-            <div class="checkbox-group">
-              <input type="checkbox" id="rapportInterventionTransmis" formControlName="rapportInterventionTransmis">
-              <label for="rapportInterventionTransmis">Rapport d'intervention transmis</label>
-            </div>
-            <div class="checkbox-group">
-              <input type="checkbox" id="registreRempli" formControlName="registreRempli">
-              <label for="registreRempli">Registre rempli</label>
-            </div>
-            <div class="checkbox-group">
-              <input type="checkbox" id="horairesRespectes" formControlName="horairesRespectes">
-              <label for="horairesRespectes">Horaires respectés</label>
-            </div>
-            <div class="checkbox-group">
-              <input type="checkbox" id="delaiReactionRespecte" formControlName="delaiReactionRespecte">
-              <label for="delaiReactionRespecte">Délai de réaction respecté (4h)</label>
-            </div>
-            <div class="checkbox-group">
-              <input type="checkbox" id="delaiInterventionRespecte" formControlName="delaiInterventionRespecte">
-              <label for="delaiInterventionRespecte">Délai d'intervention respecté (24h)</label>
-            </div>
-            <div class="checkbox-group">
-              <input type="checkbox" id="vehiculeDisponible" formControlName="vehiculeDisponible">
-              <label for="vehiculeDisponible">Véhicule disponible</label>
-            </div>
-            <div class="checkbox-group">
-              <input type="checkbox" id="tenueDisponible" formControlName="tenueDisponible">
-              <label for="tenueDisponible">Tenue réglementaire disponible</label>
-            </div>
-            <div class="checkbox-group">
-              <input type="checkbox" id="techniciensCertifies" formControlName="techniciensCertifies">
-              <label for="techniciensCertifies">Techniciens certifiés ITIL</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="observationsGenerales">Observations Générales</label>
-          <textarea
-            id="observationsGenerales"
-            formControlName="observationsGenerales"
-            rows="3"
-            placeholder="Observations générales sur la période..."
-            class="line-input"
-          ></textarea>
-        </div>
-
-        <div class="form-actions">
-          <button type="button" class="btn btn-secondary" (click)="showCreateForm = false">
-            Annuler
-          </button>
-          <button type="submit" class="btn btn-primary" [disabled]="evaluationForm.invalid || loading">
-            {{ loading ? 'Création...' : 'Créer l\'Évaluation' }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Report Modal -->
-  <div class="modal-overlay" *ngIf="showReportModal" (click)="closeReportModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <app-evaluation-report
-        *ngIf="selectedEvaluation"
-        [evaluation]="selectedEvaluation"
-      ></app-evaluation-report>
-      <div style="padding: 1rem; text-align: center;">
-        <button class="btn btn-secondary" (click)="closeReportModal()">
-          Fermer
-        </button>
-      </div>
-    </div>
-  </div>
-</div>

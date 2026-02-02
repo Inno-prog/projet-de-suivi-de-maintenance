@@ -1,0 +1,51 @@
+2026-01-25 13:27:20.949788Z jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "-- Script SQL pour ajouter les nouveaux champs à la table evaluation_trimestrielle\000a-- Conforme aux exigences du formulaire d'évaluation\000a\000aALTER TABLE evaluation_trimestrielle\000aADD COLUMN exigence1 VARCHAR(500)[*],\000aADD COLUMN exigence2 VARCHAR(500),\000aADD COLUMN exigence3 VARCHAR(500),\000aADD COLUMN exigence4 VARCHAR(500),\000aADD COLUMN exigence5 VARCHAR(500),\000aADD COLUMN exigence6 VARCHAR(500),\000aADD COLUMN exigence7 VARCHAR(500),\000aADD COLUMN exigence8 VARCHAR(500),\000aADD COLUMN exigence9 VARCHAR(500),\000aADD COLUMN obs1 VARCHAR(500),\000aADD COLUMN obs2 VARCHAR(500),\000aADD COLUMN obs3 VARCHAR(500),\000aADD COLUMN obs4 VARCHAR(500),\000aADD COLUMN obs5 VARCHAR(500),\000aADD COLUMN obs6 VARCHAR(500),\000aADD COLUMN obs7 VARCHAR(500),\000aADD COLUMN obs8 VARCHAR(500),\000aADD COLUMN obs9 VARCHAR(500)"; SQL statement:
+-- Script SQL pour ajouter les nouveaux champs à la table evaluation_trimestrielle
+-- Conforme aux exigences du formulaire d'évaluation
+
+ALTER TABLE evaluation_trimestrielle
+ADD COLUMN exigence1 VARCHAR(500),
+ADD COLUMN exigence2 VARCHAR(500),
+ADD COLUMN exigence3 VARCHAR(500),
+ADD COLUMN exigence4 VARCHAR(500),
+ADD COLUMN exigence5 VARCHAR(500),
+ADD COLUMN exigence6 VARCHAR(500),
+ADD COLUMN exigence7 VARCHAR(500),
+ADD COLUMN exigence8 VARCHAR(500),
+ADD COLUMN exigence9 VARCHAR(500),
+ADD COLUMN obs1 VARCHAR(500),
+ADD COLUMN obs2 VARCHAR(500),
+ADD COLUMN obs3 VARCHAR(500),
+ADD COLUMN obs4 VARCHAR(500),
+ADD COLUMN obs5 VARCHAR(500),
+ADD COLUMN obs6 VARCHAR(500),
+ADD COLUMN obs7 VARCHAR(500),
+ADD COLUMN obs8 VARCHAR(500),
+ADD COLUMN obs9 VARCHAR(500) [42000-224]
+2026-01-25 13:30:26.567649Z jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "-- Script SQL pour ajouter les nouveaux champs à la table evaluation_trimestrielle\000a-- Conforme aux exigences du formulaire d'évaluation\000a\000aALTER TABLE evaluation_trimestrielle\000aADD exigence1 VARCHAR(500)[*],\000aADD exigence2 VARCHAR(500),\000aADD exigence3 VARCHAR(500),\000aADD exigence4 VARCHAR(500),\000aADD exigence5 VARCHAR(500),\000aADD exigence6 VARCHAR(500),\000aADD exigence7 VARCHAR(500),\000aADD exigence8 VARCHAR(500),\000aADD exigence9 VARCHAR(500),\000aADD obs1 VARCHAR(500),\000aADD obs2 VARCHAR(500),\000aADD obs3 VARCHAR(500),\000aADD obs4 VARCHAR(500),\000aADD obs5 VARCHAR(500),\000aADD obs6 VARCHAR(500),\000aADD obs7 VARCHAR(500),\000aADD obs8 VARCHAR(500),\000aADD obs9 VARCHAR(500)"; SQL statement:
+-- Script SQL pour ajouter les nouveaux champs à la table evaluation_trimestrielle
+-- Conforme aux exigences du formulaire d'évaluation
+
+ALTER TABLE evaluation_trimestrielle
+ADD exigence1 VARCHAR(500),
+ADD exigence2 VARCHAR(500),
+ADD exigence3 VARCHAR(500),
+ADD exigence4 VARCHAR(500),
+ADD exigence5 VARCHAR(500),
+ADD exigence6 VARCHAR(500),
+ADD exigence7 VARCHAR(500),
+ADD exigence8 VARCHAR(500),
+ADD exigence9 VARCHAR(500),
+ADD obs1 VARCHAR(500),
+ADD obs2 VARCHAR(500),
+ADD obs3 VARCHAR(500),
+ADD obs4 VARCHAR(500),
+ADD obs5 VARCHAR(500),
+ADD obs6 VARCHAR(500),
+ADD obs7 VARCHAR(500),
+ADD obs8 VARCHAR(500),
+ADD obs9 VARCHAR(500) [42000-224]
+2026-01-25 13:33:50.612779Z jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "EVALUATION_TRIMESTRIELLE" not found; SQL statement:
+-- Script SQL pour ajouter les nouveaux champs à la table evalu [42102-224]

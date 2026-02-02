@@ -44,4 +44,7 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
 
     @Query("SELECT c FROM Contrat c LEFT JOIN FETCH c.ordresCommande WHERE c.nomPrestataire = :nomPrestataire AND c.lot.nomLot = :lot AND c.statut = com.dgsi.maintenance.entity.StatutContrat.ACTIF")
     List<Contrat> findActiveContratsByNomPrestataireAndLot(String nomPrestataire, String lot);
+    
+    @Query("SELECT c FROM Contrat c WHERE c.nomPrestataire = :nomPrestataire")
+    List<Contrat> findByNomPrestataire(String nomPrestataire);
 }

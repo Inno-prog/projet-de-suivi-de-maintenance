@@ -10,11 +10,6 @@
   border: 1px solid #e5e7eb;
 }
 
-.prestation-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
 /* Header avec gradient */
 .card-header {
   background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 25%, #10b981 50%, #059669 75%, #047857 100%);
@@ -64,6 +59,56 @@
   font-weight: 500;
 }
 
+/* Button variants - outlined style
+   Buttons are now transparent with a colored border and colored icon/text.
+   The background is not filled; on hover a very light tint is applied. */
+.action-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: inherit;
+}
+
+/* ensure icons inherit the text color */
+.action-btn .btn-icon,
+.action-btn i {
+  color: inherit;
+}
+
+.details-btn {
+  border-color: #3b82f6; /* blue */
+  color: #1e40af;
+}
+.details-btn:hover { background: rgba(59,130,246,0.06); box-shadow: none; }
+
+.submit-btn {
+  border-color: #f59e0b; /* amber */
+  color: #b45309;
+}
+.submit-btn:hover { background: rgba(245,158,11,0.06); box-shadow: none; }
+
+.download-btn {
+  border-color: #10b981; /* green */
+  color: #059669;
+}
+.download-btn:hover { background: rgba(16,185,129,0.06); box-shadow: none; }
+
+.validate-btn {
+  border-color: #10b981; /* green */
+  color: #059669;
+}
+.validate-btn:hover:not(.disabled) { background: rgba(16,185,129,0.06); box-shadow: none; }
+
+.reject-btn {
+  border-color: #ef4444; /* red */
+  color: #b91c1c;
+}
+.reject-btn:hover:not(.disabled) { background: rgba(239,68,68,0.06); box-shadow: none; }
+
+.delete-btn {
+  border-color: #ef4444; /* red */
+  color: #b91c1c;
+}
+.delete-btn:hover { background: rgba(239,68,68,0.06); box-shadow: none; }
 /* Contenu */
 .card-content {
   padding: 1.5rem;
@@ -203,57 +248,75 @@
 
 /* Button variants */
 .details-btn {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  color: white;
+  background: transparent;
+  color: #3b82f6;
+  border: 1px solid #3b82f6;
 }
 
 .details-btn:hover {
-  background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+  background: rgba(59, 130, 246, 0.1);
+  color: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: white;
+  background: transparent;
+  color: #f59e0b;
+  border: 1px solid #f59e0b;
 }
 
 .submit-btn:hover {
-  background: linear-gradient(135deg, #d97706, #b45309);
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border-color: #d97706;
 }
 
 .download-btn {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
+  background: transparent;
+  color: #10b981;
+  border: 1px solid #10b981;
 }
 
 .download-btn:hover {
-  background: linear-gradient(135deg, #059669, #047857);
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border-color: #059669;
 }
 
 .validate-btn {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
+  background: transparent;
+  color: #10b981;
+  border: 1px solid #10b981;
 }
 
 .validate-btn:hover:not(.disabled) {
-  background: linear-gradient(135deg, #059669, #047857);
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border-color: #059669;
 }
 
 .reject-btn {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: white;
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
 }
 
 .reject-btn:hover:not(.disabled) {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border-color: #dc2626;
 }
 
 .delete-btn {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  color: white;
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
 }
 
 .delete-btn:hover {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border-color: #dc2626;
 }
 
 /* Disabled state */

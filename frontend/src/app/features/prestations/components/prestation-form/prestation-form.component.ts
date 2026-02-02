@@ -1114,7 +1114,11 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   }
 
   getSelectedItemsNames(): string {
-    return this.selectedItems.map(i => i.nomItem).join(', ');
+    // Store items as JSON array with name and price for proper backend parsing
+    return JSON.stringify(this.selectedItems.map(i => ({ 
+      nom: i.nomItem, 
+      prix: i.prix 
+    })));
   }
 
   getSelectedItemsNamesNumbered(): string {

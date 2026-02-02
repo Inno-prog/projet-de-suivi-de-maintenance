@@ -2,16 +2,24 @@ import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+import { OAuthService } from 'angular-oauth2-oidc';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private isLoggingOut = false;
   
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private oauthService: OAuthService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // L'intercepteur ne fait pas de vérification d'authentification
-    // La vérification se fait au niveau des guards et des composants
+    // Ajouter le token d'accès aux requêtes API si disponible
+    const accessToken = this.oauthService.getAccessToken();
+    if (accessToken) {
+      req = req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${accessToken}`
+        }
+      });
+    }
     
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {

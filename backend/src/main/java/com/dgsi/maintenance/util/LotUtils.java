@@ -38,4 +38,16 @@ public class LotUtils {
 
         return raw.trim();
     }
+    
+    /**
+     * Test method to verify the fix
+     */
+    public static void main(String[] args) {
+        System.out.println("Testing normalizeLotName:");
+        System.out.println("Input: \"Lot 1\" -> Output: \"" + normalizeLotName("Lot 1") + "\"");
+        System.out.println("Input: \"lot 2\" -> Output: \"" + normalizeLotName("lot 2") + "\"");
+        System.out.println("Input: \"Lot Lot 3\" -> Output: \"" + normalizeLotName("Lot Lot 3") + "\"");
+        System.out.println("Input: \"lot lot 4\" -> Output: \"" + normalizeLotName("lot lot 4") + "\"");
+        System.out.println("Input: \"Lot5\" -> Output: \"" + normalizeLotName("Lot5") + "\"");
+    }
 }

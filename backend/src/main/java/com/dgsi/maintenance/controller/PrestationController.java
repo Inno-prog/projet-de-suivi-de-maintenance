@@ -375,7 +375,7 @@ public class PrestationController {
                     authentication.getName(), page, size);
             log.info("📥 Rôles de l'utilisateur: {}", authentication.getAuthorities());
 
-            // Get paginated prestations
+            // Get paginated prestations - only show submitted ones (not drafts)
             var pageResult = prestationService.getAllPrestationsPaginated(page, size);
 
             // Convert to pagination response

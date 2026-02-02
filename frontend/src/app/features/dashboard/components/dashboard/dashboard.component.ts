@@ -255,28 +255,21 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     <!-- Authenticated Dashboard Layout -->
     <ng-container *ngIf="isAuthenticated">
       <div class="dashboard-container" style="position: relative; min-height: 100vh;">
-        <!-- Google Maps Background -->
-        <div class="map-background" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.6;">
-          <iframe 
-            id="google-map"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.5932023843613!2d-1.5334512240710387!3d12.36865458757334!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9e1c754a5a85%3A0x3534a28a2ef20271!2sOuagadougou%2C%20Burkina%20Faso!5e0!3m2!1sfr!2sbf!4v1705846800000!5m2!1sfr!2sbf" 
-            allowfullscreen="" 
-            loading="lazy" 
-            referrerpolicy="no-referrer-when-downgrade"
-            title="Carte de Ouagadougou"
-            style="width: 100%; height: 100%; border: none; filter: grayscale(30%) brightness(1.1);"
-          ></iframe>
-        </div>
-        <!-- Welcome Section for Authenticated Users (except Agent DGSI) -->
-        <div class="welcome-palette" *ngIf="isAuthenticated && !isAgentDGSI" style="margin-bottom: 10px;">
-           <div class="welcome-card">
 
-            <div class="welcome-content">
-              <h2 class="welcome-title">Bienvenue sur <span class="brand-highlight">MainTrack Pro</span></h2>
-              <div class="user-info">
-                <span class="greeting">Bonjour</span>
-                <span class="user-name">{{ currentUser?.nom }}</span>
-                <span class="role-badge" [class]="getRoleClass()">{{ getRoleDisplayName() }}</span>
+        <!-- Welcome Section for Authenticated Users (except Agent DGSI) -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-8" *ngIf="isAuthenticated && !isAgentDGSI">
+          <div class="flex justify-between items-center">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900 mb-2">Tableau de Bord Administrateur</h1>
+              <p class="text-gray-600 text-lg">Bienvenue, {{ currentUser?.nom }}</p>
+            </div>
+            <div class="flex items-center gap-6">
+              <button (click)="refreshStats()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-lg">
+                <i class="fas fa-sync-alt mr-2"></i>Actualiser
+              </button>
+              <div class="text-right">
+                <div class="text-lg text-gray-500 font-medium">{{ currentDate }}</div>
+                <div class="text-xl font-bold text-gray-700">{{ currentTime }}</div>
               </div>
             </div>
           </div>
@@ -514,12 +507,13 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       text-align: center;
     }
 
-    .ministry-name {
-      font-size: 1.1rem;
-      font-weight: 500;
-      margin-bottom: .5rem;
-      letter-spacing: .5px;
-    }
+     .ministry-name {
+       font-size: 1.1rem;
+       font-weight: 500;
+       margin-bottom: .5rem;
+       letter-spacing: .5px;
+       color: black;
+     }
 
     .direction-title {
       font-size: 2.5rem;
@@ -527,6 +521,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       letter-spacing: 2px;
       margin: .5rem 0;
       text-shadow: 2px 2px 4px rgba(0,0,0,.3);
+      color: white;
     }
 
     .tagline {
@@ -728,7 +723,8 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       right: -40px;
       width: 120px;
       height: 120px;
-      background: var(--card-color, #ff6b6b);
+      /* Use off-white (blanc-salé) for the decorative semicircle */
+      background: #f3f2e8 !important;
       border-radius: 50%;
     }
     .stat-icon {
@@ -760,7 +756,8 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       bottom: 10px;
       text-align: center;
       z-index: 1;
-      color: white;
+      /* show the trend arrow/text in the theme color so it remains visible on the off-white circle */
+      color: var(--card-color, #ff6b6b);
     }
     .trend-arrow {
       font-size: 0.875rem;
@@ -2417,6 +2414,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     totalStructuresMefp: 0
   };
 
+  currentTime: string = '';
+  currentDate: string = '';
+
   private refreshInterval: any;
   private visibilityHandler: EventListener | null = null;
   private userSub: Subscription;
@@ -2460,6 +2460,27 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
       // Handle redirection based on user role when user data becomes available
       this.handleRoleBasedRedirection(user);
+    });
+
+    // Initialize current time and date
+    this.updateDateTime();
+    // Update time every second
+    setInterval(() => {
+      this.updateDateTime();
+    }, 1000);
+  }
+
+  private updateDateTime(): void {
+    const now = new Date();
+    this.currentTime = now.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    this.currentDate = now.toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   }
 

@@ -6,6 +6,7 @@ import { PrestationService, Prestation } from '../../../../core/services/prestat
 import { PrestationPdfService } from '../../../../core/services/prestation-pdf.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../../../core/services/auth.service';
 
 interface PrestationDetailData {
   id: number;
@@ -109,7 +110,24 @@ interface ConfirmationState {
           <table class="summary-table">
             <tr>
               <td class="label-cell">Items couverts:</td>
-              <td class="value-cell items-list-cell">{{ getItemsString() }}</td>
+              <td class="value-cell">
+                <table class="items-details-table">
+                  <thead>
+                    <tr>
+                      <th>Numéro</th>
+                      <th>Items</th>
+                      <th>Qté utilisée</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of getItemsArray(); let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ item.nom }}</td>
+                      <td>{{ item.quantite }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
             </tr>
             <tr>
               <td class="label-cell">Date de début:</td>
@@ -134,11 +152,28 @@ interface ConfirmationState {
           </table>
         </div>
 
+        <div class="detail-section">
+          <div class="section-header">
+            <h3>📅 Informations de Modification</h3>
+            <div class="section-divider"></div>
+          </div>
+          <table class="summary-table">
+            <tr>
+              <td class="label-cell">Date de création:</td>
+              <td class="value-cell">{{ formatDate(prestation.dateCreation) }}</td>
+            </tr>
+            <tr>
+              <td class="label-cell">Dernière modification:</td>
+              <td class="value-cell">{{ formatDate(prestation.dateModification) }}</td>
+            </tr>
+          </table>
+        </div>
+
         <div class="detail-actions">
           <button class="btn btn-outline" (click)="goBack()">← Retour</button>
           <div class="action-buttons">
-            <button class="btn btn-success" (click)="confirmValider()">✓ Valider</button>
-            <button class="btn btn-danger" (click)="confirmRejeter()">✕ Rejeter</button>
+            <button class="btn btn-success" *ngIf="isAdmin()" (click)="confirmValider()">✓ Valider</button>
+            <button class="btn btn-danger" *ngIf="isAdmin()" (click)="confirmRejeter()">✕ Rejeter</button>
             <button class="btn btn-warning" (click)="confirmSupprimer()">🗑️ Supprimer</button>
           </div>
         </div>
@@ -282,6 +317,39 @@ interface ConfirmationState {
       white-space: pre-wrap;
       line-height: 1.8;
     }
+
+    /* Items Details Table */
+    .items-details-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    .items-details-table th,
+    .items-details-table td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #e5e7eb;
+      font-size: 14px;
+    }
+
+    .items-details-table th {
+      background-color: #f3f4f6;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .items-details-table td {
+      color: #6b7280;
+    }
+
+    .items-details-table tr:nth-child(even) {
+      background-color: #f9fafb;
+    }
+
+    .items-details-table tr:hover {
+      background-color: #f3f4f6;
+    }
     .detail-actions {
       display: flex;
       justify-content: space-between;
@@ -316,20 +384,44 @@ interface ConfirmationState {
       border: 1px solid #ddd;
     }
     .btn-primary {
-      background: #3b82f6;
-      color: white;
+      background: transparent;
+      color: #3b82f6;
+      border: 1px solid #3b82f6;
+    }
+    .btn-primary:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: #2563eb;
+      border-color: #2563eb;
     }
     .btn-success {
-      background: #22c55e;
-      color: white;
+      background: transparent;
+      color: #22c55e;
+      border: 1px solid #22c55e;
+    }
+    .btn-success:hover {
+      background: rgba(34, 197, 94, 0.1);
+      color: #16a34a;
+      border-color: #16a34a;
     }
     .btn-warning {
-      background: #f59e0b;
-      color: white;
+      background: transparent;
+      color: #f59e0b;
+      border: 1px solid #f59e0b;
+    }
+    .btn-warning:hover {
+      background: rgba(245, 158, 11, 0.1);
+      color: #d97706;
+      border-color: #d97706;
     }
     .btn-danger {
-      background: #ef4444;
-      color: white;
+      background: transparent;
+      color: #ef4444;
+      border: 1px solid #ef4444;
+    }
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+      color: #dc2626;
+      border-color: #dc2626;
     }
     .loading {
       display: flex;
@@ -472,7 +564,8 @@ export class PrestationDetailComponent implements OnInit, OnDestroy {
     private prestationPdfService: PrestationPdfService,
     private toast: ToastService,
     private cdr: ChangeDetectorRef,
-    private injector: Injector
+    private injector: Injector,
+    private authService: AuthService
   ) {
     try {
       this.dialogRefValue = this.injector.get(MatDialogRef, null);
@@ -482,6 +575,11 @@ export class PrestationDetailComponent implements OnInit, OnDestroy {
       this.dialogRefValue = null;
       this.dataValue = null;
     }
+  }
+
+  isAdmin(): boolean {
+    // Vérifier si l'utilisateur est administrateur
+    return this.authService.isAdmin();
   }
 
   ngOnInit(): void {
@@ -564,32 +662,40 @@ export class PrestationDetailComponent implements OnInit, OnDestroy {
     this._montantLabel = montant ? `${this.formatNumber(montant)} CFA` : '0 CFA';
   }
 
-  private computeItemsString(): string {
-    if (!this.prestation) return 'Aucun item spécifié';
+  getItemsArray(): { nom: string; quantite: number }[] {
+    if (!this.prestation) return [];
     const p = this.prestation as any;
     const itemsFromPrestation = p.itemsUtilises;
     if (itemsFromPrestation && Array.isArray(itemsFromPrestation) && itemsFromPrestation.length > 0) {
-      return itemsFromPrestation.map((item: any, index: number) => {
+      return itemsFromPrestation.map((item: any) => {
         const nom = item.nomItem || item.nom || item.nom_item || 'Item';
-        return `${index + 1}. ${nom}`;
-      }).join('\n');
+        const quantite = item.quantite || 1;
+        return { nom, quantite };
+      });
     }
     if (this.prestation.nomPrestation && typeof this.prestation.nomPrestation === 'string') {
       try {
         const parsed = JSON.parse(this.prestation.nomPrestation);
         if (Array.isArray(parsed)) {
-          return parsed.map((nom: string, index: number) => `${index + 1}. ${nom}`).join('\n');
+          return parsed.map((nom: string) => ({ nom, quantite: 1 }));
         }
       } catch (e) {}
       if (this.prestation.nomPrestation.includes(',')) {
-        return this.prestation.nomPrestation.split(',').map((nom: string, index: number) =>
-          `${index + 1}. ${nom.trim()}`
-        ).join('\n');
+        return this.prestation.nomPrestation.split(',').map((nom: string) => ({
+          nom: nom.trim(),
+          quantite: 1
+        }));
       } else if (this.prestation.nomPrestation.trim().length > 0) {
-        return `1. ${this.prestation.nomPrestation.trim()}`;
+        return [{ nom: this.prestation.nomPrestation.trim(), quantite: 1 }];
       }
     }
-    return 'Aucun item spécifié';
+    return [];
+  }
+
+  private computeItemsString(): string {
+    const itemsArray = this.getItemsArray();
+    if (itemsArray.length === 0) return 'Aucun item spécifié';
+    return itemsArray.map((item, index) => `${index + 1}. ${item.nom}`).join('\n');
   }
 
   getItemsString(): string { return this._itemsString; }

@@ -23,7 +23,13 @@ public class StructureMefp {
     private String nom;
 
     @Size(max = 100)
-    private String contact;
+    private String contact1;
+    
+    @Size(max = 100)
+    private String contact2;
+    
+    @Size(max = 100)
+    private String contact3;
 
     @Size(max = 100)
     private String email;
@@ -94,8 +100,18 @@ public class StructureMefp {
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }
 
-    public String getContact() { return contact; }
-    public void setContact(String contact) { this.contact = contact; }
+    public String getContact1() { return contact1; }
+    public void setContact1(String contact1) { this.contact1 = contact1; }
+
+    // Convenience method for getting the primary contact
+    public String getContact() { return contact1; }
+    public void setContact(String contact) { this.contact1 = contact; }
+    
+    public String getContact2() { return contact2; }
+    public void setContact2(String contact2) { this.contact2 = contact2; }
+    
+    public String getContact3() { return contact3; }
+    public void setContact3(String contact3) { this.contact3 = contact3; }
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }

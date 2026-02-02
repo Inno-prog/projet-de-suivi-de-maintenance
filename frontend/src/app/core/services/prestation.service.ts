@@ -18,6 +18,9 @@ export interface PaginationResponse<T> {
 
 export interface Prestation {
   id?: number;
+  // Timestamps
+  dateCreation?: string;
+  dateModification?: string;
   // Prestataire information
   prestataireId?: string;
   nomPrestataire: string;

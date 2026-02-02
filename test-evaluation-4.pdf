@@ -1,0 +1,1 @@
+Error generating PDF: Exception evaluating SpringEL expression: "evaluation.zoneGeographique != null and evaluation.zoneGeographique != ''" (template: "report_evaluation" - line 336, col 29)

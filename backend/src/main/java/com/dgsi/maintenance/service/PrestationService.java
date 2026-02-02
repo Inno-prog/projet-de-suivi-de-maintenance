@@ -919,13 +919,27 @@ public class PrestationService {
         // Set the beneficiary structure name
         fiche.setNomStructure(prestation.getNomStructure());
 
-        // Collecter les items utilisés
+        // Collecter les items utilisés avec leurs prix (en JSON pour préserver les informations complètes)
         if (prestation.getItemsUtilises() != null && !prestation.getItemsUtilises().isEmpty()) {
-            String itemsCouverts = prestation.getItemsUtilises().stream()
-                .map(item -> item.getNomItem())
-                .reduce((a, b) -> a + "," + b)
-                .orElse("");
-            fiche.setItemsCouverts(itemsCouverts);
+            try {
+                com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                java.util.List<java.util.Map<String, Object>> itemsWithPrices = new java.util.ArrayList<>();
+                for (Item item : prestation.getItemsUtilises()) {
+                    java.util.Map<String, Object> itemInfo = new java.util.HashMap<>();
+                    itemInfo.put("nom", item.getNomItem());
+                    itemInfo.put("prix", item.getPrix());
+                    itemsWithPrices.add(itemInfo);
+                }
+                String itemsCouverts = mapper.writeValueAsString(itemsWithPrices);
+                fiche.setItemsCouverts(itemsCouverts);
+            } catch (Exception e) {
+                // Si JSON échoue, utiliser format comma-separated comme fallback
+                String itemsCouverts = prestation.getItemsUtilises().stream()
+                    .map(item -> item.getNomItem())
+                    .reduce((a, b) -> a + "," + b)
+                    .orElse("");
+                fiche.setItemsCouverts(itemsCouverts);
+            }
         }
 
         // Date de réalisation basée sur la prestation
@@ -935,10 +949,8 @@ public class PrestationService {
         // Statut initial : en attente de validation
         fiche.setStatut(StatutFiche.EN_ATTENTE);
 
-        // Quantité basée sur les items utilisés
-        if (prestation.getItemsUtilises() != null) {
-            fiche.setQuantite(prestation.getItemsUtilises().size());
-        }
+        // Quantité réalisée : 1 par défaut (une prestation = une quantité de 1)
+        fiche.setQuantite(1);
 
         // Commentaire initial
         fiche.setCommentaire("Fiche créée automatiquement pour la prestation " + prestation.getNomPrestation());
