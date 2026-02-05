@@ -10,6 +10,7 @@ import com.dgsi.maintenance.entity.Notification;
 import com.dgsi.maintenance.entity.User;
 import com.dgsi.maintenance.repository.NotificationRepository;
 import com.dgsi.maintenance.repository.UserRepository;
+import com.dgsi.maintenance.repository.PrestationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class NotificationService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PrestationRepository prestationRepository;
 
     // Map destinataire -> list of emitters (thread-safe)
     private final Map<String, List<SseEmitter>> emitters = new ConcurrentHashMap<>();
@@ -132,23 +136,40 @@ public class NotificationService {
         List<User> admins = userRepository.findByRole("ADMINISTRATEUR");
         log.info("📧 Nombre d'administrateurs trouvés: {}", admins.size());
         
+        // Si aucun admin trouvé avec "ADMINISTRATEUR", essayer avec "ROLE_ADMINISTRATEUR"
+        if (admins.isEmpty()) {
+            log.warn("⚠️ Aucun admin trouvé avec role 'ADMINISTRATEUR', tentative avec 'ROLE_ADMINISTRATEUR'");
+            admins = userRepository.findByRole("ROLE_ADMINISTRATEUR");
+            log.info("📧 Nombre d'administrateurs trouvés avec ROLE_: {}", admins.size());
+        }
+        
+        if (admins.isEmpty()) {
+            log.error("❌ ERREUR: Aucun administrateur trouvé dans la base de données pour recevoir les notifications!");
+            log.error("❌ Vérifiez que des utilisateurs avec le rôle 'ADMINISTRATEUR' existent dans la table users");
+            return;
+        }
+        
         for (User admin : admins) {
-            Notification notification = new Notification();
-            notification.setDestinataire(admin.getEmail());
-            notification.setTitre("Nouvelle fiche de prestation soumise");
-            notification.setMessage(String.format(
-                "Le prestataire '%s' a soumis une nouvelle fiche de prestation (ID: %s) pour l'item '%s'. Veuillez la traiter.",
-                prestataire, idPrestation, nomItem != null ? nomItem : "N/A"
-            ));
-            notification.setType("INFO");
+            try {
+                Notification notification = new Notification();
+                notification.setDestinataire(admin.getEmail());
+                notification.setTitre("Nouvelle fiche de prestation soumise");
+                notification.setMessage(String.format(
+                    "Le prestataire '%s' a soumis une nouvelle fiche de prestation (ID: %s) pour l'item '%s'. Veuillez la traiter.",
+                    prestataire, idPrestation, nomItem != null ? nomItem : "N/A"
+                ));
+                notification.setType("INFO");
 
-            notificationRepository.save(notification);
-            log.info("📧 Notification sauvegardée pour admin: {}", admin.getEmail());
-            
-            // push realtime to admin if connected
-            sendEventToDestinataire(notification.getDestinataire(), notification);
-            // send email to admin if configured
-            sendEmailIfPossible(notification.getDestinataire(), notification.getTitre(), notification.getMessage());
+                notificationRepository.save(notification);
+                log.info("📧 Notification sauvegardée pour admin: {} (ID: {})", admin.getEmail(), notification.getId());
+                
+                // push realtime to admin if connected
+                sendEventToDestinataire(notification.getDestinataire(), notification);
+                // send email to admin if configured
+                sendEmailIfPossible(notification.getDestinataire(), notification.getTitre(), notification.getMessage());
+            } catch (Exception e) {
+                log.error("❌ Erreur lors de l'envoi de notification à l'admin {}: {}", admin.getEmail(), e.getMessage(), e);
+            }
         }
         
         log.info("✅ Notifications fiche soumise envoyées à {} administrateurs", admins.size());
@@ -329,5 +350,50 @@ public class NotificationService {
         } catch (Exception e) {
             log.error("❌ Erreur lors de l'envoi de la notification personnalisée à {}: {}", destinataire, e.getMessage());
         }
+    }
+
+    /**
+     * Envoie des notifications pour toutes les prestations en attente qui n'ont pas encore de notification
+     * Utile pour corriger les prestations créées avant la correction du système
+     */
+    public int envoyerNotificationsPrestationsEnAttente() {
+        log.info("🔍 Recherche des prestations en attente sans notification...");
+        
+        // Récupérer toutes les prestations en attente
+        List<com.dgsi.maintenance.entity.Prestation> prestationsEnAttente = 
+            prestationRepository.findByStatutValidation("EN_ATTENTE");
+        
+        log.info("📊 {} prestations en attente trouvées", prestationsEnAttente.size());
+        
+        int notificationsSent = 0;
+        for (com.dgsi.maintenance.entity.Prestation prestation : prestationsEnAttente) {
+            try {
+                // Vérifier si une notification existe déjà pour cette prestation
+                String prestationIdStr = prestation.getId().toString();
+                List<Notification> existingNotifs = notificationRepository
+                    .findAll()
+                    .stream()
+                    .filter(n -> n.getMessage() != null && n.getMessage().contains(prestationIdStr))
+                    .toList();
+                
+                if (existingNotifs.isEmpty()) {
+                    // Envoyer la notification
+                    envoyerNotificationFicheSoumise(
+                        prestation.getNomPrestataire(),
+                        prestationIdStr,
+                        prestation.getNomPrestation()
+                    );
+                    notificationsSent++;
+                    log.info("✅ Notification envoyée pour prestation ID: {}", prestation.getId());
+                } else {
+                    log.debug("ℹ️ Notification déjà existante pour prestation ID: {}", prestation.getId());
+                }
+            } catch (Exception e) {
+                log.error("❌ Erreur lors de l'envoi de notification pour prestation ID: {}", prestation.getId(), e);
+            }
+        }
+        
+        log.info("✅ {} notifications envoyées sur {} prestations en attente", notificationsSent, prestationsEnAttente.size());
+        return notificationsSent;
     }
 }

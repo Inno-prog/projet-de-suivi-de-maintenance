@@ -1,0 +1,147 @@
+🔔 CHECKLIST DE VÉRIFICATION - NOTIFICATIONS ADMIN
+═══════════════════════════════════════════════════════════════
+
+📋 ÉTAPES À SUIVRE DANS L'ORDRE
+
+┌─────────────────────────────────────────────────────────────┐
+│ 1. REDÉMARRER LE BACKEND                                    │
+└─────────────────────────────────────────────────────────────┘
+
+   cd backend
+   ./mvnw spring-boot:run
+   
+   ✓ Le backend démarre sans erreur
+   ✓ Aucune exception dans les logs
+
+┌─────────────────────────────────────────────────────────────┐
+│ 2. VÉRIFIER LES ADMINISTRATEURS                             │
+└─────────────────────────────────────────────────────────────┘
+
+   Exécuter dans votre client SQL:
+   
+   SELECT * FROM users WHERE role = 'ADMINISTRATEUR';
+   
+   ✓ Au moins 1 administrateur existe
+   ✓ L'administrateur a un email valide
+   
+   Si aucun admin, créer un admin de test:
+   
+   INSERT INTO users (id, nom, email, password, role, contact, created_at, updated_at)
+   VALUES (
+       'admin-test-001',
+       'Admin Test',
+       'admin.test@dgsi.bf',
+       '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhkO',
+       'ADMINISTRATEUR',
+       '+226 70 00 00 00',
+       NOW(),
+       NOW()
+   );
+
+┌─────────────────────────────────────────────────────────────┐
+│ 3. TESTER L'ENDPOINT DE NOTIFICATION                        │
+└─────────────────────────────────────────────────────────────┘
+
+   curl -X POST http://localhost:8080/api/notifications/test-admin-notification
+   
+   ✓ Réponse HTTP 200
+   ✓ Message de succès retourné
+
+┌─────────────────────────────────────────────────────────────┐
+│ 4. VÉRIFIER LES LOGS                                        │
+└─────────────────────────────────────────────────────────────┘
+
+   tail -f backend/backend.log | grep notification
+   
+   Vous devriez voir:
+   
+   ✓ "📧 Envoi notification fiche soumise"
+   ✓ "📧 Nombre d'administrateurs trouvés: X" (X > 0)
+   ✓ "📧 Notification sauvegardée pour admin: ..."
+   ✓ "✅ Notifications fiche soumise envoyées à X administrateurs"
+
+┌─────────────────────────────────────────────────────────────┐
+│ 5. VÉRIFIER LA BASE DE DONNÉES                              │
+└─────────────────────────────────────────────────────────────┘
+
+   SELECT * FROM notifications ORDER BY date_creation DESC LIMIT 5;
+   
+   ✓ Des notifications existent
+   ✓ Le champ destinataire correspond à un email d'admin
+   ✓ Le champ titre contient "Nouvelle fiche de prestation soumise"
+
+┌─────────────────────────────────────────────────────────────┐
+│ 6. TEST COMPLET - CRÉER UNE PRESTATION                      │
+└─────────────────────────────────────────────────────────────┘
+
+   a) Se connecter en tant que prestataire
+   b) Créer une nouvelle prestation
+   c) Soumettre la prestation
+   
+   ✓ Aucune erreur lors de la soumission
+   ✓ Les logs montrent l'envoi de notification
+   ✓ Une notification est créée dans la base
+
+┌─────────────────────────────────────────────────────────────┐
+│ 7. VÉRIFIER CÔTÉ ADMIN                                      │
+└─────────────────────────────────────────────────────────────┘
+
+   a) Se connecter en tant qu'administrateur
+   b) Cliquer sur la cloche de notifications
+   
+   ✓ La notification apparaît
+   ✓ Le titre est correct
+   ✓ Le message contient les bonnes informations
+
+═══════════════════════════════════════════════════════════════
+
+🚨 EN CAS DE PROBLÈME
+
+┌─────────────────────────────────────────────────────────────┐
+│ PROBLÈME: Aucun administrateur trouvé                       │
+└─────────────────────────────────────────────────────────────┘
+
+   SOLUTION: Créer un administrateur (voir étape 2)
+
+┌─────────────────────────────────────────────────────────────┐
+│ PROBLÈME: Notifications créées mais pas affichées           │
+└─────────────────────────────────────────────────────────────┘
+
+   SOLUTION: Vérifier la connexion SSE du frontend
+   
+   Dans la console du navigateur:
+   - Vérifier qu'il n'y a pas d'erreur de connexion
+   - Vérifier que EventSource est connecté
+
+┌─────────────────────────────────────────────────────────────┐
+│ PROBLÈME: Erreur dans les logs                              │
+└─────────────────────────────────────────────────────────────┘
+
+   SOLUTION: Consulter GUIDE_DIAGNOSTIC_NOTIFICATIONS.md
+   
+   grep -i "error\|erreur" backend/backend.log | tail -20
+
+═══════════════════════════════════════════════════════════════
+
+📚 DOCUMENTATION COMPLÈTE
+
+   - RESUME_CORRECTIONS_NOTIFICATIONS.md (résumé en français)
+   - GUIDE_DIAGNOSTIC_NOTIFICATIONS.md (diagnostic complet)
+   - CORRECTION_NOTIFICATIONS_ADMIN.md (documentation technique)
+   - backend/verification_notifications_admin.sql (requêtes SQL)
+
+═══════════════════════════════════════════════════════════════
+
+✅ VALIDATION FINALE
+
+   ☐ Backend redémarré
+   ☐ Au moins 1 admin existe
+   ☐ Endpoint de test fonctionne
+   ☐ Logs montrent les notifications envoyées
+   ☐ Notifications créées dans la base
+   ☐ Prestation de test créée avec succès
+   ☐ Admin voit la notification dans l'interface
+
+   Si tous les points sont cochés: ✅ SYSTÈME FONCTIONNEL
+
+═══════════════════════════════════════════════════════════════

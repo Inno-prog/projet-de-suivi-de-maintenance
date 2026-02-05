@@ -1469,7 +1469,7 @@
 
 .admin-quick-action-card {
   background: white;
-  border-radius: 16px;
+  border-radius: 0;
   padding: 1.5rem;
   box-shadow: 0 4px 15px rgba(0,0,0,0.08);
   border: 2px solid rgba(0,0,0,0.08);

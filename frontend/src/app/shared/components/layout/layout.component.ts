@@ -1,6 +1,6 @@
 import { Component, ViewChild, HostListener, ElementRef, OnDestroy, AfterViewInit, AfterViewChecked, Directive, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl, FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
@@ -12,6 +12,7 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
 import { ToastComponent } from '../toast/toast.component';
 import { ConfirmationComponent } from '../confirmation/confirmation.component';
 import { NotificationBellComponent } from '../notification/notification.component';
+import { MessageComponent } from '../message/message.component';
 
 // Directive pour détecter les clics à l'extérieur d'un élément
 @Directive({
@@ -35,7 +36,7 @@ export class ClickOutsideDirective {
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, SidebarComponent, ToastComponent, ConfirmationComponent, NotificationBellComponent, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterModule, SidebarComponent, ToastComponent, ConfirmationComponent, NotificationBellComponent, MessageComponent, TranslatePipe],
   templateUrl: './layout.component.html',
   styleUrls: ['./modal-fix.css', './modal-visibility-fix.css'],
   styles: [`
@@ -85,9 +86,125 @@ export class ClickOutsideDirective {
       min-height: 64px;
       max-height: 64px;
       width: 100%;
-      background: rgb(28, 82, 118);
+      background: transparent;
       position: relative !important;
       z-index: 50;
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .navbar-content {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-left: auto;
+    }
+
+    /* Hamburger Button */
+    .hamburger-btn {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .hamburger-btn:hover {
+      background: #e2e8f0;
+      color: #f97316;
+      transform: scale(1.05);
+    }
+
+    .hamburger-icon {
+      display: block;
+      line-height: 1;
+    }
+
+     /* Search Box */
+     .search-box {
+       flex: 1;
+       max-width: 500px;
+       position: relative;
+       background: #f1f5f9;
+       border: 2px solid #cbd5e1;
+       border-radius: 25px;
+       padding: 0.5rem 1rem;
+       display: flex;
+       align-items: center;
+       gap: 0.75rem;
+       transition: all 0.3s ease;
+     }
+
+     .search-box:focus-within {
+       background: white;
+       border-color: #f97316;
+       box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+     }
+
+    .search-icon {
+      color: #64748b;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .search-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #1e293b;
+      font-size: 0.95rem;
+      padding: 0.25rem 0;
+    }
+
+    .search-input::placeholder {
+      color: #94a3b8;
+    }
+
+    /* Messages Button */
+    .messages-container {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .messages-btn {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .messages-btn:hover {
+      background: #e2e8f0;
+      color: #f97316;
+      transform: scale(1.05);
     }
 
     .content {
@@ -99,152 +216,164 @@ export class ClickOutsideDirective {
       background: #f8fafc;
     }
 
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 64px;
+     /* Responsive */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0 1rem;
+      }
+      
+      .navbar-content {
+        gap: 0.75rem;
+      }
+      
+      .search-box {
+        max-width: 200px;
+      }
+      
+      .user-info {
+        display: none;
+      }
+      
+      .profile-item {
+        min-width: auto;
+        padding: 0.5rem;
+      }
+      
+      .dropdown-icon {
+        display: none;
+      }
+      
+      /* Sidebar mobile styles */
+      app-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1200;
+      }
+      
+      app-sidebar.mobile-open {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        transition: margin-left 0.3s ease;
+      }
+      
+      .main-content.sidebar-open {
+        margin-left: 260px !important;
+        width: calc(100% - 260px) !important;
+      }
     }
 
-    .nav-brand {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .sidebar-toggle {
-      background: none;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      color: #e2e8f0;
-      padding: 0.5rem;
-      border-radius: 4px;
-      transition: background 0.2s;
-    }
-
-    .sidebar-toggle:hover {
-      background: rgba(255,255,255,0.1);
-    }
-
-    .sidebar-toggle-nav {
-      background: none;
-      border: none;
-      font-size: 1.2rem;
-      cursor: pointer;
-      color: #e2e8f0;
-      padding: 0.5rem;
-      border-radius: 4px;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .sidebar-toggle-nav:hover {
-      background: rgba(255,255,255,0.1);
-    }
-
-    .hamburger {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .hamburger span {
-      width: 18px;
-      height: 2px;
-      background: currentColor;
-      transition: all 0.3s ease;
-    }
-
-    .logo-section {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .nav-logo {
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 6px;
-      background: white;
-      object-fit: contain;
-    }
-
-    .nav-text h1 {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: #e2e8f0;
-    }
-
-    .nav-user {
-      display: flex;
-      align-items: center;
+    @media (max-width: 480px) {
+      .navbar {
+        padding: 0 0.75rem;
+      }
+      
+      .navbar-content {
+        gap: 0.5rem;
+      }
+      
+      .hamburger-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 1.1rem;
+      }
+      
+      .search-box {
+        display: none;
+      }
     }
 
     .notification-container {
-      margin-right: 0.75rem;
+      flex-shrink: 0;
       display: flex;
       align-items: center;
     }
 
     .profile-section {
       position: relative;
+      flex-shrink: 0;
     }
 
     .profile-item {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      padding: 0.5rem 0.75rem;
-      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.3s ease;
+      background: white;
+      border: 1px solid #e2e8f0;
+      min-width: 200px;
     }
 
     .profile-item:hover {
-      background: rgba(255,255,255,0.1);
+      background: #f8fafc;
+      border-color: #cbd5e1;
     }
 
     .user-avatar {
-      width: 32px;
-      height: 32px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       background: white;
-      color: #f97316;
+      color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 600;
-      font-size: 0.875rem;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+      border: 2px solid #e2e8f0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .avatar-placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .user-info {
-      display: flex;
-      flex-direction: column;
+      flex: 1;
+      text-align: left;
+      min-width: 0;
     }
 
     .user-name {
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: #e2e8f0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1e293b;
       margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .user-role {
       font-size: 0.75rem;
-      color: #94a3b8;
+      color: #64748b;
       margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .dropdown-icon {
-      color: #94a3b8;
-      transition: transform 0.2s;
+      color: #64748b;
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+      font-size: 0.7rem;
     }
 
     .dropdown-icon.rotated {
@@ -629,6 +758,12 @@ export class ClickOutsideDirective {
       z-index: 1000;
       margin-top: 0.5rem;
       overflow: visible;
+    }
+
+    /* Right-align the dropdown to avoid clipping on smaller screens */
+    .profile-dropdown.align-right {
+      left: auto;
+      right: 0;
     }
 
     .profile-details-dropdown,
@@ -1230,6 +1365,9 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
   profileLoading = false;
   isMobile = false;
   
+  // Search
+  searchQuery = '';
+  
   // Dropdown inline form states (used in template for inline profile/settings forms)
   showProfileForm = false;
   showSettingsForm = false;
@@ -1249,6 +1387,8 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
   private preventSidebarClose = true;
 
   profileForm: FormGroup;
+  // Track avatar load errors so we can fallback to initials reliably
+  photoLoadError = false;
 
   private routerEventsSub?: Subscription;
   private stabilizeInterval?: any;
@@ -1460,13 +1600,8 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
   toggleSidebar() {
     console.log('LayoutComponent - toggleSidebar called. isMobile:', this.isMobile, 'current sidebarOpen:', this.sidebarOpen);
-    // Toggle state; respect preventSidebarClose on desktop
+    // Toggle state
     this.sidebarOpen = !this.sidebarOpen;
-    if (this.preventSidebarClose && !this.isMobile && !this.sidebarOpen) {
-      // restore open state on desktop
-      this.sidebarOpen = true;
-      console.log('LayoutComponent - prevented closing sidebar on desktop');
-    }
     if (this.sidebar) {
       this.sidebar.isOpen = this.sidebarOpen;
     }
@@ -1491,6 +1626,40 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
 
   toggleProfileMenu() {
     this.profileMenuOpen = !this.profileMenuOpen;
+    // When opening the menu, ensure it will not overflow the viewport horizontally.
+    if (this.profileMenuOpen) {
+      setTimeout(() => this.adjustProfileDropdownAlignment(), 0);
+    }
+  }
+
+  // Ensure dropdown stays within viewport; add class to align to the right of avatar when needed.
+  private adjustProfileDropdownAlignment(): void {
+    try {
+      const dropdown = (this.elementRef.nativeElement as HTMLElement).querySelector('.profile-dropdown') as HTMLElement | null;
+      const container = (this.elementRef.nativeElement as HTMLElement).querySelector('.navbar') as HTMLElement | null;
+      if (!dropdown || !container) return;
+
+      // Reset any previous alignment
+      dropdown.classList.remove('align-right');
+
+      const rect = dropdown.getBoundingClientRect();
+      const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+      // If dropdown overflows to the right, align it to the right side of the avatar
+      if (rect.right > viewportWidth - 8) {
+        dropdown.classList.add('align-right');
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  onAvatarError() {
+    // Prevent continuous error loops
+    this.photoLoadError = true;
+  }
+
+  onAvatarLoad() {
+    this.photoLoadError = false;
   }
 
   toggleProfileDetails() {
@@ -1541,8 +1710,16 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
     const previousIsMobile = this.isMobile;
     const previousSidebarOpen = this.sidebarOpen;
     this.isMobile = window.innerWidth <= 768;
-    // Always keep sidebar open for debugging - will be visible regardless of screen size
-    this.sidebarOpen = true;
+    
+    // Gestion correcte de l'état de la sidebar selon la taille d'écran
+    if (this.isMobile) {
+      // Sur mobile, la sidebar doit être fermée par défaut
+      this.sidebarOpen = false;
+    } else {
+      // Sur desktop, la sidebar doit être ouverte par défaut
+      this.sidebarOpen = true;
+    }
+    
     // Keep CSS variables up-to-date when screen size changes
     this.updateNavbarCssVars();
 
@@ -1755,5 +1932,53 @@ export class LayoutComponent implements AfterViewInit, OnDestroy {
       // If toast service isn't available yet, ignore silently.
       console.warn('Toast service unavailable for demo message', e);
     }
+  }
+
+  /**
+   * Perform global search
+   */
+  performSearch(): void {
+    if (!this.searchQuery || this.searchQuery.trim() === '') {
+      return;
+    }
+
+    const query = this.searchQuery.toLowerCase().trim();
+    
+    // Search routes mapping
+    const routes: { [key: string]: string } = {
+      'utilisateur': '/users',
+      'user': '/users',
+      'prestation': '/prestations',
+      'contrat': '/contrats',
+      'ordre': '/ordres-commande',
+      'commande': '/ordres-commande',
+      'structure': '/structures-mefp',
+      'mefp': '/structures-mefp',
+      'équipement': '/équipements',
+      'equipement': '/équipements',
+      'statistique': '/statistiques',
+      'rapport': '/rapports',
+      'évaluation': '/evaluations',
+      'evaluation': '/evaluations',
+      'item': '/items',
+      'dashboard': '/dashboard',
+      'tableau': '/dashboard'
+    };
+
+    // Find matching route
+    for (const [keyword, route] of Object.entries(routes)) {
+      if (query.includes(keyword)) {
+        this.router.navigate([route]);
+        this.searchQuery = '';
+        return;
+      }
+    }
+
+    // If no match, show message
+    this.toastService.show({
+      type: 'info',
+      title: 'Recherche',
+      message: `Aucun résultat pour "${this.searchQuery}"`
+    });
   }
 }

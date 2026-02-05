@@ -492,6 +492,12 @@ public class FichePrestationController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
         }
     }
+    
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('PRESTATAIRE') or hasRole('AGENT_DGSI')")
+    public List<FichePrestation> searchFiches(@RequestParam String keyword) {
+        return ficheRepository.searchByKeyword(keyword);
+    }
 
     private void createOrUpdateOrdreCommandeForItem(String trimestre, int annee, String prestataireName, String itemName) {
         try {

@@ -7,9 +7,10 @@ import { ContratService } from '../../../../core/services/contrat.service';
 import { FichePrestation, Contrat, StatutFiche, StatutContrat } from '../../../../core/models/business.models';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ToastService } from '../../../../core/services/toast.service';
-import { NotificationService } from '../../../../core/services/notification.service';
 import { FileUploadService } from '../../../../core/services/file-upload.service';
 import { ConfirmationService } from '../../../../core/services/confirmation.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 
 interface PrestationDashboard {
   fiche: FichePrestation;
@@ -1252,7 +1253,7 @@ export class PrestationsDashboardComponent implements OnInit {
     private router: Router,
     private formBuilder: FormBuilder,
     private toastService: ToastService,
-    private notificationService: NotificationService,
+    private http: HttpClient,
     private fileUploadService: FileUploadService,
     private confirmationService: ConfirmationService
   ) {
@@ -1484,11 +1485,13 @@ export class PrestationsDashboardComponent implements OnInit {
           prestation.progression = this.calculateProgression(prestation.fiche);
 
           // Envoyer notification si prestation terminée
-          this.notificationService.notifierPrestationTerminee(
-            prestation.fiche.nomPrestataire,
-            prestation.fiche.id!,
-            prestation.fiche.nomItem
-          ).subscribe({
+          this.http.post(`${environment.apiUrl}/notifications/prestation-terminee`, null, {
+            params: {
+              prestataire: prestation.fiche.nomPrestataire,
+              prestationId: prestation.fiche.id!.toString(),
+              nomItem: prestation.fiche.nomItem
+            }
+          }).subscribe({
             next: () => {
               this.toastService.show({
                 type: 'info',
@@ -1496,7 +1499,7 @@ export class PrestationsDashboardComponent implements OnInit {
                 message: 'Le prestataire a été notifié pour soumettre son rapport'
               });
             },
-            error: (error) => {
+            error: (error: any) => {
               console.error('Erreur lors de l\'envoi de notification:', error);
             }
           });

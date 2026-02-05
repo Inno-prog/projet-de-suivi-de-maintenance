@@ -25,6 +25,7 @@
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/PrestationController.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/RapportSuiviController.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/ReportController.java
+/home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/SearchController.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/StructureMefpController.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/TestController.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/TypeItemController.java
@@ -100,6 +101,7 @@
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/PrestationService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/RapportSuiviService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/ReferenceDataService.java
+/home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/SearchService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/StructureMefpService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/service/UserService.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/util/DatabaseFixer.java

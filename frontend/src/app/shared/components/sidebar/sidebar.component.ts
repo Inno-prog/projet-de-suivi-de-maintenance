@@ -599,6 +599,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
         left: 0;
         transform: translateX(-100%);
         z-index: 1200;
+        transition: transform 0.3s ease;
       }
 
       .sidebar.mobile-open {
@@ -648,9 +649,9 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  toggleSidebar(): void {
-    console.log('SidebarComponent - toggleSidebar called, forcing isOpen to true');
-    this.isOpen = true;
+   toggleSidebar(): void {
+    console.log('SidebarComponent - toggleSidebar called, current isOpen:', this.isOpen);
+    this.isOpen = !this.isOpen;
     this.toggleChange.emit(this.isOpen);
   }
 

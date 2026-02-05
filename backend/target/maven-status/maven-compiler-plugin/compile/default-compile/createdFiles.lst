@@ -38,10 +38,12 @@ com/dgsi/maintenance/entity/Trimestre.class
 com/dgsi/maintenance/dto/OrdreCommandeDto.class
 com/dgsi/maintenance/config/FicheStructureDataFix.class
 com/dgsi/maintenance/controller/PrestationController.class
+com/dgsi/maintenance/service/SearchService$SearchResult.class
 com/dgsi/maintenance/controller/ContratController.class
 com/dgsi/maintenance/config/TransactionConfig.class
 com/dgsi/maintenance/service/EquipementService.class
 com/dgsi/maintenance/util/DatabaseFixer.class
+com/dgsi/maintenance/controller/SearchController.class
 com/dgsi/maintenance/config/DataInitializer.class
 com/dgsi/maintenance/config/ContractRelationshipFix.class
 com/dgsi/maintenance/controller/TypeItemController.class
@@ -80,6 +82,7 @@ com/dgsi/maintenance/config/LotDataInitializer.class
 com/dgsi/maintenance/controller/PrestationController$1ValidationResponse.class
 com/dgsi/maintenance/service/BudgetInsufficientException.class
 com/dgsi/maintenance/service/ItemService.class
+com/dgsi/maintenance/service/SearchService.class
 com/dgsi/maintenance/controller/GlobalExceptionHandler.class
 com/dgsi/maintenance/entity/EvaluationTrimestrielle.class
 com/dgsi/maintenance/controller/ItemController$ErrorResponse.class

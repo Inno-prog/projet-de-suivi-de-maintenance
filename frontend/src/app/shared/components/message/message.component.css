@@ -1,0 +1,442 @@
+/* ============================================
+   MESSAGE BUTTON & DROPDOWN STYLES
+   Modern design with gradients, shadows, and animations
+   ============================================ */
+
+/* Container for the message button */
+.message-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   MESSAGE BUTTON STYLES
+   ============================================ */
+
+app-message .relative,
+.message-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+app-message button,
+.message-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+  box-shadow: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+app-message button:hover,
+.message-btn:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: none;
+  background: #e2e8f0;
+  color: #f97316;
+}
+
+app-message button:focus,
+.message-btn:focus {
+  outline: none;
+  box-shadow: 
+    0 0 0 4px rgba(245, 158, 11, 0.3),
+    0 4px 15px rgba(245, 158, 11, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+app-message button:active,
+.message-btn:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 
+    0 2px 8px rgba(245, 158, 11, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Message icon */
+app-message .message-icon,
+.message-icon {
+  font-size: 20px;
+  line-height: 1;
+  color: #64748b;
+  text-shadow: none;
+}
+
+/* ============================================
+   MESSAGE BADGE
+   ============================================ */
+
+app-message span[class*="absolute"],
+.message-badge {
+  position: absolute !important;
+  top: -4px;
+  right: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  box-shadow: 
+    0 3px 8px rgba(0, 0, 0, 0.2),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  animation: pulse-badge 2s infinite;
+}
+
+app-message span.bg-red-600,
+.message-badge.unread {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: white !important;
+}
+
+app-message span.bg-slate-300,
+.message-badge.empty {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%) !important;
+  color: #1e293b !important;
+  animation: none;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 
+      0 3px 8px rgba(0, 0, 0, 0.2),
+      0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 
+      0 5px 12px rgba(239, 68, 68, 0.4),
+      0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* ============================================
+   MESSAGE DROPDOWN PANEL
+   ============================================ */
+
+app-message div[role="dialog"],
+.message-dropdown {
+  position: absolute !important;
+  right: 0;
+  top: calc(100% + 12px);
+  width: 380px;
+  max-height: 480px;
+  overflow: hidden;
+  background: white !important;
+  border-radius: 20px;
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.2),
+    0 10px 25px rgba(0, 0, 0, 0.15),
+    0 5px 12px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  z-index: 9999 !important;
+  animation: slideDown 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================
+   DROPDOWN HEADER
+   ============================================ */
+
+app-message .message-dropdown-header,
+.message-dropdown-header {
+  background: white !important;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 18px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+app-message .message-dropdown-header .title,
+.message-dropdown-header .title {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+app-message .message-header-actions,
+.message-header-actions {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+/* Close button */
+app-message .message-close-btn,
+.message-close-btn {
+  padding: 8px 16px !important;
+  background: white !important;
+  color: #64748b !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+app-message .message-close-btn:hover,
+.message-close-btn:hover {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+/* ============================================
+   MESSAGE LIST
+   ============================================ */
+
+app-message ul,
+.message-list {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  max-height: 380px !important;
+  overflow-y: auto !important;
+}
+
+/* Scrollbar styling */
+app-message ul::-webkit-scrollbar,
+.message-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+app-message ul::-webkit-scrollbar-track,
+.message-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+app-message ul::-webkit-scrollbar-thumb,
+.message-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+app-message ul::-webkit-scrollbar-thumb:hover,
+.message-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============================================
+   MESSAGE ITEM
+   ============================================ */
+
+app-message li,
+.message-list-item {
+  border-bottom: 1px solid #f1f5f9 !important;
+  transition: background-color 0.2s ease !important;
+  padding: 16px 20px !important;
+}
+
+app-message li:last-child,
+.message-list-item:last-child {
+  border-bottom: none !important;
+}
+
+app-message li:hover,
+.message-list-item:hover {
+  background: #f8fafc !important;
+}
+
+app-message li.unread,
+.message-list-item.unread {
+  background: #fff7ed !important;
+  border-left: 4px solid #f97316;
+}
+
+/* Message content */
+app-message .message-content,
+.message-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+app-message .message-title,
+.message-title {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  margin-bottom: 4px !important;
+  display: block !important;
+  line-height: 1.4;
+}
+
+app-message .message-time,
+.message-time {
+  font-size: 11px !important;
+  color: #94a3b8 !important;
+  margin-left: 8px !important;
+  white-space: nowrap;
+}
+
+app-message .message-body,
+.message-body {
+  font-size: 13px !important;
+  color: #64748b !important;
+  display: block !important;
+  margin-top: 4px !important;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================
+   MESSAGE FOOTER
+   ============================================ */
+
+app-message .message-footer,
+.message-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+app-message .message-sender,
+.message-sender {
+  font-size: 12px !important;
+  color: #475569 !important;
+  font-weight: 500 !important;
+}
+
+app-message .message-action-btn,
+.message-action-btn {
+  padding: 6px 12px !important;
+  background: white !important;
+  color: #dc2626 !important;
+  border: 1px solid #fecaca !important;
+  border-radius: 8px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+app-message .message-action-btn:hover,
+.message-action-btn:hover {
+  background: #fef2f2 !important;
+  border-color: #fca5a5 !important;
+  color: #b91c1c !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
+app-message .message-action-btn:active,
+.message-action-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+
+app-message .message-empty,
+.message-empty {
+  padding: 48px 24px !important;
+  text-align: center !important;
+  color: #94a3b8 !important;
+  font-size: 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 200px;
+}
+
+app-message .message-icon-empty,
+.message-icon-empty {
+  font-size: 56px !important;
+  color: #cbd5e1 !important;
+  margin-bottom: 16px !important;
+  opacity: 0.7 !important;
+}
+
+/* ============================================
+   DARK MODE SUPPORT
+   ============================================ */
+
+.dark app-message button,
+.dark .message-btn {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #94a3b8 !important;
+}
+
+.dark app-message button:hover,
+.dark .message-btn:hover {
+  background: #334155 !important;
+  color: #f97316 !important;
+}
+
+.dark app-message div[role="dialog"],
+.dark .message-dropdown {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  box-shadow: 
+    0 25px 60px rgba(0, 0, 0, 0.5),
+    0 10px 25px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.dark app-message .message-dropdown-header,
+.dark .message-dropdown-header {
+  background: #1e293b !important;
+  border-bottom-color: #334155 !important;
+}
+
+.dark app-message .message-dropdown-header .title,
+.dark .message-dropdown-header .title {
+  color: #f1f5f9 !important;
+}
+
+.dark app-message li,
+.dark .message-list-item {
+  border-bottom-color: #334155 !important;
+}
+
+.dark app-message li:hover,
+.dark .message-list-item:hover {
+  background: #334155 !important;
+}
+
+.dark app-message li.unread,
+.dark .message-list-item.unread {
+  background: rgba(249, 115, 22, 0.1) !important;
+  border-left-color: #f97316 !important;
+}

@@ -8,6 +8,7 @@ import com.dgsi.maintenance.entity.Prestation;
 import com.dgsi.maintenance.entity.StatutFiche;
 import com.dgsi.maintenance.repository.FichePrestationRepository;
 import com.dgsi.maintenance.repository.ItemRepository;
+import com.dgsi.maintenance.repository.PrestationRepository;
 import com.dgsi.maintenance.service.NotificationService;
 import com.dgsi.maintenance.service.PrestationPdfService;
 import com.dgsi.maintenance.service.PrestationService;
@@ -54,10 +55,14 @@ public class PrestationController {
     private com.dgsi.maintenance.service.ContratItemService contratItemService;
 
     @Autowired
-    public PrestationController(PrestationService prestationService, PrestationPdfService prestationPdfService, ItemRepository itemRepository) {
+    private PrestationRepository prestationRepository;
+
+    @Autowired
+    public PrestationController(PrestationService prestationService, PrestationPdfService prestationPdfService, ItemRepository itemRepository, com.dgsi.maintenance.repository.PrestationRepository prestationRepository) {
         this.prestationService = prestationService;
         this.prestationPdfService = prestationPdfService;
         this.itemRepository = itemRepository;
+        this.prestationRepository = prestationRepository;
     }
 
     // DTO for prestation creation request
@@ -485,6 +490,13 @@ public class PrestationController {
         }
     }
 
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('PRESTATAIRE') or hasRole('AGENT_DGSI')")
+    @Transactional(readOnly = true)
+    public List<Prestation> searchPrestations(@RequestParam String keyword) {
+        return prestationRepository.searchByKeyword(keyword);
+    }
+    
     @GetMapping("/count")
     @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
     @Transactional(readOnly = true)

@@ -1,52 +1,75 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { NotificationService as CoreNotificationService } from '../../../core/services/notification.service';
-import { environment } from '../../../../environments/environment';
+  import { BehaviorSubject } from 'rxjs';
+  import { HttpClient } from '@angular/common/http';
+  import { environment } from '../../../../environments/environment';
 
-export interface AppNotification {
-  id: string;
-  title: string;
-  body?: string;
-  time?: string;
-  read?: boolean;
-  url?: string;
-}
-
-@Injectable({ providedIn: 'root' })
-export class NotificationService {
-  private _notifications$ = new BehaviorSubject<AppNotification[]>([]);
-  public notifications$ = this._notifications$.asObservable();
-
-  constructor(private coreNotificationService: CoreNotificationService) {
-    // Real notifications will be loaded via SSE connection
+  export interface AppNotification {
+    id: string;
+    title: string;
+    body?: string;
+    time?: string;
+    read?: boolean;
+    url?: string;
   }
 
-  private eventSource?: EventSource | null = null;
-  private currentDestinataire: string | null = null;
+  @Injectable({ providedIn: 'root' })
+  export class NotificationService {
+    private _notifications$ = new BehaviorSubject<AppNotification[]>([]);
+    public notifications$ = this._notifications$.asObservable();
 
-  /**
-   * Connect to backend SSE stream for the given destinataire (usually user email).
-   * The backend endpoint: /api/notifications/stream/{destinataire}
-   */
-  connectSse(destinataire: string) {
-    try {
-      // If we're already connected to the same destinataire and the connection is open, do nothing.
-      if (this.eventSource && this.currentDestinataire === destinataire && this.eventSource.readyState === 1) {
-        console.log('NotificationService: SSE already connected to', destinataire);
-        return;
-      }
+    constructor(private http: HttpClient) {}
 
-      // If there's an existing connection for a different destinataire or closed, close it first.
-      if (this.eventSource) {
-        try { this.eventSource.close(); } catch (_) {}
-        this.eventSource = null;
-        this.currentDestinataire = null;
-      }
+    private eventSource?: EventSource | null = null;
+    private currentDestinataire: string | null = null;
 
-      const url = `${environment.apiUrl}/notifications/stream/${encodeURIComponent(destinataire)}`;
-      console.log('NotificationService: SSE connecting to', url);
-      this.eventSource = new EventSource(url);
-      this.currentDestinataire = destinataire;
+    /**
+     * Load existing notifications from backend for the given destinataire
+     */
+    loadNotifications(destinataire: string) {
+      const url = `${environment.apiUrl}/notifications/${encodeURIComponent(destinataire)}`;
+      console.log('NotificationService: Loading notifications from', url);
+      
+      this.http.get<any[]>(url).subscribe({
+        next: (notifications) => {
+          console.log('NotificationService: Loaded', notifications.length, 'notifications');
+          const mappedNotifications: AppNotification[] = notifications.map(n => ({
+            id: n.id ? n.id.toString() : Date.now().toString(),
+            title: n.titre || n.title || 'Notification',
+            body: n.message || n.body || '',
+            time: n.dateCreation || new Date().toISOString(),
+            read: !!n.lu
+          }));
+          this._notifications$.next(mappedNotifications);
+        },
+        error: (err) => {
+          console.error('NotificationService: Failed to load notifications', err);
+        }
+      });
+    }
+
+    /**
+     * Connect to backend SSE stream for the given destinataire (usually user email).
+     */
+    connectSse(destinataire: string) {
+      try {
+        if (this.eventSource && this.currentDestinataire === destinataire && this.eventSource.readyState === 1) {
+          console.log('NotificationService: SSE already connected to', destinataire);
+          return;
+        }
+
+        if (this.eventSource) {
+          try { this.eventSource.close(); } catch (_) {}
+          this.eventSource = null;
+          this.currentDestinataire = null;
+        }
+
+        // Load existing notifications first
+        this.loadNotifications(destinataire);
+
+        const url = `${environment.apiUrl}/notifications/stream/${encodeURIComponent(destinataire)}`;
+        console.log('NotificationService: SSE connecting to', url);
+        this.eventSource = new EventSource(url);
+        this.currentDestinataire = destinataire;
 
       this.eventSource.onopen = () => {
         console.log('NotificationService: SSE connection opened');
@@ -55,9 +78,7 @@ export class NotificationService {
       this.eventSource.onmessage = (evt) => {
         try {
           const payload = JSON.parse(evt.data);
-          // handle initial batch
           if (payload && Array.isArray(payload)) {
-            // initial notifications array
             payload.forEach((p: any) => {
               const n: AppNotification = {
                 id: p.id ? p.id.toString() : Date.now().toString(),
@@ -86,7 +107,6 @@ export class NotificationService {
 
       this.eventSource.onerror = (err) => {
         console.error('SSE error', err);
-        // Close existing connection and attempt a reconnect after a short delay.
         try { this.eventSource?.close(); } catch (_) {}
         this.eventSource = null;
         this.currentDestinataire = null;
@@ -123,12 +143,11 @@ export class NotificationService {
     const list = this._notifications$.value.map(n => n.id === id ? { ...n, read: true } : n);
     this._notifications$.next(list);
 
-    // Also mark as read in backend
     const numericId = parseInt(id, 10);
     if (!isNaN(numericId)) {
-      this.coreNotificationService.marquerCommeLu(numericId).subscribe({
+      this.http.put(`${environment.apiUrl}/notifications/${numericId}/marquer-lu`, {}).subscribe({
         next: () => console.log('Notification marked as read in backend'),
-        error: (err) => console.error('Failed to mark notification as read in backend:', err)
+        error: (err) => console.error('Failed to mark notification as read:', err)
       });
     }
   }
@@ -137,13 +156,12 @@ export class NotificationService {
     const list = this._notifications$.value.map(n => ({ ...n, read: true }));
     this._notifications$.next(list);
 
-    // Also mark all as read in backend
     this._notifications$.value.forEach(n => {
       const numericId = parseInt(n.id, 10);
       if (!isNaN(numericId) && !n.read) {
-        this.coreNotificationService.marquerCommeLu(numericId).subscribe({
-          next: () => console.log(`Notification ${numericId} marked as read in backend`),
-          error: (err) => console.error(`Failed to mark notification ${numericId} as read in backend:`, err)
+        this.http.put(`${environment.apiUrl}/notifications/${numericId}/marquer-lu`, {}).subscribe({
+          next: () => console.log(`Notification ${numericId} marked as read`),
+          error: (err) => console.error(`Failed to mark notification ${numericId}:`, err)
         });
       }
     });
@@ -153,16 +171,4 @@ export class NotificationService {
     const list = this._notifications$.value.filter(n => n.id !== id);
     this._notifications$.next(list);
   }
-
-
-  // Example: realtime connection (WebSocket/SSE) - adapt to backend
-  // connectRealtime(wsUrl: string) {
-  //   const ws = new WebSocket(wsUrl);
-  //   ws.onmessage = (evt) => {
-  //     try {
-  //       const payload = JSON.parse(evt.data);
-  //       this.push({ id: payload.id, title: payload.title, body: payload.body, time: payload.time, read: false, url: payload.url });
-  //     } catch(e) { console.error(e); }
-  //   };
-  // }
 }

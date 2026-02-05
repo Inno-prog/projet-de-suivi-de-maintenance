@@ -8,6 +8,7 @@ import { FichePrestationService } from '../../../../core/services/fiche-prestati
 import { PrestationService } from '../../../../core/services/prestation.service';
 import { FichePrestation } from '../../../../core/models/business.models';
 import { ToastService } from '../../../../core/services/toast.service';
+import { ConfirmationService } from '../../../../core/services/confirmation.service';
 
 @Component({
   selector: 'app-lot-fiches',
@@ -766,7 +767,8 @@ export class LotFichesComponent implements OnInit {
     private fichePrestationService: FichePrestationService,
     private prestationService: PrestationService,
     private toastService: ToastService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
@@ -1050,7 +1052,7 @@ export class LotFichesComponent implements OnInit {
     });
   }
 
-   deleteFiche(fiche: any): void {
+  async deleteFiche(fiche: any): Promise<void> {
     if (!fiche.id) {
       this.toastService.show({
         type: 'error',
@@ -1060,9 +1062,15 @@ export class LotFichesComponent implements OnInit {
       return;
     }
 
-    // Show confirmation dialog
-    const confirmed = confirm(`Êtes-vous sûr de vouloir supprimer la fiche ${fiche.idPrestation} ?`);
-    
+    // Show confirmation dialog using custom confirmation service
+    const confirmed = await this.confirmationService.show({
+      title: 'Supprimer la fiche',
+      message: `Êtes-vous sûr de vouloir supprimer la fiche ${fiche.idPrestation} ?`,
+      confirmText: 'Supprimer',
+      cancelText: 'Annuler',
+      type: 'danger'
+    });
+
     if (!confirmed) {
       return;
     }
@@ -1071,7 +1079,7 @@ export class LotFichesComponent implements OnInit {
       next: () => {
         // Remove fiche from local list
         this.fiches = this.fiches.filter(f => f.id !== fiche.id);
-        
+
         this.toastService.show({
           type: 'success',
           title: 'Succès',
@@ -1089,7 +1097,7 @@ export class LotFichesComponent implements OnInit {
     });
   }
 
-  validerFiche(fiche: any): void {
+  async validerFiche(fiche: any): Promise<void> {
     if (!fiche.id) {
       this.toastService.show({
         type: 'error',
@@ -1099,9 +1107,15 @@ export class LotFichesComponent implements OnInit {
       return;
     }
 
-    // Show confirmation dialog
-    const confirmed = confirm(`Êtes-vous sûr de vouloir valider la fiche ${fiche.idPrestation} ?`);
-    
+    // Show confirmation dialog using custom confirmation service
+    const confirmed = await this.confirmationService.show({
+      title: 'Valider la fiche',
+      message: `Êtes-vous sûr de vouloir valider la fiche ${fiche.idPrestation} ?`,
+      confirmText: 'Valider',
+      cancelText: 'Annuler',
+      type: 'info'
+    });
+
     if (!confirmed) {
       return;
     }
@@ -1113,7 +1127,7 @@ export class LotFichesComponent implements OnInit {
         if (index !== -1) {
           this.fiches[index] = updatedFiche;
         }
-        
+
         this.toastService.show({
           type: 'success',
           title: 'Succès',
@@ -1131,7 +1145,7 @@ export class LotFichesComponent implements OnInit {
     });
   }
 
-  rejeterFiche(fiche: any): void {
+  async rejeterFiche(fiche: any): Promise<void> {
     if (!fiche.id) {
       this.toastService.show({
         type: 'error',
@@ -1141,9 +1155,15 @@ export class LotFichesComponent implements OnInit {
       return;
     }
 
-    // Show confirmation dialog
-    const confirmed = confirm(`Êtes-vous sûr de vouloir rejeter la fiche ${fiche.idPrestation} ?`);
-    
+    // Show confirmation dialog using custom confirmation service
+    const confirmed = await this.confirmationService.show({
+      title: 'Rejeter la fiche',
+      message: `Êtes-vous sûr de vouloir rejeter la fiche ${fiche.idPrestation} ?`,
+      confirmText: 'Rejeter',
+      cancelText: 'Annuler',
+      type: 'warning'
+    });
+
     if (!confirmed) {
       return;
     }
@@ -1155,7 +1175,7 @@ export class LotFichesComponent implements OnInit {
         if (index !== -1) {
           this.fiches[index] = updatedFiche;
         }
-        
+
         this.toastService.show({
           type: 'success',
           title: 'Succès',

@@ -30,6 +30,18 @@ public class StructureMefpController {
 
     @Autowired
     private StructureMefpService structureMefpService;
+    
+    @Autowired
+    private com.dgsi.maintenance.repository.StructureMefpRepository structureMefpRepository;
+    
+    @GetMapping("/search")
+    @PreAuthorize("#profile != 'production' or isAuthenticated()")
+    public List<StructureMefp> searchStructures(@RequestParam String keyword) {
+        logger.info("GET /api/structures-mefp/search - Searching structures with keyword: " + keyword);
+        List<StructureMefp> structures = structureMefpRepository.searchByKeyword(keyword);
+        logger.info("Returning " + structures.size() + " structures matching keyword: " + keyword);
+        return structures;
+    }
 
     @GetMapping
     @PreAuthorize("#profile != 'production' or isAuthenticated()")

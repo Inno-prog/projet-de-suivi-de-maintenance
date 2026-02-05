@@ -47,4 +47,7 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
     
     @Query("SELECT c FROM Contrat c WHERE c.nomPrestataire = :nomPrestataire")
     List<Contrat> findByNomPrestataire(String nomPrestataire);
+    
+    @Query("SELECT c FROM Contrat c WHERE c.idContrat LIKE %:keyword% OR c.nomPrestataire LIKE %:keyword% OR c.lot.nomLot LIKE %:keyword%")
+    List<Contrat> searchByKeyword(@Param("keyword") String keyword);
 }

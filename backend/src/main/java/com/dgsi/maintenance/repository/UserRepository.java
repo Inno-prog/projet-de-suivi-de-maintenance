@@ -19,4 +19,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query("SELECT u FROM User u WHERE u.role = 'PRESTATAIRE'")
     List<User> findAllPrestataires();
+    
+    @Query("SELECT u FROM User u WHERE u.nom LIKE %:keyword% OR u.email LIKE %:keyword% OR u.contact LIKE %:keyword% OR u.adresse LIKE %:keyword%")
+    List<User> searchByKeyword(@Param("keyword") String keyword);
 }

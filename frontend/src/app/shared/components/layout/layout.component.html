@@ -6,32 +6,34 @@
   <div class="main-content" [class.sidebar-open]="sidebarOpen && isMobile" (click)="onLayoutClick()">
     <!-- Header -->
     <nav class="navbar">
-      <div class="container">
-        <div class="nav-brand">
-          <!-- Hamburger menu for mobile -->
-          <button *ngIf="isMobile" class="sidebar-toggle-nav" (click)="toggleSidebar()">
-            <div class="hamburger">
-              <span></span><span></span><span></span>
-            </div>
-          </button>
-        </div>
+      <div class="navbar-content">
+        <!-- Hamburger Menu -->
+        <button class="hamburger-btn" (click)="toggleSidebar()">
+          <span class="hamburger-icon">☰</span>
+        </button>
 
-        <div class="nav-menu">
-          <!-- Navigation links removed for authenticated users -->
-        </div>
 
-        <!-- User Profile + Notifications (only for authenticated users) -->
-        <div class="nav-user" *ngIf="currentUser" (click)="$event.stopPropagation()">
+
+        <!-- Right-aligned elements -->
+        <div class="navbar-right">
           <!-- Notification Bell -->
           <div class="notification-container">
             <app-notification-bell></app-notification-bell>
           </div>
+
+        <!-- Messages Icon - Only for Administrator -->
+        <div class="messages-container" *ngIf="currentUser?.role === 'ADMINISTRATEUR'">
+          <app-message></app-message>
+        </div>
           
-          <!-- Profile Section with Dropdown -->
-          <div class="profile-section" [class.expanded]="profileMenuOpen">
-            <!-- Profile Header (clickable to toggle dropdown) -->
+          <!-- Profile Section -->
+          <div class="profile-section" [class.expanded]="profileMenuOpen" *ngIf="currentUser" (click)="$event.stopPropagation()">
             <div class="profile-item" (click)="toggleProfileMenu(); $event.stopPropagation()">
-              <div class="user-avatar">{{ getUserInitials() }}</div>
+              <div class="user-avatar">
+                <!-- Prefer user's uploaded photo. If it fails to load or is absent, show default avatar. -->
+                <img *ngIf="currentUser?.photo && !photoLoadError" [src]="currentUser.photo" alt="{{ currentUser.nom }}" class="avatar-img" (error)="onAvatarError()" (load)="onAvatarLoad()">
+                <img *ngIf="!currentUser?.photo || photoLoadError" src="assets/avatar.svg" alt="Avatar" class="avatar-img">
+              </div>
               <div class="user-info">
                 <p class="user-name">{{ currentUser.nom }}</p>
                 <p class="user-role">{{ getRoleLabel() }}</p>
@@ -235,9 +237,8 @@
               </div>
             </div>
           </div>
-        </div>
-
-      </div>
+        </div> <!-- fermeture navbar-right -->
+      </div> <!-- fermeture navbar-content -->
     </nav>
 
     <!-- Page Content -->

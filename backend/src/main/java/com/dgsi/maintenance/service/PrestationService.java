@@ -150,6 +150,17 @@ public class PrestationService {
                     FichePrestation fiche = creerFichePourPrestation(savedPrestation);
                     fichePrestationRepository.save(fiche);
                     log.info("✅ Fiche créée automatiquement pour prestation ID: {}", savedPrestation.getId());
+                    
+                    // Envoyer notification aux admins si la prestation est soumise (pas en brouillon)
+                    if (savedPrestation.getStatutValidation() != null && 
+                        !"BROUILLON".equals(savedPrestation.getStatutValidation())) {
+                        log.info("📧 Envoi notification aux admins pour prestation soumise ID: {}", savedPrestation.getId());
+                        notificationService.envoyerNotificationFicheSoumise(
+                            savedPrestation.getNomPrestataire(),
+                            savedPrestation.getId().toString(),
+                            savedPrestation.getNomPrestation()
+                        );
+                    }
                 }
 
                 return savedPrestation;

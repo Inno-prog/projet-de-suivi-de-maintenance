@@ -81,4 +81,6 @@ public interface PrestationRepository extends JpaRepository<Prestation, Long> {
 
     @Query("SELECT i.nomItem, COUNT(p) FROM Prestation p JOIN p.itemsUtilises i WHERE p.trimestre = :trimestre GROUP BY i.nomItem")
     List<Object[]> countByNomPrestationGrouped(@Param("trimestre") String trimestre);
+
+    List<Prestation> findByStatutValidation(String statutValidation);
 }

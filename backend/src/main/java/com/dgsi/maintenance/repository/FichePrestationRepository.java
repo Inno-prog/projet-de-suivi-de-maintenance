@@ -36,4 +36,7 @@ public interface FichePrestationRepository extends JpaRepository<FichePrestation
 
     // Check if a specific numero is already used
     boolean existsByNumeroFiche(String numeroFiche);
+    
+    @Query("SELECT f FROM FichePrestation f WHERE f.numeroFiche LIKE %:keyword% OR f.nomItem LIKE %:keyword% OR f.nomPrestataire LIKE %:keyword%")
+    List<FichePrestation> searchByKeyword(@Param("keyword") String keyword);
 }

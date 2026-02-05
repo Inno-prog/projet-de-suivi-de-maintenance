@@ -1,0 +1,133 @@
+/* New Statistics Cards - Matching the provided image */
+.stats-section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  margin-bottom: 2rem;
+}
+
+.stats-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.stats-title-bar {
+  width: 4px;
+  height: 24px;
+  background: #f97316;
+  border-radius: 2px;
+}
+
+.stats-header h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+  flex: 1;
+}
+
+.refresh-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+  background: #f3f4f6;
+  transform: rotate(180deg);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #fafafa 0%, #ffffff 100%);
+  border-radius: 12px;
+  padding: 1.25rem;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  border: 1px solid #f0f0f0;
+  transition: all 0.3s ease;
+  min-height: 120px;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.blue-bg {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+}
+
+.purple-bg {
+  background: linear-gradient(135deg, #e9d5ff 0%, #d8b4fe 100%);
+}
+
+.orange-bg {
+  background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+}
+
+.green-bg {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+}
+
+.stat-trend {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+}
+
+.stat-trend.green {
+  color: #10b981;
+  background: #d1fae5;
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1f2937;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -295,5 +295,11 @@ public class ContratController {
     private String sanitizeLotName(String raw) {
         return LotUtils.normalizeLotName(raw);
     }
+    
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('PRESTATAIRE') or hasRole('AGENT_DGSI')")
+    public List<Contrat> searchContrats(@RequestParam String keyword) {
+        return contratRepository.searchByKeyword(keyword);
+    }
 
 }

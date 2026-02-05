@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { MessageService } from '../../core/services/message.service';
 
 @Component({
   selector: 'app-contact',
@@ -694,10 +695,15 @@ export class ContactComponent {
   isSubmitting = false;
   submitSuccess = false;
 
+  constructor(private messageService: MessageService) { }
+
   onSubmit() {
     this.isSubmitting = true;
     
     setTimeout(() => {
+      // Add message to service
+      this.messageService.addMessage(this.formData);
+
       this.isSubmitting = false;
       this.submitSuccess = true;
       

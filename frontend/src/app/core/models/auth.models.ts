@@ -15,6 +15,7 @@ export interface User {
   direction?: string;
   service?: string;
   departement?: string;
+  photo?: string;
   createdAt?: string;
   updatedAt?: string;
 }

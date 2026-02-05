@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -455,5 +456,11 @@ public class UserController {
             logger.severe("Error during force fix: " + e.getMessage());
             return ResponseEntity.internalServerError().body("Error during force fix: " + e.getMessage());
         }
+    }
+    
+    @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
+    public List<User> searchUsers(@RequestParam String keyword) {
+        return userRepository.searchByKeyword(keyword);
     }
 }

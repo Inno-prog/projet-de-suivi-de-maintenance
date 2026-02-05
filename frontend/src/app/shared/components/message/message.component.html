@@ -1,0 +1,51 @@
+<div class="message-wrapper relative" (keydown.escape)="close()" tabindex="0">
+  <!-- Message button -->
+  <button
+    (click)="toggle()"
+    aria-haspopup="true"
+    [attr.aria-expanded]="open"
+    class="message-btn"
+    title="Messages"
+  >
+    <span class="message-icon">💬</span>
+    
+    <!-- Badge -->
+    <span *ngIf="unreadCount > 0" 
+          class="absolute -top-1 -right-1 inline-flex items-center justify-center text-xs font-semibold rounded-full px-1.5 py-0.5 bg-red-600 text-white">
+      {{ unreadCount > 9 ? '9+' : unreadCount }}
+    </span>
+  </button>
+
+  <!-- Dropdown -->
+  <div *ngIf="open" class="message-dropdown" role="dialog" aria-label="Messages panel">
+    <div class="message-dropdown-header">
+      <strong class="title">Messages</strong>
+      <div class="message-header-actions">
+        <button (click)="close()" class="message-close-btn">Fermer</button>
+      </div>
+    </div>
+
+    <ng-container *ngIf="messages.length > 0">
+      <ul class="message-list">
+        <li *ngFor="let m of messages" class="message-list-item" [class.unread]="!m.read">
+          <div class="message-content">
+            <div class="flex items-center justify-between">
+              <p class="message-title">{{ m.subject }}</p>
+              <p class="message-time">{{ formatDate(m.timestamp) }}</p>
+            </div>
+            <p class="message-body">{{ m.message }}</p>
+            <div class="message-footer">
+              <span class="message-sender">{{ m.name }}</span>
+              <button (click)="deleteMessage(m.id, $event)" class="message-action-btn">Supprimer</button>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </ng-container>
+
+    <div *ngIf="messages.length === 0" class="message-empty">
+      <span class="message-icon-empty">💬</span>
+      <p>Aucun message</p>
+    </div>
+  </div>
+</div>
