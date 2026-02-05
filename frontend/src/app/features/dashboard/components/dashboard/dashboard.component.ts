@@ -266,7 +266,7 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
             </div>
             <div class="flex items-center gap-6">
                 <!-- Search Bar -->
-                <div class="search-section">
+                <div class="search-section" style="position: relative;">
                   <div class="search-box" style="position: relative;">
                     <input 
                       type="text" 
@@ -448,6 +448,93 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     .action-card {
       background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(10px);
+    }
+
+    /* Search Results Styles */
+    .search-results {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      border: 1px solid #e5e7eb;
+      max-height: 400px;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+
+    .search-results-container {
+      padding: 8px 0;
+    }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .search-result-item:hover {
+      background: #f3f4f6;
+    }
+
+    .result-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      background: #f0f9ff;
+      color: #0284c7;
+    }
+
+    .result-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .result-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .result-description {
+      font-size: 0.85rem;
+      color: #6b7280;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Search Results Scrollbar */
+    .search-results::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .search-results::-webkit-scrollbar-track {
+      background: #f3f4f6;
+      border-radius: 3px;
+    }
+
+    .search-results::-webkit-scrollbar-thumb {
+      background: #d1d5db;
+      border-radius: 3px;
+    }
+
+    .search-results::-webkit-scrollbar-thumb:hover {
+      background: #9ca3af;
     }
 
     .welcome-palette {
