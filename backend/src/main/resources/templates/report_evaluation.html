@@ -9,33 +9,26 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
         }
         
         body {
-            background-color: #f5f5f5;
-            color: #000;
-            line-height: 1.4;
-            padding: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #1f2937;
+            margin: 0;
+            padding: 0;
         }
         
         .page {
-            background-color: white;
-            width: 210mm;
-            min-height: 297mm;
-            margin: 0 auto 20px auto;
-            padding: 8mm 15mm;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: relative;
-            border-left: 1px solid #1f2961;
-            border-right: 1px solid #1f2961;
+            padding: 20px;
+            width: 100%;
         }
         
-        /* Entête exacte comme la fiche de prestation */
+        /* Entête */
         .header-table {
             width: 100%;
             margin-bottom: 15px;
             border-collapse: collapse;
+            border: none;
         }
         
         .header-table td {
@@ -52,20 +45,17 @@
         .header-center {
             width: 30%;
             text-align: center;
-            padding: 5px;
         }
         
         .header-text {
             font-weight: bold;
             font-size: 11pt;
-            color: #000;
             margin-bottom: 2px;
         }
         
         .header-dept {
             font-weight: bold;
             font-size: 10pt;
-            color: #000;
             margin-bottom: 2px;
         }
         
@@ -74,27 +64,24 @@
             font-size: 8pt;
             color: #808080;
             margin-bottom: 2px;
-            text-align: center;
             letter-spacing: 2px;
         }
         
         .logo-container {
-            width: 85px;
-            height: 85px;
+            width: 80px;
+            height: 80px;
             margin: 0 auto;
-            overflow: hidden;
         }
         
         .logo {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
         }
         
         .country {
             font-weight: bold;
             font-size: 13pt;
-            color: #000;
             margin-bottom: 3px;
         }
         
@@ -102,7 +89,6 @@
             font-size: 11pt;
             font-weight: bold;
             line-height: 1.3;
-            color: #000;
         }
         
         .generation-date {
@@ -113,58 +99,56 @@
         }
         
         .separator-line {
-            margin: 12px 0 15px 0;
             border: none;
-            border-top: 1px solid #1f2961;
+            border-top: 2px solid #1f2961;
+            margin: 15px 0;
         }
         
         .report-title {
             text-align: center;
             font-weight: bold;
-            font-size: 15pt;
+            font-size: 18pt;
             margin: 20px 0 10px 0;
             color: #1f2961;
         }
         
         .report-subtitle {
             text-align: center;
-            font-size: 12pt;
-            margin-bottom: 6px;
+            font-size: 14pt;
+            margin-bottom: 8px;
             font-weight: bold;
         }
         
         .lot-period {
             text-align: center;
-            font-size: 11pt;
-            margin-bottom: 6px;
+            font-size: 12pt;
+            margin-bottom: 8px;
         }
         
         .date {
             text-align: center;
-            font-size: 10pt;
-            margin-bottom: 15px;
+            font-size: 11pt;
+            margin-bottom: 20px;
             font-style: italic;
             color: #666;
         }
         
-        /* Sections encadrées */
+        /* Sections */
         .section {
             margin-bottom: 15px;
-            border: 1px solid #e2e2e2;
         }
         
-        .section-title {
-            font-weight: bold;
-            font-size: 11pt;
-            margin: 0;
+        .section h2 {
+            background: #1f2961;
             color: white;
-            background-color: #1f2961;
-            padding: 8px 12px;
+            padding: 10px 12px;
+            border-left: 5px solid #0d1a3c;
+            font-size: 13pt;
+            margin: 0 0 8px 0;
         }
         
         .section-content {
-            padding: 12px;
-            font-size: 10pt;
+            font-size: 11pt;
         }
         
         .section-content p {
@@ -172,27 +156,48 @@
             text-align: justify;
         }
         
-        .section-content p:last-child {
-            margin-bottom: 0;
-        }
-        
-        table.data-table {
+        /* Tableaux */
+        table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 10pt;
             margin: 8px 0;
-            font-size: 9pt;
+            border: 1px solid #1f2961;
         }
         
-        table.data-table th, table.data-table td {
-            border: 1px solid #000;
+        th, td {
             padding: 6px 8px;
             text-align: left;
             vertical-align: top;
+            border: 1px solid #1f2961;
+            word-wrap: break-word;
+            word-break: break-word;
         }
         
-        table.data-table th {
-            background-color: #f0f0f0;
-            font-weight: bold;
+        th {
+            background-color: #fafafa;
+            font-weight: 700;
+            color: #1f2961;
+        }
+        
+        tr:nth-child(even) td {
+            background-color: #f9f9f9;
+        }
+        
+        th:first-child, td:first-child {
+            border-left: 1px solid #e6e6e6;
+        }
+        
+        th:last-child, td:last-child {
+            border-right: 1px solid #e6e6e6;
+        }
+        
+        tr:first-child th {
+            border-top: 1px solid #e6e6e6;
+        }
+        
+        tr:last-child td {
+            border-bottom: 1px solid #e6e6e6;
         }
         
         .ras {
@@ -201,17 +206,18 @@
             font-style: italic;
         }
         
+        /* Signatures */
         .signatures {
-            margin-top: 25px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            margin-top: 30px;
+            padding-top: 20px;
         }
         
         .signature {
             flex: 1;
             text-align: center;
-            padding: 0 10px;
+            padding: 0 15px;
         }
         
         .signature:first-child {
@@ -223,67 +229,59 @@
         }
         
         .signature-line {
-            border-top: 1px solid #000;
-            margin: 40px 0 5px 0;
+            border-top: 1px solid #333;
+            margin: 50px 0 8px 0;
+            padding-top: 5px;
         }
         
         .signature-name {
             font-weight: bold;
-            font-size: 9pt;
+            font-size: 10pt;
         }
         
         .signature-title {
-            font-size: 8pt;
-            color: #666;
-            font-style: italic;
-        }
-        
-        .footer {
-            margin-top: 35px;
-            text-align: center;
             font-size: 9pt;
             color: #666;
-            border-top: 1px solid #e2e2e2;
-            padding-top: 10px;
+            font-style: italic;
+            margin-top: 3px;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #e6e6e6;
+            text-align: center;
+            font-size: 10pt;
+            color: #7c8594;
         }
         
         .footer-note {
-            font-size: 8pt;
-            color: #1f2961;
-            margin-top: 3px;
-            font-weight: bold;
-        }
-        
-        .page-number {
-            position: absolute;
-            bottom: 10mm;
-            right: 15mm;
             font-size: 9pt;
-            color: #666;
+            color: #1f2961;
+            margin-top: 5px;
+            font-weight: bold;
         }
         
         @media print {
             body {
-                background-color: white;
+                margin: 0;
                 padding: 0;
             }
             
             .page {
-                box-shadow: none;
-                margin: 0;
-                padding: 8mm 15mm;
-                page-break-after: always;
+                padding: 15px;
             }
             
-            .page:last-child {
-                page-break-after: avoid;
+            .section {
+                page-break-inside: avoid;
             }
         }
     </style>
 </head>
 <body>
     <div class="page">
-        <!-- Entête exacte comme la fiche de prestation -->
+        <!-- Entête -->
         <table class="header-table">
             <tr>
                 <td class="header-left">
@@ -300,7 +298,7 @@
                 <td class="header-center">
                     <div class="logo-container">
                         <img th:if="${logoBase64}" th:src="'data:image/png;base64,' + ${logoBase64}" alt="Logo" class="logo" />
-                        <div th:unless="${logoBase64}" style="width: 85px; height: 85px; line-height: 85px; color: #999; font-size: 9pt; border: 1px solid #ddd;">Logo</div>
+                        <div th:unless="${logoBase64}" style="width: 80px; height: 80px; line-height: 80px; color: #999; font-size: 10pt; border: 1px solid #ddd;">Logo</div>
                     </div>
                 </td>
                 <td class="header-right">
@@ -326,7 +324,7 @@
         
         <!-- Section I. Introduction -->
         <div class="section">
-            <div class="section-title">I. INTRODUCTION</div>
+            <h2>I. INTRODUCTION</h2>
             <div class="section-content">
                 <p>Le Ministère de l'Économie et des Finances (MEF) signe annuellement des contrats de maintenance informatique avec des prestataires privés, spécialisés dans le domaine. Ces contrats couvrent en général, la maintenance préventive et curative des équipements informatiques, pièces et main-d'œuvre y comprises et le support bureautique.</p>
                 <p>Au cours de l'exécution de ces contrats de maintenance, une évaluation trimestrielle est réalisée par les équipes techniques de la DGSI et les correspondants informatiques des structures bénéficiaires. L'évaluation consiste à vérifier sur le terrain si les prestations attendues ont été respectées conformément aux exigences des contrats de maintenance.</p>
@@ -336,11 +334,11 @@
         
         <!-- Section II. Allotissement -->
         <div class="section">
-            <div class="section-title">II. ALLOTISSEMENT</div>
+            <h2>II. ALLOTISSEMENT</h2>
             <div class="section-content">
-                <table class="data-table">
+                <table>
                     <tr>
-                        <th style="width: 35%;">Lot</th>
+                        <th style="width: 30%;">Lot</th>
                         <td th:text="${evaluation.lot}">10</td>
                     </tr>
                     <tr>
@@ -361,9 +359,9 @@
         
         <!-- Section III. Exigences à satisfaire -->
         <div class="section">
-            <div class="section-title">III. EXIGENCES À SATISFAIRE</div>
+            <h2>III. EXIGENCES À SATISFAIRE</h2>
             <div class="section-content">
-                <table class="data-table">
+                <table>
                     <thead>
                         <tr>
                             <th style="width: 5%;">N°</th>
@@ -428,17 +426,17 @@
         
         <!-- Section IV. Instances de maintenance non résolues -->
         <div class="section">
-            <div class="section-title">IV. INSTANCES DE MAINTENANCE NON RÉSOLUES</div>
+            <h2>IV. INSTANCES DE MAINTENANCE NON RÉSOLUES</h2>
             <div class="section-content">
-                <table class="data-table">
+                <table>
                     <thead>
                         <tr>
                             <th style="width: 5%;">N°</th>
                             <th style="width: 30%;">Instance non résolue</th>
-                            <th style="width: 20%;">Structure</th>
+                            <th style="width: 22%;">Structure</th>
                             <th style="width: 15%;">Date début</th>
-                            <th style="width: 15%;">Jours pénalité</th>
-                            <th style="width: 15%;">Observations</th>
+                            <th style="width: 14%;">Jours pénalité</th>
+                            <th style="width: 14%;">Observations</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -457,7 +455,7 @@
         
         <!-- Section V. Appréciation globale -->
         <div class="section">
-            <div class="section-title">V. APPRÉCIATION GLOBALE</div>
+            <h2>V. APPRÉCIATION GLOBALE</h2>
             <div class="section-content">
                 <p><strong>Observations générales :</strong> <span th:text="${evaluation.observationsGenerales != null and evaluation.observationsGenerales != ''} ? ${evaluation.observationsGenerales} : 'Aucune observation particulière.'">Aucune observation</span></p>
             </div>
@@ -487,8 +485,6 @@
             <div>Document généré automatiquement par le système DGSI Maintenance</div>
             <div class="footer-note">Confidentiel - Ministère de l'Économie et des Finances</div>
         </div>
-        
-        <div class="page-number">1</div>
     </div>
 </body>
 </html>

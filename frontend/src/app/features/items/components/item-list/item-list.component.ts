@@ -24,26 +24,17 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
         <h1 class="fw-bold text-primary mb-0"><i class="fa-solid fa-boxes-stacked me-2"></i>Gestion des Items & Lots</h1>
         <p class="text-muted mb-0">Créez, modifiez et organisez vos items par lots</p>
       </div>
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-primary shadow-sm" (click)="showLotManager()">
-          <i class="fa-solid fa-layer-group me-2"></i> Gérer les Lots
-        </button>
-        <button class="btn btn-primary shadow-sm" (click)="onAdd()">
-          <i class="fa-solid fa-plus-circle me-2"></i> Ajouter un Item
-        </button>
-      </div>
     </div>
 
-    <!-- Statistics Cards - Material Design Style -->
-    <div class="stats-overview">
-      <div class="stat-card total-items-card">
+    <!-- Statistics Cards -->
+    <div class="stats-overview mb-5">
+      <div class="stat-card total-items-card shadow-sm" style="background: white; border: none; border-radius: 0;">
         <div class="stat-icon-wrapper">
-          <div class="stat-icon-bg">
-            <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,19H5V17H19V19M19,13H5V11H19V13M19,9H5V7H19V9Z"/>
-            </svg>
+          <div class="stat-icon-bg" style="background: #f8f9fa; border-radius: 0;">
+            <span class="sticker-icon bg-primary text-white">
+              <i class="fa-solid fa-boxes-stacked"></i>
+            </span>
           </div>
-          <div class="stat-icon-shadow"></div>
         </div>
         <div class="stat-content">
           <div class="stat-number">{{ getTotalItems() }}</div>
@@ -52,14 +43,13 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
         </div>
       </div>
 
-      <div class="stat-card active-lots-card">
+      <div class="stat-card active-lots-card shadow-sm" style="background: white; border: none; border-radius: 0;">
         <div class="stat-icon-wrapper">
-          <div class="stat-icon-bg">
-            <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M3,6H21V18H3V6M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M7,8A2,2 0 0,1 5,10V14A2,2 0 0,1 7,16H17A2,2 0 0,1 19,14V10A2,2 0 0,1 17,8H7Z"/>
-            </svg>
+          <div class="stat-icon-bg" style="background: #f8f9fa; border-radius: 0;">
+            <span class="sticker-icon bg-success text-white">
+              <i class="fa-solid fa-layer-group"></i>
+            </span>
           </div>
-          <div class="stat-icon-shadow"></div>
         </div>
         <div class="stat-content">
           <div class="stat-number">{{ getTotalLots() }}</div>
@@ -68,14 +58,13 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
         </div>
       </div>
 
-      <div class="stat-card total-value-card">
+      <div class="stat-card total-value-card shadow-sm" style="background: white; border: none; border-radius: 0;">
         <div class="stat-icon-wrapper">
-          <div class="stat-icon-bg">
-            <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M11.8,10.9C9.53,10.31 8.8,13 9.6,14.4L9.47,14.5C7.55,12 5.89,8.15 4.81,6.31L3,5V4.5C3,3 4,2 5.5,2S8,3 8,4.5V5C7.14,5.78 6.32,6.5 5.55,7.17C7.41,9.95 9.22,13.47 10.55,15.93C12.3,16 13.64,13.33 11.8,10.9M15.5,4C16.88,4 18,5.12 18,6.5C18,7.88 16.88,9 15.5,9S13,7.88 13,6.5C13,5.12 14.12,4 15.5,4M12,20A2,2 0 0,0 14,18A2,2 0 0,0 12,16A2,2 0 0,0 10,18A2,2 0 0,0 12,20M7,24H17V22H7V24Z"/>
-            </svg>
+          <div class="stat-icon-bg" style="background: #f8f9fa; border-radius: 0;">
+            <span class="sticker-icon bg-warning text-white">
+              <i class="fa-solid fa-money-bill-wave"></i>
+            </span>
           </div>
-          <div class="stat-icon-shadow"></div>
         </div>
         <div class="stat-content">
           <div class="stat-number">{{ getTotalValue() | number:'1.0-0' }}</div>
@@ -84,14 +73,13 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
         </div>
       </div>
 
-      <div class="stat-card prestations-card">
+      <div class="stat-card prestations-card shadow-sm" style="background: white; border: none; border-radius: 0;">
         <div class="stat-icon-wrapper">
-          <div class="stat-icon-bg">
-            <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M22.7,19L13.6,9.9C14.5,7.6 14,4.9 12.1,3C10.1,1 7.1,0.6 4.7,1.7L9,6L7.9,7.1L3.7,2.9C2.6,5.3 3,8.3 5,10.3C6.9,12.2 9.6,12.7 11.9,11.8L21,20.9C21.4,21.3 22,21.3 22.4,20.9C22.8,20.5 22.8,19.9 22.7,19Z"/>
-            </svg>
+          <div class="stat-icon-bg" style="background: #f8f9fa; border-radius: 0;">
+            <span class="sticker-icon bg-info text-white">
+              <i class="fa-solid fa-check-circle"></i>
+            </span>
           </div>
-          <div class="stat-icon-shadow"></div>
         </div>
         <div class="stat-content">
           <div class="stat-number">{{ totalPrestations }}</div>
@@ -101,22 +89,14 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
       </div>
     </div>
 
-    <!-- SEARCH & FILTERS -->
-    <div class="card shadow-sm border-0 rounded-3 mb-4">
-      <div class="card-body">
-        <div class="row g-3 align-items-end">
-          <div class="col-md-4">
-            <label class="form-label fw-semibold">Recherche</label>
-            <div class="input-group">
-              <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass"></i></span>
-              <input type="text" class="form-control" placeholder="Nom, description ou lot..." 
-                     [(ngModel)]="searchTerm" (input)="applyFilters()">
-            </div>
-          </div>
-          
-        
-        </div>
-      </div>
+    <!-- BUTTONS BAR -->
+    <div class="d-flex justify-content-end gap-2 mb-4">
+      <button class="btn btn-outline-primary shadow-sm" (click)="showLotManager()">
+        <i class="fa-solid fa-layer-group me-2"></i> Gérer les Lots
+      </button>
+      <button class="btn btn-primary shadow-sm" (click)="onAdd()">
+        <i class="fa-solid fa-plus-circle me-2"></i> Ajouter un Item
+      </button>
     </div>
 
     <!-- LOT SELECTION VIEW -->

@@ -7,54 +7,41 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <!-- Modern Glassmorphism Header with Orange Theme -->
-    <div class="bg-gradient-to-r from-orange-50 via-white to-orange-50 border-b border-orange-200/50 shadow-sm">
-      <div class="max-w-7xl mx-auto px-8 py-8">
+    <!-- Simple and Clean Header with White Background -->
+    <div class="bg-white border-b border-gray-200 shadow-sm">
+      <div class="max-w-7xl mx-auto px-8 py-6">
         <div class="flex items-center justify-between">
           <!-- Logo and Title Section -->
-          <div class="flex items-center space-x-6">
-            <div class="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg">
-              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-              </svg>
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
+              <i class="fa-solid fa-file-invoice text-white text-lg"></i>
             </div>
             <div>
-              <h1 class="text-3xl font-bold text-gray-900 tracking-tight">
-                Ordres de
-                <span class="bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent">
-                  Commande
-                </span>
+              <h1 class="text-2xl font-bold text-gray-800">
+                Ordres de Commande
               </h1>
-              <p class="text-base text-gray-600 font-medium">
+              <p class="text-sm text-gray-500">
                 Gestion et suivi des prestations
               </p>
             </div>
           </div>
 
           <!-- Status and Breadcrumb -->
-          <div class="flex items-center space-x-8">
+          <div class="flex items-center space-x-6">
             <!-- System Status -->
-            <div class="flex items-center space-x-3 bg-white/80 backdrop-blur-sm px-4 py-2.5 rounded-xl border border-orange-200/60 shadow-sm">
-              <div class="w-3 h-3 bg-gradient-to-r from-green-400 to-green-500 rounded-full animate-pulse"></div>
-              <span class="text-sm font-semibold text-gray-700">Système opérationnel</span>
+            <div class="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-lg border border-gray-200">
+              <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span class="text-sm font-medium text-gray-700">Système opérationnel</span>
             </div>
 
-            <!-- Separator -->
-            <div class="h-6 w-px bg-orange-300/50"></div>
-
             <!-- Breadcrumb -->
-            <nav class="flex items-center space-x-4">
-              <div class="flex items-center space-x-3 text-gray-600">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"/>
-                </svg>
-                <span class="text-base font-medium">Accueil</span>
+            <nav class="flex items-center space-x-2">
+              <div class="flex items-center space-x-2 text-gray-500">
+                <i class="fa-solid fa-home text-sm"></i>
+                <span class="text-sm font-medium">Accueil</span>
               </div>
-              <svg class="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
-              </svg>
-              <span class="text-base font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-2 rounded-xl shadow-md">Ordres de Commande</span>
+              <i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
+              <span class="text-sm font-bold text-orange-600">Ordres de Commande</span>
             </nav>
           </div>
         </div>

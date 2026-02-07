@@ -3,9 +3,11 @@ package com.dgsi.maintenance.controller;
 import java.util.List;
 import java.util.Map;
 import com.dgsi.maintenance.entity.Item;
+import com.dgsi.maintenance.entity.FichePrestation;
 import com.dgsi.maintenance.repository.ContratRepository;
 import com.dgsi.maintenance.repository.ItemRepository;
 import com.dgsi.maintenance.repository.OrdreCommandeRepository;
+import com.dgsi.maintenance.repository.FichePrestationRepository;
 import com.dgsi.maintenance.service.ItemService;
 import com.dgsi.maintenance.service.PrestationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,52 @@ public class ItemController {
 
     @Autowired
     private com.dgsi.maintenance.repository.UserRepository userRepository;
+    
+    @Autowired
+    private FichePrestationRepository fichePrestationRepository;
+    
+    /**
+     * Calculer la quantité totale réalisée pour un item donné (somme des quantités des fiches prestation)
+     * Cette méthode est identique à getItemUsageCount dans FichePrestationPdfService pour assurer la cohérence
+     */
+    private int calculateItemUsageQuantity(String itemNom) {
+        if (itemNom == null || itemNom.trim().isEmpty()) {
+            return 0;
+        }
+        
+        int total = 0;
+        List<FichePrestation> allFiches = fichePrestationRepository.findAll();
+        
+        for (FichePrestation fiche : allFiches) {
+            if (fiche == null) continue;
+            
+            boolean contains = false;
+            String itemsCouverts = fiche.getItemsCouverts();
+            String nomItem = fiche.getNomItem();
+            
+            if (itemsCouverts != null && !itemsCouverts.trim().isEmpty()) {
+                if (itemsCouverts.contains(itemNom)) {
+                    contains = true;
+                }
+            }
+            
+            if (!contains && nomItem != null && !nomItem.trim().isEmpty()) {
+                if (nomItem.contains(itemNom)) {
+                    contains = true;
+                }
+            }
+            
+            if (contains) {
+                if (fiche.getQuantite() != null && fiche.getQuantite() > 0) {
+                    total += fiche.getQuantite();
+                } else {
+                    total += 1;
+                }
+            }
+        }
+        
+        return total;
+    }
 
     /**
      * Calcule le prochain ID d'item disponible.
@@ -260,15 +308,15 @@ public class ItemController {
 
         // Mettre à jour les compteurs d'utilisation pour chaque item
         for (Item item : matchingItems) {
-            // Compter le nombre de prestations utilisant cet item (pour quantiteUtilisee)
-            Long count = prestationService.countByNomPrestation(item.getNomItem());
-            item.setQuantiteUtilisee(count.intValue());
+            // Calculer la quantité totale réalisée pour cet item (somme des quantités des fiches prestation)
+            int totalQuantite = calculateItemUsageQuantity(item.getNomItem());
+            item.setQuantiteUtilisee(totalQuantite);
             
             if (item.getQuantiteUtiliseeTrimestre() == null) {
-                item.setQuantiteUtiliseeTrimestre(count.intValue());
+                item.setQuantiteUtiliseeTrimestre(totalQuantite);
             }
             
-            System.out.println("[DEBUG] Updated item " + item.getNomItem() + ": quantiteUtilisee=" + count);
+            System.out.println("[DEBUG] Updated item " + item.getNomItem() + ": quantiteUtilisee=" + totalQuantite);
         }
 
         // Trier les résultats par idItem pour conserver la numérotation correcte
