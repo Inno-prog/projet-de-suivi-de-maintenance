@@ -11,7 +11,7 @@ import { User } from '../../../../core/models/auth.models';
     <div class="flex items-center justify-center min-h-screen">
       <div class="text-center">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-        <p class="text-gray-600">Redirection vers votre tableau de bord...</p>
+        <p class="text-gray-600">Mise à jour de la session...</p>
       </div>
     </div>
   `
@@ -30,11 +30,36 @@ export class DashboardRedirectComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     console.log('DashboardRedirect: Component initialized');
     
+    // Récupérer la page précédente depuis le localStorage
+    let previousUrl = localStorage.getItem('previousUrl');
+    // Extraire seulement le pathname pour éviter les paramètres OAuth
+    if (previousUrl) {
+      const urlObj = new URL(previousUrl, window.location.origin);
+      previousUrl = urlObj.pathname;
+    }
+    console.log('DashboardRedirect: Previous URL:', previousUrl);
+    
     // Éviter les boucles infinies - si on arrive sur /login avec un utilisateur déjà chargé
     const currentUser = this.authService.getCurrentUser();
     if (currentUser && currentUser.role) {
-      console.log('DashboardRedirect: User data already available, redirecting immediately');
-      this.redirectToAppropriateDashboard(currentUser);
+      console.log('DashboardRedirect: User data already available');
+      
+      // Si on a une page précédente valide (pas /login), rediriger vers elle
+      if (previousUrl && previousUrl !== '/login') {
+        console.log('DashboardRedirect: Redirecting to previous page:', previousUrl);
+        this.router.navigateByUrl(previousUrl);
+      } else {
+        // Sinon, vérifier si le silent refresh est en cours
+        const isSilentRefresh = window.location.search.includes('prompt=none');
+        if (isSilentRefresh) {
+          console.log('DashboardRedirect: Silent refresh in progress, staying on current page');
+          // Ne pas rediriger pour le silent refresh
+          this.hasRedirected = true;
+        } else {
+          console.log('DashboardRedirect: No valid previous page, redirecting to dashboard');
+          this.redirectToAppropriateDashboard(currentUser);
+        }
+      }
       return;
     }
 
@@ -48,8 +73,12 @@ export class DashboardRedirectComponent implements OnInit, OnDestroy {
     // Timeout de sécurité pour éviter les attentes infinies
     this.redirectTimeout = setTimeout(() => {
       if (!this.hasRedirected) {
-        console.log('DashboardRedirect: Timeout waiting for user data, redirecting to default dashboard');
-        this.redirectToDefaultDashboard();
+        console.log('DashboardRedirect: Timeout waiting for user data');
+        if (previousUrl) {
+          this.router.navigateByUrl(previousUrl);
+        } else {
+          this.hasRedirected = true;
+        }
       }
     }, 3000); // 3 secondes de timeout
 
@@ -60,7 +89,6 @@ export class DashboardRedirectComponent implements OnInit, OnDestroy {
         this.hasRedirected = true;
         
         // Nettoyer les données OAuth avant redirection pour éviter les problèmes
-        // Utiliser manualTokenCleanup pour nettoyer les tokens manuellement
         try {
           localStorage.removeItem('nonce');
           localStorage.removeItem('state');
@@ -72,7 +100,12 @@ export class DashboardRedirectComponent implements OnInit, OnDestroy {
         
         // Petit délai pour s'assurer que le nettoyage est terminé
         setTimeout(() => {
-          this.redirectToAppropriateDashboard(user);
+          if (previousUrl) {
+            console.log('DashboardRedirect: Redirecting to previous page after user data received:', previousUrl);
+            this.router.navigateByUrl(previousUrl);
+          } else {
+            console.log('DashboardRedirect: No previous page, staying on current');
+          }
         }, 100);
       }
     });
@@ -107,10 +140,5 @@ export class DashboardRedirectComponent implements OnInit, OnDestroy {
         console.log('DashboardRedirect: Unknown role, defaulting to admin dashboard');
         this.router.navigate(['/dashboard/admin']);
     }
-  }
-
-  private redirectToDefaultDashboard(): void {
-    console.log('DashboardRedirect: Redirecting to default dashboard due to timeout');
-    this.router.navigate(['/dashboard/admin']);
   }
 }

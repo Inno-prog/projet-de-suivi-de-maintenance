@@ -100,8 +100,8 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
               </div>
 
               <div class="cta-section" style="margin-left: 700px;">
-                <a href="https://it.finances.bf/" target="_blank" class="btn btn-primary animated-cta" style="animation-delay: 1.2s">
-                  <span style="margin-bottom: 10px;" class="btn-text">En savoir plus</span>
+                <a href="https://it.finances.bf/" target="_blank" class="btn btn-primary animated-cta" style="animation-delay: 1.2s;">
+                  <span style="margin-bottom: 10px; color: white;" class="btn-text">En savoir plus</span>
                   <span class="btn-arrow"></span>
                 </a>
               </div>
