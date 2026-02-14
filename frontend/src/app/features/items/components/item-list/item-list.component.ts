@@ -989,27 +989,14 @@ export class ItemListComponent implements OnInit {
   // Group items by equipment - stored as property to avoid infinite loops
   groupedItemsByEquipement: Map<Equipement | string, Item[]> = new Map();
 
-  // Calculate grouped items and store in property
   updateGroupedItemsByEquipement() {
     const items = this.getItemsForSelectedLot();
-<<<<<<< HEAD
-    const grouped = new Map<string | number, { equipement: Equipement | string; items: Item[] }>();
-=======
     const grouped = new Map<string, { key: Equipement | string; items: Item[] }>();
->>>>>>> dff9aa5bf7cd10caea1a4885432e20a1793b5095
     
     items.forEach(item => {
       // If item has equipment(s)
       if (item.equipements && item.equipements.length > 0) {
         item.equipements.forEach(equipement => {
-<<<<<<< HEAD
-          // Use equipment number as unique key to avoid duplicates
-          const key = equipement.numero || equipement.id || equipement.nomEquipement;
-          if (!grouped.has(key)) {
-            grouped.set(key, { equipement: equipement, items: [] });
-          }
-          grouped.get(key)?.items.push(item);
-=======
           // Use unique key for equipment based on id or numero + nomEquipement
           const equipementKey = equipement.id ? 
             equipement.id.toString() : 
@@ -1019,28 +1006,16 @@ export class ItemListComponent implements OnInit {
             grouped.set(equipementKey, { key: equipement, items: [] });
           }
           grouped.get(equipementKey)?.items.push(item);
->>>>>>> dff9aa5bf7cd10caea1a4885432e20a1793b5095
         });
       } else {
         // Items without equipment go to "Sans équipement" group
         if (!grouped.has('Sans équipement')) {
-<<<<<<< HEAD
-          grouped.set('Sans équipement', { equipement: 'Sans équipement', items: [] });
-=======
           grouped.set('Sans équipement', { key: 'Sans équipement', items: [] });
->>>>>>> dff9aa5bf7cd10caea1a4885432e20a1793b5095
         }
         grouped.get('Sans équipement')?.items.push(item);
       }
     });
     
-<<<<<<< HEAD
-    // Convert to the format expected by the template
-    this.groupedItemsByEquipement = new Map<Equipement | string, Item[]>();
-    grouped.forEach((value) => {
-      this.groupedItemsByEquipement.set(value.equipement, value.items);
-    });
-=======
     // Convert back to Map with Equipement | string as key
     const result = new Map<Equipement | string, Item[]>();
     grouped.forEach(value => {
@@ -1048,7 +1023,6 @@ export class ItemListComponent implements OnInit {
     });
     
     this.groupedItemsByEquipement = result;
->>>>>>> dff9aa5bf7cd10caea1a4885432e20a1793b5095
   }
 
   constructor(

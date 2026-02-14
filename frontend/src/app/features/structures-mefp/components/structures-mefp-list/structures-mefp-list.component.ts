@@ -101,7 +101,7 @@ interface Page<T> {
                     <div class="info-item">
                       <i class="fas fa-phone info-icon"></i>
                       <span class="info-label">Contact:</span>
-                      <span class="info-value">{{ structure.contact || 'Non spécifié' }}</span>
+                      <span class="info-value">{{ structure.contact1 || 'Non spécifié' }}</span>
                     </div>
                   </div>
 
@@ -124,10 +124,10 @@ interface Page<T> {
                       <span class="info-label">CI:</span>
                       <span class="info-value">{{ (structure.prenomCI || '') + ' ' + (structure.nomCI || '') }}</span>
                     </div>
-                    <div class="info-item" *ngIf="structure.contactCI">
+                    <div class="info-item" *ngIf="structure.contact1CI">
                       <i class="fas fa-phone-alt info-icon"></i>
                       <span class="info-label">Contact CI:</span>
-                      <span class="info-value">{{ structure.contactCI }}</span>
+                      <span class="info-value">{{ structure.contact1CI }}</span>
                     </div>
                   </div>
 
@@ -1389,7 +1389,7 @@ export class StructuresMefpListComponent implements OnInit {
       this.filteredStructures = this.structures.filter(structure =>
         (structure.nom || '').toLowerCase().includes(term) ||
         (structure.email || '').toLowerCase().includes(term) ||
-        String(structure.contact || '').toLowerCase().includes(term) ||
+        String(structure.contact1 || '').toLowerCase().includes(term) ||
         (structure.ville || '').toLowerCase().includes(term) ||
         (structure.description || '').toLowerCase().includes(term) ||
         (structure.categorie || '').toLowerCase().includes(term)
@@ -1464,7 +1464,7 @@ export class StructuresMefpListComponent implements OnInit {
       const formData = {
         nom: structure.nom || '',
         email: structure.email || '',
-        contact: structure.contact || '',
+        contact: structure.contact1 || '',
         ville: structure.ville || '',
         adresseStructure: structure.adresseStructure || '',
         description: structure.description || '',
@@ -1472,7 +1472,7 @@ export class StructuresMefpListComponent implements OnInit {
         lotId: structure.lot?.id || null,
         nomCI: structure.nomCI || '',
         prenomCI: structure.prenomCI || '',
-        contactCI: structure.contactCI || '',
+        contactCI: structure.contact1CI || '',
         fonctionCI: structure.fonctionCI || ''
       };
 
@@ -1657,7 +1657,7 @@ export class StructuresMefpListComponent implements OnInit {
     this.structureForm.patchValue({
       nom: structure.nom,
       email: structure.email,
-      contact: structure.contact,
+      contact: structure.contact1,
       ville: structure.ville,
       adresseStructure: structure.adresseStructure,
       description: structure.description,
@@ -1665,7 +1665,7 @@ export class StructuresMefpListComponent implements OnInit {
       lotId: structure.lot?.id || null,
       nomCI: structure.nomCI,
       prenomCI: structure.prenomCI,
-      contactCI: structure.contactCI,
+      contactCI: structure.contact1CI,
       fonctionCI: structure.fonctionCI
     });
     this.showStructureModal = true;

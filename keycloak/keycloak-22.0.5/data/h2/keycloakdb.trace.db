@@ -1,0 +1,96 @@
+2026-02-14 11:45:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select distinct r1_0.EVENTS_EXPIRATION from REALM r1_0 where r1_0.EVENTS_EXPIRATION>0 [42104-220]
+2026-02-14 11:45:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CLIENT_INITIAL_ACCESS" not found (this database is empty); SQL statement:
+delete from CLIENT_INITIAL_ACCESS where (EXPIRATION>0 and (TIMESTAMP+EXPIRATION)<?) or REMAINING_COUNT=0 [42104-220]
+2026-02-14 11:45:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select r1_0.ID from REALM r1_0 [42104-220]
+2026-02-14 11:45:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM_ATTRIBUTE" not found (this database is empty); SQL statement:
+select r1_0.NAME,r1_0.REALM_ID,r1_0.VALUE from REALM_ATTRIBUTE r1_0 where r1_0.NAME=? and character_length(r1_0.VALUE)>0 [42104-220]
+2026-02-14 12:00:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select distinct r1_0.EVENTS_EXPIRATION from REALM r1_0 where r1_0.EVENTS_EXPIRATION>0 [42104-220]
+2026-02-14 12:00:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CLIENT_INITIAL_ACCESS" not found (this database is empty); SQL statement:
+delete from CLIENT_INITIAL_ACCESS where (EXPIRATION>0 and (TIMESTAMP+EXPIRATION)<?) or REMAINING_COUNT=0 [42104-220]
+2026-02-14 12:00:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select r1_0.ID from REALM r1_0 [42104-220]
+2026-02-14 12:00:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM_ATTRIBUTE" not found (this database is empty); SQL statement:
+select r1_0.NAME,r1_0.REALM_ID,r1_0.VALUE from REALM_ATTRIBUTE r1_0 where r1_0.NAME=? and character_length(r1_0.VALUE)>0 [42104-220]
+2026-02-14 12:15:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select distinct r1_0.EVENTS_EXPIRATION from REALM r1_0 where r1_0.EVENTS_EXPIRATION>0 [42104-220]
+2026-02-14 12:15:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CLIENT_INITIAL_ACCESS" not found (this database is empty); SQL statement:
+delete from CLIENT_INITIAL_ACCESS where (EXPIRATION>0 and (TIMESTAMP+EXPIRATION)<?) or REMAINING_COUNT=0 [42104-220]
+2026-02-14 12:15:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select r1_0.ID from REALM r1_0 [42104-220]
+2026-02-14 12:15:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM_ATTRIBUTE" not found (this database is empty); SQL statement:
+select r1_0.NAME,r1_0.REALM_ID,r1_0.VALUE from REALM_ATTRIBUTE r1_0 where r1_0.NAME=? and character_length(r1_0.VALUE)>0 [42104-220]
+2026-02-14 12:30:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select distinct r1_0.EVENTS_EXPIRATION from REALM r1_0 where r1_0.EVENTS_EXPIRATION>0 [42104-220]
+2026-02-14 12:30:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CLIENT_INITIAL_ACCESS" not found (this database is empty); SQL statement:
+delete from CLIENT_INITIAL_ACCESS where (EXPIRATION>0 and (TIMESTAMP+EXPIRATION)<?) or REMAINING_COUNT=0 [42104-220]
+2026-02-14 12:30:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select r1_0.ID from REALM r1_0 [42104-220]
+2026-02-14 12:30:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM_ATTRIBUTE" not found (this database is empty); SQL statement:
+select r1_0.NAME,r1_0.REALM_ID,r1_0.VALUE from REALM_ATTRIBUTE r1_0 where r1_0.NAME=? and character_length(r1_0.VALUE)>0 [42104-220]
+2026-02-14 12:45:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select distinct r1_0.EVENTS_EXPIRATION from REALM r1_0 where r1_0.EVENTS_EXPIRATION>0 [42104-220]
+2026-02-14 12:45:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CLIENT_INITIAL_ACCESS" not found (this database is empty); SQL statement:
+delete from CLIENT_INITIAL_ACCESS where (EXPIRATION>0 and (TIMESTAMP+EXPIRATION)<?) or REMAINING_COUNT=0 [42104-220]
+2026-02-14 12:45:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select r1_0.ID from REALM r1_0 [42104-220]
+2026-02-14 12:45:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM_ATTRIBUTE" not found (this database is empty); SQL statement:
+select r1_0.NAME,r1_0.REALM_ID,r1_0.VALUE from REALM_ATTRIBUTE r1_0 where r1_0.NAME=? and character_length(r1_0.VALUE)>0 [42104-220]
+2026-02-14 13:00:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select distinct r1_0.EVENTS_EXPIRATION from REALM r1_0 where r1_0.EVENTS_EXPIRATION>0 [42104-220]
+2026-02-14 13:00:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CLIENT_INITIAL_ACCESS" not found (this database is empty); SQL statement:
+delete from CLIENT_INITIAL_ACCESS where (EXPIRATION>0 and (TIMESTAMP+EXPIRATION)<?) or REMAINING_COUNT=0 [42104-220]
+2026-02-14 13:00:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select r1_0.ID from REALM r1_0 [42104-220]
+2026-02-14 13:00:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM_ATTRIBUTE" not found (this database is empty); SQL statement:
+select r1_0.NAME,r1_0.REALM_ID,r1_0.VALUE from REALM_ATTRIBUTE r1_0 where r1_0.NAME=? and character_length(r1_0.VALUE)>0 [42104-220]
+2026-02-14 13:15:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select distinct r1_0.EVENTS_EXPIRATION from REALM r1_0 where r1_0.EVENTS_EXPIRATION>0 [42104-220]
+2026-02-14 13:15:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CLIENT_INITIAL_ACCESS" not found (this database is empty); SQL statement:
+delete from CLIENT_INITIAL_ACCESS where (EXPIRATION>0 and (TIMESTAMP+EXPIRATION)<?) or REMAINING_COUNT=0 [42104-220]
+2026-02-14 13:15:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select r1_0.ID from REALM r1_0 [42104-220]
+2026-02-14 13:15:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM_ATTRIBUTE" not found (this database is empty); SQL statement:
+select r1_0.NAME,r1_0.REALM_ID,r1_0.VALUE from REALM_ATTRIBUTE r1_0 where r1_0.NAME=? and character_length(r1_0.VALUE)>0 [42104-220]
+2026-02-14 13:30:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select distinct r1_0.EVENTS_EXPIRATION from REALM r1_0 where r1_0.EVENTS_EXPIRATION>0 [42104-220]
+2026-02-14 13:30:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "CLIENT_INITIAL_ACCESS" not found (this database is empty); SQL statement:
+delete from CLIENT_INITIAL_ACCESS where (EXPIRATION>0 and (TIMESTAMP+EXPIRATION)<?) or REMAINING_COUNT=0 [42104-220]
+2026-02-14 13:30:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM" not found (this database is empty); SQL statement:
+select r1_0.ID from REALM r1_0 [42104-220]
+2026-02-14 13:30:22 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "REALM_ATTRIBUTE" not found (this database is empty); SQL statement:
+select r1_0.NAME,r1_0.REALM_ID,r1_0.VALUE from REALM_ATTRIBUTE r1_0 where r1_0.NAME=? and character_length(r1_0.VALUE)>0 [42104-220]
