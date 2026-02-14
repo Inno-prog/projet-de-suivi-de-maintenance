@@ -170,6 +170,11 @@ export class AuthService {
 
 
   login(credentials?: LoginRequest): void {
+    // Sauvegarder la page courante avant toute redirection (ne sauvegarder pas /login)
+    if (window.location.pathname !== '/login') {
+      localStorage.setItem('previousUrl', window.location.pathname + window.location.search);
+    }
+    
     if (credentials) {
       // Utiliser le flux de mot de passe pour la connexion directe. Certaines configurations Keycloak nécessitent
       // que le corps de la requête soit application/x-www-form-urlencoded et que

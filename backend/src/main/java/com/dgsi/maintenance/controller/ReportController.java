@@ -77,7 +77,7 @@ public class ReportController {
             String fileName = "rapport-evaluation-" + evaluation.getLot() + "-" + evaluation.getTrimestre() + ".pdf";
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(pdf);
         } catch (Exception e) {
