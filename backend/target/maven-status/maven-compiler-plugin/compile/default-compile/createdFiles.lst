@@ -61,6 +61,7 @@ com/dgsi/maintenance/service/PrestationLimitExceededException.class
 com/dgsi/maintenance/service/FileUploadService.class
 com/dgsi/maintenance/entity/StructureMefp.class
 com/dgsi/maintenance/repository/OrdreCommandeRepository.class
+com/dgsi/maintenance/controller/KeycloakController.class
 com/dgsi/maintenance/dto/LoginRequest.class
 com/dgsi/maintenance/controller/EvaluationFileController.class
 com/dgsi/maintenance/repository/RapportSuiviRepository.class
@@ -82,6 +83,7 @@ com/dgsi/maintenance/config/LotDataInitializer.class
 com/dgsi/maintenance/controller/PrestationController$1ValidationResponse.class
 com/dgsi/maintenance/service/BudgetInsufficientException.class
 com/dgsi/maintenance/service/ItemService.class
+com/dgsi/maintenance/config/BrouillonFicheCleanupConfig$BrouillonFicheInfo.class
 com/dgsi/maintenance/service/SearchService.class
 com/dgsi/maintenance/controller/GlobalExceptionHandler.class
 com/dgsi/maintenance/entity/EvaluationTrimestrielle.class
@@ -114,6 +116,7 @@ com/dgsi/maintenance/security/CustomUserDetailsService.class
 com/dgsi/maintenance/service/EvaluationService.class
 com/dgsi/maintenance/service/FichePrestationService.class
 com/dgsi/maintenance/service/PdfReportService.class
+com/dgsi/maintenance/config/BrouillonFicheCleanupConfig.class
 com/dgsi/maintenance/repository/TypeItemRepository.class
 com/dgsi/maintenance/config/ContratDataInitializer.class
 com/dgsi/maintenance/controller/NotificationController.class

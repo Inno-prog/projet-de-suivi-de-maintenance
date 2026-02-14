@@ -1762,11 +1762,13 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
     .animated-cta {
       animation: fadeInUp 1s ease-out both;
       opacity: 0;
+      color: white !important;
     }
 
     .btn-text {
       display: inline-block;
       transition: transform 0.2s ease;
+      color: white !important;
     }
 
     .btn-arrow {

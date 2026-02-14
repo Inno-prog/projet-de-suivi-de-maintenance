@@ -34,6 +34,12 @@ public class EquipementController {
     public List<Equipement> getAllEquipements() {
         return equipementService.getAllEquipements();
     }
+    
+    @GetMapping("/with-items")
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('PRESTATAIRE')")
+    public List<Equipement> getAllEquipementsWithItems() {
+        return equipementService.getAllEquipementsWithItems();
+    }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('PRESTATAIRE')")

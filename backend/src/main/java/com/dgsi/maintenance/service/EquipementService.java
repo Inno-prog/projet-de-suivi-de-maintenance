@@ -37,6 +37,16 @@ public class EquipementService {
     public List<Equipement> getAllEquipements() {
         return equipementRepository.findAll();
     }
+    
+    public List<Equipement> getAllEquipementsWithItems() {
+        List<Equipement> equipements = equipementRepository.findAll();
+        // Charger les items associés à chaque équipement
+        for (Equipement equipement : equipements) {
+            // Forcer le chargement de la collection items (lazy loading)
+            equipement.getItems().size();
+        }
+        return equipements;
+    }
 
     public Optional<Equipement> getEquipementById(Long id) {
         return equipementRepository.findById(id);

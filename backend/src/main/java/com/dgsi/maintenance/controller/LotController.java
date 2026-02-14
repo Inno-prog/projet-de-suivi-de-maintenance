@@ -65,6 +65,12 @@ public class LotController {
                         dto.addVille(ville);
                     }
                 }
+                // Populate regions from the lot entity if available
+                if (lot.getRegions() != null && !lot.getRegions().isEmpty()) {
+                    for (String region : lot.getRegions()) {
+                        dto.addRegion(region);
+                    }
+                }
                 lotMap.put(lot.getNomLot(), dto);
             }
 
@@ -327,6 +333,10 @@ public class LotController {
                     // If no villes from contracts and lot has no villes, set empty list
                     lot.setVilles(new java.util.ArrayList<>());
                 }
+                // Ensure regions is never null
+                if (lot.getRegions() == null) {
+                    lot.setRegions(new java.util.ArrayList<>());
+                }
             }
 
             return ResponseEntity.ok(lots);
@@ -373,6 +383,7 @@ public class LotController {
             lot.setNomLot(lotDetails.getNomLot());
             lot.setCodeLot(lotDetails.getCodeLot());
             lot.setVilles(lotDetails.getVilles());
+            lot.setRegions(lotDetails.getRegions());
             Lot updatedLot = lotRepository.save(lot);
             return ResponseEntity.ok(updatedLot);
         } else {

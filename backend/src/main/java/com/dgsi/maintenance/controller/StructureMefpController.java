@@ -34,6 +34,9 @@ public class StructureMefpController {
     @Autowired
     private com.dgsi.maintenance.repository.StructureMefpRepository structureMefpRepository;
     
+    @Autowired
+    private com.dgsi.maintenance.repository.LotRepository lotRepository;
+    
     @GetMapping("/search")
     @PreAuthorize("#profile != 'production' or isAuthenticated()")
     public List<StructureMefp> searchStructures(@RequestParam String keyword) {
@@ -181,6 +184,36 @@ public class StructureMefpController {
             return ResponseEntity.ok(structures);
         } catch (Exception e) {
             logger.warning("Error fetching structures by region and ville: " + region + "/" + ville + ", error: " + e.getMessage());
+            return ResponseEntity.ok(java.util.Collections.emptyList());
+        }
+    }
+
+    @GetMapping("/by-lot-regions/{lotId}")
+    @PreAuthorize("#profile != 'production' or isAuthenticated()")
+    public ResponseEntity<List<StructureMefp>> getStructuresByLotRegions(@PathVariable Long lotId) {
+        logger.info("GET /api/structures-mefp/by-lot-regions/" + lotId + " - Fetching structures by lot regions");
+        try {
+            // First get the lot to find its regions
+            java.util.Optional<com.dgsi.maintenance.entity.Lot> lotOpt = lotRepository.findById(lotId);
+            if (!lotOpt.isPresent()) {
+                logger.warning("Lot not found with ID: " + lotId);
+                return ResponseEntity.ok(java.util.Collections.emptyList());
+            }
+            
+            com.dgsi.maintenance.entity.Lot lot = lotOpt.get();
+            java.util.List<String> regions = lot.getRegions();
+            
+            if (regions == null || regions.isEmpty()) {
+                logger.info("Lot " + lotId + " has no regions assigned, returning empty list");
+                return ResponseEntity.ok(java.util.Collections.emptyList());
+            }
+            
+            logger.info("Lot " + lotId + " has regions: " + regions);
+            java.util.List<StructureMefp> structures = structureMefpService.getStructuresByRegions(regions);
+            logger.info("Returning " + structures.size() + " structures for lot regions");
+            return ResponseEntity.ok(structures);
+        } catch (Exception e) {
+            logger.warning("Error fetching structures by lot regions for lot ID: " + lotId + ", error: " + e.getMessage());
             return ResponseEntity.ok(java.util.Collections.emptyList());
         }
     }

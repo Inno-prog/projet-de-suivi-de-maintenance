@@ -2,6 +2,7 @@ package com.dgsi.maintenance.service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -103,6 +104,16 @@ public class KeycloakService {
         } finally {
             keycloak.close();
         }
+    }
+
+    public List<Map<String, Object>> getAllPrestataires() {
+        // Return empty list for now since Keycloak is not running
+        return Collections.emptyList();
+    }
+
+    public List<Map<String, Object>> getAllUsers() {
+        // Return empty list for now since Keycloak is not running
+        return Collections.emptyList();
     }
 
     public void logout(String refreshToken) {

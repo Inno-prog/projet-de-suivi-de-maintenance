@@ -58,7 +58,6 @@ public class Contrat {
     @JsonIgnore
     private Lot lot;
 
-    @NotBlank
     @Column(name = "ville")
     private String ville;
 

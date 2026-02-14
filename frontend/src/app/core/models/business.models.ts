@@ -272,6 +272,7 @@ export enum StatutValidation {
 export interface LotWithContractorDto {
   lot: string;
   villes: string[];
+  regions: string[];
   contractIds: string[];
   fichesCount: number;
 }
@@ -281,6 +282,7 @@ export interface Lot {
     nomLot: string;
     codeLot: string;
     villes?: string[];
+    regions?: string[];
 }
 
 export interface Item {
@@ -305,6 +307,7 @@ export interface Equipement {
   typeEquipement: string;
   statut: string;
   prestations?: Prestation[];
+  items?: Item[];
 }
 
 export interface TypeItem {

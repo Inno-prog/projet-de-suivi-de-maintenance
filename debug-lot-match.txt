@@ -1,0 +1,27 @@
+Let's simulate what happens:
+
+ItemController.getItemsByPrestataire("6e80c5a0-b7b8-4151-8f63-4be4bf94b816") - NetCom Afrique
+
+Step 1: Retrieve contrats for prestataire
+SQL: SELECT * FROM contrats WHERE prestataire_id = '6e80c5a0-b7b8-4151-8f63-4be4bf94b816'
+
+From earlier call, NetCom Afrique has contract with id=360, lot="lot2"
+
+Step 2: Extract unique lots
+uniqueLots = [contrat.getLot().trim().toLowerCase(), ...]
+So for NetCom, this should be ["lot2"]
+
+Step 3: Get all items and filter
+items in database:
+- id:187, nomItem: "chargement d'encre ", lot: "lot1"
+- id:181, nomItem: "mise en service d'une nouvelle imprimante", lot: "lot2"
+- id:191, nomItem: "remplacement de Barrette mémoire 2 Go", lot: "lot2"
+- id:192, nomItem: "Fourniture et Remplacement de Barrette mémoire 4 Go", lot: "lot2"
+- id:193, nomItem: "Remplacement de Boitier d'alimentation", lot: "lot2"
+- id:194, nomItem: "Remplacement de Microprocesseur Intel core i3", lot: "lot2"
+- ...
+
+Step 4: Check lotsMatch for each item
+items[i].getLot() = "lot1" (for id:187)
+prestationLots contains "lot2"
+Does lotsMatch("lot1", "lot2") return true?

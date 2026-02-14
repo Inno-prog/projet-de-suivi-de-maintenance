@@ -2,12 +2,12 @@ package com.dgsi.maintenance.controller;
 
 import java.util.List;
 import java.util.Map;
-import com.dgsi.maintenance.entity.Item;
 import com.dgsi.maintenance.entity.FichePrestation;
+import com.dgsi.maintenance.entity.Item;
 import com.dgsi.maintenance.repository.ContratRepository;
+import com.dgsi.maintenance.repository.FichePrestationRepository;
 import com.dgsi.maintenance.repository.ItemRepository;
 import com.dgsi.maintenance.repository.OrdreCommandeRepository;
-import com.dgsi.maintenance.repository.FichePrestationRepository;
 import com.dgsi.maintenance.service.ItemService;
 import com.dgsi.maintenance.service.PrestationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,10 +52,14 @@ public class ItemController {
     private FichePrestationRepository fichePrestationRepository;
     
     /**
-     * Calculer la quantité totale réalisée pour un item donné (somme des quantités des fiches prestation)
+     * Calculer la quantité totale réalisée pour un item donné (compte le nombre d'occurrences dans les fiches prestation)
      * Cette méthode est identique à getItemUsageCount dans FichePrestationPdfService pour assurer la cohérence
      */
     private int calculateItemUsageQuantity(String itemNom) {
+        return calculateItemUsageQuantity(itemNom, null);
+    }
+    
+    private int calculateItemUsageQuantity(String itemNom, String lot) {
         if (itemNom == null || itemNom.trim().isEmpty()) {
             return 0;
         }
@@ -63,32 +67,41 @@ public class ItemController {
         int total = 0;
         List<FichePrestation> allFiches = fichePrestationRepository.findAll();
         
+        // Normaliser le nom de l'item pour la comparaison (supprimer les espaces en fin)
+        String normalizedItemNom = itemNom.trim();
+        
         for (FichePrestation fiche : allFiches) {
             if (fiche == null) continue;
             
-            boolean contains = false;
+            // Ne compter que les fiches du lot spécifié (via numero_fiche)
+            if (lot != null && (fiche.getNumeroFiche() == null || !fiche.getNumeroFiche().contains("L" + lot.replaceAll("[^0-9]", "")))) {
+                continue;
+            }
+            
+            int countInFiche = 0;
             String itemsCouverts = fiche.getItemsCouverts();
             String nomItem = fiche.getNomItem();
             
+            // Compter les occurrences dans itemsCouverts
             if (itemsCouverts != null && !itemsCouverts.trim().isEmpty()) {
-                if (itemsCouverts.contains(itemNom)) {
-                    contains = true;
+                // Split items by commas and trim each item
+                String[] items = itemsCouverts.split(",");
+                for (String item : items) {
+                    String trimmedItem = item.trim();
+                    if (trimmedItem.equalsIgnoreCase(normalizedItemNom)) {
+                        countInFiche++;
+                    }
                 }
             }
             
-            if (!contains && nomItem != null && !nomItem.trim().isEmpty()) {
-                if (nomItem.contains(itemNom)) {
-                    contains = true;
+            // Compter l'occurrence dans nomItem
+            if (countInFiche == 0 && nomItem != null && !nomItem.trim().isEmpty()) {
+                if (nomItem.trim().equalsIgnoreCase(normalizedItemNom)) {
+                    countInFiche++;
                 }
             }
             
-            if (contains) {
-                if (fiche.getQuantite() != null && fiche.getQuantite() > 0) {
-                    total += fiche.getQuantite();
-                } else {
-                    total += 1;
-                }
-            }
+            total += countInFiche;
         }
         
         return total;
@@ -105,7 +118,28 @@ public class ItemController {
 
     @GetMapping
     public List<Item> getAllItems() {
-        return itemRepository.findAll();
+        List<Item> allItems = itemRepository.findAll();
+        
+        // Mettre à jour les compteurs d'utilisation pour chaque item
+        for (Item item : allItems) {
+            // Calculer la quantité totale réalisée pour cet item (somme des quantités des fiches prestation)
+            int totalQuantite = calculateItemUsageQuantity(item.getNomItem(), item.getLot());
+            item.setQuantiteUtilisee(totalQuantite);
+            
+            if (item.getQuantiteUtiliseeTrimestre() == null) {
+                item.setQuantiteUtiliseeTrimestre(totalQuantite);
+            }
+        }
+        
+        // Trier les résultats par idItem pour conserver la numérotation correcte
+        allItems.sort((a, b) -> {
+            if (a.getIdItem() == null && b.getIdItem() == null) return 0;
+            if (a.getIdItem() == null) return 1;
+            if (b.getIdItem() == null) return -1;
+            return a.getIdItem().compareTo(b.getIdItem());
+        });
+        
+        return allItems;
     }
 
     @GetMapping("/{id}")
@@ -124,7 +158,28 @@ public class ItemController {
 
     @GetMapping("/by-lot/{lot}")
     public List<Item> getItemsByLot(@PathVariable String lot) {
-        return itemRepository.findByLot(lot);
+        List<Item> itemsByLot = itemRepository.findByLot(lot);
+        
+        // Mettre à jour les compteurs d'utilisation pour chaque item
+        for (Item item : itemsByLot) {
+            // Calculer la quantité totale réalisée pour cet item (somme des quantités des fiches prestation)
+            int totalQuantite = calculateItemUsageQuantity(item.getNomItem(), lot);
+            item.setQuantiteUtilisee(totalQuantite);
+            
+            if (item.getQuantiteUtiliseeTrimestre() == null) {
+                item.setQuantiteUtiliseeTrimestre(totalQuantite);
+            }
+        }
+        
+        // Trier les résultats par idItem pour conserver la numérotation correcte
+        itemsByLot.sort((a, b) -> {
+            if (a.getIdItem() == null && b.getIdItem() == null) return 0;
+            if (a.getIdItem() == null) return 1;
+            if (b.getIdItem() == null) return -1;
+            return a.getIdItem().compareTo(b.getIdItem());
+        });
+        
+        return itemsByLot;
     }
 
     /**

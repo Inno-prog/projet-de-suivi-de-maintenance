@@ -1,0 +1,235 @@
+{
+  "realm" : "Maintenance-DGSI",
+  "users" : [ {
+    "id" : "1f50a2e0-5557-46b9-9d63-781df377796f",
+    "username" : "admin",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Admin",
+    "lastName" : "System",
+    "email" : "admin@gmail.com",
+    "credentials" : [ {
+      "id" : "0b8f218e-316f-4aba-b7e2-2aa7606ed9cc",
+      "type" : "password",
+      "createdDate" : 1764236575790,
+      "secretData" : "{\"value\":\"kz71IIL2bZj3ju65KkGLlYsVnmQuHjsgJDJR1ejSFQ0=\",\"salt\":\"xir1nvkFXkop8J3a3T30uw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "ADMINISTRATEUR" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "8de56852-0dcf-4ac9-8217-f7848972834d",
+    "username" : "agent",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Agent",
+    "lastName" : "DGSI",
+    "email" : "agent@gmail.com",
+    "credentials" : [ {
+      "id" : "d641b24a-3690-4593-a51a-c9b6f819484b",
+      "type" : "password",
+      "createdDate" : 1764236575929,
+      "secretData" : "{\"value\":\"OOSHHsIaM4+YhSJHLGCkqTYuB0lfLHF/4RjjG4VO9sQ=\",\"salt\":\"kqIeb9kWpDfAhlKDp7DBxw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "AGENT_DGSI" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "ba42c460-f9c9-4898-b306-55e68ef6e1e1",
+    "username" : "cybertech",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "CyberTech",
+    "lastName" : "SARL",
+    "email" : "cybertech@gmail.com",
+    "credentials" : [ {
+      "id" : "48ed863e-4ecc-48f9-b7ee-ff96b1979c65",
+      "type" : "password",
+      "createdDate" : 1764236576433,
+      "secretData" : "{\"value\":\"4Mlo8xahLTpG2f+A0dWrdm0BvhjvN4KGdPCyFJqXxZ0=\",\"salt\":\"mcbjKxq+hOjQmODHKv2Sxw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "PRESTATAIRE" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "32cd5a51-781c-4b6f-8a82-24418aa0ecd7",
+    "username" : "digitalsolutions",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Digital",
+    "lastName" : "Solutions",
+    "email" : "digitalsolutions@gmail.com",
+    "credentials" : [ {
+      "id" : "3236e5b9-790a-496a-ac9a-b976c7fe42cb",
+      "type" : "password",
+      "createdDate" : 1764236576363,
+      "secretData" : "{\"value\":\"XUujYpC+erf6hdIW7WozBwv0hGxEFD7SkRjz2ew7fNk=\",\"salt\":\"IgNMVZ+AlBDE3E7etxIn7A==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "PRESTATAIRE" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "6fd12a0e-134d-4a0d-9d37-ffd7d736ac01",
+    "username" : "infotech",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "InfoTech",
+    "lastName" : "Burkina",
+    "email" : "infotech@gmail.com",
+    "credentials" : [ {
+      "id" : "0acdcf09-b1f2-4e8b-8045-de0e4b6b131d",
+      "type" : "password",
+      "createdDate" : 1764236576292,
+      "secretData" : "{\"value\":\"c4PRVM3hdYHT+ZEMTIPbJguD1AMGoNF7zyY3NYGJuzo=\",\"salt\":\"3m3NBtzAjvGKOy6B6W1fww==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "PRESTATAIRE" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "6aef439b-9ccf-40f5-b308-c88d6e1bf86d",
+    "username" : "itsolutions",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "IT Solutions",
+    "lastName" : "Burkina",
+    "email" : "itsolutions@gmail.com",
+    "credentials" : [ {
+      "id" : "b6507e6f-6af7-4476-8b3b-c87c53487045",
+      "type" : "password",
+      "createdDate" : 1764236576147,
+      "secretData" : "{\"value\":\"e10WDXZ3GBRkFqpxiauoA29kRn9Fk7B641moolIq4Zs=\",\"salt\":\"QpPPjdE6uat00YYByzg42A==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "PRESTATAIRE" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "ec37b3b0-f6a0-40da-ac99-796e0bdb6748",
+    "username" : "netcom",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "NetCom",
+    "lastName" : "Afrique",
+    "email" : "netcom@gmail.com",
+    "credentials" : [ {
+      "id" : "ad1f1058-8c46-466e-95f4-ec3f79664c07",
+      "type" : "password",
+      "createdDate" : 1764236576075,
+      "secretData" : "{\"value\":\"HQHdhjh/bnUjBJzNv7zJYUU2WTDKypOop1fWjpyaG94=\",\"salt\":\"4UY24JWVdWg34Y3KqEQSbA==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "PRESTATAIRE" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "06ec7a2e-288b-44ee-bc55-62a95238a5ca",
+    "username" : "prestataire",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Prestataire",
+    "lastName" : "Service",
+    "email" : "presta@gmail.com",
+    "credentials" : [ {
+      "id" : "3ec3256a-dfa2-420b-946f-51aa66d7f30a",
+      "type" : "password",
+      "createdDate" : 1764236575860,
+      "secretData" : "{\"value\":\"7joah3LQg2144kH2rk723COxIc4Kvu121KPmJHoLdoM=\",\"salt\":\"piGeaFbnqyrUHTZM/4rhcQ==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "PRESTATAIRE" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "4bfe28fb-fb80-4319-8e98-9b4ad4a8a8ab",
+    "username" : "softlink",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "SoftLink",
+    "lastName" : "Technologies",
+    "email" : "softlink@gmail.com",
+    "credentials" : [ {
+      "id" : "51e5b4c3-4a34-4ed1-bbe7-0d6da205d812",
+      "type" : "password",
+      "createdDate" : 1764236576217,
+      "secretData" : "{\"value\":\"UG9NJYMpMGB8SubZIkCjPG+pUFCyw570KKEk0dSaKK4=\",\"salt\":\"Irq2mP0BBGfLDStpxNIJfA==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "PRESTATAIRE" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "b87e5fb6-e35f-43ac-91a1-265ed480dd46",
+    "username" : "techpro",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "TechPro",
+    "lastName" : "Services",
+    "email" : "techpro@gmail.com",
+    "credentials" : [ {
+      "id" : "10fdace8-2193-4f3a-bdd8-cb3c1ec35857",
+      "type" : "password",
+      "createdDate" : 1764237325699,
+      "secretData" : "{\"value\":\"d38YicAm4DrQSB45Nf0I/akyxGshCTAroijMglGwBko=\",\"salt\":\"4Vivc5WBnWN4pbxGSIKBEw==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "PRESTATAIRE" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "c3d71146-fbe7-45d2-81ad-14ee60051d68",
+    "username" : "techserve",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "TechServe",
+    "lastName" : "SARL",
+    "email" : "techserve@gmail.com",
+    "credentials" : [ {
+      "id" : "1a3207e5-ff8a-4e13-b0dc-d423bd3d91a3",
+      "type" : "password",
+      "createdDate" : 1764236576000,
+      "secretData" : "{\"value\":\"ypyxyMmkFrQpjjTBMc5Esc2xJB/iu3nFRdQ1zAOg0n8=\",\"salt\":\"q1tUGeSM2p2ffJBkKc06Yg==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "PRESTATAIRE" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}

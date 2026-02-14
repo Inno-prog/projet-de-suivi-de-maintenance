@@ -8,11 +8,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class LotWithContractorDto {
     private String lot;
     private List<String> villes;
+    private List<String> regions;
     private List<String> contractIds;
     private int fichesCount;
 
     public LotWithContractorDto() {
         this.villes = new ArrayList<>();
+        this.regions = new ArrayList<>();
         this.contractIds = new ArrayList<>();
         this.fichesCount = 0;
     }
@@ -20,6 +22,7 @@ public class LotWithContractorDto {
     public LotWithContractorDto(String lot) {
         this.lot = lot;
         this.villes = new ArrayList<>();
+        this.regions = new ArrayList<>();
         this.contractIds = new ArrayList<>();
         this.fichesCount = 0;
     }
@@ -63,6 +66,20 @@ public class LotWithContractorDto {
     public void addVille(String ville) {
         if (!this.villes.contains(ville)) {
             this.villes.add(ville);
+        }
+    }
+
+    public List<String> getRegions() {
+        return regions;
+    }
+
+    public void setRegions(List<String> regions) {
+        this.regions = regions;
+    }
+
+    public void addRegion(String region) {
+        if (!this.regions.contains(region)) {
+            this.regions.add(region);
         }
     }
 

@@ -8,13 +8,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import com.dgsi.maintenance.entity.FichePrestation;
-import com.dgsi.maintenance.entity.Prestation;
 import com.dgsi.maintenance.entity.Item;
+import com.dgsi.maintenance.entity.Prestation;
+import com.dgsi.maintenance.repository.FichePrestationRepository;
+import com.dgsi.maintenance.repository.ItemRepository;
 import com.dgsi.maintenance.repository.PrestationRepository;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.io.image.ImageData;
@@ -48,11 +52,16 @@ public class FichePrestationPdfService {
 
         private final PrestationRepository prestationRepository;
         private final ItemService itemService;
+        private final FichePrestationRepository fichePrestationRepository;
+        private final ItemRepository itemRepository;
 
         @Autowired
-        public FichePrestationPdfService(PrestationRepository prestationRepository, ItemService itemService) {
+        public FichePrestationPdfService(PrestationRepository prestationRepository, ItemService itemService,
+                                         FichePrestationRepository fichePrestationRepository, ItemRepository itemRepository) {
                 this.prestationRepository = prestationRepository;
                 this.itemService = itemService;
+                this.fichePrestationRepository = fichePrestationRepository;
+                this.itemRepository = itemRepository;
         }
 
     // Couleurs définies une seule fois
@@ -628,7 +637,7 @@ public class FichePrestationPdfService {
         }
     }
 
-    private void addDetailedPrestationsSection(Document document, List<FichePrestation> fiches, PdfFont normalFont, PdfFont boldFont) {
+    private void addDetailedPrestationsSection(Document document, String lot, List<FichePrestation> fiches, PdfFont normalFont, PdfFont boldFont) {
         Table table = new Table(UnitValue.createPercentArray(new float[]{10,20,25,10,8,12,15}))
                 .setWidth(UnitValue.createPercentValue(100))
                 .setMarginBottom(15);
@@ -697,8 +706,77 @@ public class FichePrestationPdfService {
             String qteStr = fiche.getQuantite() != null ? fiche.getQuantite().toString() : "0";
             table.addCell(createTableCell(qteStr, normalFont, rowBg, TextAlignment.CENTER));
 
-            // Montant
-            double montant = fiche.getQuantite() != null ? fiche.getQuantite() * 50000 : 0;
+            // Récupérer tous les items de la fiche avec leurs prix
+            List<java.util.Map<String, Object>> items = new ArrayList<>();
+            String itemsCouverts = fiche.getItemsCouverts();
+            String nomItem = fiche.getNomItem();
+            
+            // Try to parse itemsCouverts as JSON array first
+            if (itemsCouverts != null && !itemsCouverts.trim().isEmpty()) {
+                try {
+                    com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                    java.util.List<java.util.Map<String, Object>> parsed = mapper.readValue(itemsCouverts, 
+                        new com.fasterxml.jackson.core.type.TypeReference<java.util.List<java.util.Map<String, Object>>>() {});
+                    for (java.util.Map<String, Object> item : parsed) {
+                        if (item != null && item.containsKey("nom")) {
+                            items.add(item);
+                        }
+                    }
+                } catch (Exception e) {
+                    // If JSON parsing fails, treat as comma-separated string
+                    String[] splitItems = itemsCouverts.split(",");
+                    for (String item : splitItems) {
+                        String trimmed = item.trim();
+                        if (!trimmed.isEmpty()) {
+                            java.util.Map<String, Object> itemMap = new java.util.HashMap<>();
+                            itemMap.put("nom", trimmed);
+                            items.add(itemMap);
+                        }
+                    }
+                }
+            }
+            
+            // If no items found in itemsCouverts, use nomItem
+            if (items.isEmpty() && nomItem != null && !nomItem.trim().isEmpty()) {
+                java.util.Map<String, Object> itemMap = new java.util.HashMap<>();
+                itemMap.put("nom", nomItem.trim());
+                items.add(itemMap);
+            }
+            
+            // If still no items, use default
+            if (items.isEmpty()) {
+                java.util.Map<String, Object> itemMap = new java.util.HashMap<>();
+                itemMap.put("nom", "N/A");
+                items.add(itemMap);
+            }
+            
+            int quantite = fiche.getQuantite() != null ? fiche.getQuantite() : 0;
+            double montant = 0;
+            
+            // Calculer le montant pour chaque item de la fiche
+            for (java.util.Map<String, Object> item : items) {
+                String itemNom = (String) item.get("nom");
+                Number itemPrix = (Number) item.get("prix");
+                
+                double prixUnitaire;
+                if (itemPrix != null) {
+                    prixUnitaire = itemPrix.doubleValue();
+                } else if (fiche.getPrixUnitaire() != null) {
+                    prixUnitaire = fiche.getPrixUnitaire();
+                } else {
+                    // Récupérer le prix réel de l'item depuis la base de données en fonction du lot
+                    Item realItem = itemService.getItemByNomItemAndLot(itemNom, lot);
+                    if (realItem != null && realItem.getPrix() != null) {
+                        prixUnitaire = realItem.getPrix().doubleValue();
+                    } else {
+                        // Si prix unitaire non défini et item non trouvé, utiliser un prix par défaut (50000 FCFA)
+                        prixUnitaire = 50000;
+                    }
+                }
+                
+                montant += quantite * prixUnitaire;
+            }
+            
             totalMontant += montant;
             table.addCell(createTableCell(String.format("%.0f FCFA", montant),
                     normalFont, rowBg, TextAlignment.RIGHT));
@@ -827,7 +905,7 @@ public class FichePrestationPdfService {
         document.add(infoTable);
     }
 
-    private void addGlobalSummaryInfo(Document document, List<FichePrestation> fiches, PdfFont normalFont, PdfFont boldFont) {
+    private void addGlobalSummaryInfo(Document document, String lot, List<FichePrestation> fiches, PdfFont normalFont, PdfFont boldFont) {
         Table summaryTable = new Table(UnitValue.createPercentArray(new float[]{60, 40}))
                 .setWidth(UnitValue.createPercentValue(100))
                 .setMarginBottom(20);
@@ -838,9 +916,75 @@ public class FichePrestationPdfService {
         int rejetees = (int) fiches.stream().filter(f -> "REJETE".equals(f.getStatut() != null ? f.getStatut().toString() : "")).count();
         int enAttente = totalFiches - validees - rejetees;
 
-        double montantTotal = fiches.stream()
-                .mapToDouble(f -> f.getQuantite() != null ? f.getQuantite() * 50000 : 0)
-                .sum();
+        double montantTotal = 0;
+        for (FichePrestation fiche : fiches) {
+            // Calculer le montant de la fiche
+            // Récupérer les items de la fiche
+            List<Map<String, Object>> items = new ArrayList<>();
+            
+            // Vérifier les items dans itemsCouverts (JSON ou string séparé par des virgules)
+            if (fiche.getItemsCouverts() != null && !fiche.getItemsCouverts().isEmpty()) {
+                try {
+                    // Essayer de parser itemsCouverts comme JSON
+                    com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                    List<Map<String, Object>> parsedItems = objectMapper.readValue(fiche.getItemsCouverts(), List.class);
+                    items.addAll(parsedItems);
+                } catch (Exception e) {
+                    // Si JSON parsing fails, treat as comma-separated string
+                    String[] splitItems = fiche.getItemsCouverts().split(",");
+                    for (String item : splitItems) {
+                        String trimmed = item.trim();
+                        if (!trimmed.isEmpty()) {
+                            Map<String, Object> itemMap = new HashMap<>();
+                            itemMap.put("nom", trimmed);
+                            items.add(itemMap);
+                        }
+                    }
+                }
+            }
+
+            // Si no items found in itemsCouverts, use nomItem
+            if (items.isEmpty() && fiche.getNomItem() != null && !fiche.getNomItem().trim().isEmpty()) {
+                Map<String, Object> itemMap = new HashMap<>();
+                itemMap.put("nom", fiche.getNomItem().trim());
+                items.add(itemMap);
+            }
+
+            // If still no items, use default
+            if (items.isEmpty()) {
+                Map<String, Object> itemMap = new HashMap<>();
+                itemMap.put("nom", "N/A");
+                items.add(itemMap);
+            }
+
+            int quantite = fiche.getQuantite() != null ? fiche.getQuantite() : 0;
+            
+            // Calculer le montant pour chaque item de la fiche
+            for (Map<String, Object> item : items) {
+                String itemNom = (String) item.get("nom");
+                Number itemPrix = (Number) item.get("prix");
+                
+                // Calculer le prix unitaire
+                double prixUnitaire;
+                if (itemPrix != null) {
+                    prixUnitaire = itemPrix.doubleValue();
+                } else if (fiche.getPrixUnitaire() != null) {
+                    prixUnitaire = fiche.getPrixUnitaire();
+                } else {
+                    // Récupérer le prix réel de l'item depuis la base de données
+                    Item realItem = itemService.getItemByNomItemAndLot(itemNom, lot);
+                    if (realItem != null && realItem.getPrix() != null) {
+                        prixUnitaire = realItem.getPrix().doubleValue();
+                    } else {
+                        // Si prix unitaire non défini et item non trouvé, utiliser un prix par défaut (50000 FCFA)
+                        prixUnitaire = 50000;
+                    }
+                }
+                
+                // Ajouter au montant total
+                montantTotal += quantite * prixUnitaire;
+            }
+        }
 
         long prestatairesUniques = fiches.stream()
                 .map(FichePrestation::getNomPrestataire)
@@ -916,7 +1060,7 @@ public class FichePrestationPdfService {
                 .setPadding(0);
     }
 
-    private void addGlobalPrestationsTable(Document document, List<FichePrestation> fiches, PdfFont normalFont, PdfFont boldFont) {
+    private void addGlobalPrestationsTable(Document document, List<FichePrestation> fiches, String lot, PdfFont normalFont, PdfFont boldFont) {
         Table table = new Table(UnitValue.createPercentArray(new float[]{10, 20, 25, 15, 10, 10, 10}))
                 .setWidth(UnitValue.createPercentValue(100))
                 .setMarginBottom(30);
@@ -974,8 +1118,77 @@ public class FichePrestationPdfService {
             String qteStr = fiche.getQuantite() != null ? fiche.getQuantite().toString() : "0";
             table.addCell(createTableCell(qteStr, normalFont, rowBg, TextAlignment.CENTER));
 
-            // Montant
-            double montant = fiche.getQuantite() != null ? fiche.getQuantite() * 50000 : 0;
+            // Récupérer tous les items de la fiche avec leurs prix
+            List<java.util.Map<String, Object>> items = new ArrayList<>();
+            String itemsCouverts = fiche.getItemsCouverts();
+            String nomItem = fiche.getNomItem();
+            
+            // Try to parse itemsCouverts as JSON array first
+            if (itemsCouverts != null && !itemsCouverts.trim().isEmpty()) {
+                try {
+                    com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                    java.util.List<java.util.Map<String, Object>> parsed = mapper.readValue(itemsCouverts, 
+                        new com.fasterxml.jackson.core.type.TypeReference<java.util.List<java.util.Map<String, Object>>>() {});
+                    for (java.util.Map<String, Object> item : parsed) {
+                        if (item != null && item.containsKey("nom")) {
+                            items.add(item);
+                        }
+                    }
+                } catch (Exception e) {
+                    // If JSON parsing fails, treat as comma-separated string
+                    String[] splitItems = itemsCouverts.split(",");
+                    for (String item : splitItems) {
+                        String trimmed = item.trim();
+                        if (!trimmed.isEmpty()) {
+                            java.util.Map<String, Object> itemMap = new java.util.HashMap<>();
+                            itemMap.put("nom", trimmed);
+                            items.add(itemMap);
+                        }
+                    }
+                }
+            }
+            
+            // If no items found in itemsCouverts, use nomItem
+            if (items.isEmpty() && nomItem != null && !nomItem.trim().isEmpty()) {
+                java.util.Map<String, Object> itemMap = new java.util.HashMap<>();
+                itemMap.put("nom", nomItem.trim());
+                items.add(itemMap);
+            }
+            
+            // If still no items, use default
+            if (items.isEmpty()) {
+                java.util.Map<String, Object> itemMap = new java.util.HashMap<>();
+                itemMap.put("nom", "N/A");
+                items.add(itemMap);
+            }
+            
+            int quantite = fiche.getQuantite() != null ? fiche.getQuantite() : 0;
+            double montant = 0;
+            
+            // Calculer le montant pour chaque item de la fiche
+            for (java.util.Map<String, Object> item : items) {
+                String itemNom = (String) item.get("nom");
+                Number itemPrix = (Number) item.get("prix");
+                
+                double prixUnitaire;
+                if (itemPrix != null) {
+                    prixUnitaire = itemPrix.doubleValue();
+                } else if (fiche.getPrixUnitaire() != null) {
+                    prixUnitaire = fiche.getPrixUnitaire();
+                } else {
+                    // Récupérer le prix réel de l'item depuis la base de données en fonction du lot
+                    Item realItem = itemService.getItemByNomItemAndLot(itemNom, lot);
+                    if (realItem != null && realItem.getPrix() != null) {
+                        prixUnitaire = realItem.getPrix().doubleValue();
+                    } else {
+                        // Si prix unitaire non défini et item non trouvé, utiliser un prix par défaut (50000 FCFA)
+                        prixUnitaire = 50000;
+                    }
+                }
+                
+                montant += quantite * prixUnitaire;
+            }
+            
             totalMontant += montant;
             table.addCell(createTableCell(String.format("%.0f FCFA", montant),
                     normalFont, rowBg, TextAlignment.RIGHT));
@@ -1237,8 +1450,8 @@ public class FichePrestationPdfService {
                 String itemText = (itemIndex + 1) + "- " + itemNom;
                 table.addCell(createTableCell(itemText, normalFont, rowBg, TextAlignment.LEFT));
 
-                // Quantité réalisée - récupérer la quantité de la fiche
-                int qteUtilisee = getItemUsageCount(itemNom, fiche);
+                 // Quantité réalisée - calculer la quantité utilisée pour cet item dans la fiche courante
+                 int qteUtilisee = getItemUsageCount(itemNom, fiche);
                 String qteStr = String.valueOf(qteUtilisee);
                 table.addCell(createTableCell(qteStr, normalFont, rowBg, TextAlignment.CENTER));
 
@@ -1560,68 +1773,84 @@ public class FichePrestationPdfService {
         
         // Vérifier dans itemsCouverts
         if (itemsCouverts != null && !itemsCouverts.trim().isEmpty()) {
-            if (itemsCouverts.contains(itemNom)) {
-                count++;
+            String[] items = itemsCouverts.split(",");
+            for (String item : items) {
+                String trimmedItem = item.trim();
+                if (trimmedItem.equalsIgnoreCase(itemNom)) {
+                    count++;
+                }
             }
         }
         
         // Vérifier dans nomItem
-        if (nomItem != null && !nomItem.trim().isEmpty()) {
-            if (nomItem.contains(itemNom)) {
+        if (count == 0 && nomItem != null && !nomItem.trim().isEmpty()) {
+            if (nomItem.trim().equalsIgnoreCase(itemNom)) {
                 count++;
             }
-        }
-        
-        // Si la fiche a une quantité spécifiée, utiliser cette valeur
-        if (currentFiche.getQuantite() != null && currentFiche.getQuantite() > 0) {
-            return currentFiche.getQuantite();
         }
         
         return count;
     }
 
+
+
         /**
          * Calcule la quantité totale réalisée pour un item donné à travers
-         * une liste de fiches. Si une fiche contient une quantité explicite
+         * TOUTES les fiches de la base de données. Si une fiche contient une quantité explicite
          * (champ quantite) celle-ci est sommée; sinon on compte 1 par fiche
          * contenant l'item.
+         * 
+         * Cette méthode est identique à calculateItemUsageQuantity dans ItemController
+         * pour assurer la cohérence des valeurs entre la page des items et le PDF.
          */
-        private int getItemUsageCount(String itemNom, List<FichePrestation> fiches) {
-                if (itemNom == null || itemNom.trim().isEmpty() || fiches == null || fiches.isEmpty()) {
+        private int getItemUsageCount(String itemNom, String lot) {
+                if (itemNom == null || itemNom.trim().isEmpty()) {
                         return 0;
                 }
-
+                
                 int total = 0;
-                for (FichePrestation fiche : fiches) {
+                List<FichePrestation> allFiches = fichePrestationRepository.findAll();
+                
+                // Normaliser le nom de l'item pour la comparaison (supprimer les espaces en fin)
+                String normalizedItemNom = itemNom.trim();
+                
+                for (FichePrestation fiche : allFiches) {
                         if (fiche == null) continue;
-
-                        boolean contains = false;
+                        
+                        // Ne compter que les fiches du lot spécifié (via numero_fiche)
+                        if (fiche.getNumeroFiche() == null || !fiche.getNumeroFiche().contains("L" + lot.replaceAll("[^0-9]", ""))) {
+                            continue;
+                        }
+                        
+                        int countInFiche = 0;
                         String itemsCouverts = fiche.getItemsCouverts();
                         String nomItem = fiche.getNomItem();
-
+                        
+                        // Compter les occurrences dans itemsCouverts
                         if (itemsCouverts != null && !itemsCouverts.trim().isEmpty()) {
-                                if (itemsCouverts.contains(itemNom)) {
-                                        contains = true;
+                            // Split items by commas and trim each item
+                            String[] items = itemsCouverts.split(",");
+                            for (String item : items) {
+                                String trimmedItem = item.trim();
+                                if (trimmedItem.equalsIgnoreCase(normalizedItemNom)) {
+                                    countInFiche++;
                                 }
+                            }
                         }
-
-                        if (!contains && nomItem != null && !nomItem.trim().isEmpty()) {
-                                if (nomItem.contains(itemNom)) {
-                                        contains = true;
-                                }
+                        
+                        // Compter l'occurrence dans nomItem
+                        if (countInFiche == 0 && nomItem != null && !nomItem.trim().isEmpty()) {
+                            if (nomItem.trim().equalsIgnoreCase(normalizedItemNom)) {
+                                countInFiche++;
+                            }
                         }
-
-                        if (contains) {
-                                if (fiche.getQuantite() != null && fiche.getQuantite() > 0) {
-                                        total += fiche.getQuantite();
-                                } else {
-                                        total += 1;
-                                }
-                        }
+                        
+                        total += countInFiche;
                 }
-
+                
                 return total;
         }
+
 
     private Cell createTableCell(String text, PdfFont font, DeviceRgb bgColor, TextAlignment alignment) {
         return new Cell()

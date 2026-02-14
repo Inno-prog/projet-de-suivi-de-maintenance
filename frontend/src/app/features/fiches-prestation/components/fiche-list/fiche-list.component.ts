@@ -1555,7 +1555,9 @@ export class FicheListComponent implements OnInit {
 
   // Helper methods for template
   getItemsCouvertsString(fiche: FichePrestation): string {
-    return fiche.itemsCouverts || 'N/A';
+    const items = this.getItemsArray(fiche);
+    if (items.length === 0) return 'N/A';
+    return items.join(', ');
   }
 
   getStatutInterventionLabel(statut: string | undefined): string {

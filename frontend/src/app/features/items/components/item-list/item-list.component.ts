@@ -119,10 +119,10 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
             {{ formatLotLabel(lot.lot) }}
           </h5>
 
-              <!-- LOT CITIES -->
+              <!-- LOT REGIONS -->
               <p class="text-muted small mb-3 flex-grow-1">
                 <i class="fa-solid fa-map-marker-alt me-1"></i>
-                {{ lot.villes.join(', ') }}
+                {{ lot.regions.join(', ') }}
               </p>
 
               <!-- LOT STATS -->
@@ -187,7 +187,7 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
               </h2>
               <p class="text-muted small mb-0">
                 <i class="fa-solid fa-map-marker-alt me-1"></i>
-                {{ selectedLot.villes.join(', ') }}
+                {{ selectedLot.regions.join(', ') }}
               </p>
             </div>
           </div>
@@ -267,12 +267,12 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
                         #{{ getFormattedItemNumber(equipmentGroup.key, i + 1) }}
                       </span>
                     </td>
-                    <td class="fw-semibold">{{ item.nomItem }}</td>
-                    <td class="text-muted">{{ item.description || '-' }}</td>
+                    <td class="fw-semibold" [title]="item.nomItem">{{ item.nomItem }}</td>
+                    <td class="text-muted" [title]="item.description || 'Aucune description'">{{ item.description || '-' }}</td>
                     <td>
                       <span class="text-success fw-semibold">{{ item.prix | number:'1.0-0' }} FCFA</span>
                     <td>
-                      <span class="badge bg-info-subtle text-info">{{ item.quantiteMaxTrimestre }}</span>
+                      <span class="fw-bold fs-5">{{ item.quantiteMaxTrimestre }}</span>
                     </td>
                     <td>
                       <div class="d-flex align-items-center gap-2">
@@ -282,10 +282,10 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
                                  [style.width.%]="getUsagePercentage(item)">
                             </div>
                           </div>
-                        </div>->
-                        <small class="fw-semibold text-muted">
+                        </div>
+                        <span class="fw-bold fs-5 text-muted">
                           {{ getPrestationsCountForItem(item) }}/{{ item.quantiteMaxTrimestre }}
-                        </small>
+                        </span>
                       </div>
                     </td>
                     <td class="text-center">
@@ -992,27 +992,33 @@ export class ItemListComponent implements OnInit {
   // Calculate grouped items and store in property
   updateGroupedItemsByEquipement() {
     const items = this.getItemsForSelectedLot();
-    const grouped = new Map<Equipement | string, Item[]>();
+    const grouped = new Map<string | number, { equipement: Equipement | string; items: Item[] }>();
     
     items.forEach(item => {
       // If item has equipment(s)
       if (item.equipements && item.equipements.length > 0) {
         item.equipements.forEach(equipement => {
-          if (!grouped.has(equipement)) {
-            grouped.set(equipement, []);
+          // Use equipment number as unique key to avoid duplicates
+          const key = equipement.numero || equipement.id || equipement.nomEquipement;
+          if (!grouped.has(key)) {
+            grouped.set(key, { equipement: equipement, items: [] });
           }
-          grouped.get(equipement)?.push(item);
+          grouped.get(key)?.items.push(item);
         });
       } else {
         // Items without equipment go to "Sans équipement" group
         if (!grouped.has('Sans équipement')) {
-          grouped.set('Sans équipement', []);
+          grouped.set('Sans équipement', { equipement: 'Sans équipement', items: [] });
         }
-        grouped.get('Sans équipement')?.push(item);
+        grouped.get('Sans équipement')?.items.push(item);
       }
     });
     
-    this.groupedItemsByEquipement = grouped;
+    // Convert to the format expected by the template
+    this.groupedItemsByEquipement = new Map<Equipement | string, Item[]>();
+    grouped.forEach((value) => {
+      this.groupedItemsByEquipement.set(value.equipement, value.items);
+    });
   }
 
   constructor(
@@ -1088,24 +1094,22 @@ export class ItemListComponent implements OnInit {
       });
     } else {
       // Admin ou autre rôle : charger tous les items
-      Promise.all([
-        this.itemService.getAllItems().toPromise(),
-        this.itemService.getItemsStatistiques().toPromise()
-      ]).then(([items, itemsStats]) => {
-        const statsObj = itemsStats as Record<string, any>;
-        const itemsByLot = statsObj ? statsObj['itemsByLot'] : {};
-        
-        this.items = (items || []).map(item => ({
-          ...item,
-          quantiteUtilisee: item.quantiteUtilisee || 0
-        }));
-        this.filteredItems = [...this.items];
-        this.groupItemsByLot();
-        this.updateGroupedItemsByEquipement();
-        this.loading = false;
-      }).catch(() => {
-        this.loading = false;
-        this.toast.show({ type: 'error', title: 'Erreur', message: 'Erreur lors du chargement des données' });
+      this.itemService.getAllItems().subscribe({
+        next: (items) => {
+          this.items = (items || []).map(item => ({
+            ...item,
+            quantiteUtilisee: item.quantiteUtilisee || 0
+          }));
+          this.filteredItems = [...this.items];
+          this.groupItemsByLot();
+          this.updateGroupedItemsByEquipement();
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('[DEBUG] Error loading items:', error);
+          this.loading = false;
+          this.toast.show({ type: 'error', title: 'Erreur', message: 'Erreur lors du chargement des items' });
+        }
       });
     }
   }
@@ -1309,7 +1313,7 @@ export class ItemListComponent implements OnInit {
 
   getLotName(lotId: string): string {
     const lot = this.lots.find(l => l.contractIds && l.contractIds.includes(lotId));
-    return lot ? `${this.formatLotLabel(lot.lot)} (${(lot.villes || []).join(', ')})` : 'Lot inconnu';
+    return lot ? `${this.formatLotLabel(lot.lot)} (${(lot.regions || []).join(', ')})` : 'Lot inconnu';
   }
 
   /**
@@ -1382,7 +1386,7 @@ export class ItemListComponent implements OnInit {
   transformLotsForManager(lots: LotWithContractorDto[]): any[] {
     return lots.map(lot => ({
       id: parseInt(lot.contractIds[0]) || 0,
-      nomLot: lot.villes.join(', '),
+      nomLot: lot.regions.join(', '),
       codeLot: lot.lot
     }));
   }

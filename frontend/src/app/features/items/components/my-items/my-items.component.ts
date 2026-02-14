@@ -147,10 +147,10 @@ import { ToastService } from '../../../../core/services/toast.service';
                 <td class="text-muted">{{ item.description || '-' }}</td>
                 <td><span class="text-success fw-semibold">{{ item.prix | number:'1.0-0' }} FCFA</span></td>
                 <td>
-                  <div class="d-flex gap-1">
-                    <span class="badge bg-warning-subtle text-warning">{{ getPrestationsCountForItem(item) }}</span>
-                    <span class="text-muted">/</span>
-                    <span class="badge bg-info-subtle text-info">{{ item.quantiteMaxTrimestre }}</span>
+                  <div class="d-flex gap-1 align-items-center justify-content-center">
+                    <span class="fw-bold fs-5">{{ getPrestationsCountForItem(item) }}</span>
+                    <span class="text-muted fs-5">/</span>
+                    <span class="fw-bold fs-5">{{ item.quantiteMaxTrimestre }}</span>
                   </div>
                 </td>
                 <td><span class="text-danger fw-semibold">{{ (item.prix * item.quantiteMaxTrimestre) | number:'1.0-0' }} FCFA</span></td>
@@ -704,8 +704,8 @@ export class MyItemsComponent implements OnInit {
     }
 
     if (!lot) return this.formatLotLabel(lotId);
-    const villes = (lot.villes || []).filter(v => v && v.trim().length > 0);
-    return villes.length > 0 ? `${this.formatLotLabel(lot.lot)} (${villes.join(', ')})` : this.formatLotLabel(lot.lot);
+    const regions = (lot.regions || []).filter(r => r && r.trim().length > 0);
+    return regions.length > 0 ? `${this.formatLotLabel(lot.lot)} (${regions.join(', ')})` : this.formatLotLabel(lot.lot);
   }
 
   /**

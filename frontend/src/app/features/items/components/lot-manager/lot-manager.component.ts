@@ -1,10 +1,11 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Lot, Item } from '../../../../core/models/business.models';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ConfirmationService } from '../../../../core/services/confirmation.service';
 import { LotService } from '../../../../core/services/lot.service';
+import { StructureMefpService } from '../../../../core/services/structure-mefp.service';
 import { formatLotDisplay } from '../../../../shared/utils/lot-utils';
 import { LotDisplayPipe } from '../../../../shared/pipes/lot-display.pipe';
 
@@ -32,9 +33,9 @@ import { LotDisplayPipe } from '../../../../shared/pipes/lot-display.pipe';
               </div>
               <div class="card-body">
                 <p class="text-muted small mb-3">Code: {{ lot.codeLot }}</p>
-                <p class="text-muted small mb-3" *ngIf="lot.villes && lot.villes.length > 0">
+                <p class="text-muted small mb-3" *ngIf="lot.regions && lot.regions.length > 0">
                   <i class="fa-solid fa-map-marker-alt me-1"></i>
-                  Villes: {{ lot.villes.join(', ') }}
+                  Régions: {{ lot.regions.join(', ') }}
                 </p>
 
                 <!-- Items in this lot -->
@@ -88,10 +89,28 @@ import { LotDisplayPipe } from '../../../../shared/pipes/lot-display.pipe';
                          placeholder="Ex: LOT-2024-Q1">
                 </div>
                 <div class="mb-3">
-                  <label class="form-label">Villes couvertes</label>
-                  <input formControlName="villes" type="text" class="form-control"
-                         placeholder="Ex: Ouagadougou, Bobo-Dioulasso">
-                  <div class="form-text">Séparez les villes par des virgules</div>
+                  <label class="form-label">Régions couvertes (17 régions du Burkina Faso)</label>
+                  <div class="regions-selection border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                    <div class="form-check" *ngFor="let region of availableRegions">
+                      <input class="form-check-input" type="checkbox"
+                             [id]="'region-' + region"
+                             [checked]="isRegionSelected(region)"
+                             (change)="toggleRegionSelection(region)">
+                      <label class="form-check-label" [for]="'region-' + region">
+                        {{ region }}
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-text mt-2">
+                    <i class="fa-solid fa-info-circle me-1"></i>
+                    Sélectionnez les régions couvertes par ce lot. Les structures de ces régions seront disponibles lors de la création de prestations.
+                  </div>
+                  <div class="mt-2" *ngIf="selectedRegions.length > 0">
+                    <span class="badge bg-primary me-1" *ngFor="let region of selectedRegions">
+                      {{ region }}
+                      <i class="fa-solid fa-times ms-1" style="cursor: pointer;" (click)="toggleRegionSelection(region)"></i>
+                    </span>
+                  </div>
                 </div>
                 <div class="text-end">
                   <button type="button" class="btn btn-outline-secondary me-2" (click)="cancelEdit()">
@@ -250,7 +269,7 @@ import { LotDisplayPipe } from '../../../../shared/pipes/lot-display.pipe';
     }
   `]
 })
-export class LotManagerComponent {
+export class LotManagerComponent implements OnInit {
   @Input() lots: Lot[] = [];
   @Input() items: Item[] = [];
   @Output() lotCreated = new EventEmitter<Lot>();
@@ -261,6 +280,10 @@ export class LotManagerComponent {
   isEditing = false;
   lotForm!: FormGroup;
   currentLot: Lot | null = null;
+
+  // Regions properties
+  availableRegions: string[] = [];
+  selectedRegions: string[] = [];
 
   // Item selection properties
   showItemSelectionModal = false;
@@ -273,17 +296,53 @@ export class LotManagerComponent {
     private fb: FormBuilder,
     private toast: ToastService,
     private confirm: ConfirmationService,
-    private lotService: LotService
+    private lotService: LotService,
+    private structureMefpService: StructureMefpService
   ) {
     this.initForm();
+  }
+
+  ngOnInit(): void {
+    this.loadRegions();
   }
 
   initForm() {
     this.lotForm = this.fb.group({
       nomLot: ['', Validators.required],
       codeLot: ['', Validators.required],
-      villes: ['']
+      regions: [[]]
     });
+  }
+
+  loadRegions(): void {
+    this.structureMefpService.getAllRegions().subscribe({
+      next: (regions) => {
+        this.availableRegions = regions;
+        console.log('🌍 Régions chargées:', regions);
+      },
+      error: (error) => {
+        console.error('❌ Erreur lors du chargement des régions:', error);
+        this.toast.show({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Impossible de charger la liste des régions'
+        });
+      }
+    });
+  }
+
+  toggleRegionSelection(region: string): void {
+    const index = this.selectedRegions.indexOf(region);
+    if (index > -1) {
+      this.selectedRegions.splice(index, 1);
+    } else {
+      this.selectedRegions.push(region);
+    }
+    this.lotForm.patchValue({ regions: this.selectedRegions });
+  }
+
+  isRegionSelected(region: string): boolean {
+    return this.selectedRegions.includes(region);
   }
 
   showCreateForm() {
@@ -297,10 +356,14 @@ export class LotManagerComponent {
     this.showForm = true;
     this.isEditing = true;
     this.currentLot = lot;
+    
+    // Initialize selected regions from lot data
+    this.selectedRegions = lot.regions ? [...lot.regions] : [];
+    
     this.lotForm.patchValue({
       nomLot: lot.nomLot || '',
       codeLot: lot.codeLot || '',
-      villes: lot.villes ? lot.villes.join(', ') : ''
+      regions: this.selectedRegions
     });
     console.log('Form after patch:', this.lotForm.value);
     console.log('Form valid:', this.lotForm.valid);
@@ -313,6 +376,7 @@ export class LotManagerComponent {
     this.showForm = false;
     this.isEditing = false;
     this.currentLot = null;
+    this.selectedRegions = [];
     this.lotForm.reset();
   }
 
@@ -329,10 +393,10 @@ export class LotManagerComponent {
 
     const lotData = this.lotForm.value;
 
-    // Convert villes string to array
+    // Process regions array
     const processedLotData = {
       ...lotData,
-      villes: lotData.villes ? lotData.villes.split(',').map((v: string) => v.trim()).filter((v: string) => v) : []
+      regions: this.selectedRegions || []
     };
 
     if (this.isEditing && this.currentLot) {

@@ -1,0 +1,6 @@
+2026-02-11 14:58:51.207910Z jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "FICHES_PRESTATION" not found; SQL statement:
+
+
+-- Delete all fiches prestation
+DELETE FROM fiches_prestation [42102-224]

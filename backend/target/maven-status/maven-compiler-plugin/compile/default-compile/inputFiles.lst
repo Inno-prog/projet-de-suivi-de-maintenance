@@ -1,4 +1,5 @@
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/MaintenanceApplication.java
+/home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/BrouillonFicheCleanupConfig.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/ContractRelationshipFix.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/ContratDataInitializer.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/DataInitializer.java
@@ -19,6 +20,7 @@
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/FileUploadController.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/GlobalExceptionHandler.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/ItemController.java
+/home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/KeycloakController.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/LotController.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/NotificationController.java
 /home/inno/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/OrdreCommandeController.java

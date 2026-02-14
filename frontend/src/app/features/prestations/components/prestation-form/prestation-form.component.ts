@@ -495,12 +495,13 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    console.log('🏢 Chargement des structures pour le lot ID:', lotId);
-    this.structureMefpService.getStructuresByLotId(lotId).subscribe({
+    console.log('🏢 Chargement des structures pour le lot ID (via régions):', lotId);
+    // Use the new endpoint that loads structures by lot regions
+    this.structureMefpService.getStructuresByLotRegions(lotId).subscribe({
       next: (structures) => {
-        console.log('🏢 API Response - structures loaded:', structures);
+        console.log('🏢 API Response - structures loaded by regions:', structures);
         this.structuresMefp = structures;
-        console.log(`🏢 ${structures.length} structures chargées pour le lot ${lotId}`);
+        console.log(`🏢 ${structures.length} structures chargées pour le lot ${lotId} (via régions)`);
 
         // Reset structure selection if current selection is not in the filtered list
         if (this.selectedStructure && !structures.find(s => s.id === this.selectedStructure!.id)) {
@@ -520,13 +521,13 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       },
       error: (error) => {
-        console.error('🏢 Error loading structures by lot:', error);
+        console.error('🏢 Error loading structures by lot regions:', error);
         if (error.status !== 401) {
-          console.error('Erreur lors du chargement des structures par lot:', error);
+          console.error('Erreur lors du chargement des structures par régions du lot:', error);
           this.toastService.show({
             type: 'error',
             title: 'Erreur',
-            message: 'Erreur lors du chargement des structures pour ce lot'
+            message: 'Erreur lors du chargement des structures pour les régions de ce lot'
           });
         }
         this.structuresMefp = [];

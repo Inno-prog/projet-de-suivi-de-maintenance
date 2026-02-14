@@ -34,6 +34,10 @@ public class Lot {
     @Convert(converter = StringListConverter.class)
     private List<String> villes = new ArrayList<>();
 
+    @Column(name = "regions", columnDefinition = "TEXT")
+    @Convert(converter = StringListConverter.class)
+    private List<String> regions = new ArrayList<>();
+
     @OneToMany(mappedBy = "lot", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Contrat> contrats = new ArrayList<>();
@@ -76,6 +80,14 @@ public class Lot {
 
     public void setVilles(List<String> villes) {
         this.villes = villes;
+    }
+
+    public List<String> getRegions() {
+        return regions;
+    }
+
+    public void setRegions(List<String> regions) {
+        this.regions = regions;
     }
 
     @JsonIgnore

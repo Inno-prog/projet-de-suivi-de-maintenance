@@ -107,4 +107,11 @@ export class StructureMefpService {
   getStructuresByRegionAndVille(region: string, ville: string): Observable<StructureMefp[]> {
     return this.http.get<StructureMefp[]>(`${this.API_URL}/by-region/${encodeURIComponent(region)}/ville/${encodeURIComponent(ville)}`, { headers: this.getHeaders() });
   }
+
+  /**
+   * Get structures by lot regions - used when a lot is selected in prestation form
+   */
+  getStructuresByLotRegions(lotId: number): Observable<StructureMefp[]> {
+    return this.http.get<StructureMefp[]>(`${this.API_URL}/by-lot-regions/${lotId}`, { headers: this.getHeaders() });
+  }
 }

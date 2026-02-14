@@ -149,6 +149,35 @@ public class StructureMefpService {
     }
 
     /**
+     * Get structures by multiple regions (for lot region assignment)
+     */
+    public List<StructureMefp> getStructuresByRegions(List<String> regions) {
+        if (regions == null || regions.isEmpty()) {
+            logger.info("No regions provided, returning empty list");
+            return new ArrayList<>();
+        }
+        
+        logger.info("Fetching structures for regions: " + regions);
+        List<StructureMefp> allStructures = new ArrayList<>();
+        
+        for (String region : regions) {
+            if (region != null && !region.trim().isEmpty()) {
+                List<StructureMefp> structures = structureMefpRepository.findByRegion(region);
+                logger.info("Found " + structures.size() + " structures for region: " + region);
+                allStructures.addAll(structures);
+            }
+        }
+        
+        // Remove duplicates based on structure ID
+        List<StructureMefp> uniqueStructures = allStructures.stream()
+            .distinct()
+            .collect(Collectors.toList());
+        
+        logger.info("Total unique structures found for all regions: " + uniqueStructures.size());
+        return uniqueStructures;
+    }
+
+    /**
      * Get hierarchical structure of MEFP organizations
      * Format: Region -> Ville -> Structures
      * This version includes ALL 17 regions, even those without structures

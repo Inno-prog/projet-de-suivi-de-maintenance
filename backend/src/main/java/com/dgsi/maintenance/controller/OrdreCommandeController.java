@@ -311,8 +311,7 @@ public class OrdreCommandeController {
             for (FichePrestation fiche : fiches) {
                 if (fiche.getNumeroFiche() == null) {
                     // Utiliser la logique existante du service pour générer le numéro de fiche
-                    String formattedNumber = String.format("T%d-L%d-%02d", trimestre, lotNumber, 
-                        fichePrestationService.getNextAvailableNumero(trimestre, lotNumber));
+                    String formattedNumber = fichePrestationService.getNextAvailableNumero(trimestre, lotNumber);
                     fiche.setNumeroFiche(formattedNumber);
                     // Enregistrer le numéro généré dans la base de données
                     try {
