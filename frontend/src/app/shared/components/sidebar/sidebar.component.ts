@@ -27,7 +27,7 @@ import { TranslatePipe } from '../../pipes/translate.pipe';
 
         <!-- App title and role -->
         <div class="app-info">
-          <h3>MainTrack Pro</h3>
+          <h3>SUMIO DGSI</h3>
           <small *ngIf="currentUser$ | async as user">{{ getRoleLabel(user.role) }}</small>
         </div>
       </div>

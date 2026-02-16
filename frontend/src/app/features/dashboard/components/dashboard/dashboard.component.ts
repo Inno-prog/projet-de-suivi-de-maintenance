@@ -74,19 +74,19 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
             <div class="dashboard-header" style="max-width: 65%; margin: 0 auto; margin-top: 50px; margin-bottom: -20px; padding: 2rem 2rem; background: linear-gradient(135deg, #1e4d7b 0%, #2d5a8a 100%); border-top: 1px solid #1e293b;">
               <div class="welcome-section" style="margin-top: 20px;">
                 <h1 class="animated-title" style="margin-left: 50px;">
-                  <span class="title-text">Bienvenue sur </span><span class="title-text-3d" style="margin-left: 10px;"> MainTrack Pro DGSI</span>
+                  <span class="title-text">Bienvenue sur </span><span class="title-text-3d" style="margin-left: 10px;"> SUMIO DGSI</span>
                 </h1>
                 <p class="animated-subtitle">
                   <span class="word" style="animation-delay: 0.8s">Notre</span>
                   <span class="word" style="animation-delay: 1s">plateforme</span>
                   <span class="word" style="animation-delay: 1.2s">de</span>
                   <span class="word" style="animation-delay: 1.4s">suivi</span>
-                  <span class="word" style="animation-delay: 1.6s">professionnel</span>
+                  <span class="word" style="animation-delay: 1.6s">Unifié</span>
                   <span class="word" style="animation-delay: 1.8s">des</span>
-                  <span class="word" style="animation-delay: 2s">prestations</span>
-                  <span class="word" style="animation-delay: 2.2s">de</span>
-                  <span class="word" style="animation-delay: 2.4s">maintenance</span>
-                  <span class="word" style="animation-delay: 2.6s">informatique</span>
+                  <span class="word" style="animation-delay: 2s">Maintenances</span>
+                  <span class="word" style="animation-delay: 2.2s">Informatiques</span>
+                  <span class="word" style="animation-delay: 2.4s">et de gestion des </span>
+                  <span class="word" style="animation-delay: 2.6s">Ordres de commande</span>
                 </p>
                 <p class="subtitle animated-subtitle">
                   <span class="word" style="animation-delay: 2.8s">Développé</span>

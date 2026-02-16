@@ -48,11 +48,7 @@
       "webOrigins": [
         "http://localhost:4200"
       ],
-      "postLogoutRedirectUris": [
-        "http://localhost:4200",
-        "http://localhost:4200/*",
-        "http://localhost:4200/dashboard"
-      ],
+
       "protocolMappers": [
         {
           "name": "realm roles",
