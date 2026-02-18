@@ -30,9 +30,10 @@ public class Prestataire extends User {
     @Column(name = "direction")
     private String direction;
 
-    @OneToMany(mappedBy = "prestataire", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @com.fasterxml.jackson.annotation.JsonIgnore
-    private List<Contrat> contrats = new ArrayList<>();
+    // Note: The contrats relationship has been removed because the prestataire_id column in contrats
+    // now stores Keycloak user IDs rather than local database IDs. Use the Keycloak API to retrieve
+    // contracts for a specific prestataire.
+    private transient List<Contrat> contrats = new ArrayList<>();
 
     @OneToMany(mappedBy = "prestataire", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FichePrestation> fichesPrestation = new HashSet<>();

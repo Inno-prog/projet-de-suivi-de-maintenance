@@ -7,6 +7,7 @@ export interface Contrat {
    nomPrestataire: string;
    montant: number;
    lot: string;
+   regions?: string;
    ville: string;
    statut: StatutContrat;
    fichierContrat?: string;

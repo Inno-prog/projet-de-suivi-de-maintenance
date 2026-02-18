@@ -118,7 +118,7 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
                   <th>Date de Fin</th>
                   <th>Montant</th>
                   <th>Lot</th>
-                  <th>Ville</th>
+                   <th>Régions</th>
                   <th>Statut</th>
                   <th>Actions</th>
                 </tr>
@@ -131,7 +131,7 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
                   <td>{{ formatDate(contrat.dateFin) }}</td>
                   <td class="text-green-600 font-medium">{{ contrat.montant | number:'1.0-0' }} FCFA</td>
                   <td>{{ contrat.lot }}</td>
-                  <td>{{ contrat.ville }}</td>
+                   <td>{{ contrat.regions }}</td>
                   <td>
                     <span class="badge" [class]="getStatutBadgeClass(contrat.statut)">
                       {{ getStatutLabel(contrat.statut) }}
@@ -464,7 +464,7 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
     th:nth-child(4), td:nth-child(4) { min-width: 100px; } /* Date Fin */
     th:nth-child(5), td:nth-child(5) { min-width: 100px; } /* Montant */
     th:nth-child(6), td:nth-child(6) { min-width: 80px; }  /* Lot */
-    th:nth-child(7), td:nth-child(7) { min-width: 100px; } /* Ville */
+     th:nth-child(7), td:nth-child(7) { min-width: 150px; } /* Régions */
     th:nth-child(8), td:nth-child(8) { min-width: 100px; } /* Statut */
     th:nth-child(9), td:nth-child(9) { min-width: 150px; } /* Actions */
 

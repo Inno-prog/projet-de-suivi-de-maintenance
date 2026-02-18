@@ -74,10 +74,18 @@ public class Contrat {
     @Column(name = "fichier_contrat", length = 500)
     private String fichierContrat;
 
+    @Column(name = "prestataire_id")
+    private String prestataireId;
+
+    @Column(name = "regions")
+    private String regions;
+
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "prestataire_id")
-    private Prestataire prestataire;
+    // Note: The prestataire_id column now stores Keycloak user IDs, not local database IDs
+    // The ManyToOne relationship has been removed because the prestataire_id now references Keycloak users
+    // rather than the local prestataires table
+    // If you need to access the Prestataire entity, you should use the Keycloak API directly
+    private transient Prestataire prestataire;
 
     @OneToMany(mappedBy = "contrat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrdreCommande> ordresCommande = new ArrayList<>();
@@ -207,6 +215,22 @@ public class Contrat {
 
     public void setFichierContrat(String fichierContrat) {
         this.fichierContrat = fichierContrat;
+    }
+
+    public String getPrestataireId() {
+        return prestataireId;
+    }
+
+    public void setPrestataireId(String prestataireId) {
+        this.prestataireId = prestataireId;
+    }
+
+    public String getRegions() {
+        return regions;
+    }
+
+    public void setRegions(String regions) {
+        this.regions = regions;
     }
 
     public Prestataire getPrestataire() {

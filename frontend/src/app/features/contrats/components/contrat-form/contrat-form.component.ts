@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 import { ContratService } from '../../../../core/services/contrat.service';
 import { ItemService } from '../../../../core/services/item.service';
 import { LotService } from '../../../../core/services/lot.service';
+import { KeycloakService, KeycloakPrestataire } from '../../../../core/services/keycloak.service';
 import { Contrat, StatutContrat, Item, Lot } from '../../../../core/models/business.models';
 import { ToastService } from '../../../../core/services/toast.service';
 
@@ -41,6 +42,7 @@ export class ContratFormComponent implements OnInit, OnDestroy {
   selectedItems: Item[] = [];
   selectedItemIds: number[] = [];
   lots: Lot[] = [];
+  prestataires: KeycloakPrestataire[] = [];
 
   statutOptions = [
     { value: StatutContrat.ACTIF, label: 'Actif' },
@@ -64,19 +66,21 @@ export class ContratFormComponent implements OnInit, OnDestroy {
     private contratService: ContratService,
     private itemService: ItemService,
     private lotService: LotService,
+    private keycloakService: KeycloakService,
     private toastService: ToastService,
     public dialogRef: MatDialogRef<ContratFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.isEditMode = !!data?.contrat;
-    this.contratForm = this.fb.group({
+     this.contratForm = this.fb.group({
       idContrat: [data?.contrat?.idContrat || '', [Validators.required]],
       dateDebut: [data?.contrat?.dateDebut || '', [Validators.required]],
       dateFin: [data?.contrat?.dateFin || '', [Validators.required]],
+      prestataireId: [data?.contrat?.prestataireId || '', [Validators.required]],
       nomPrestataire: [data?.contrat?.nomPrestataire || '', [Validators.required]],
       montant: [data?.contrat?.montant || '', [Validators.required, Validators.min(0)]],
       lotId: [data?.contrat?.lotEntity?.id || '', [Validators.required]],
-      ville: [data?.contrat?.ville || '', [Validators.required]],
+      regions: [data?.contrat?.regions || ''],
       statut: [data?.contrat?.statut || StatutContrat.ACTIF, [Validators.required]],
       fichierContrat: [data?.contrat?.fichierContrat || '', [Validators.required]]
     });
@@ -87,6 +91,21 @@ export class ContratFormComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadItems();
     this.loadLots();
+    this.loadPrestataires();
+    
+    // Listener pour mettre à jour le nomPrestataire lorsque le prestataireId change
+    this.contratForm.get('prestataireId')?.valueChanges.subscribe(prestataireId => {
+      const selectedPrestataire = this.prestataires.find(p => p.id === prestataireId);
+      if (selectedPrestataire) {
+        const displayName = selectedPrestataire.displayName || 
+                          selectedPrestataire.nom || 
+                          `${selectedPrestataire.firstName || ''} ${selectedPrestataire.lastName || ''}`.trim() || 
+                          selectedPrestataire.username || '';
+        this.contratForm.patchValue({
+          nomPrestataire: displayName
+        });
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -126,6 +145,27 @@ export class ContratFormComponent implements OnInit, OnDestroy {
           type: 'error',
           title: 'Erreur',
           message: 'Erreur lors du chargement des lots'
+        });
+        this.loading = false;
+      }
+    });
+    this.subscriptions.push(subscription);
+  }
+
+  loadPrestataires(): void {
+    this.loading = true;
+    const subscription = this.keycloakService.getPrestataires().subscribe({
+      next: (prestataires) => {
+        this.prestataires = prestataires;
+        this.loading = false;
+        console.log('Prestataires chargés:', this.prestataires);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des prestataires:', error);
+        this.toastService.show({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Erreur lors du chargement des prestataires depuis Keycloak'
         });
         this.loading = false;
       }
@@ -271,6 +311,17 @@ export class ContratFormComponent implements OnInit, OnDestroy {
       // Find the selected lot
       const selectedLot = this.lots.find(lot => lot.id === lotId);
       if (selectedLot) {
+        // Auto-fill regions with the lot's regions list
+        if (selectedLot.regions && selectedLot.regions.length > 0) {
+          this.contratForm.patchValue({
+            regions: selectedLot.regions.join(', ')
+          });
+        } else {
+          // Clear regions if lot has no regions
+          this.contratForm.patchValue({
+            regions: ''
+          });
+        }
         // Auto-fill ville with first ville from the selected lot's villes list
         if (selectedLot.villes && selectedLot.villes.length > 0) {
           this.contratForm.patchValue({
@@ -284,10 +335,21 @@ export class ContratFormComponent implements OnInit, OnDestroy {
         }
       }
     } else {
-      // Clear ville if no lot selected
+      // Clear fields if no lot selected
       this.contratForm.patchValue({
+        regions: '',
         ville: ''
       });
     }
+  }
+
+  // Helper method to get display name for a prestataire
+  getPrestataireDisplayName(prestataireId: string): string {
+    const presta = this.prestataires.find(p => p.id === prestataireId);
+    if (presta) {
+      // Use nom or full name (firstName + lastName) or username
+      return presta.nom || `${presta.firstName || ''} ${presta.lastName || ''}`.trim() || presta.username || '';
+    }
+    return '';
   }
 }

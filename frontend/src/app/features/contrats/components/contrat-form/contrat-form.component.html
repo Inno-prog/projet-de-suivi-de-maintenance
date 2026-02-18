@@ -107,18 +107,21 @@
 
         <div class="form-row">
           <div class="form-group half">
-            <label for="nomPrestataire">Nom du prestataire *</label>
-            <input
-              type="text"
-              id="nomPrestataire"
-              formControlName="nomPrestataire"
-              placeholder="Nom du prestataire"
+            <label for="prestataireId">Prestataire *</label>
+            <select
+              id="prestataireId"
+              formControlName="prestataireId"
               class="line-input"
-              [class.error]="contratForm.get('nomPrestataire')?.invalid && contratForm.get('nomPrestataire')?.touched"
-            />
-            <div class="input-line" [class.error]="contratForm.get('nomPrestataire')?.invalid && contratForm.get('nomPrestataire')?.touched"></div>
-            <div class="error-message" *ngIf="contratForm.get('nomPrestataire')?.invalid && contratForm.get('nomPrestataire')?.touched">
-              <span *ngIf="contratForm.get('nomPrestataire')?.errors?.['required']">Le nom du prestataire est requis</span>
+              [class.error]="contratForm.get('prestataireId')?.invalid && contratForm.get('prestataireId')?.touched"
+            >
+              <option value="">-- Sélectionner un prestataire --</option>
+              <option *ngFor="let prestataire of prestataires" [value]="prestataire.id">
+                {{ prestataire.displayName || prestataire.nom || (prestataire.firstName + ' ' + prestataire.lastName).trim() || prestataire.username }}
+              </option>
+            </select>
+            <div class="input-line" [class.error]="contratForm.get('prestataireId')?.invalid && contratForm.get('prestataireId')?.touched"></div>
+            <div class="error-message" *ngIf="contratForm.get('prestataireId')?.invalid && contratForm.get('prestataireId')?.touched">
+              <span *ngIf="contratForm.get('prestataireId')?.errors?.['required']">Le prestataire est requis</span>
             </div>
           </div>
 
@@ -144,19 +147,16 @@
         </div>
 
         <div class="form-group">
-          <label for="ville">Ville *</label>
+          <label for="regions">Régions couvertes</label>
           <input
             type="text"
-            id="ville"
-            formControlName="ville"
-            placeholder="Ville d'exécution du contrat"
+            id="regions"
+            formControlName="regions"
+            placeholder="Régions couvertes par le contrat"
             class="line-input"
-            [class.error]="contratForm.get('ville')?.invalid && contratForm.get('ville')?.touched"
+            readonly
           />
-          <div class="input-line" [class.error]="contratForm.get('ville')?.invalid && contratForm.get('ville')?.touched"></div>
-          <div class="error-message" *ngIf="contratForm.get('ville')?.invalid && contratForm.get('ville')?.touched">
-            <span *ngIf="contratForm.get('ville')?.errors?.['required']">La ville est requise</span>
-          </div>
+          <div class="input-line"></div>
         </div>
 
         <div class="form-group">

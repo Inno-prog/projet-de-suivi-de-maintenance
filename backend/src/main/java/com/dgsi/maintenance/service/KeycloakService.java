@@ -1,17 +1,22 @@
 package com.dgsi.maintenance.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.RoleMappingResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,37 +24,31 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import jakarta.ws.rs.core.Response;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class KeycloakService {
 
-    // Commented out Keycloak properties for now since Keycloak is not running
-    // @Value("${keycloak.auth-server-url}")
-    // private String authServerUrl;
+    @Value("${keycloak.auth-server-url:http://localhost:8080}")
+    private String authServerUrl;
 
-    // @Value("${keycloak.realm}")
-    // private String realm;
+    @Value("${keycloak.realm:Maintenance-DGSI}")
+    private String realm;
 
-    // @Value("${keycloak.admin.username}")
-    // private String adminUsername;
+    @Value("${keycloak.admin.username:admin}")
+    private String adminUsername;
 
-    // @Value("${keycloak.admin.password}")
-    // private String adminPassword;
+    @Value("${keycloak.admin.password:admin123}")
+    private String adminPassword;
 
-    // @Value("${keycloak.admin.client-id}")
-    // private String adminClientId;
-
-    // Temporary hardcoded values for testing without Keycloak
-    private String authServerUrl = "http://localhost:8080";
-    private String realm = "Maintenance-DGSI";
-    private String adminUsername = "admin";
-    private String adminPassword = "admin";
-    private String adminClientId = "admin-cli";
+    @Value("${keycloak.admin.client-id:admin-cli}")
+    private String adminClientId;
 
     private Keycloak getKeycloakInstance() {
         return KeycloakBuilder.builder()
                 .serverUrl(authServerUrl)
-                .realm(realm)
+                .realm("master") // Must use master realm for admin operations
                 .username(adminUsername)
                 .password(adminPassword)
                 .clientId(adminClientId)
@@ -106,14 +105,148 @@ public class KeycloakService {
         }
     }
 
+    /**
+     * Get access token from Keycloak for admin API
+     */
+    private String getAdminAccessToken() {
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            
+            String tokenUrl = authServerUrl + "/realms/" + realm + "/protocol/openid-connect/token";
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("grant_type", "password");
+            params.add("client_id", "admin-cli");
+            params.add("username", adminUsername);
+            params.add("password", adminPassword);
+            
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+            
+            ResponseEntity<Map> response = restTemplate.postForEntity(tokenUrl, request, Map.class);
+            
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return (String) response.getBody().get("access_token");
+            }
+        } catch (Exception e) {
+            log.error("Failed to get admin access token: {}", e.getMessage());
+        }
+        return null;
+    }
+    
     public List<Map<String, Object>> getAllPrestataires() {
-        // Return empty list for now since Keycloak is not running
-        return Collections.emptyList();
+        List<Map<String, Object>> prestataires = new ArrayList<>();
+        
+        Keycloak keycloak = getKeycloakInstance();
+        try {
+            RealmResource realmResource = keycloak.realm(realm);
+            UsersResource usersResource = realmResource.users();
+            RoleRepresentation prestataireRole = realmResource.roles().get("PRESTATAIRE").toRepresentation();
+            
+            // Get all users
+            List<UserRepresentation> allUsers = usersResource.list();
+            
+            if (allUsers != null && !allUsers.isEmpty()) {
+                for (UserRepresentation user : allUsers) {
+                    if (user.isEnabled()) {
+                        // Check if user has PRESTATAIRE role
+                        List<RoleRepresentation> userRoles = usersResource.get(user.getId()).roles().realmLevel().listEffective();
+                        
+                        boolean hasPrestataireRole = userRoles.stream()
+                            .anyMatch(role -> "PRESTATAIRE".equals(role.getName()));
+                        
+                        if (hasPrestataireRole) {
+                            Map<String, Object> presta = new HashMap<>();
+                            presta.put("id", user.getId());
+                            presta.put("username", user.getUsername());
+                            presta.put("email", user.getEmail());
+                            presta.put("firstName", user.getFirstName());
+                            presta.put("lastName", user.getLastName());
+                            
+                            // Create display name
+                            String displayName = "";
+                            if (user.getFirstName() != null && !user.getFirstName().isEmpty()) {
+                                displayName = user.getFirstName();
+                            }
+                            if (user.getLastName() != null && !user.getLastName().isEmpty()) {
+                                if (!displayName.isEmpty()) {
+                                    displayName += " ";
+                                }
+                                displayName += user.getLastName();
+                            }
+                            if (displayName.isEmpty() && user.getUsername() != null) {
+                                displayName = user.getUsername();
+                            }
+                            
+                            presta.put("displayName", displayName);
+                            prestataires.add(presta);
+                        }
+                    }
+                }
+            }
+            
+            log.info("Nombre de prestataires trouvés dans Keycloak: {}", prestataires.size());
+        } catch (Exception e) {
+            log.error("Erreur lors de la récupération des prestataires depuis Keycloak: ", e);
+        } finally {
+            keycloak.close();
+        }
+        
+        return prestataires;
     }
 
     public List<Map<String, Object>> getAllUsers() {
-        // Return empty list for now since Keycloak is not running
-        return Collections.emptyList();
+        List<Map<String, Object>> users = new ArrayList<>();
+        
+        Keycloak keycloak = getKeycloakInstance();
+        try {
+            RealmResource realmResource = keycloak.realm(realm);
+            UsersResource usersResource = realmResource.users();
+            
+            // Get all users
+            List<UserRepresentation> allUsers = usersResource.list();
+            
+            if (allUsers != null && !allUsers.isEmpty()) {
+                for (UserRepresentation user : allUsers) {
+                    if (user.isEnabled()) {
+                        Map<String, Object> userMap = new HashMap<>();
+                        userMap.put("id", user.getId());
+                        userMap.put("username", user.getUsername());
+                        userMap.put("email", user.getEmail());
+                        userMap.put("firstName", user.getFirstName());
+                        userMap.put("lastName", user.getLastName());
+                        
+                        // Create display name
+                        String displayName = "";
+                        if (user.getFirstName() != null && !user.getFirstName().isEmpty()) {
+                            displayName = user.getFirstName();
+                        }
+                        if (user.getLastName() != null && !user.getLastName().isEmpty()) {
+                            if (!displayName.isEmpty()) {
+                                displayName += " ";
+                            }
+                            displayName += user.getLastName();
+                        }
+                        if (displayName.isEmpty() && user.getUsername() != null) {
+                            displayName = user.getUsername();
+                        }
+                        
+                        userMap.put("displayName", displayName);
+                        users.add(userMap);
+                    }
+                }
+            }
+            
+            log.info("Nombre d'utilisateurs trouvés dans Keycloak: {}", users.size());
+        } catch (Exception e) {
+            log.error("Erreur lors de la récupération des utilisateurs depuis Keycloak: ", e);
+        } finally {
+            keycloak.close();
+        }
+        
+        return users;
     }
 
     public void logout(String refreshToken) {

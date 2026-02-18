@@ -15,6 +15,7 @@ import com.dgsi.maintenance.util.LotUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,6 +38,9 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*", maxAge = 3600)
 
 public class ContratController {
+    
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private ContratRepository contratRepository;
@@ -83,8 +89,9 @@ public class ContratController {
     public ResponseEntity<Contrat> createContrat(
             @RequestParam(value = "idContrat", required = false) String idContrat,
             @RequestParam(value = "nomPrestataire", required = false) String nomPrestataire,
+            @RequestParam(value = "prestataireId", required = false) String prestataireId,
             @RequestParam(value = "lotId", required = false) Long lotId,
-            @RequestParam(value = "ville", required = false) String ville,
+            @RequestParam(value = "regions", required = false) String regions,
             @RequestParam(value = "dateDebut", required = false) String dateDebut,
             @RequestParam(value = "dateFin", required = false) String dateFin,
             @RequestParam(value = "montant", required = false) Double montant,
@@ -109,6 +116,12 @@ public class ContratController {
             Contrat contrat = new Contrat();
             contrat.setIdContrat(idContrat);
             contrat.setNomPrestataire(nomPrestataire);
+            if (prestataireId != null && !prestataireId.trim().isEmpty()) {
+                contrat.setPrestataireId(prestataireId);
+            }
+            if (regions != null && !regions.trim().isEmpty()) {
+                contrat.setRegions(regions);
+            }
 
             // Set lot entity if lotId is provided
             if (lotId != null) {
@@ -118,7 +131,6 @@ public class ContratController {
                 }
             }
 
-            contrat.setVille(ville);
             contrat.setDateDebut(dateDebut != null ? LocalDate.parse(dateDebut) : null);
             contrat.setDateFin(dateFin != null ? LocalDate.parse(dateFin) : null);
             contrat.setMontant(montant);
@@ -175,8 +187,9 @@ public class ContratController {
             @PathVariable Long id,
             @RequestParam(value = "idContrat", required = false) String idContrat,
             @RequestParam(value = "nomPrestataire", required = false) String nomPrestataire,
+            @RequestParam(value = "prestataireId", required = false) String prestataireId,
             @RequestParam(value = "lotId", required = false) Long lotId,
-            @RequestParam(value = "ville", required = false) String ville,
+            @RequestParam(value = "regions", required = false) String regions,
             @RequestParam(value = "dateDebut", required = false) String dateDebut,
             @RequestParam(value = "dateFin", required = false) String dateFin,
             @RequestParam(value = "montant", required = false) Double montant,
@@ -191,6 +204,12 @@ public class ContratController {
             try {
                 if (idContrat != null) contrat.setIdContrat(idContrat);
                 if (nomPrestataire != null) contrat.setNomPrestataire(nomPrestataire);
+                if (prestataireId != null && !prestataireId.trim().isEmpty()) {
+                    contrat.setPrestataireId(prestataireId);
+                }
+                if (regions != null && !regions.trim().isEmpty()) {
+                    contrat.setRegions(regions);
+                }
 
                 // Set lot entity if lotId is provided
                 if (lotId != null) {
@@ -200,7 +219,6 @@ public class ContratController {
                     }
                 }
 
-                if (ville != null) contrat.setVille(ville);
                 if (dateDebut != null) contrat.setDateDebut(LocalDate.parse(dateDebut));
                 if (dateFin != null) contrat.setDateFin(LocalDate.parse(dateFin));
                 if (montant != null) contrat.setMontant(montant);
@@ -253,9 +271,14 @@ public class ContratController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRATEUR')")
+    @Transactional
     public ResponseEntity<?> deleteContrat(@PathVariable Long id) {
         return contratRepository.findById(id)
             .map(contrat -> {
+                // Supprimer les références dans la table contrat_regions (table de jointure Many-to-Many)
+                contratRepository.deleteContratRegions(id);
+                
+                // Supprimer le contrat
                 contratRepository.delete(contrat);
                 return ResponseEntity.ok().build();
             })

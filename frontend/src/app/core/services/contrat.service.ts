@@ -28,13 +28,18 @@ export class ContratService {
       // Ajout des champs obligatoires
       formData.append('idContrat', contrat.idContrat || '');
       formData.append('nomPrestataire', contrat.nomPrestataire || '');
+      if (contrat.prestataireId) {
+        formData.append('prestataireId', contrat.prestataireId);
+      }
 
       // Send lotId if available
       if (contrat.lotId) {
         formData.append('lotId', contrat.lotId.toString());
       }
 
-      formData.append('ville', contrat.ville || '');
+      if (contrat.regions) {
+        formData.append('regions', contrat.regions);
+      }
       
       // Formatage des dates
       const formatDate = (date: any) => {
@@ -85,13 +90,18 @@ export class ContratService {
     const formData = new FormData();
     formData.append('idContrat', contrat.idContrat || '');
     formData.append('nomPrestataire', contrat.nomPrestataire || '');
+    if (contrat.prestataireId) {
+      formData.append('prestataireId', contrat.prestataireId);
+    }
 
     // Send lotId if available
     if (contrat.lotId) {
       formData.append('lotId', contrat.lotId.toString());
     }
 
-    formData.append('ville', contrat.ville || '');
+    if (contrat.regions) {
+      formData.append('regions', contrat.regions);
+    }
     formData.append('dateDebut', contrat.dateDebut ? new Date(contrat.dateDebut).toISOString().split('T')[0] : '');
     formData.append('dateFin', contrat.dateFin ? new Date(contrat.dateFin).toISOString().split('T')[0] : '');
     formData.append('montant', (contrat.montant || 0).toString());

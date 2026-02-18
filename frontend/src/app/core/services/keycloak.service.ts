@@ -10,6 +10,7 @@ export interface KeycloakPrestataire {
   lastName: string;
   username: string;
   enabled: boolean;
+  displayName?: string;
 }
 
 @Injectable({
