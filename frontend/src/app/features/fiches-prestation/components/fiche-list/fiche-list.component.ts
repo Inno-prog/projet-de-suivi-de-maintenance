@@ -1572,10 +1572,28 @@ export class FicheListComponent implements OnInit {
 
   getItemsArray(fiche: FichePrestation): string[] {
     if (!fiche.itemsCouverts) return [];
-    if (Array.isArray(fiche.itemsCouverts)) return fiche.itemsCouverts;
+    if (Array.isArray(fiche.itemsCouverts)) {
+      // If itemsCouverts is an array, check if it contains objects with "nom" property
+      return fiche.itemsCouverts.map(item => {
+        if (typeof item === 'object' && item !== null && 'nom' in item) {
+          return item.nom; // Extract the "nom" property
+        }
+        return String(item);
+      });
+    }
     if (typeof fiche.itemsCouverts === 'string') {
       try {
-        return JSON.parse(fiche.itemsCouverts);
+        const parsed = JSON.parse(fiche.itemsCouverts);
+        // If parsed is an array, extract item names
+        if (Array.isArray(parsed)) {
+          return parsed.map(item => {
+            if (typeof item === 'object' && item !== null && 'nom' in item) {
+              return item.nom; // Extract the "nom" property
+            }
+            return String(item);
+          });
+        }
+        return [parsed];
       } catch {
         return [fiche.itemsCouverts];
       }

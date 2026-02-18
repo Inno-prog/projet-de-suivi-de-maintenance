@@ -5,3 +5,4 @@ node_modules
 node_modules/
 keycloak-23.0.4/
 backend/target/*.jar
+backend/uploads/

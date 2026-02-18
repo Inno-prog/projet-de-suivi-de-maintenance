@@ -44,7 +44,7 @@ public class FichePrestation {
     @Column(name = "date_realisation")
     private LocalDateTime dateRealisation;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private StatutFiche statut = StatutFiche.EN_ATTENTE;
 
     @Column(name = "quantite")

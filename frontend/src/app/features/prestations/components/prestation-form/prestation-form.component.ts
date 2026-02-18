@@ -1512,10 +1512,10 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
 
     console.log('👤 ID Prestataire:', prestataireId);
 
-    const data = {
+     const data = {
       prestataireId: prestataireId,
       nomPrestataire: formValue.nomPrestataire,
-      nomPrestation: this.getSelectedItemsNames(),
+      nomPrestation: this.selectedItems.map(i => i.nomItem).join(', '),
       nomResponsablePrestation: formValue.nomResponsablePrestation,
       contactResponsablePrestation: formValue.contactResponsablePrestation,
       qualificationResponsablePrestation: formValue.qualificationResponsablePrestation,

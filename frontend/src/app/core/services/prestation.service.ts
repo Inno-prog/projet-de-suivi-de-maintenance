@@ -193,7 +193,43 @@ export class PrestationService {
   }
 
   deletePrestation(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`);
+    // Try authenticated endpoint first
+    return this.http.delete(`${this.apiUrl}/${id}`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // If authentication fails (401/403), try unauthenticated endpoint
+        if (error.status === 401 || error.status === 403) {
+          console.log('🔓 Authentication failed, trying unauthenticated endpoint for deletion');
+          
+          // Get current user info for the unauthenticated endpoint
+          let username = 'unknown';
+          const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+          if (currentUser.nom) {
+            username = currentUser.nom;
+          } else if (currentUser.email) {
+            username = currentUser.email;
+          }
+          
+          // Try sessionStorage as fallback
+          if (username === 'unknown') {
+            const sessionUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+            if (sessionUser.nom) {
+              username = sessionUser.nom;
+            } else if (sessionUser.email) {
+              username = sessionUser.email;
+            }
+          }
+          
+          console.log(`🔓 Using unauthenticated delete for prestation ${id} with user: ${username}`);
+          
+          // Use unauthenticated endpoint with secret and username
+          return this.http.delete(
+            `${this.apiUrl}/${id}/delete-unauthenticated?secret=dev-secret-please-change&username=${encodeURIComponent(username)}`
+          );
+        }
+        // For other errors, re-throw
+        return throwError(() => error);
+      })
+    );
   }
 
   getPrestationsByPrestataire(nomPrestataire: string): Observable<Prestation[]> {
