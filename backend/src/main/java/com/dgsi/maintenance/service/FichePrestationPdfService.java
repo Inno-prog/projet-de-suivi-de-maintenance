@@ -1456,12 +1456,8 @@ public class FichePrestationPdfService {
                 String itemText = (itemIndex + 1) + "- " + itemNom;
                 table.addCell(createTableCell(itemText, normalFont, rowBg, TextAlignment.LEFT));
 
-                 // Quantité réalisée - calculer la quantité utilisée pour cet item dans le lot
-                 int qteUtilisee = 0;
-                 if (!processedItems.contains(itemNom)) {
-                     qteUtilisee = getItemUsageCount(itemNom, lot);
-                     processedItems.add(itemNom);
-                 }
+                 // Quantité réalisée - calculer la quantité utilisée pour cet item dans cette fiche
+                 int qteUtilisee = getItemUsageCount(itemNom, fiche);
                 String qteStr = String.valueOf(qteUtilisee);
                 table.addCell(createTableCell(qteStr, normalFont, rowBg, TextAlignment.CENTER));
 
