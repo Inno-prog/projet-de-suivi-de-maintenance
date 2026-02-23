@@ -15,8 +15,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import com.dgsi.maintenance.entity.FichePrestation;
+import com.dgsi.maintenance.entity.FichePrestationItem;
 import com.dgsi.maintenance.entity.Item;
 import com.dgsi.maintenance.entity.Prestation;
+import com.dgsi.maintenance.repository.FichePrestationItemRepository;
 import com.dgsi.maintenance.repository.FichePrestationRepository;
 import com.dgsi.maintenance.repository.ItemRepository;
 import com.dgsi.maintenance.repository.PrestationRepository;
@@ -54,14 +56,17 @@ public class FichePrestationPdfService {
         private final ItemService itemService;
         private final FichePrestationRepository fichePrestationRepository;
         private final ItemRepository itemRepository;
+        private final FichePrestationItemRepository fichePrestationItemRepository;
 
         @Autowired
         public FichePrestationPdfService(PrestationRepository prestationRepository, ItemService itemService,
-                                         FichePrestationRepository fichePrestationRepository, ItemRepository itemRepository) {
+                                         FichePrestationRepository fichePrestationRepository, ItemRepository itemRepository,
+                                         FichePrestationItemRepository fichePrestationItemRepository) {
                 this.prestationRepository = prestationRepository;
                 this.itemService = itemService;
                 this.fichePrestationRepository = fichePrestationRepository;
                 this.itemRepository = itemRepository;
+                this.fichePrestationItemRepository = fichePrestationItemRepository;
         }
 
     // Couleurs définies une seule fois
@@ -1383,6 +1388,7 @@ public class FichePrestationPdfService {
         double totalMontant = 0;
         boolean alternateRow = false;
         int rowNumber = 1;
+        java.util.Set<String> processedItems = new java.util.HashSet<>();
 
         for (FichePrestation fiche : fichesSorted) {
             DeviceRgb rowBg = alternateRow ? LIGHT_GRAY : WHITE;
@@ -1450,8 +1456,12 @@ public class FichePrestationPdfService {
                 String itemText = (itemIndex + 1) + "- " + itemNom;
                 table.addCell(createTableCell(itemText, normalFont, rowBg, TextAlignment.LEFT));
 
-                 // Quantité réalisée - calculer la quantité utilisée pour cet item dans la fiche courante
-                 int qteUtilisee = getItemUsageCount(itemNom, fiche);
+                 // Quantité réalisée - calculer la quantité utilisée pour cet item dans le lot
+                 int qteUtilisee = 0;
+                 if (!processedItems.contains(itemNom)) {
+                     qteUtilisee = getItemUsageCount(itemNom, lot);
+                     processedItems.add(itemNom);
+                 }
                 String qteStr = String.valueOf(qteUtilisee);
                 table.addCell(createTableCell(qteStr, normalFont, rowBg, TextAlignment.CENTER));
 
@@ -1482,26 +1492,29 @@ public class FichePrestationPdfService {
                         fiche.getDateRealisation().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "N/A";
                 table.addCell(createTableCell(dateStr, normalFont, rowBg, TextAlignment.CENTER));
 
-                 // Montant total - utiliser le prix réel de l'item depuis la base de données (en fonction du lot)
-                 double montant;
-                 if (fiche.getMontantTotal() != null) {
-                     // Si montant total de la fiche est défini, diviser par le nombre d'items
-                     montant = fiche.getMontantTotal() / items.size();
-                 } else if (qteUtilisee > 0 && itemPrix != null) {
-                     montant = qteUtilisee * itemPrix.doubleValue();
-                 } else if (qteUtilisee > 0 && fiche.getPrixUnitaire() != null) {
-                     montant = qteUtilisee * fiche.getPrixUnitaire();
-                 } else if (qteUtilisee > 0) {
-                     // Récupérer le prix réel de l'item depuis la base de données en fonction du lot
-                     Item realItem = itemService.getItemByNomItemAndLot(itemNom, lot);
-                     if (realItem != null && realItem.getPrix() != null) {
-                         montant = qteUtilisee * realItem.getPrix().doubleValue();
+                 // Montant total - utiliser la quantité totale d'utilisation de l'item (provenant de la table de jointure)
+                 // au lieu de la quantité individuelle de la fiche
+                 double montant = 0;
+                 
+                 // Utiliser qteUtilisee (provenant de getItemUsageCount qui compte via la table de jointure)
+                 // pour assurer la cohérence avec la page des items
+                 if (qteUtilisee > 0) {
+                     double prixUnitaireCalc;
+                     if (itemPrix != null) {
+                         prixUnitaireCalc = itemPrix.doubleValue();
+                     } else if (fiche.getPrixUnitaire() != null) {
+                         prixUnitaireCalc = fiche.getPrixUnitaire();
                      } else {
-                         // Si prix unitaire non défini et item non trouvé, utiliser un prix par défaut (50000 FCFA)
-                         montant = qteUtilisee * 50000;
+                         // Récupérer le prix réel de l'item depuis la base de données en fonction du lot
+                         Item realItem = itemService.getItemByNomItemAndLot(itemNom, lot);
+                         if (realItem != null && realItem.getPrix() != null) {
+                             prixUnitaireCalc = realItem.getPrix().doubleValue();
+                         } else {
+                             // Si prix unitaire non défini et item non trouvé, utiliser un prix par défaut (50000 FCFA)
+                             prixUnitaireCalc = 50000;
+                         }
                      }
-                 } else {
-                     montant = 0;
+                     montant = qteUtilisee * prixUnitaireCalc;
                  }
                 
                 // Ajouter au total pour chaque item (car chaque item a maintenant sa propre quantité)
@@ -1767,25 +1780,18 @@ public class FichePrestationPdfService {
 
     private int getItemUsageCount(String itemNom, FichePrestation currentFiche) {
         int count = 0;
-        // Vérifier si l'item est dans itemsCouverts (JSON ou string séparé par des virgules)
-        String itemsCouverts = currentFiche.getItemsCouverts();
-        String nomItem = currentFiche.getNomItem();
         
-        // Vérifier dans itemsCouverts
-        if (itemsCouverts != null && !itemsCouverts.trim().isEmpty()) {
-            String[] items = itemsCouverts.split(",");
-            for (String item : items) {
-                String trimmedItem = item.trim();
-                if (trimmedItem.equalsIgnoreCase(itemNom)) {
+        // Trouver l'item par son nom
+        List<Item> items = itemRepository.findByNomItemIgnoreCase(itemNom);
+        if (items != null && !items.isEmpty()) {
+            Long itemId = items.get(0).getId();
+            
+            // Vérifier si l'item est associé à la fiche via la table de jointure
+            List<FichePrestationItem> ficheItems = fichePrestationItemRepository.findByFichePrestationId(currentFiche.getId());
+            for (FichePrestationItem ficheItem : ficheItems) {
+                if (ficheItem.getItem().getId().equals(itemId)) {
                     count++;
                 }
-            }
-        }
-        
-        // Vérifier dans nomItem
-        if (count == 0 && nomItem != null && !nomItem.trim().isEmpty()) {
-            if (nomItem.trim().equalsIgnoreCase(itemNom)) {
-                count++;
             }
         }
         
@@ -1796,9 +1802,7 @@ public class FichePrestationPdfService {
 
         /**
          * Calcule la quantité totale réalisée pour un item donné à travers
-         * TOUTES les fiches de la base de données. Si une fiche contient une quantité explicite
-         * (champ quantite) celle-ci est sommée; sinon on compte 1 par fiche
-         * contenant l'item.
+         * TOUTES les fiches de la base de données. 
          * 
          * Cette méthode est identique à calculateItemUsageQuantity dans ItemController
          * pour assurer la cohérence des valeurs entre la page des items et le PDF.
@@ -1808,47 +1812,17 @@ public class FichePrestationPdfService {
                         return 0;
                 }
                 
-                int total = 0;
-                List<FichePrestation> allFiches = fichePrestationRepository.findAll();
-                
-                // Normaliser le nom de l'item pour la comparaison (supprimer les espaces en fin)
-                String normalizedItemNom = itemNom.trim();
-                
-                for (FichePrestation fiche : allFiches) {
-                        if (fiche == null) continue;
-                        
-                        // Ne compter que les fiches du lot spécifié (via numero_fiche)
-                        if (fiche.getNumeroFiche() == null || !fiche.getNumeroFiche().contains("L" + lot.replaceAll("[^0-9]", ""))) {
-                            continue;
-                        }
-                        
-                        int countInFiche = 0;
-                        String itemsCouverts = fiche.getItemsCouverts();
-                        String nomItem = fiche.getNomItem();
-                        
-                        // Compter les occurrences dans itemsCouverts
-                        if (itemsCouverts != null && !itemsCouverts.trim().isEmpty()) {
-                            // Split items by commas and trim each item
-                            String[] items = itemsCouverts.split(",");
-                            for (String item : items) {
-                                String trimmedItem = item.trim();
-                                if (trimmedItem.equalsIgnoreCase(normalizedItemNom)) {
-                                    countInFiche++;
-                                }
-                            }
-                        }
-                        
-                        // Compter l'occurrence dans nomItem
-                        if (countInFiche == 0 && nomItem != null && !nomItem.trim().isEmpty()) {
-                            if (nomItem.trim().equalsIgnoreCase(normalizedItemNom)) {
-                                countInFiche++;
-                            }
-                        }
-                        
-                        total += countInFiche;
+                // Trouver l'item par son nom
+                List<Item> items = itemRepository.findByNomItemIgnoreCase(itemNom);
+                if (items == null || items.isEmpty()) {
+                    return 0;
                 }
                 
-                return total;
+                // Récupérer le premier item trouvé (normalement unique par nom)
+                Item item = items.get(0);
+                
+                // Utiliser le champ quantiteUtilisee de l'item (même logique que le front-end)
+                return item.getQuantiteUtilisee() != null ? item.getQuantiteUtilisee() : 0;
         }
 
 

@@ -1,8 +1,6 @@
 package com.dgsi.maintenance.controller;
 
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Optional;
 import com.dgsi.maintenance.dto.PaginationResponse;
 import com.dgsi.maintenance.entity.FichePrestation;
@@ -18,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -540,13 +537,6 @@ public class PrestationController {
     public ResponseEntity<?> deletePrestation(@PathVariable Long id, Authentication authentication) {
         log.info("📥 Requête DELETE pour prestation ID: {}", id);
 
-        // Vérifier si l'authentification est null (Keycloak non disponible)
-        if (authentication == null) {
-            log.warn("⛔ Authentification null - Impossible de supprimer la prestation ID: {}. Utilisez l'endpoint /delete-unauthenticated", id);
-            return ResponseEntity.status(401).body(new ErrorResponse("AUTHENTICATION_REQUIRED", 
-                "Authentification requise. Utilisez l'endpoint /api/prestations/" + id + "/delete-unauthenticated avec secret et username"));
-        }
-
         try {
             // Déterminer si c'est un admin ou un prestataire
             boolean isAdmin = authentication.getAuthorities().stream()
@@ -592,96 +582,6 @@ public class PrestationController {
         } catch (Exception e) {
             log.error("❌ Erreur lors de la suppression de la prestation ID: {}", id, e);
             return ResponseEntity.internalServerError().body(new ErrorResponse("DELETE_ERROR", "Erreur lors de la suppression"));
-        }
-    }
-
-    /**
-     * Endpoint de suppression sans authentification pour les prestataires
-     * Permet de supprimer une prestation même si Keycloak/authentication échoue
-     * Nécessite un secret key et le username du prestataire pour vérifier la propriété
-     */
-    @DeleteMapping("/{id}/delete-unauthenticated")
-    public ResponseEntity<?> deletePrestationUnauthenticated(
-            @PathVariable Long id,
-            @RequestParam(required = false) String secret,
-            @RequestParam(required = false) String username) {
-        
-        log.info("📥 Requête DELETE sans authentification pour prestation ID: {} par user: {}", id, username);
-
-        // Vérifier le secret key
-        if (secret == null || !"dev-secret-please-change".equals(secret)) {
-            log.warn("⛔ Tentative de suppression sans authentification avec secret invalide");
-            return ResponseEntity.status(403).body(new ErrorResponse("FORBIDDEN", "Secret key invalide ou manquant"));
-        }
-
-        // Vérifier que le username est fourni
-        if (username == null || username.trim().isEmpty()) {
-            log.warn("⛔ Tentative de suppression sans authentification sans username");
-            return ResponseEntity.badRequest().body(new ErrorResponse("BAD_REQUEST", "Le paramètre 'username' est obligatoire"));
-        }
-
-        try {
-            // Utiliser le service de suppression sans authentification (prestataire = soft delete)
-            boolean deleted = prestationService.deletePrestationUnauthenticated(id, username, false);
-            
-            if (deleted) {
-                log.info("✅ Prestation ID: {} supprimée (soft delete) par prestataire: {} (sans authentification)", id, username);
-                return ResponseEntity.ok().body(new ErrorResponse("SUCCESS", "Prestation supprimée avec succès"));
-            } else {
-                log.warn("⚠️ Prestation ID: {} non trouvée pour suppression", id);
-                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("NOT_FOUND", "Prestation non trouvée avec ID: " + id));
-            }
-        } catch (RuntimeException e) {
-            log.error("❌ Erreur lors de la suppression sans authentification de la prestation ID: {} - {}", id, e.getMessage());
-            return ResponseEntity.status(403).body(new ErrorResponse("FORBIDDEN", e.getMessage()));
-        } catch (Exception e) {
-            log.error("❌ Erreur technique lors de la suppression sans authentification de la prestation ID: {}", id, e);
-            return ResponseEntity.internalServerError().body(new ErrorResponse("DELETE_ERROR", "Erreur lors de la suppression: " + e.getMessage()));
-        }
-    }
-
-    /**
-     * Endpoint de suppression sans authentification pour les administrateurs
-     * Permet de supprimer n'importe quelle prestation (suppression physique) même si Keycloak/authentication échoue
-     * Nécessite un secret key et le username de l'admin
-     */
-    @DeleteMapping("/{id}/admin-delete-unauthenticated")
-    public ResponseEntity<?> adminDeletePrestationUnauthenticated(
-            @PathVariable Long id,
-            @RequestParam(required = false) String secret,
-            @RequestParam(required = false) String username) {
-        
-        log.info("📥 Requête DELETE admin sans authentification pour prestation ID: {} par admin: {}", id, username);
-
-        // Vérifier le secret key
-        if (secret == null || !"dev-secret-please-change".equals(secret)) {
-            log.warn("⛔ Tentative de suppression admin sans authentification avec secret invalide");
-            return ResponseEntity.status(403).body(new ErrorResponse("FORBIDDEN", "Secret key invalide ou manquant"));
-        }
-
-        // Vérifier que le username est fourni
-        if (username == null || username.trim().isEmpty()) {
-            log.warn("⛔ Tentative de suppression admin sans authentification sans username");
-            return ResponseEntity.badRequest().body(new ErrorResponse("BAD_REQUEST", "Le paramètre 'username' est obligatoire"));
-        }
-
-        try {
-            // Utiliser le service de suppression sans authentification (admin = suppression physique)
-            boolean deleted = prestationService.deletePrestationUnauthenticated(id, username, true);
-            
-            if (deleted) {
-                log.info("✅ Prestation ID: {} supprimée physiquement par admin: {} (sans authentification)", id, username);
-                return ResponseEntity.ok().body(new ErrorResponse("SUCCESS", "Prestation supprimée définitivement avec succès"));
-            } else {
-                log.warn("⚠️ Prestation ID: {} non trouvée pour suppression admin", id);
-                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("NOT_FOUND", "Prestation non trouvée avec ID: " + id));
-            }
-        } catch (RuntimeException e) {
-            log.error("❌ Erreur lors de la suppression admin sans authentification de la prestation ID: {} - {}", id, e.getMessage());
-            return ResponseEntity.status(403).body(new ErrorResponse("FORBIDDEN", e.getMessage()));
-        } catch (Exception e) {
-            log.error("❌ Erreur technique lors de la suppression admin sans authentification de la prestation ID: {}", id, e);
-            return ResponseEntity.internalServerError().body(new ErrorResponse("DELETE_ERROR", "Erreur lors de la suppression: " + e.getMessage()));
         }
     }
 
@@ -1072,82 +972,6 @@ public class PrestationController {
             log.error("❌ Erreur lors de la validation de la sélection d'items", e);
             return ResponseEntity.internalServerError().body(
                 new ErrorResponse("VALIDATION_ERROR", "Erreur lors de la validation: " + e.getMessage())
-            );
-        }
-    }
-
-    /**
-     * Endpoint admin pour corriger les quantités d'items après suppression de prestations
-     * Ce endpoint restaure les quantités utilisées pour les prestations supprimées sans être soumises
-     * 
-     * @param secret Clé secrète pour l'authentification admin
-     * @return Rapport de correction
-     */
-    @PostMapping("/admin/correct-quantities")
-    @Transactional
-    public ResponseEntity<?> correctQuantitiesAfterDeletion(
-            @RequestParam(value = "secret", required = false) String secret) {
-        
-        // Vérifier la clé secrète
-        if (!"dev-secret-please-change".equals(secret)) {
-            log.warn("⛔ Tentative d'accès non autorisé au endpoint de correction des quantités");
-            return ResponseEntity.status(403).body(
-                new ErrorResponse("UNAUTHORIZED", "Clé secrète invalide")
-            );
-        }
-
-        log.info("🔧 Début de la correction des quantités d'items après suppression de prestations");
-
-        try {
-            // Récupérer toutes les prestations supprimées (soft delete)
-            List<Prestation> deletedPrestations = prestationRepository.findAll().stream()
-                .filter(p -> p.getDeleted() != null && p.getDeleted())
-                .toList();
-
-            log.info("📊 {} prestations supprimées trouvées", deletedPrestations.size());
-
-            int totalItemsRestored = 0;
-            Map<String, Integer> correctionsByPrestataire = new HashMap<>();
-
-            for (Prestation prestation : deletedPrestations) {
-                try {
-                    // Restaurer les quantités pour cette prestation
-                    prestationService.restaurerQuantitesItems(prestation);
-                    
-                    int itemCount = prestation.getItemsUtilises() != null ? 
-                        prestation.getItemsUtilises().size() : 0;
-                    totalItemsRestored += itemCount;
-                    
-                    String prestataire = prestation.getNomPrestataire();
-                    correctionsByPrestataire.merge(prestataire, itemCount, Integer::sum);
-                    
-                    log.info("✅ Quantités restaurées pour prestation ID: {} ({} items)", 
-                        prestation.getId(), itemCount);
-                        
-                } catch (Exception e) {
-                    log.error("❌ Erreur lors de la restauration pour prestation ID: {} - {}", 
-                        prestation.getId(), e.getMessage());
-                }
-            }
-
-            // Créer le rapport de correction
-            Map<String, Object> report = new HashMap<>();
-            report.put("prestationsTraitees", deletedPrestations.size());
-            report.put("totalItemsRestaures", totalItemsRestored);
-            report.put("correctionsByPrestataire", correctionsByPrestataire);
-            report.put("message", "Correction des quantités terminée avec succès");
-            report.put("timestamp", java.time.LocalDateTime.now().toString());
-
-            log.info("✅ Correction des quantités terminée: {} prestations, {} items restaurés", 
-                deletedPrestations.size(), totalItemsRestored);
-
-            return ResponseEntity.ok(report);
-
-        } catch (Exception e) {
-            log.error("❌ Erreur lors de la correction des quantités: {}", e.getMessage(), e);
-            return ResponseEntity.internalServerError().body(
-                new ErrorResponse("CORRECTION_ERROR", 
-                    "Erreur lors de la correction: " + e.getMessage())
             );
         }
     }
