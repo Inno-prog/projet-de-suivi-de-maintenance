@@ -176,8 +176,8 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
         <!-- BACK BUTTON AND LOT HEADER -->
         <div class="d-flex align-items-center justify-content-between mb-4">
           <div class="d-flex align-items-center gap-3">
-            <button class="btn btn-outline-secondary btn-sm" (click)="backToLots()">
-              <i class="fa-solid fa-arrow-left me-2"></i>
+            <button class="btn btn-lg btn-back-sidebar" (click)="backToLots()">
+              <i class="bi bi-arrow-left-circle me-2"></i>
               Retour aux lots
             </button>
             <div *ngIf="selectedLot">
@@ -964,6 +964,31 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
       color: #6b7280;
       font-weight: 500;
     }
+
+    /* Bouton retour avec couleur sidebar (rgb(28, 82, 118)) */
+    .btn-back-sidebar {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      border: 2px solid rgb(28, 82, 118);
+      border-radius: 0.5rem;
+      background-color: rgb(28, 82, 118);
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    .btn-back-sidebar:hover {
+      transform: translateY(-2px);
+      background-color: rgb(20, 60, 90);
+      border-color: rgb(20, 60, 90);
+      box-shadow: 0 4px 12px rgba(28, 82, 118, 0.35);
+    }
+
+    .btn-back-sidebar i {
+      font-size: 1rem;
+    }
   `]
 })
 export class ItemListComponent implements OnInit {
@@ -1061,6 +1086,7 @@ export class ItemListComponent implements OnInit {
     this.itemForm = this.fb.group({
       nomItem: ['', [Validators.required, Validators.minLength(3)]],
       prix: [0, [Validators.required, Validators.min(0)]],
+      quantiteMinTrimestre: [0, [Validators.min(0)]],
       quantiteMaxTrimestre: [1, [Validators.required, Validators.min(1)]],
       description: ['', [Validators.maxLength(500)]],
       lot: [''],
@@ -1438,6 +1464,7 @@ export class ItemListComponent implements OnInit {
     this.isViewing = false;
     this.itemForm.reset({
       prix: 0,
+      quantiteMinTrimestre: 0,
       quantiteMaxTrimestre: 1,
       equipements: []
     });
@@ -1445,15 +1472,17 @@ export class ItemListComponent implements OnInit {
   }
 
   onEdit(item: Item) {
+    console.log('Editing item:', item);
     this.showForm = true;
     this.isEditing = true;
     this.isViewing = false;
     this.currentItem = item;
     const formData = {
       ...item,
-      lot: item.lot ? parseInt(item.lot) : '',
+      lot: item.lot || '',
       equipements: item.equipements || []
     };
+    console.log('Form data:', formData);
     this.itemForm.patchValue(formData);
     this.itemForm.enable();
   }
@@ -1511,17 +1540,20 @@ export class ItemListComponent implements OnInit {
       lot: formData.lot ? formData.lot.toString() : ''
     };
 
-    if (this.isEditing && (this.currentItem?.id || this.currentItem?.idItem)) {
-      const itemId = this.currentItem.id || this.currentItem.idItem!;
+    if (this.isEditing && this.currentItem?.id) {
+      const itemId = this.currentItem.id;
+      console.log('Updating item with id:', itemId, 'Current item:', this.currentItem);
       this.itemService.updateItem(itemId, itemData).subscribe({
-        next: () => {
+        next: (updatedItem) => {
+          console.log('Updated item received:', updatedItem);
           this.loading = false;
           this.showForm = false;
           this.currentItem = null;
           this.loadItems();
           this.toast.show({ type: 'success', title: 'Succès', message: 'Item modifié avec succès' });
         },
-        error: () => {
+        error: (error) => {
+          console.error('Error updating item:', error);
           this.loading = false;
           this.toast.show({ type: 'error', title: 'Erreur', message: 'Erreur lors de la modification' });
         }

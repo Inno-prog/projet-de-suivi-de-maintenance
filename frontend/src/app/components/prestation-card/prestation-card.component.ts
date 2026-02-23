@@ -30,6 +30,7 @@ export class PrestationCardComponent implements OnChanges, OnInit {
   @Output() validateClicked = new EventEmitter<string>();
   @Output() rejectClicked = new EventEmitter<string>();
   @Output() deleteClicked = new EventEmitter<string>();
+  @Output() editClicked = new EventEmitter<string>();
   @Output() statutInterventionChanged = new EventEmitter<{prestationId: number, newStatutIntervention: string}>();
 
   constructor(
@@ -285,6 +286,36 @@ export class PrestationCardComponent implements OnChanges, OnInit {
 
   getRejectTitle(): string {
     return 'Rejeter';
+  }
+
+  /** Condition pour activer le bouton Modifier */
+  canEdit(): boolean {
+    // Seuls les prestataires peuvent modifier
+    if (!this.isPrestataire()) return false;
+    
+    // Les prestations ne sont modifiables que si elles sont en statut BROUILLON (non soumises)
+    const statutValidation = (this.statutValidation || '').toUpperCase();
+    const ficheStatut = (this.fiche?.statut || '').toUpperCase();
+    
+    return statutValidation === 'BROUILLON' && ficheStatut !== 'EN_ATTENTE' && ficheStatut !== 'VALIDE' && ficheStatut !== 'REJETE';
+  }
+
+  /** Condition pour activer le bouton Soumettre */
+  canSubmit(): boolean {
+    // Seuls les prestataires peuvent soumettre
+    if (!this.isPrestataire()) return false;
+    
+    // Les prestations ne sont soumissibles que si elles sont en statut BROUILLON (non soumises)
+    const statutValidation = (this.statutValidation || '').toUpperCase();
+    const ficheStatut = (this.fiche?.statut || '').toUpperCase();
+    
+    return statutValidation === 'BROUILLON' && ficheStatut !== 'EN_ATTENTE' && ficheStatut !== 'VALIDE' && ficheStatut !== 'REJETE';
+  }
+
+  /** Action Modifier */
+  onEditClick(): void {
+    if (!this.canEdit() || !this.prestationId) return;
+    this.editClicked.emit(this.prestationId);
   }
 
   // Helpers used by the template

@@ -23,14 +23,14 @@ public class DatabaseFixer {
                 SELECT p.id 
                 FROM prestataires p
                 JOIN users u ON p.id = u.id
-                WHERE LOWER(u.nom) = LOWER(c.nom_prestataire)
+                WHERE LOWER(p.structure) = LOWER(c.nom_prestataire)
             )
             WHERE c.prestataire_id IS NULL 
               AND EXISTS (
                 SELECT 1 
                 FROM prestataires p
                 JOIN users u ON p.id = u.id
-                WHERE LOWER(u.nom) = LOWER(c.nom_prestataire)
+                WHERE LOWER(p.structure) = LOWER(c.nom_prestataire)
             )
         """;
         

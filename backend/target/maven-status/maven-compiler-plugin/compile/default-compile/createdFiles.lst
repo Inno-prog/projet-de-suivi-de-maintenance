@@ -27,6 +27,7 @@ com/dgsi/maintenance/service/FichePrestationPdfService.class
 com/dgsi/maintenance/dto/PrestationDto.class
 com/dgsi/maintenance/controller/ReportController.class
 com/dgsi/maintenance/dto/PrestataireDto.class
+com/dgsi/maintenance/entity/FichePrestationItemId.class
 com/dgsi/maintenance/controller/FileController.class
 com/dgsi/maintenance/service/RapportSuiviService.class
 com/dgsi/maintenance/controller/OrdreCommandeController.class
@@ -45,6 +46,7 @@ com/dgsi/maintenance/config/TransactionConfig.class
 com/dgsi/maintenance/service/EquipementService.class
 com/dgsi/maintenance/util/DatabaseFixer.class
 com/dgsi/maintenance/controller/SearchController.class
+com/dgsi/maintenance/controller/AdminController.class
 com/dgsi/maintenance/config/DataInitializer.class
 com/dgsi/maintenance/config/ContractRelationshipFix.class
 com/dgsi/maintenance/controller/TypeItemController.class
@@ -54,6 +56,7 @@ com/dgsi/maintenance/controller/EquipementController.class
 com/dgsi/maintenance/repository/ContratRepository.class
 com/dgsi/maintenance/repository/PrestataireRepository.class
 com/dgsi/maintenance/entity/StringListConverter.class
+com/dgsi/maintenance/security/WebSecurityConfig$1.class
 com/dgsi/maintenance/repository/NotificationRepository.class
 com/dgsi/maintenance/repository/EvaluationTrimestrielleRepository.class
 com/dgsi/maintenance/util/LotUtils.class
@@ -63,11 +66,13 @@ com/dgsi/maintenance/service/FileUploadService.class
 com/dgsi/maintenance/entity/StructureMefp.class
 com/dgsi/maintenance/repository/OrdreCommandeRepository.class
 com/dgsi/maintenance/controller/KeycloakController.class
+com/dgsi/maintenance/entity/FichePrestationItem.class
 com/dgsi/maintenance/dto/LoginRequest.class
 com/dgsi/maintenance/controller/EvaluationFileController.class
 com/dgsi/maintenance/repository/RapportSuiviRepository.class
 com/dgsi/maintenance/repository/PrestationRepository.class
 com/dgsi/maintenance/config/SoftlinkDigitalSolutionsFix.class
+com/dgsi/maintenance/config/StructureRegionFix.class
 com/dgsi/maintenance/entity/StatutContrat.class
 com/dgsi/maintenance/service/StructureMefpService.class
 com/dgsi/maintenance/dto/RegionHierarchyDto$VilleHierarchyDto.class
@@ -85,6 +90,7 @@ com/dgsi/maintenance/controller/PrestationController$1ValidationResponse.class
 com/dgsi/maintenance/service/BudgetInsufficientException.class
 com/dgsi/maintenance/service/ItemService.class
 com/dgsi/maintenance/config/BrouillonFicheCleanupConfig$BrouillonFicheInfo.class
+com/dgsi/maintenance/repository/FichePrestationItemRepository.class
 com/dgsi/maintenance/service/SearchService.class
 com/dgsi/maintenance/controller/GlobalExceptionHandler.class
 com/dgsi/maintenance/entity/EvaluationTrimestrielle.class
@@ -118,6 +124,7 @@ com/dgsi/maintenance/security/CustomUserDetailsService.class
 com/dgsi/maintenance/service/EvaluationService.class
 com/dgsi/maintenance/service/FichePrestationService.class
 com/dgsi/maintenance/service/PdfReportService.class
+com/dgsi/maintenance/service/ContratItemService$1.class
 com/dgsi/maintenance/config/BrouillonFicheCleanupConfig.class
 com/dgsi/maintenance/repository/TypeItemRepository.class
 com/dgsi/maintenance/config/ContratDataInitializer.class

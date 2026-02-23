@@ -53,6 +53,12 @@ public class LotController {
 
             System.out.println("🔍 Found " + contrats.size() + " active contracts");
 
+            // Normalize function for lot name comparison
+            java.util.function.Function<String, String> normalizeLot = (String name) -> {
+                if (name == null) return "";
+                return name.replaceAll("[()]", " ").trim().replaceAll("\\s+", " ").toLowerCase().replaceAll("(?i)^lot\\s*", "");
+            };
+
             // Group contracts by lot name - only for lots that exist in database
             java.util.Map<String, LotWithContractorDto> lotMap = new java.util.HashMap<>();
 
@@ -71,16 +77,16 @@ public class LotController {
                         dto.addRegion(region);
                     }
                 }
-                lotMap.put(lot.getNomLot(), dto);
+                lotMap.put(normalizeLot.apply(lot.getNomLot()), dto);
             }
 
             // Populate with contract data - only for existing lots
             for (com.dgsi.maintenance.entity.Contrat contrat : contrats) {
                 if (contrat.getLot() != null && !contrat.getLot().trim().isEmpty()) {
-                    String lotName = contrat.getLot();
+                    String normalizedContractLot = normalizeLot.apply(contrat.getLot());
 
                     // Only add contract data if the lot exists in our map (i.e., in database)
-                    LotWithContractorDto dto = lotMap.get(lotName);
+                    LotWithContractorDto dto = lotMap.get(normalizedContractLot);
                     if (dto != null) {
                         // Add ville if not null and not already in the lot's villes
                         if (contrat.getVille() != null && !contrat.getVille().trim().isEmpty()) {
@@ -92,9 +98,9 @@ public class LotController {
                             dto.addContractId(contrat.getIdContrat());
                         }
 
-                        System.out.println("📄 Contract: " + contrat.getIdContrat() + " - Lot: " + lotName + " - Prestataire: " + contrat.getNomPrestataire());
+                        System.out.println("📄 Contract: " + contrat.getIdContrat() + " - Lot: " + contrat.getLot() + " - Prestataire: " + contrat.getNomPrestataire());
                     } else {
-                        System.out.println("⚠️  Contract " + contrat.getIdContrat() + " references non-existent lot: " + lotName);
+                        System.out.println("⚠️  Contract " + contrat.getIdContrat() + " references non-existent lot: " + contrat.getLot());
                     }
                 }
             }
@@ -141,7 +147,8 @@ public class LotController {
     }
 
     @GetMapping("/by-prestataire/{prestataireId}")
-    @PreAuthorize("hasRole('ADMINISTRATEUR') or (hasRole('PRESTATAIRE') and #prestataireId == authentication.principal.id)")
+    // Ensure we compare the path prestataireId against the JWT subject (sub) which contains the Keycloak user ID
+    @PreAuthorize("hasRole('ADMINISTRATEUR') or (hasRole('PRESTATAIRE') and ( #prestataireId == authentication.principal.subject or #prestataireId == authentication.principal.claims['preferred_username'] or #prestataireId == authentication.principal.claims['email'] or #prestataireId == authentication.name ))")
     public ResponseEntity<List<LotWithContractorDto>> getLotsByPrestataire(@PathVariable String prestataireId) {
         try {
             // Get contracts for this prestataire using foreign key

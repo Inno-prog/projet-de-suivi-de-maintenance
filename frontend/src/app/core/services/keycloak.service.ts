@@ -34,5 +34,12 @@ export class KeycloakService {
   getUsers(): Observable<KeycloakPrestataire[]> {
     return this.http.get<KeycloakPrestataire[]>(`${this.apiUrl}/users`);
   }
+
+  /**
+   * Synchronise les utilisateurs Keycloak avec la base de données
+   */
+  syncUsers(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/sync-users`, {});
+  }
 }
 

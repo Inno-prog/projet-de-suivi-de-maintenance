@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Data fix for Softlink Technologies and Digital Solutions issues.
@@ -18,8 +19,8 @@ import org.springframework.stereotype.Component;
  * 1. Softlink Technologies - ensure correct lot assignment
  * 2. Digital Solutions - ensure contract is linked to prestataire
  */
-@Component
-@Order(16)
+// @Component
+// @Order(16)
 public class SoftlinkDigitalSolutionsFix implements CommandLineRunner {
 
     private static final Logger logger = Logger.getLogger(SoftlinkDigitalSolutionsFix.class.getName());
@@ -31,7 +32,9 @@ public class SoftlinkDigitalSolutionsFix implements CommandLineRunner {
     private UserRepository userRepository;
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
+
         try {
             logger.info("🔧 Running Softlink Technologies & Digital Solutions data fixes...");
             
@@ -49,6 +52,7 @@ public class SoftlinkDigitalSolutionsFix implements CommandLineRunner {
      * Fix Digital Solutions contract linkage to prestataire.
      * Digital Solutions items don't show because its contract may not be linked.
      */
+    @Transactional
     private void fixDigitalSolutionsContractLink() {
         logger.info("📋 Fixing Digital Solutions contract linkage...");
         
@@ -96,13 +100,15 @@ public class SoftlinkDigitalSolutionsFix implements CommandLineRunner {
         logger.info("Found " + contrats.size() + " contract(s) for Digital Solutions:");
         
         for (Contrat contrat : contrats) {
+            String currentPrestataireId = contrat.getPrestataireId() != null ? 
+                contrat.getPrestataireId() : "null";
             logger.info("  - Contract: " + contrat.getIdContrat() + 
                        ", Lot: " + contrat.getLot() + 
-                       ", Current prestataire_id: " + contrat.getPrestataire());
+                       ", Current prestataire_id: " + currentPrestataireId);
             
             // Link contract to prestataire if not already linked
-            if (contrat.getPrestataire() == null || 
-                !contrat.getPrestataire().getId().equals(digitalSolutions.getId())) {
+            if (contrat.getPrestataireId() == null || 
+                !contrat.getPrestataireId().equals(digitalSolutions.getId())) {
                 
                 contrat.setPrestataire(digitalSolutions);
                 contratRepository.save(contrat);
@@ -117,6 +123,7 @@ public class SoftlinkDigitalSolutionsFix implements CommandLineRunner {
      * Fix Softlink Technologies lot assignment.
      * Softlink may have wrong lot or contract may not be properly associated.
      */
+    @Transactional
     private void fixSoftlinkTechnologiesLot() {
         logger.info("📋 Fixing Softlink Technologies lot assignment...");
         
@@ -162,13 +169,15 @@ public class SoftlinkDigitalSolutionsFix implements CommandLineRunner {
         logger.info("Found " + contrats.size() + " contract(s) for Softlink Technologies:");
         
         for (Contrat contrat : contrats) {
+            String currentPrestataireId = contrat.getPrestataireId() != null ? 
+                contrat.getPrestataireId() : "null";
             logger.info("  - Contract: " + contrat.getIdContrat() + 
                        ", Lot: " + contrat.getLot() + 
-                       ", Current prestataire_id: " + contrat.getPrestataire());
+                       ", Current prestataire_id: " + currentPrestataireId);
             
             // Ensure contract is linked to prestataire
-            if (contrat.getPrestataire() == null || 
-                !contrat.getPrestataire().getId().equals(softlink.getId())) {
+            if (contrat.getPrestataireId() == null || 
+                !contrat.getPrestataireId().equals(softlink.getId())) {
                 
                 contrat.setPrestataire(softlink);
                 contratRepository.save(contrat);
@@ -187,4 +196,3 @@ public class SoftlinkDigitalSolutionsFix implements CommandLineRunner {
         }
     }
 }
-

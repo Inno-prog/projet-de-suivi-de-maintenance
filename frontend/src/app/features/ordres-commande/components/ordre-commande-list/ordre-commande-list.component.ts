@@ -79,12 +79,10 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
         <div class="mb-8">
           <button
             (click)="goBack()"
-            class="inline-flex items-center space-x-3 px-6 py-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 group"
+            class="btn btn-lg btn-back-sidebar"
           >
-            <svg class="w-5 h-5 text-gray-600 group-hover:text-gray-800 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-            <span class="text-sm font-medium text-gray-700 group-hover:text-gray-900">Retour aux trimestres</span>
+            <i class="bi bi-arrow-left-circle me-2"></i>
+            Retour aux trimestres
           </button>
         </div>
 
@@ -126,7 +124,7 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
                   </div>
                   <div>
                     <h3 class="text-xl font-bold text-gray-900">{{ lot.lot }}</h3>
-                    <p class="text-sm text-gray-600 font-medium">{{ lot.ville }}</p>
+                    <p class="text-sm text-gray-600 font-medium">{{ lot.villes?.join(', ') }}</p>
                   </div>
                 </div>
 
@@ -141,12 +139,12 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
               <!-- Lot details -->
               <div class="space-y-4 mb-6">
                 <div class="flex items-center justify-between text-sm">
-                  <span class="text-gray-600">Ville:</span>
-                  <span class="font-medium text-gray-900">{{ lot.ville }}</span>
+                  <span class="text-gray-600">Villes:</span>
+                  <span class="font-medium text-gray-900">{{ lot.villes?.join(', ') }}</span>
                 </div>
                 <div class="flex items-center justify-between text-sm">
-                  <span class="text-gray-600">Contrat ID:</span>
-                  <span class="font-medium text-gray-900">#{{ lot.contractId }}</span>
+                  <span class="text-gray-600">Contrats:</span>
+                  <span class="font-medium text-gray-900">#{{ lot.contractIds?.join(', #') }}</span>
                 </div>
                 <div class="flex items-center justify-between text-sm">
                   <span class="text-gray-600">Lot:</span>
@@ -183,12 +181,10 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
           </p>
           <button
             (click)="goBack()"
-            class="inline-flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 shadow-lg hover:shadow-xl"
+            class="btn btn-lg btn-back-sidebar"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-            <span>Retour aux trimestres</span>
+            <i class="bi bi-arrow-left-circle me-2"></i>
+            Retour aux trimestres
           </button>
         </div>
       </div>
@@ -219,6 +215,31 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
 
     .hover\:-translate-y-1:hover {
       transform: translateY(-4px);
+    }
+
+    /* Bouton retour avec couleur sidebar (rgb(28, 82, 118)) */
+    .btn-back-sidebar {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      border: 2px solid rgb(28, 82, 118);
+      border-radius: 0.5rem;
+      background-color: rgb(28, 82, 118);
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    .btn-back-sidebar:hover {
+      transform: translateY(-2px);
+      background-color: rgb(20, 60, 90);
+      border-color: rgb(20, 60, 90);
+      box-shadow: 0 4px 12px rgba(28, 82, 118, 0.35);
+    }
+
+    .btn-back-sidebar i {
+      font-size: 1rem;
     }
   `]
 })

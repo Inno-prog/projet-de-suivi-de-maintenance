@@ -57,36 +57,36 @@ import { ToastService } from '../../../../core/services/toast.service';
 
             <div class="form-row">
               <div class="form-group">
-                <label for="minArticles" class="required">Min Articles *</label>
+                <label for="minItems" class="required">Min Items *</label>
                 <input
                   type="number"
-                  id="minArticles"
-                  name="minArticles"
+                  id="minItems"
+                  name="minItems"
                   class="form-control"
-                  [(ngModel)]="formData.minArticles"
+                  [(ngModel)]="formData.minItems"
                   required
-                  #minArticles="ngModel"
+                  #minItems="ngModel"
                   min="0"
                   placeholder="0">
-                <div class="error-message" *ngIf="minArticles.invalid && minArticles.touched">
-                  Le nombre minimum d'articles est obligatoire
+                <div class="error-message" *ngIf="minItems.invalid && minItems.touched">
+                  Le nombre minimum d'items est obligatoire
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="maxArticles" class="required">Max Articles *</label>
+                <label for="maxItems" class="required">Max Items *</label>
                 <input
                   type="number"
-                  id="maxArticles"
-                  name="maxArticles"
+                  id="maxItems"
+                  name="maxItems"
                   class="form-control"
-                  [(ngModel)]="formData.maxArticles"
+                  [(ngModel)]="formData.maxItems"
                   required
-                  #maxArticles="ngModel"
+                  #maxItems="ngModel"
                   min="1"
                   placeholder="100">
-                <div class="error-message" *ngIf="maxArticles.invalid && maxArticles.touched">
-                  Le nombre maximum d'articles est obligatoire
+                <div class="error-message" *ngIf="maxItems.invalid && maxItems.touched">
+                  Le nombre maximum d'items est obligatoire
                 </div>
               </div>
             </div>
@@ -321,8 +321,8 @@ export class TypeItemFormComponent implements OnInit {
   formData: TypeItem = {
     numero: '',
     prestation: '',
-    minArticles: 0,
-    maxArticles: 0,
+    minItems: 0,
+    maxItems: 0,
     prixUnitaire: 0,
     oc1Quantity: 0
   };
@@ -354,8 +354,8 @@ export class TypeItemFormComponent implements OnInit {
     this.formData = {
       numero: '',
       prestation: '',
-      minArticles: 0,
-      maxArticles: 0,
+      minItems: 0,
+      maxItems: 0,
       prixUnitaire: 0,
       oc1Quantity: 0
     };

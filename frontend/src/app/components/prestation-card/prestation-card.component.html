@@ -2,19 +2,17 @@
   <!-- Header avec gradient -->
   <div class="card-header">
     <div class="header-info">
-      <h2 class="brand-title">MainTrack Pro</h2>
+      <h2 class="brand-title">SUMIO DGSI</h2>
       <p class="brand-subtitle">Acteurs de maintenance Pro</p>
     </div>
     <div class="header-logo">
-      <img src="assets/logoFinal.png" alt="MainTrack Pro Logo" class="logo-image">
+      <img src="assets/logoFinal.png" alt="SUMIO DGSI Logo" class="logo-image">
     </div>
   </div>
 
   <!-- Contenu de la prestation -->
   <div class="card-content">
     <div class="prestation-info">
-      <h3 class="prestation-title">{{ titre }}</h3>
-
       <!-- Informations structurées comme les structures MEFP -->
       <div class="info-row" *ngIf="getParsedPrestationData()['prestataire'] || getParsedPrestationData()['structure']">
         <div class="info-item" *ngIf="getParsedPrestationData()['prestataire']">
@@ -68,8 +66,16 @@
       <span>Détails</span>
     </button>
 
-    <!-- Bouton Soumettre (pour prestataires) -->
-    <button class="action-btn submit-btn" *ngIf="isPrestataire()" (click)="onSubmitClick()">
+    <!-- Bouton Modifier (pour prestataires, seulement sur brouillons) -->
+    <button class="action-btn edit-btn" *ngIf="isPrestataire() && canEdit()" (click)="onEditClick()">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+      </svg>
+      <span>Modifier</span>
+    </button>
+
+    <!-- Bouton Soumettre (pour prestataires, seulement sur brouillons) -->
+    <button class="action-btn submit-btn" *ngIf="isPrestataire() && canSubmit()" (click)="onSubmitClick()">
       <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
         <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
         <path d="M8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01l-4-4z"/>

@@ -37,6 +37,14 @@ public interface FichePrestationRepository extends JpaRepository<FichePrestation
     // Check if a specific numero is already used
     boolean existsByNumeroFiche(String numeroFiche);
     
-    @Query("SELECT f FROM FichePrestation f WHERE f.numeroFiche LIKE %:keyword% OR f.nomItem LIKE %:keyword% OR f.nomPrestataire LIKE %:keyword%")
-    List<FichePrestation> searchByKeyword(@Param("keyword") String keyword);
+     @Query("SELECT f FROM FichePrestation f WHERE f.numeroFiche LIKE %:keyword% OR f.nomItem LIKE %:keyword% OR f.nomPrestataire LIKE %:keyword%")
+     List<FichePrestation> searchByKeyword(@Param("keyword") String keyword);
+
+     // Compter le nombre d'utilisations d'un item spécifique dans les fiches
+     @Query(value = "SELECT COUNT(*) FROM fiche_prestation_items fpi " +
+                    "JOIN fiches_prestation fp ON fpi.fiche_prestation_id = fp.id " +
+                    "WHERE fpi.item_id = :itemId " +
+                    "AND (:lot IS NULL OR fp.numero_fiche LIKE %:lot%)",
+            nativeQuery = true)
+     int countByItemId(@Param("itemId") Long itemId, @Param("lot") String lot);
 }

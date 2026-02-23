@@ -18,9 +18,6 @@ export interface Contrat {
 
 export enum StatutContrat {
   ACTIF = 'ACTIF',
-  SUSPENDU = 'SUSPENDU',
-  TERMINE = 'TERMINE',
-  EXPIRE = 'EXPIRE',
   RESILIE = 'RESILIE'
 }
 
@@ -315,8 +312,8 @@ export interface TypeItem {
   id?: number;
   numero: string;
   prestation: string;
-  minArticles: number;
-  maxArticles: number;
+  minItems: number;
+  maxItems: number;
   prixUnitaire: number;
   oc1Quantity?: number;
 }

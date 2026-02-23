@@ -13,8 +13,8 @@ import { HttpClient } from '@angular/common/http';
   imports: [CommonModule, PrestationCardComponent],
   template: `
     <div class="p-8">
-      <button (click)="goBack()" class="mb-6 flex items-center text-blue-600 hover:text-blue-800">
-        <i class="fas fa-arrow-left mr-2"></i> Retour aux lots
+      <button (click)="goBack()" class="btn btn-lg btn-back-sidebar mb-6">
+        <i class="bi bi-arrow-left-circle me-2"></i> Retour aux lots
       </button>
 
       <div class="flex justify-between items-center mb-6">
@@ -63,6 +63,31 @@ import { HttpClient } from '@angular/common/http';
       display: block;
       background-color: #f8fafc;
       min-height: 100vh;
+    }
+
+    /* Bouton retour avec couleur sidebar (rgb(28, 82, 118)) */
+    .btn-back-sidebar {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      border: 2px solid rgb(28, 82, 118);
+      border-radius: 0.5rem;
+      background-color: rgb(28, 82, 118);
+      color: white;
+      transition: all 0.3s ease;
+    }
+
+    .btn-back-sidebar:hover {
+      transform: translateY(-2px);
+      background-color: rgb(20, 60, 90);
+      border-color: rgb(20, 60, 90);
+      box-shadow: 0 4px 12px rgba(28, 82, 118, 0.35);
+    }
+
+    .btn-back-sidebar i {
+      font-size: 1rem;
     }
 
     .animate-spin {

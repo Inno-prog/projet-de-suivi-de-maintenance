@@ -8,8 +8,10 @@
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/JacksonConfig.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/LotDataInitializer.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/SoftlinkDigitalSolutionsFix.java
+/home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/StructureRegionFix.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/TransactionConfig.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/config/UpdateFicheNumerationFix.java
+/home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/AdminController.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/AuthController.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/ContratController.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/controller/EquipementController.java
@@ -48,6 +50,8 @@
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/entity/Equipement.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/entity/EvaluationTrimestrielle.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/entity/FichePrestation.java
+/home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/entity/FichePrestationItem.java
+/home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/entity/FichePrestationItemId.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/entity/Item.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/entity/Lot.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/entity/Notification.java
@@ -69,6 +73,7 @@
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/repository/ContratRepository.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/repository/EquipementRepository.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/repository/EvaluationTrimestrielleRepository.java
+/home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/repository/FichePrestationItemRepository.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/repository/FichePrestationRepository.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/repository/ItemRepository.java
 /home/inno/Bureau/projet-de-suivi-de-maintenance/backend/src/main/java/com/dgsi/maintenance/repository/LotRepository.java

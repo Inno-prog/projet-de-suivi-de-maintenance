@@ -81,11 +81,13 @@ public class Contrat {
     private String regions;
 
     @JsonIgnore
-    // Note: The prestataire_id column now stores Keycloak user IDs, not local database IDs
-    // The ManyToOne relationship has been removed because the prestataire_id now references Keycloak users
-    // rather than the local prestataires table
-    // If you need to access the Prestataire entity, you should use the Keycloak API directly
-    private transient Prestataire prestataire;
+    // The prestataire_id column stores Keycloak user IDs. Keep the String column (prestataireId)
+    // but also expose a read-only JPA relationship so we can navigate to a Prestataire entity when
+    // it exists in the local users table. This uses the same column but is not insertable/updatable
+    // to avoid conflicts with the prestataireId String field.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "prestataire_id", insertable = false, updatable = false)
+    private Prestataire prestataire;
 
     @OneToMany(mappedBy = "contrat", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrdreCommande> ordresCommande = new ArrayList<>();

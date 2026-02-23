@@ -129,19 +129,33 @@ export class PrestataireDashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadPrestataireData(): void {
-    if (this.currentUser?.id) {
-      this.contratService.getContratsByPrestataire(this.currentUser.id.toString())
-        .pipe(takeUntil(this.destroy$))
-        .subscribe({
-          next: (contrats) => {
-            this.contrats = contrats;
-          },
-          error: (error) => {
-            console.error('Erreur lors du chargement des contrats:', error);
-            this.contrats = [];
-          }
-        });
+    console.log('DEBUG: loadPrestataireData called');
+    console.log('DEBUG: currentUser:', this.currentUser);
+    console.log('DEBUG: currentUser.id:', this.currentUser?.id);
+    console.log('DEBUG: currentUser.email:', this.currentUser?.email);
+    console.log('DEBUG: currentUser.nom:', this.currentUser?.nom);
+    
+    // Use getMyContrats() which uses email AND nom-based search for more reliable contract retrieval
+    // Pass the local user 'nom' (name) to find contracts - this is the most reliable method
+    // because at inscription, the nom is stored and used as nomPrestataire in contracts
+    console.log('DEBUG: Calling getMyContrats with nom parameter for authenticated user');
+    
+    // Pass currentUser.nom to the backend for direct contract search
+    this.contratService.getMyContrats(this.currentUser?.nom)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (contrats) => {
+          console.log('DEBUG: Contrats received:', contrats);
+          console.log('DEBUG: Number of contrats:', contrats.length);
+          this.contrats = contrats;
+        },
+        error: (error) => {
+          console.error('DEBUG: Error loading contrats:', error);
+          this.contrats = [];
+        }
+      });
 
+    if (this.currentUser?.id) {
       this.ficheService.getFichesByPrestataire(this.currentUser.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({

@@ -12,11 +12,9 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
     <div class="container">
       <!-- Header -->
       <div class="header">
-        <button class="btn-back" (click)="goBack()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Retour
+        <button class="btn btn-lg btn-back-sidebar" (click)="goBack()">
+          <i class="bi bi-arrow-left-circle me-2"></i>
+          Retour aux trimestres
         </button>
         <h1>Trimestre {{ selectedTrimestre }} - Lots disponibles</h1>
       </div>
@@ -32,19 +30,22 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
               {{ lot.status }}
             </div>
           </div>
-          <div class="lot-info">
-            <p class="lot-ville">📍 {{ lot.ville }}</p>
-            <div class="lot-contracts" *ngIf="lot.contractIds && lot.contractIds.length > 0">
-              <small class="text-muted">Contrats:</small>
-              <div class="contract-badges">
-                <span class="contract-badge" *ngFor="let contractId of lot.contractIds">{{ contractId }}</span>
+           <div class="lot-info">
+              <p class="lot-region" *ngIf="lot.regions && lot.regions.length > 0">
+                <i class="fa-solid fa-map-marker-alt me-1"></i>
+                Régions: {{ lot.regions.join(', ') }}
+              </p>
+              <div class="lot-contracts" *ngIf="lot.contractIds && lot.contractIds.length > 0">
+                <small class="text-muted">Contrats:</small>
+                <div class="contract-badges">
+                  <span class="contract-badge" *ngFor="let contractId of lot.contractIds">{{ contractId }}</span>
+                </div>
+              </div>
+              <p class="lot-description">{{ lot.description }}</p>
+              <div class="lot-stats">
+                <span class="stat">{{ lot.contractIds.length }} contrat(s)</span>
               </div>
             </div>
-            <p class="lot-description">{{ lot.description }}</p>
-            <div class="lot-stats">
-              <span class="stat">{{ lot.contractIds.length }} contrat(s)</span>
-            </div>
-          </div>
           <div class="lot-footer">
             <button class="btn-view">Voir les fiches</button>
           </div>
@@ -68,22 +69,29 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
       border-bottom: 2px solid #e9ecef;
     }
 
-    .btn-back {
-      display: flex;
+    /* Bouton retour avec couleur sidebar (rgb(28, 82, 118)) */
+    .btn-back-sidebar {
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      background: #f8f9fa;
-      border: 1px solid #dee2e6;
-      border-radius: 6px;
-      color: #495057;
-      cursor: pointer;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      border: 2px solid rgb(28, 82, 118);
+      border-radius: 0.5rem;
+      background-color: rgb(28, 82, 118);
+      color: white;
       transition: all 0.3s ease;
     }
 
-    .btn-back:hover {
-      background: #e9ecef;
-      color: #007bff;
+    .btn-back-sidebar:hover {
+      transform: translateY(-2px);
+      background-color: rgb(20, 60, 90);
+      border-color: rgb(20, 60, 90);
+      box-shadow: 0 4px 12px rgba(28, 82, 118, 0.35);
+    }
+
+    .btn-back-sidebar i {
+      font-size: 1rem;
     }
 
     h1 {
@@ -99,7 +107,7 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
       gap: 20px;
     }
 
-    .lot-card {
+     .lot-card {
       background: white;
       border: 2px solid #e9ecef;
       border-radius: 12px;
@@ -155,7 +163,7 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
       margin-bottom: 20px;
     }
 
-    .lot-ville {
+    .lot-region {
       color: #007bff;
       font-weight: 600;
       margin-bottom: 8px;
@@ -261,14 +269,13 @@ export class TrimestreLotsComponent implements OnInit {
     });
   }
 
-  loadLots(): void {
+   loadLots(): void {
     this.lotService.getActiveLots().subscribe({
       next: (lotsData: LotWithContractorDto[]) => {
         this.lots = lotsData.map(lot => ({
           numero: lot.lot, // Already normalized by backend: "Lot X"
           rawNumero: (lot as any).lotRaw, // Raw lot name like "lot9"
-          ville: lot.villes.join(', '),
-          villes: lot.villes,
+          regions: lot.regions,
           contractIds: lot.contractIds,
           description: `Contrats: ${lot.contractIds.join(', ')}`,
           status: 'Actif',

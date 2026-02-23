@@ -136,7 +136,8 @@ import { PrestationFormComponent } from '../prestation-form/prestation-form.comp
               (submitClicked)="onSubmitClicked($event)"
               (validateClicked)="onValidateClicked($event)"
               (rejectClicked)="onRejectClicked($event)"
-              (deleteClicked)="onDeleteClicked($event)">
+              (deleteClicked)="onDeleteClicked($event)"
+              (editClicked)="onEditClicked($event)">
             </app-prestation-card>
           </div>
 
@@ -293,6 +294,23 @@ export class PrestatairePrestationListComponent implements OnInit {
     this.searchTerm = '';
     this.selectedStatutValidation = '';
     this.filteredDisplayItems = [...this.displayItems];
+  }
+
+  /** Gérer le clic sur le bouton Modifier */
+  onEditClicked(prestationId: string): void {
+    console.log('Modifier prestation:', prestationId);
+    // Ouvrir le formulaire de modification
+    const dialogRef = this.dialog.open(PrestationFormComponent, {
+      width: '800px',
+      data: { prestationId: prestationId }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'success') {
+        // Recharger les prestations après modification
+        this.loadPrestations();
+      }
+    });
   }
 
   getValidationCountByStatut(statut: string): number {

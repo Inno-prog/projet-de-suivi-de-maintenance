@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
         <div class="flex items-center justify-between">
           <!-- Logo and Title Section -->
           <div class="flex items-center space-x-4">
-            <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
+            <div class="w-12 h-12 bg-[rgb(28,82,118)] rounded-lg flex items-center justify-center">
               <i class="fa-solid fa-file-invoice text-white text-lg"></i>
             </div>
             <div>
@@ -41,7 +41,7 @@ import { CommonModule } from '@angular/common';
                 <span class="text-sm font-medium">Accueil</span>
               </div>
               <i class="fa-solid fa-chevron-right text-sm text-gray-400"></i>
-              <span class="text-sm font-bold text-orange-600">Ordres de Commande</span>
+              <span class="text-sm font-bold text-[rgb(28,82,118)]">Ordres de Commande</span>
             </nav>
           </div>
         </div>

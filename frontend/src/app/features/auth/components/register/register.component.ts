@@ -96,7 +96,7 @@ import { AuthService } from '../../../../core/services/auth.service';
             />
           </div>
 
-          <div class="form-group" *ngIf="registerForm.get('role')?.value === 'AGENT_DGSI'">
+          <div class="form-group" *ngIf="registerForm.get('role')?.value === 'AGENT_DGSI' || registerForm.get('role')?.value === 'PRESTATAIRE'">
             <label for="structure">Structure</label>
             <input
               type="text"
@@ -387,8 +387,7 @@ export class RegisterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Redirect to Keycloak registration page
-    window.location.href = 'http://localhost:8080/realms/Maintenance-DGSI/account';
+    // No redirection - use the Angular form
   }
 
   togglePasswordVisibility(): void {

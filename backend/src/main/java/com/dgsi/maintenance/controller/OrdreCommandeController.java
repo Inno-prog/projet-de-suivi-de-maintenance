@@ -1,6 +1,7 @@
 package com.dgsi.maintenance.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -327,11 +328,82 @@ public class OrdreCommandeController {
             // Préparer la réponse
             Map<String, Object> response = new HashMap<>();
 
+            // Récupérer les villes et régions pour ce lot à partir des contrats
+            List<String> villesLot = new ArrayList<>();
+            List<String> regionsLot = new ArrayList<>();
+            
+            if (contratRepository != null) {
+                try {
+                    List<com.dgsi.maintenance.entity.Contrat> contratsLot = contratRepository.findAll().stream()
+                        .filter(c -> {
+                            String contractLotName = c.getLot();
+                            if (contractLotName == null && c.getLotEntity() != null) {
+                                contractLotName = c.getLotEntity().getNomLot();
+                            }
+                            return contractLotName != null && lotsMatch(contractLotName, lotNom);
+                        })
+                        .collect(Collectors.toList());
+                    
+                    for (com.dgsi.maintenance.entity.Contrat contrat : contratsLot) {
+                        if (contrat.getVille() != null && !contrat.getVille().trim().isEmpty() && !villesLot.contains(contrat.getVille())) {
+                            villesLot.add(contrat.getVille());
+                        }
+                        if (contrat.getRegions() != null && !contrat.getRegions().trim().isEmpty()) {
+                            // Split regions string into list (handle CSV, JSON array, or PostgreSQL array formats)
+                            String regionsStr = contrat.getRegions().trim();
+                            List<String> regionsList = new ArrayList<>();
+                            
+                            // Handle JSON array format ["item1", "item2"]
+                            if (regionsStr.startsWith("[") && regionsStr.endsWith("]")) {
+                                try {
+                                    String content = regionsStr.substring(1, regionsStr.length() - 1);
+                                    if (!content.trim().isEmpty()) {
+                                        regionsList = Arrays.stream(content.split(","))
+                                            .map(s -> s.trim().replaceAll("^\"|\"$", ""))
+                                            .filter(s -> !s.isEmpty())
+                                            .collect(Collectors.toList());
+                                    }
+                                } catch (Exception e) {
+                                    // Fall back to CSV
+                                    regionsList = Arrays.asList(regionsStr.split(","));
+                                }
+                            } 
+                            // Handle PostgreSQL array format {item1, item2}
+                            else if (regionsStr.startsWith("{") && regionsStr.endsWith("}")) {
+                                String content = regionsStr.substring(1, regionsStr.length() - 1);
+                                regionsList = Arrays.stream(content.split(","))
+                                    .map(s -> s.trim().replaceAll("^\"|\"$", ""))
+                                    .filter(s -> !s.isEmpty())
+                                    .collect(Collectors.toList());
+                            }
+                            // Handle CSV format
+                            else {
+                                regionsList = Arrays.stream(regionsStr.split(","))
+                                    .map(String::trim)
+                                    .filter(s -> !s.isEmpty())
+                                    .collect(Collectors.toList());
+                            }
+                            
+                            // Add regions to the list, avoiding duplicates
+                            for (String region : regionsList) {
+                                if (!regionsLot.contains(region)) {
+                                    regionsLot.add(region);
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.warn("⚠️ Erreur récupération villes/regions pour lot {}: {}", lotNom, e.getMessage());
+                }
+            }
+
             Map<String, Object> lotInfo = new HashMap<>();
             lotInfo.put("id", lotId);
             lotInfo.put("nom", lotNom);
             lotInfo.put("prestataires", prestatairesLot);
             lotInfo.put("nombrePrestataires", prestatairesLot.size());
+            lotInfo.put("villes", villesLot);
+            lotInfo.put("regions", regionsLot);
 
             response.put("lotInfo", lotInfo);
             response.put("fiches", formattedFiches);

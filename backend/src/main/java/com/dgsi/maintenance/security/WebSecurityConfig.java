@@ -1,15 +1,26 @@
 package com.dgsi.maintenance.security;
 
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.OncePerRequestFilter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -33,74 +44,73 @@ public class WebSecurityConfig {
 
         // If not production, insert a development authentication filter that grants role-specific authentication
         if (!isProduction) {
-            // Temporarily disable dev filter for testing
-            // http.addFilterBefore(new OncePerRequestFilter() {
-            //     @Override
-            //     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
-            //             throws ServletException, IOException {
-            //         // In development, simulate different user authentications based on request context
-            //         System.out.println("🔧 DEV FILTER: Setting authentication for request: " + request.getRequestURI());
+            http.addFilterBefore(new OncePerRequestFilter() {
+                @Override
+                protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
+                        throws ServletException, IOException {
+                    // In development, simulate different user authentications based on request context
+                    System.out.println("🔧 DEV FILTER: Setting authentication for request: " + request.getRequestURI());
 
-            //         // Check for user simulation headers/parameters
-            //         String simulatedUser = request.getHeader("X-Simulated-User");
-            //         if (simulatedUser == null) {
-            //             // Check query parameter
-            //             simulatedUser = request.getParameter("simulatedUser");
-            //         }
-            //         if (simulatedUser == null) {
-            //             // Check session attribute
-            //             simulatedUser = (String) request.getSession().getAttribute("simulatedUser");
-            //         }
+                    // Check for user simulation headers/parameters
+                    String simulatedUser = request.getHeader("X-Simulated-User");
+                    if (simulatedUser == null) {
+                        // Check query parameter
+                        simulatedUser = request.getParameter("simulatedUser");
+                    }
+                    if (simulatedUser == null) {
+                        // Check session attribute
+                        simulatedUser = (String) request.getSession().getAttribute("simulatedUser");
+                    }
 
-            //         // Default to softlink (prestataire) if no simulation specified for better testing
-            //         if (simulatedUser == null || simulatedUser.isEmpty()) {
-            //             simulatedUser = "softlink";
-            //         }
+                    // Default to admin if no simulation specified (since only admin can validate/reject)
+                    if (simulatedUser == null || simulatedUser.isEmpty()) {
+                        simulatedUser = "admin";
+                    }
 
-            //         String principalName;
-            //         List<SimpleGrantedAuthority> authorities;
+                    String principalName;
+                    List<SimpleGrantedAuthority> authorities;
 
-            //         switch (simulatedUser.toLowerCase()) {
-            //             case "admin":
-            //             case "administrateur":
-            //                 principalName = "admin@gmail.com";
-            //                 authorities = Arrays.asList(
-            //                     new SimpleGrantedAuthority("ROLE_ADMINISTRATEUR"),
-            //                     new SimpleGrantedAuthority("ROLE_PRESTATAIRE"),
-            //                     new SimpleGrantedAuthority("ROLE_AGENT_DGSI")
-            //                 );
-            //                 break;
-            //             case "prestataire":
-            //             case "presta":
-            //                 principalName = "presta@gmail.com";
-            //                 authorities = Arrays.asList(
-            //                     new SimpleGrantedAuthority("ROLE_PRESTATAIRE")
-            //                 );
-            //                 break;
-            //             case "agent":
-            //             case "agent_dgsi":
-            //                 principalName = "agent@gmail.com";
-            //                 authorities = Arrays.asList(
-            //                     new SimpleGrantedAuthority("ROLE_AGENT_DGSI")
-            //                 );
-            //                 break;
-            //             default:
-            //                 // Fallback to admin
-            //                 principalName = "admin@gmail.com";
-            //                 authorities = Arrays.asList(
-            //                     new SimpleGrantedAuthority("ROLE_ADMINISTRATEUR"),
-            //                     new SimpleGrantedAuthority("ROLE_PRESTATAIRE"),
-            //                     new SimpleGrantedAuthority("ROLE_AGENT_DGSI")
-            //                 );
-            //                 break;
-            //         }
+                    switch (simulatedUser.toLowerCase()) {
+                        case "admin":
+                        case "administrateur":
+                            principalName = "admin@gmail.com";
+                            authorities = Arrays.asList(
+                                new SimpleGrantedAuthority("ROLE_ADMINISTRATEUR"),
+                                new SimpleGrantedAuthority("ROLE_PRESTATAIRE"),
+                                new SimpleGrantedAuthority("ROLE_AGENT_DGSI")
+                            );
+                            break;
+                        case "prestataire":
+                        case "presta":
+                            principalName = "presta@gmail.com";
+                            authorities = Arrays.asList(
+                                new SimpleGrantedAuthority("ROLE_PRESTATAIRE")
+                            );
+                            break;
+                        case "agent":
+                        case "agent_dgsi":
+                            principalName = "agent@gmail.com";
+                            authorities = Arrays.asList(
+                                new SimpleGrantedAuthority("ROLE_AGENT_DGSI")
+                            );
+                            break;
+                        default:
+                            // Fallback to admin
+                            principalName = "admin@gmail.com";
+                            authorities = Arrays.asList(
+                                new SimpleGrantedAuthority("ROLE_ADMINISTRATEUR"),
+                                new SimpleGrantedAuthority("ROLE_PRESTATAIRE"),
+                                new SimpleGrantedAuthority("ROLE_AGENT_DGSI")
+                            );
+                            break;
+                    }
 
-            //         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(principalName, null, authorities);
-            //         SecurityContextHolder.getContext().setAuthentication(auth);
-            //         System.out.println("✅ DEV FILTER: Authentication set for user: " + simulatedUser + " (" + principalName + ") with roles: " + authorities);
-            //         filterChain.doFilter(request, response);
-            //     }
-            // }, org.springframework.security.web.authentication.AnonymousAuthenticationFilter.class);
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(principalName, null, authorities);
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    System.out.println("✅ DEV FILTER: Authentication set for user: " + simulatedUser + " (" + principalName + ") with roles: " + authorities);
+                    filterChain.doFilter(request, response);
+                }
+            }, org.springframework.security.web.authentication.AnonymousAuthenticationFilter.class);
         }
         http
             // Configurer CORS

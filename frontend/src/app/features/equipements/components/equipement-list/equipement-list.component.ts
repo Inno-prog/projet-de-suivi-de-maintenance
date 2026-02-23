@@ -136,6 +136,19 @@ export class EquipementListComponent implements OnInit {
     });
   }
 
+  editEquipement(equipement: Equipement): void {
+    const dialogRef = this.dialog.open(EquipementFormComponent, {
+      width: '800px',
+      data: { equipement }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadEquipements();
+      }
+    });
+  }
+
   getEquipementType(equipement: Equipement): string {
     return (equipement as any).marque || equipement.typeEquipement || '';
   }

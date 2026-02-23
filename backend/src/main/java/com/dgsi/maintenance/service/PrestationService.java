@@ -8,7 +8,10 @@ import com.dgsi.maintenance.entity.Item;
 import com.dgsi.maintenance.entity.OrdreCommande;
 import com.dgsi.maintenance.entity.Prestation;
 import com.dgsi.maintenance.entity.StatutFiche;
+import com.dgsi.maintenance.entity.FichePrestationItem;
+import com.dgsi.maintenance.entity.FichePrestationItemId;
 import com.dgsi.maintenance.repository.FichePrestationRepository;
+import com.dgsi.maintenance.repository.FichePrestationItemRepository;
 import com.dgsi.maintenance.repository.ItemRepository;
 import com.dgsi.maintenance.repository.PrestationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,7 @@ public class PrestationService {
     private final ItemRepository itemRepository;
     private final OrdreCommandeService ordreCommandeService;
     private final FichePrestationRepository fichePrestationRepository;
+    private final FichePrestationItemRepository fichePrestationItemRepository;
     private final TransactionTemplate transactionTemplate;
     private final com.dgsi.maintenance.repository.ContratRepository contratRepository;
     private final NotificationService notificationService;
@@ -38,6 +42,7 @@ public class PrestationService {
                             ItemRepository itemRepository,
                             OrdreCommandeService ordreCommandeService,
                             FichePrestationRepository fichePrestationRepository,
+                            FichePrestationItemRepository fichePrestationItemRepository,
                             TransactionTemplate transactionTemplate,
                             com.dgsi.maintenance.repository.ContratRepository contratRepository,
                             NotificationService notificationService,
@@ -46,6 +51,7 @@ public class PrestationService {
         this.itemRepository = itemRepository;
         this.ordreCommandeService = ordreCommandeService;
         this.fichePrestationRepository = fichePrestationRepository;
+        this.fichePrestationItemRepository = fichePrestationItemRepository;
         this.transactionTemplate = transactionTemplate;
         this.contratRepository = contratRepository;
         this.notificationService = notificationService;
@@ -951,6 +957,21 @@ public class PrestationService {
                     .orElse("");
                 fiche.setItemsCouverts(itemsCouverts);
             }
+        }
+
+        // Sauvegarder la fiche pour obtenir un ID
+        fiche = fichePrestationRepository.save(fiche);
+
+        // Lier les items à la fiche dans la table fiche_prestation_items
+        if (prestation.getItemsUtilises() != null && !prestation.getItemsUtilises().isEmpty()) {
+            for (Item item : prestation.getItemsUtilises()) {
+                FichePrestationItem fichePrestationItem = new FichePrestationItem();
+                fichePrestationItem.setId(new FichePrestationItemId(fiche.getId(), item.getId()));
+                fichePrestationItem.setFichePrestation(fiche);
+                fichePrestationItem.setItem(item);
+                fichePrestationItemRepository.save(fichePrestationItem);
+            }
+            log.info("✅ Items liés à la fiche prestation ID: {}", fiche.getId());
         }
 
         // Date de réalisation basée sur la prestation

@@ -44,7 +44,7 @@ public class ReferenceDataService {
         }
         
         // 4. Guiriko (Chef-lieu : Bobo-Dioulasso)
-        REGION_VILLES.put("Guiriko", Arrays.asList("Bobo-Dioulasso", "Houndé", "Orodara", "Banfora"));
+        REGION_VILLES.put("Guiriko", Arrays.asList("Bobo-Dioulasso", "Houndé", "Orodara"));
         for (String ville : REGION_VILLES.get("Guiriko")) {
             VILLE_REGION.put(ville, "Guiriko");
         }

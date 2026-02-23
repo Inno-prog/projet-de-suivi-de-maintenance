@@ -17,69 +17,33 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
   template: `
     <div class="container">
 
-        <!-- Statistics Cards - Material Design Style -->
-        <div class="stats-overview">
-          <div class="stat-card total-card">
-            <div class="stat-icon-wrapper">
-              <div class="stat-icon-bg">
-                <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                </svg>
-              </div>
-              <div class="stat-icon-shadow"></div>
+        <!-- Statistics Cards - Lot-fiches Style -->
+        <div class="stats-grid">
+          <div class="stat-card stat-card-total">
+            <div class="stat-icon-wrapper bg-primary-soft">
+              <i class="bi bi-clipboard-data stat-icon"></i>
             </div>
-            <div class="stat-content">
-              <div class="stat-number">{{ filteredContrats.length }}</div>
+            <div class="stat-info">
+              <span class="stat-badge badge bg-light text-dark border">{{ filteredContrats.length }}</span>
               <div class="stat-label">Total Contrats</div>
-              <div class="stat-subtitle">Tous les contrats</div>
             </div>
           </div>
-
-          <div class="stat-card active-card">
-            <div class="stat-icon-wrapper">
-              <div class="stat-icon-bg">
-                <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M10.3,16.74L6.21,12.63L7.62,11.21L10.3,13.89L16.38,7.79L17.79,9.21L10.3,16.74Z"/>
-                </svg>
-              </div>
-              <div class="stat-icon-shadow"></div>
+          <div class="stat-card stat-card-active">
+            <div class="stat-icon-wrapper bg-success-soft">
+              <i class="bi bi-check-circle-fill stat-icon text-success"></i>
             </div>
-            <div class="stat-content">
-              <div class="stat-number">{{ getContratsByStatus('ACTIF').length }}</div>
+            <div class="stat-info">
+              <span class="stat-badge badge bg-light text-dark border">{{ getContratsByStatus('ACTIF').length }}</span>
               <div class="stat-label">Contrats Actifs</div>
-              <div class="stat-subtitle">En cours d'exécution</div>
             </div>
           </div>
-
-          <div class="stat-card suspended-card">
-            <div class="stat-icon-wrapper">
-              <div class="stat-icon-bg">
-                <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M13,14H11V12H13M13,18H11V16H13M1,21H23L12,2L1,21Z"/>
-                </svg>
-              </div>
-              <div class="stat-icon-shadow"></div>
+          <div class="stat-card stat-card-resilie">
+            <div class="stat-icon-wrapper bg-danger-soft">
+              <i class="bi bi-x-circle-fill stat-icon text-danger"></i>
             </div>
-            <div class="stat-content">
-              <div class="stat-number">{{ getContratsByStatus('SUSPENDU').length }}</div>
-              <div class="stat-label">Suspendus</div>
-              <div class="stat-subtitle">En attente</div>
-            </div>
-          </div>
-
-          <div class="stat-card amount-card">
-            <div class="stat-icon-wrapper">
-              <div class="stat-icon-bg">
-                <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3,6H21V18H3V6M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M7,8A2,2 0 0,1 5,10V14A2,2 0 0,1 7,16H17A2,2 0 0,1 19,14V10A2,2 0 0,1 17,8H7Z"/>
-                </svg>
-              </div>
-              <div class="stat-icon-shadow"></div>
-            </div>
-            <div class="stat-content">
-              <div class="stat-number">{{ getTotalMontant() | number:'1.0-0' }}</div>
-              <div class="stat-label">Montant Total</div>
-              <div class="stat-subtitle">FCFA</div>
+            <div class="stat-info">
+              <span class="stat-badge badge bg-light text-dark border">{{ getContratsByStatus('RESILIE').length }}</span>
+              <div class="stat-label">Contrats Résiliés</div>
             </div>
           </div>
         </div>
@@ -87,15 +51,13 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
         <!-- Contracts List - Table Style -->
         <div class="contracts-list">
           <div class="table-header">
-            <h2>Listes de mes contrats</h2>
+            <h2>Listes des contrats</h2>
             <div class="header-actions">
               <div *ngIf="filteredContrats.length > 0" class="contract-count">
                 Total : <span class="font-semibold">{{ filteredContrats.length }}</span>
               </div>
-              <button class="btn btn-primary" *ngIf="authService.isAdmin()" (click)="openContratForm()">
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                </svg>
+              <button class="btn btn-sidebar" *ngIf="authService.isAdmin()" (click)="openContratForm()">
+                <i class="bi bi-plus-circle me-2"></i>
                 Nouveau Contrat
               </button>
             </div>
@@ -344,16 +306,26 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
       min-width: 120px;
     }
 
-    .btn-primary {
-      background: #1e293b;
+    .btn-sidebar {
+      background: rgb(28, 82, 118);
       color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .btn-primary:hover:not(:disabled) {
-      background: #334155;
+    .btn-sidebar:hover:not(:disabled) {
+      background: rgb(18, 62, 88);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(28, 82, 118, 0.3);
     }
 
-    .btn-primary:disabled {
+    .btn-sidebar:disabled {
       background: #ccc;
       cursor: not-allowed;
     }
@@ -796,138 +768,103 @@ import { ContratFormComponent } from '../contrat-form/contrat-form.component';
       align-items: center;
     }
 
-    .stats-overview {
+    /* Stats Grid - Lot-fiches Style */
+    .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+      margin-top: 10px;
     }
 
+    /* Cartes de statistiques avec bordures fines colorées */
     .stat-card {
-      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.2);
+      background: white;
       border-radius: 12px;
-      box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.08),
-        0 2px 6px rgba(0, 0, 0, 0.04),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-      padding: 1rem;
+      padding: 16px 20px;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
     }
 
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #f59e0b);
-      border-radius: 12px 12px 0 0;
+    /* Bordures fines colorées selon le type */
+    .stat-card-total {
+      border: 2px solid #0d6efd;
+    }
+
+    .stat-card-active {
+      border: 2px solid #198754;
+    }
+
+    .stat-card-resilie {
+      border: 2px solid #dc3545;
     }
 
     .stat-card:hover {
-      transform: translateY(-3px) scale(1.01);
-      box-shadow:
-        0 8px 20px rgba(0, 0, 0, 0.1),
-        0 4px 10px rgba(0, 0, 0, 0.06),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     }
 
-    /* Specific card themes */
-    .total-card::before { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
-    .active-card::before { background: linear-gradient(90deg, #10b981, #059669); }
-    .suspended-card::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
-    .amount-card::before { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
-
+    /* Icônes avec fond coloré subtil */
     .stat-icon-wrapper {
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    .stat-icon-bg {
       width: 48px;
       height: 48px;
-      border-radius: 12px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
-      overflow: hidden;
+      flex-shrink: 0;
     }
 
-    /* Icon backgrounds with gradients */
-    .total-card .stat-icon-bg {
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    .bg-primary-soft {
+      background: rgba(13, 110, 253, 0.1);
     }
 
-    .active-card .stat-icon-bg {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    .bg-success-soft {
+      background: rgba(25, 135, 84, 0.1);
     }
 
-    .suspended-card .stat-icon-bg {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+    .bg-danger-soft {
+      background: rgba(220, 53, 69, 0.1);
     }
 
-    .amount-card .stat-icon-bg {
-      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-      box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
+    .bg-purple-soft {
+      background: rgba(111, 66, 193, 0.1);
     }
 
     .stat-icon {
-      width: 24px;
-      height: 24px;
-      color: white;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      font-size: 24px;
     }
 
-    .stat-icon-shadow {
-      position: absolute;
-      bottom: -2px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 36px;
-      height: 4px;
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 50%;
-      filter: blur(4px);
+    .text-purple {
+      color: #6f42c1;
     }
 
-    .stat-content {
-      flex: 1;
-    }
-
-    .stat-number {
-      font-size: 1.5rem;
+    /* Badge pour la valeur */
+    .stat-badge {
+      font-size: 20px;
       font-weight: 700;
-      line-height: 1;
-      margin-bottom: 0.25rem;
-      background: linear-gradient(135deg, #1e293b 0%, #374151 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      padding: 6px 12px;
+      border-radius: 8px;
     }
 
     .stat-label {
-      font-size: 0.875rem;
+      font-size: 13px;
+      color: #6c757d;
       font-weight: 600;
-      color: #374151;
-      margin-bottom: 0.15rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
     }
 
-    .stat-subtitle {
-      font-size: 0.75rem;
-      color: #6b7280;
-      font-weight: 500;
+    .stat-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
 
     @media (max-width: 768px) {
@@ -1007,33 +944,49 @@ export class ContratListComponent implements OnInit {
 
   loadContrats(): void {
     this.loadingList = true;
-    this.contratService.getAllContrats().subscribe({
-      next: (contrats) => {
-        console.log('Contrats chargés:', contrats);
-        // Filter contracts for current prestataire if user is prestataire
-        if (this.authService.isPrestataire()) {
-          const currentUser = this.authService.getCurrentUser();
-          if (currentUser) {
-            this.contrats = contrats.filter(contrat => contrat.nomPrestataire === currentUser.nom);
-          } else {
-            this.contrats = [];
-          }
-        } else {
+    const currentUser = this.authService.getCurrentUser();
+    
+    // If user is prestataire, use the specific endpoint to get only their contracts
+    if (this.authService.isPrestataire() && currentUser) {
+      this.contratService.getContratsByPrestataire(currentUser.id).subscribe({
+        next: (contrats) => {
+          console.log('Contrats du prestataire chargés:', contrats);
           this.contrats = contrats;
+          this.filteredContrats = this.contrats;
+          this.loadingList = false;
+          
+          // Log pour debug des fichiers
+          this.contrats.forEach(contrat => {
+            console.log(`Contrat ${contrat.idContrat} - Fichier: ${contrat.fichierContrat}`);
+          });
+        },
+        error: (error) => {
+          console.error('Error loading contrats for prestataire:', error);
+          this.contrats = [];
+          this.filteredContrats = [];
+          this.loadingList = false;
         }
-        this.filteredContrats = this.contrats;
-        this.loadingList = false;
-        
-        // Log pour debug des fichiers
-        this.contrats.forEach(contrat => {
-          console.log(`Contrat ${contrat.idContrat} - Fichier: ${contrat.fichierContrat}`);
-        });
-      },
-      error: (error) => {
-        console.error('Error loading contrats:', error);
-        this.loadingList = false;
-      }
-    });
+      });
+    } else {
+      // For admin users, load all contracts
+      this.contratService.getAllContrats().subscribe({
+        next: (contrats) => {
+          console.log('Tous les contrats chargés:', contrats);
+          this.contrats = contrats;
+          this.filteredContrats = this.contrats;
+          this.loadingList = false;
+          
+          // Log pour debug des fichiers
+          this.contrats.forEach(contrat => {
+            console.log(`Contrat ${contrat.idContrat} - Fichier: ${contrat.fichierContrat}`);
+          });
+        },
+        error: (error) => {
+          console.error('Error loading contrats:', error);
+          this.loadingList = false;
+        }
+      });
+    }
   }
 
   loadPrestataires(): void {
@@ -1102,12 +1055,8 @@ export class ContratListComponent implements OnInit {
     switch (statut) {
       case StatutContrat.ACTIF:
         return 'Actif';
-      case StatutContrat.TERMINE:
-        return 'Terminé';
-      case StatutContrat.SUSPENDU:
-        return 'Suspendu';
-      case StatutContrat.EXPIRE:
-        return 'Expiré';
+      case StatutContrat.RESILIE:
+        return 'Résilié';
       default:
         return statut;
     }
@@ -1117,11 +1066,7 @@ export class ContratListComponent implements OnInit {
     switch (statut) {
       case StatutContrat.ACTIF:
         return 'badge-success';
-      case StatutContrat.TERMINE:
-        return 'badge-info';
-      case StatutContrat.SUSPENDU:
-        return 'badge-warning';
-      case StatutContrat.EXPIRE:
+      case StatutContrat.RESILIE:
         return 'badge-error';
       default:
         return 'badge-info';

@@ -259,6 +259,18 @@
   border-color: #1d4ed8;
 }
 
+.edit-btn {
+  background: transparent;
+  color: #6366f1;
+  border: 1px solid #6366f1;
+}
+
+.edit-btn:hover {
+  background: rgba(99, 102, 241, 0.1);
+  color: #4f46e5;
+  border-color: #4f46e5;
+}
+
 .submit-btn {
   background: transparent;
   color: #f59e0b;

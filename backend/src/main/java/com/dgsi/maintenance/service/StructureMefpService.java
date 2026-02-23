@@ -64,6 +64,16 @@ public class StructureMefpService {
     public StructureMefp createStructure(StructureMefp structure) {
         logger.info("Creating new structure: " + structure.getNom());
         
+        // Automatically assign region from ville if not set
+        if ((structure.getRegion() == null || structure.getRegion().isEmpty()) 
+            && structure.getVille() != null && !structure.getVille().isEmpty()) {
+            String region = referenceDataService.assignRegionFromVille(structure.getVille());
+            if (region != null) {
+                structure.setRegion(region);
+                logger.info("Auto-assigned region: " + region + " for ville: " + structure.getVille());
+            }
+        }
+        
         // Automatically assign lot from ville if not set
         if (structure.getLot() == null && structure.getVille() != null && !structure.getVille().isEmpty()) {
             Lot lot = referenceDataService.assignLotFromVille(structure.getVille());
@@ -160,21 +170,29 @@ public class StructureMefpService {
         logger.info("Fetching structures for regions: " + regions);
         List<StructureMefp> allStructures = new ArrayList<>();
         
-        for (String region : regions) {
-            if (region != null && !region.trim().isEmpty()) {
-                List<StructureMefp> structures = structureMefpRepository.findByRegion(region);
-                logger.info("Found " + structures.size() + " structures for region: " + region);
-                allStructures.addAll(structures);
+        // First, get all structures from database
+        List<StructureMefp> allStructuresFromDb = structureMefpRepository.findAll();
+        
+        // Filter structures that belong to any of the regions
+        for (StructureMefp structure : allStructuresFromDb) {
+            String structureRegion = structure.getRegion();
+            
+            // If structure has no region, try to infer from ville
+            if (structureRegion == null || structureRegion.isEmpty()) {
+                if (structure.getVille() != null && !structure.getVille().isEmpty()) {
+                    structureRegion = referenceDataService.assignRegionFromVille(structure.getVille());
+                    logger.info("Inferred region " + structureRegion + " for structure " + structure.getNom() + " (ville: " + structure.getVille() + ")");
+                }
+            }
+            
+            // Check if structure belongs to any of the target regions
+            if (structureRegion != null && regions.contains(structureRegion)) {
+                allStructures.add(structure);
             }
         }
         
-        // Remove duplicates based on structure ID
-        List<StructureMefp> uniqueStructures = allStructures.stream()
-            .distinct()
-            .collect(Collectors.toList());
-        
-        logger.info("Total unique structures found for all regions: " + uniqueStructures.size());
-        return uniqueStructures;
+        logger.info("Total unique structures found for all regions: " + allStructures.size());
+        return allStructures;
     }
 
     /**

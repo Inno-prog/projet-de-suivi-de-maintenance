@@ -3,9 +3,13 @@ package com.dgsi.maintenance.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.dgsi.maintenance.entity.Contrat;
 import com.dgsi.maintenance.entity.Item;
 import com.dgsi.maintenance.entity.OrdreCommande;
+import com.dgsi.maintenance.entity.Prestation;
 import com.dgsi.maintenance.repository.ContratRepository;
 import com.dgsi.maintenance.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -342,5 +346,127 @@ public class ContratItemService {
         stats.put("items", itemsStats);
         
         return stats;
+    }
+
+    /**
+     * Synchronise les quantités des items avec les prestations existantes.
+     * Cette méthode recalcule les quantités utilisées à partir des prestations validées.
+     */
+    @Transactional
+    public Map<String, Object> synchroniserQuantitesAvecPrestationsExistantes() {
+        log.info("🔄 Synchronisation des quantités avec les prestations existantes...");
+
+        Map<String, Object> report = new java.util.HashMap<>();
+        int itemsUpdated = 0;
+        int totalQuantitiesRecalculated = 0;
+        List<Map<String, Object>> details = new java.util.ArrayList<>();
+
+        // Récupérer tous les items
+        List<Item> allItems = itemRepository.findAll();
+        
+        for (Item item : allItems) {
+            // Récupérer les prestations associées à cet item
+            Set<Prestation> prestations = item.getPrestations();
+            
+            if (prestations == null || prestations.isEmpty()) {
+                // Si pas de prestations, réinitialiser les compteurs
+                if (item.getQuantiteUtilisee() != null && item.getQuantiteUtilisee() > 0) {
+                    log.info("🔄 Item {}: pas de prestations, réinitialisation des compteurs", item.getNomItem());
+                    item.setQuantiteUtilisee(0);
+                    item.setQuantiteUtiliseeTrimestre(0);
+                    itemRepository.save(item);
+                    itemsUpdated++;
+                }
+                continue;
+            }
+
+            // Calculer les quantités totales à partir des prestations
+            int totalQuantite = 0;
+            int totalQuantiteTrimestre = 0;
+
+            for (Prestation prestation : prestations) {
+                // Vérifier si la prestation est validée (statut validation = VALIDE)
+                if ("VALIDE".equals(prestation.getStatutValidation())) {
+                    
+                    // Récupérer la quantité utilisée pour cet item dans cette prestation
+                    Integer quantite = null;
+                    try {
+                        ObjectMapper mapper = new ObjectMapper();
+                        TypeReference<Map<Long, Integer>> typeRef = new TypeReference<>() {};
+                        Map<Long, Integer> itemQuantitiesMap = mapper.readValue(prestation.getItemQuantities(), typeRef);
+                        quantite = itemQuantitiesMap.get(item.getId());
+                    } catch (Exception e) {
+                        log.debug("Erreur lors de la lecture des quantités de la prestation {}: {}", prestation.getId(), e.getMessage());
+                    }
+                    
+                    if (quantite != null && quantite > 0) {
+                        totalQuantite += quantite;
+                        
+                        // Vérifier si la prestation est du trimestre courant
+                        if (isCurrentTrimestre(prestation)) {
+                            totalQuantiteTrimestre += quantite;
+                        }
+                    }
+                }
+            }
+
+            // Mettre à jour l'item si les quantités ont changé
+            Integer currentQuantite = item.getQuantiteUtilisee() != null ? item.getQuantiteUtilisee() : 0;
+            Integer currentQuantiteTrimestre = item.getQuantiteUtiliseeTrimestre() != null ? item.getQuantiteUtiliseeTrimestre() : 0;
+
+            if (currentQuantite != totalQuantite || currentQuantiteTrimestre != totalQuantiteTrimestre) {
+                log.info("🔄 Item {}: mise à jour des quantités (global: {} -> {}, trimestre: {} -> {})", 
+                    item.getNomItem(), currentQuantite, totalQuantite, currentQuantiteTrimestre, totalQuantiteTrimestre);
+                
+                item.setQuantiteUtilisee(totalQuantite);
+                item.setQuantiteUtiliseeTrimestre(totalQuantiteTrimestre);
+                itemRepository.save(item);
+                
+                itemsUpdated++;
+                totalQuantitiesRecalculated += Math.abs(totalQuantite - currentQuantite);
+                
+                Map<String, Object> itemDetail = new java.util.HashMap<>();
+                itemDetail.put("itemId", item.getId());
+                itemDetail.put("nomItem", item.getNomItem());
+                itemDetail.put("ancienneQuantite", currentQuantite);
+                itemDetail.put("nouvelleQuantite", totalQuantite);
+                itemDetail.put("ancienneQuantiteTrimestre", currentQuantiteTrimestre);
+                itemDetail.put("nouvelleQuantiteTrimestre", totalQuantiteTrimestre);
+                details.add(itemDetail);
+            }
+        }
+
+        report.put("itemsUpdated", itemsUpdated);
+        report.put("totalQuantitiesRecalculated", totalQuantitiesRecalculated);
+        report.put("details", details);
+        report.put("message", "Synchronisation terminée avec succès");
+        
+        log.info("✅ Synchronisation terminée: {} items mis à jour, {} quantités recalculées", itemsUpdated, totalQuantitiesRecalculated);
+        
+        return report;
+    }
+
+    /**
+     * Vérifie si une prestation appartient au trimestre courant
+     */
+    private boolean isCurrentTrimestre(Prestation prestation) {
+        if (prestation.getDateDebut() == null) {
+            return false;
+        }
+        
+        java.time.LocalDate now = java.time.LocalDate.now();
+        java.time.LocalDate dateDebut = prestation.getDateDebut();
+        
+        // Déterminer le trimestre courant
+        int currentMonth = now.getMonthValue();
+        int currentTrimestre = (currentMonth - 1) / 3 + 1;
+        int currentYear = now.getYear();
+        
+        // Déterminer le trimestre de la prestation
+        int prestationMonth = dateDebut.getMonthValue();
+        int prestationTrimestre = (prestationMonth - 1) / 3 + 1;
+        int prestationYear = dateDebut.getYear();
+        
+        return currentYear == prestationYear && currentTrimestre == prestationTrimestre;
     }
 }

@@ -2,6 +2,7 @@ package com.dgsi.maintenance.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import com.dgsi.maintenance.entity.FichePrestation;
 import com.dgsi.maintenance.entity.Item;
 import com.dgsi.maintenance.repository.ContratRepository;
@@ -55,56 +56,22 @@ public class ItemController {
      * Calculer la quantité totale réalisée pour un item donné (compte le nombre d'occurrences dans les fiches prestation)
      * Cette méthode est identique à getItemUsageCount dans FichePrestationPdfService pour assurer la cohérence
      */
-    private int calculateItemUsageQuantity(String itemNom) {
-        return calculateItemUsageQuantity(itemNom, null);
-    }
-    
-    private int calculateItemUsageQuantity(String itemNom, String lot) {
-        if (itemNom == null || itemNom.trim().isEmpty()) {
+    private int calculateItemUsageQuantity(Long itemId, String lot) {
+        if (itemId == null) {
             return 0;
         }
         
-        int total = 0;
-        List<FichePrestation> allFiches = fichePrestationRepository.findAll();
-        
-        // Normaliser le nom de l'item pour la comparaison (supprimer les espaces en fin)
-        String normalizedItemNom = itemNom.trim();
-        
-        for (FichePrestation fiche : allFiches) {
-            if (fiche == null) continue;
-            
-            // Ne compter que les fiches du lot spécifié (via numero_fiche)
-            if (lot != null && (fiche.getNumeroFiche() == null || !fiche.getNumeroFiche().contains("L" + lot.replaceAll("[^0-9]", "")))) {
-                continue;
-            }
-            
-            int countInFiche = 0;
-            String itemsCouverts = fiche.getItemsCouverts();
-            String nomItem = fiche.getNomItem();
-            
-            // Compter les occurrences dans itemsCouverts
-            if (itemsCouverts != null && !itemsCouverts.trim().isEmpty()) {
-                // Split items by commas and trim each item
-                String[] items = itemsCouverts.split(",");
-                for (String item : items) {
-                    String trimmedItem = item.trim();
-                    if (trimmedItem.equalsIgnoreCase(normalizedItemNom)) {
-                        countInFiche++;
-                    }
-                }
-            }
-            
-            // Compter l'occurrence dans nomItem
-            if (countInFiche == 0 && nomItem != null && !nomItem.trim().isEmpty()) {
-                if (nomItem.trim().equalsIgnoreCase(normalizedItemNom)) {
-                    countInFiche++;
-                }
-            }
-            
-            total += countInFiche;
+        // Récupérer le lot sous forme de chaîne pour la requête LIKE
+        String lotPattern = null;
+        if (lot != null) {
+            String lotNumber = lot.replaceAll("[^0-9]", "");
+            lotPattern = "L" + lotNumber;
         }
         
-        return total;
+        // Utiliser le repository pour compter les utilisations
+        int count = fichePrestationRepository.countByItemId(itemId, lotPattern);
+        
+        return count;
     }
 
     /**
@@ -119,17 +86,6 @@ public class ItemController {
     @GetMapping
     public List<Item> getAllItems() {
         List<Item> allItems = itemRepository.findAll();
-        
-        // Mettre à jour les compteurs d'utilisation pour chaque item
-        for (Item item : allItems) {
-            // Calculer la quantité totale réalisée pour cet item (somme des quantités des fiches prestation)
-            int totalQuantite = calculateItemUsageQuantity(item.getNomItem(), item.getLot());
-            item.setQuantiteUtilisee(totalQuantite);
-            
-            if (item.getQuantiteUtiliseeTrimestre() == null) {
-                item.setQuantiteUtiliseeTrimestre(totalQuantite);
-            }
-        }
         
         // Trier les résultats par idItem pour conserver la numérotation correcte
         allItems.sort((a, b) -> {
@@ -158,18 +114,11 @@ public class ItemController {
 
     @GetMapping("/by-lot/{lot}")
     public List<Item> getItemsByLot(@PathVariable String lot) {
-        List<Item> itemsByLot = itemRepository.findByLot(lot);
-        
-        // Mettre à jour les compteurs d'utilisation pour chaque item
-        for (Item item : itemsByLot) {
-            // Calculer la quantité totale réalisée pour cet item (somme des quantités des fiches prestation)
-            int totalQuantite = calculateItemUsageQuantity(item.getNomItem(), lot);
-            item.setQuantiteUtilisee(totalQuantite);
-            
-            if (item.getQuantiteUtiliseeTrimestre() == null) {
-                item.setQuantiteUtiliseeTrimestre(totalQuantite);
-            }
-        }
+        // Normaliser le nom du lot pour correspondre à la base de données
+        String normalizedLot = normalizeLotName(lot);
+        // Vérifier les formats possibles (lot4, Lot 4, etc.)
+        String searchLot = normalizedLot.replaceAll("\\s+", "").toLowerCase();
+        List<Item> itemsByLot = itemRepository.findByLotContainingIgnoreCase(searchLot);
         
         // Trier les résultats par idItem pour conserver la numérotation correcte
         itemsByLot.sort((a, b) -> {
@@ -361,18 +310,7 @@ public class ItemController {
 
         System.out.println("[DEBUG] Total matching items found: " + matchingItems.size());
 
-        // Mettre à jour les compteurs d'utilisation pour chaque item
-        for (Item item : matchingItems) {
-            // Calculer la quantité totale réalisée pour cet item (somme des quantités des fiches prestation)
-            int totalQuantite = calculateItemUsageQuantity(item.getNomItem());
-            item.setQuantiteUtilisee(totalQuantite);
-            
-            if (item.getQuantiteUtiliseeTrimestre() == null) {
-                item.setQuantiteUtiliseeTrimestre(totalQuantite);
-            }
-            
-            System.out.println("[DEBUG] Updated item " + item.getNomItem() + ": quantiteUtilisee=" + totalQuantite);
-        }
+
 
         // Trier les résultats par idItem pour conserver la numérotation correcte
         matchingItems.sort((a, b) -> {
@@ -394,35 +332,87 @@ public class ItemController {
     @PostMapping
     @PreAuthorize("hasRole('ADMINISTRATEUR')")
     public ResponseEntity<?> createItem(@RequestBody Item item) {
-        // Vérifier si un item avec le même nom existe déjà
-        if (item.getNomItem() != null && itemRepository.existsByNomItem(item.getNomItem())) {
+        try {
+            System.out.println("[DEBUG] Creating item: " + item);
+            System.out.println("[DEBUG] Item data - nomItem: " + item.getNomItem() + 
+                ", prix: " + item.getPrix() + 
+                ", quantiteMaxTrimestre: " + item.getQuantiteMaxTrimestre() +
+                ", quantiteMinTrimestre: " + item.getQuantiteMinTrimestre() +
+                ", lot: " + item.getLot());
+            
+            // Validation des champs requis
+            if (item.getNomItem() == null || item.getNomItem().trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("VALIDATION_ERROR", "Le nom de l'item est obligatoire"));
+            }
+            
+            if (item.getPrix() == null || item.getPrix() < 0) {
+                return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("VALIDATION_ERROR", "Le prix doit être positif ou zéro"));
+            }
+            
+            if (item.getQuantiteMaxTrimestre() == null || item.getQuantiteMaxTrimestre() < 1) {
+                return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("VALIDATION_ERROR", "La quantité maximale doit être d'au moins 1"));
+            }
+            
+            // Initialiser quantiteMinTrimestre si null
+            if (item.getQuantiteMinTrimestre() == null) {
+                item.setQuantiteMinTrimestre(0);
+                System.out.println("[DEBUG] Set quantiteMinTrimestre to default: 0");
+            }
+
+            // Vérifier si un item avec le même nom existe déjà (insensible à la casse)
+            boolean exists = itemRepository.findByNomItemContainingIgnoreCase(item.getNomItem().trim()).stream()
+                    .anyMatch(existingItem -> existingItem.getNomItem().trim().equalsIgnoreCase(item.getNomItem().trim()));
+                    
+            if (exists) {
+                System.out.println("[DEBUG] Item with name " + item.getNomItem() + " already exists");
+                return ResponseEntity.badRequest()
+                    .body(new ErrorResponse("ITEM_EXISTS", "Un item avec ce nom existe déjà"));
+            }
+
+            // Assigner un ID séquentiel (réutilise les IDs supprimés)
+            if (item.getIdItem() == null) {
+                int nextId = getNextAvailableIdItem();
+                item.setIdItem(nextId);
+                System.out.println("[DEBUG] Assigned idItem: " + nextId);
+            }
+
+            Item savedItem = itemRepository.save(item);
+            System.out.println("[DEBUG] Item saved successfully with id: " + savedItem.getId());
+            return ResponseEntity.ok(savedItem);
+            
+        } catch (Exception e) {
+            System.err.println("[ERROR] Error creating item: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest()
-                .body(new ErrorResponse("ITEM_EXISTS", "Un item avec ce nom existe déjà"));
+                .body(new ErrorResponse("SAVE_ERROR", "Erreur lors de la création: " + e.getMessage()));
         }
-
-        // Assigner un ID séquentiel (réutilise les IDs supprimés)
-        if (item.getIdItem() == null) {
-            int nextId = getNextAvailableIdItem();
-            item.setIdItem(nextId);
-            System.out.println("[DEBUG] Assigned idItem: " + nextId);
-        }
-
-        Item savedItem = itemRepository.save(item);
-        return ResponseEntity.ok(savedItem);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMINISTRATEUR')")
     public ResponseEntity<Item> updateItem(@PathVariable Long id, @RequestBody Item itemDetails) {
+        System.out.println("[DEBUG] Updating item with id: " + id);
+        System.out.println("[DEBUG] Received item details: " + itemDetails);
+        
         return itemRepository.findById(id)
             .map(item -> {
+                System.out.println("[DEBUG] Found existing item: " + item);
+                
                 item.setNomItem(itemDetails.getNomItem());
                 item.setDescription(itemDetails.getDescription());
                 item.setPrix(itemDetails.getPrix());
                 item.setLot(itemDetails.getLot());
                 item.setQuantiteMinTrimestre(itemDetails.getQuantiteMinTrimestre());
                 item.setQuantiteMaxTrimestre(itemDetails.getQuantiteMaxTrimestre());
-                return ResponseEntity.ok(itemRepository.save(item));
+                item.setEquipements(itemDetails.getEquipements());
+                
+                Item updatedItem = itemRepository.save(item);
+                System.out.println("[DEBUG] Updated item: " + updatedItem);
+                
+                return ResponseEntity.ok(updatedItem);
             })
             .orElse(ResponseEntity.notFound().build());
     }

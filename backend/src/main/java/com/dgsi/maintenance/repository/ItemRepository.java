@@ -14,6 +14,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Optional<Item> findByNomItem(String nomItem);
 
     Optional<Item> findFirstByNomItem(String nomItem);
+    
+    List<Item> findByNomItemIgnoreCase(String nomItem);
 
     List<Item> findByNomItemContainingIgnoreCase(String nomItem);
 
@@ -35,6 +37,9 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     // Find items by lot containing a keyword
     List<Item> findByLotContaining(String lot);
+    
+    // Find items by lot containing a keyword (case insensitive)
+    List<Item> findByLotContainingIgnoreCase(String lot);
 
     // Count items by lot
     long countByLot(String lot);
@@ -73,4 +78,19 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
            "LOWER(TRIM(CONCAT('lot ', i.lot))) = ANY(:lotNumbers)",
            nativeQuery = true)
     List<Item> findByLotNumbersFlexible(@Param("lotNumbers") List<String> lotNumbers);
+
+    // NOUVELLE MÉTHODE: Recherche d'items par nom et lot avec correspondance flexible
+    // Gère les cas où le même item existe dans plusieurs lots
+    @Query(value = "SELECT * FROM items i WHERE " +
+           "LOWER(TRIM(i.nom_item)) = LOWER(TRIM(:nomItem)) AND (" +
+           "LOWER(TRIM(i.lot)) = LOWER(TRIM(:lot)) OR " +
+           "LOWER(TRIM(REPLACE(i.lot, 'lot', ''))) = LOWER(TRIM(REPLACE(:lot, 'lot', ''))) OR " +
+           "LOWER(TRIM(REPLACE(i.lot, 'Lot ', ''))) = LOWER(TRIM(REPLACE(:lot, 'Lot ', ''))) OR " +
+           "LOWER(TRIM(CONCAT('lot', i.lot))) = LOWER(TRIM(:lot)) OR " +
+           "LOWER(TRIM(CONCAT('lot ', i.lot))) = LOWER(TRIM(:lot)) OR " +
+           "LOWER(TRIM(i.lot)) = LOWER(TRIM(CONCAT('lot', :lot))) OR " +
+           "LOWER(TRIM(i.lot)) = LOWER(TRIM(CONCAT('lot ', :lot)))" +
+           ")",
+           nativeQuery = true)
+    List<Item> findByNomItemAndLotFlexible(@Param("nomItem") String nomItem, @Param("lot") String lot);
 }

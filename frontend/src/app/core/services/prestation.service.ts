@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
@@ -420,7 +421,9 @@ export class PrestationService {
   }
 
   // Validate item selection
-  validateItemSelection(itemQuantities: { [key: string]: number }): Observable<any> {
+  validateItemSelection(itemQuantities: { [key: string]: number }, lot: string): Observable<any> {
+    // Backend expects a flat Map<String, Integer>, not wrapped in an object
+    // So we send itemQuantities directly as the request body
     return this.http.post<any>(`${this.apiUrl}/validate-item-selection`, itemQuantities).pipe(
       timeout(15000),
       tap(response => console.log('✅ Item selection validated:', response)),

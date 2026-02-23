@@ -46,9 +46,6 @@ export class ContratFormComponent implements OnInit, OnDestroy {
 
   statutOptions = [
     { value: StatutContrat.ACTIF, label: 'Actif' },
-    { value: StatutContrat.SUSPENDU, label: 'Suspendu' },
-    { value: StatutContrat.TERMINE, label: 'Terminé' },
-    { value: StatutContrat.EXPIRE, label: 'Expiré' },
     { value: StatutContrat.RESILIE, label: 'Résilié' }
   ];
 
@@ -154,23 +151,52 @@ export class ContratFormComponent implements OnInit, OnDestroy {
 
   loadPrestataires(): void {
     this.loading = true;
-    const subscription = this.keycloakService.getPrestataires().subscribe({
-      next: (prestataires) => {
-        this.prestataires = prestataires;
-        this.loading = false;
-        console.log('Prestataires chargés:', this.prestataires);
-      },
-      error: (error) => {
-        console.error('Erreur lors du chargement des prestataires:', error);
-        this.toastService.show({
-          type: 'error',
-          title: 'Erreur',
-          message: 'Erreur lors du chargement des prestataires depuis Keycloak'
+    // Synchroniser les utilisateurs Keycloak avec la base de données avant de charger les prestataires
+    const syncSubscription = this.keycloakService.syncUsers().subscribe({
+      next: (syncResult) => {
+        console.log('Synchronisation Keycloak:', syncResult);
+        // Charger les prestataires après synchronisation
+        const loadSubscription = this.keycloakService.getPrestataires().subscribe({
+          next: (prestataires) => {
+            this.prestataires = prestataires;
+            this.loading = false;
+            console.log('Prestataires chargés:', this.prestataires);
+          },
+          error: (error) => {
+            console.error('Erreur lors du chargement des prestataires:', error);
+            this.toastService.show({
+              type: 'error',
+              title: 'Erreur',
+              message: 'Erreur lors du chargement des prestataires depuis Keycloak'
+            });
+            this.loading = false;
+          }
         });
-        this.loading = false;
+        this.subscriptions.push(loadSubscription);
+      },
+      error: (syncError) => {
+        console.error('Erreur lors de la synchronisation Keycloak:', syncError);
+        // Charger les prestataires même si la synchronisation échoue
+        const loadSubscription = this.keycloakService.getPrestataires().subscribe({
+          next: (prestataires) => {
+            this.prestataires = prestataires;
+            this.loading = false;
+            console.log('Prestataires chargés:', this.prestataires);
+          },
+          error: (error) => {
+            console.error('Erreur lors du chargement des prestataires:', error);
+            this.toastService.show({
+              type: 'error',
+              title: 'Erreur',
+              message: 'Erreur lors du chargement des prestataires depuis Keycloak'
+            });
+            this.loading = false;
+          }
+        });
+        this.subscriptions.push(loadSubscription);
       }
     });
-    this.subscriptions.push(subscription);
+    this.subscriptions.push(syncSubscription);
   }
 
   onItemSelectionChange(item: Item, event: Event): void {

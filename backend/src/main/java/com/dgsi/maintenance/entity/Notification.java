@@ -1,8 +1,14 @@
 package com.dgsi.maintenance.entity;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "notifications")
@@ -32,7 +38,7 @@ public class Notification {
     private LocalDateTime dateCreation;
     
     @Column(name = "prestation_id")
-    private Long prestationId;
+    private String prestationId;
 
     @PrePersist
     protected void onCreate() {
@@ -61,6 +67,6 @@ public class Notification {
     public LocalDateTime getDateCreation() { return dateCreation; }
     public void setDateCreation(LocalDateTime dateCreation) { this.dateCreation = dateCreation; }
 
-    public Long getPrestationId() { return prestationId; }
-    public void setPrestationId(Long prestationId) { this.prestationId = prestationId; }
+    public String getPrestationId() { return prestationId; }
+    public void setPrestationId(String prestationId) { this.prestationId = prestationId; }
 }

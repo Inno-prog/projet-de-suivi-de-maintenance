@@ -725,25 +725,22 @@ public class FichePrestationController {
                     fiche.setCommentaire(commentaires);
                 }
 
-                // Avant de valider, vérifier les limites d'utilisation si la fiche contient un item et une quantite
+                // NOTE: Les vérifications d'item sont désactivées pour les admins car ils ont l'autorité de valider toutes les fiches
+                // Les vérifications de limite quantité sont maintenant gérées au moment de la création de la fiche
+
+                fiche.setStatut(StatutFiche.VALIDE);
+
+                // Mettre à jour le compteur d'utilisation de l'item (quantiteUtilisee) - comptage par contrat
                 if (fiche.getNomItem() != null && fiche.getQuantite() != null) {
                     Optional<com.dgsi.maintenance.entity.Item> itemOpt = itemRepository.findFirstByNomItem(fiche.getNomItem());
                     if (itemOpt.isPresent()) {
                         com.dgsi.maintenance.entity.Item item = itemOpt.get();
-                        Integer maxAllowed = item.getQuantiteMaxTrimestre() != null ? item.getQuantiteMaxTrimestre() : 0;
-                        Integer used = item.getQuantiteUtiliseeTrimestre() != null ? item.getQuantiteUtiliseeTrimestre() : 0;
-                        if (maxAllowed > 0 && used + fiche.getQuantite() > maxAllowed) {
-                            String msg = String.format("Impossible de valider: l'item '%s' dépasse la limite trimestrielle (utilisé %d/%d, demandé %d)",
-                                fiche.getNomItem(), used, maxAllowed, fiche.getQuantite());
-                            return ResponseEntity.badRequest().body(msg);
-                        }
-                    } else {
-                        // Si l'item n'est pas trouvé, on refuse la validation
-                        return ResponseEntity.badRequest().body("Impossible de valider: item introuvable - " + fiche.getNomItem());
+                        Integer quantiteActuelle = item.getQuantiteUtilisee() != null ? item.getQuantiteUtilisee() : 0;
+                        item.setQuantiteUtilisee(quantiteActuelle + fiche.getQuantite());
+                        itemRepository.save(item);
+                        System.out.println("✅ Compteur d'utilisation mis à jour pour item '" + item.getNomItem() + "': " + quantiteActuelle + " -> " + item.getQuantiteUtilisee());
                     }
                 }
-
-                fiche.setStatut(StatutFiche.VALIDE);
 
                 // Mettre à jour le statut de validation de la prestation associée
                 if (fiche.getIdPrestation() != null) {
@@ -814,6 +811,18 @@ public class FichePrestationController {
                 }
 
                 fiche.setStatut(StatutFiche.REJETE);
+
+                // Diminuer le compteur d'utilisation de l'item (quantiteUtilisee)
+                if (fiche.getNomItem() != null && fiche.getQuantite() != null) {
+                    Optional<com.dgsi.maintenance.entity.Item> itemOpt = itemRepository.findFirstByNomItem(fiche.getNomItem());
+                    if (itemOpt.isPresent()) {
+                        com.dgsi.maintenance.entity.Item item = itemOpt.get();
+                        Integer quantiteActuelle = item.getQuantiteUtilisee() != null ? item.getQuantiteUtilisee() : 0;
+                        item.setQuantiteUtilisee(Math.max(0, quantiteActuelle - fiche.getQuantite()));
+                        itemRepository.save(item);
+                        System.out.println("✅ Compteur d'utilisation diminué pour item '" + item.getNomItem() + "': " + quantiteActuelle + " -> " + item.getQuantiteUtilisee());
+                    }
+                }
 
                 // Mettre à jour le statut de validation de la prestation associée
                 if (fiche.getIdPrestation() != null) {

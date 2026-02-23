@@ -83,4 +83,10 @@ public interface PrestationRepository extends JpaRepository<Prestation, Long> {
     List<Object[]> countByNomPrestationGrouped(@Param("trimestre") String trimestre);
 
     List<Prestation> findByStatutValidation(String statutValidation);
+
+    @Query("SELECT p FROM Prestation p LEFT JOIN FETCH p.itemsUtilises")
+    List<Prestation> findAllWithItems();
+
+    @Query("SELECT p FROM Prestation p LEFT JOIN FETCH p.itemsUtilises WHERE p.deleted IS NULL OR p.deleted = false")
+    List<Prestation> findAllActiveWithItems();
 }

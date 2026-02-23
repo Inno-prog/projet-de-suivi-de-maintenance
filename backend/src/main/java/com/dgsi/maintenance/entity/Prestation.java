@@ -155,6 +155,9 @@ public class Prestation {
     )
     private Set<Item> itemsUtilises = new HashSet<>();
 
+    @Column(name = "item_quantities", columnDefinition = "TEXT")
+    private String itemQuantities; // JSON string storing itemId -> quantity map
+
     @Column(name = "nb_prest_realise")
     private Integer nbPrestRealise;
 
@@ -177,6 +180,14 @@ public class Prestation {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ordre_commande_id")
     private OrdreCommande ordreCommande;
+
+    public String getItemQuantities() {
+        return itemQuantities;
+    }
+
+    public void setItemQuantities(String itemQuantities) {
+        this.itemQuantities = itemQuantities;
+    }
 
     // Constructeurs
     public Prestation() {}

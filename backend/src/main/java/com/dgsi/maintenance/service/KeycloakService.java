@@ -25,6 +25,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
+import com.dgsi.maintenance.entity.Prestataire;
+import com.dgsi.maintenance.entity.User;
+import com.dgsi.maintenance.repository.UserRepository;
+import com.dgsi.maintenance.dto.RegisterRequest;
 
 @Slf4j
 @Service
@@ -44,6 +48,14 @@ public class KeycloakService {
 
     @Value("${keycloak.admin.client-id:admin-cli}")
     private String adminClientId;
+
+    private final UserRepository userRepository;
+    private final UserService userService;
+
+    public KeycloakService(UserRepository userRepository, UserService userService) {
+        this.userRepository = userRepository;
+        this.userService = userService;
+    }
 
     private Keycloak getKeycloakInstance() {
         return KeycloakBuilder.builder()
@@ -195,6 +207,70 @@ public class KeycloakService {
         }
         
         return prestataires;
+    }
+
+    /**
+     * Synchronise les utilisateurs Keycloak avec la base de données
+     * Vérifie si un utilisateur existe dans la base de données et le crée si nécessaire
+     */
+    public int syncKeycloakUsersToDatabase() {
+        int syncedCount = 0;
+        Keycloak keycloak = getKeycloakInstance();
+        
+        try {
+            RealmResource realmResource = keycloak.realm(realm);
+            UsersResource usersResource = realmResource.users();
+            RoleRepresentation prestataireRole = realmResource.roles().get("PRESTATAIRE").toRepresentation();
+            
+            // Get all users from Keycloak
+            List<UserRepresentation> allKeycloakUsers = usersResource.list();
+            
+            if (allKeycloakUsers != null && !allKeycloakUsers.isEmpty()) {
+                for (UserRepresentation keycloakUser : allKeycloakUsers) {
+                    if (keycloakUser.isEnabled()) {
+                        // Vérifier si l'utilisateur existe déjà dans la base de données
+                        if (!userRepository.existsById(keycloakUser.getId()) && 
+                            !userRepository.findByEmail(keycloakUser.getEmail()).isPresent()) {
+                            
+                            // Vérifier si l'utilisateur a le rôle PRESTATAIRE
+                            List<RoleRepresentation> userRoles = usersResource.get(keycloakUser.getId()).roles().realmLevel().listEffective();
+                            boolean isPrestataire = userRoles.stream()
+                                    .anyMatch(role -> "PRESTATAIRE".equals(role.getName()));
+                            
+                            if (isPrestataire) {
+                                // Créer le RegisterRequest pour le prestataire
+                                RegisterRequest registerRequest = new RegisterRequest();
+                                registerRequest.setNom(keycloakUser.getFirstName() + " " + keycloakUser.getLastName());
+                                registerRequest.setEmail(keycloakUser.getEmail());
+                                registerRequest.setPassword("default123"); // Mot de passe par défaut
+                                registerRequest.setRole("PRESTATAIRE");
+                                registerRequest.setStructure(keycloakUser.getFirstName() + " " + keycloakUser.getLastName());
+                                registerRequest.setQualification("Prestataire de services informatiques");
+                                registerRequest.setContact("");
+                                registerRequest.setAdresse("");
+                                
+                                // Créer l'utilisateur dans la base de données avec l'ID Keycloak
+                                try {
+                                    User user = userService.createUser(registerRequest, keycloakUser.getId());
+                                    log.info("Utilisateur synchronisé: {} ({})", keycloakUser.getEmail(), keycloakUser.getId());
+                                    syncedCount++;
+                                } catch (Exception e) {
+                                    log.error("Erreur lors de la création de l'utilisateur {}: {}", keycloakUser.getEmail(), e.getMessage());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            log.info("Synchronisation terminée. {} utilisateurs ajoutés à la base de données.", syncedCount);
+        } catch (Exception e) {
+            log.error("Erreur lors de la synchronisation des utilisateurs Keycloak: ", e);
+        } finally {
+            keycloak.close();
+        }
+        
+        return syncedCount;
     }
 
     public List<Map<String, Object>> getAllUsers() {

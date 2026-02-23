@@ -18,32 +18,23 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
     <div class="container">
       <!-- Header -->
       <div class="header">
-        <button class="btn-back" (click)="goBack()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+        <button class="btn btn-lg btn-back-sidebar" (click)="goBack()">
+          <i class="bi bi-arrow-left-circle me-2"></i>
           Retour aux lots
         </button>
         <div class="header-info">
-          <h1>Trimestre {{ selectedTrimestre }} - Lot {{ selectedLot }}</h1>
-          <p class="header-subtitle">{{ lotInfo.description }}</p>
+          <h1>Trimestre {{ selectedTrimestre }} -  {{ selectedLot }}</h1>
+          <p class="header-subtitle" *ngIf="lotInfo.villes && lotInfo.villes.length > 0">📍 {{ lotInfo.villes.join(', ') }}</p>
+          <p class="header-subtitle" *ngIf="lotInfo.regions && lotInfo.regions.length > 0">{{ lotInfo.regions.join(', ') }}</p>
+          <p class="header-subtitle" *ngIf="!lotInfo.villes || lotInfo.villes.length === 0">{{ lotInfo.description }}</p>
         </div>
         <div class="header-actions">
-          <button class="btn-generate-global" (click)="generateFicheGlobale()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Générer Fiche Globale
+          <button class="btn btn-success btn-lg btn-bootstrap" (click)="generateFicheGlobale()">
+            <i class="bi bi-file-earmark-text me-2"></i>
+            Générer Ordre de commande
           </button>
-          <button class="btn-generate-prestataire" (click)="generateFicheParPrestataire()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="8.5" cy="7" r="4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M20 8v6M23 11h-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+          <button class="btn btn-primary btn-lg btn-bootstrap" (click)="generateFicheParPrestataire()">
+            <i class="bi bi-people me-2"></i>
             Générer par Prestataire
           </button>
         </div>
@@ -51,28 +42,33 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
 
       <!-- Stats Summary -->
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">📋</div>
+        <div class="stat-card stat-card-total">
+          <div class="stat-icon-wrapper bg-primary-soft">
+            <i class="bi bi-clipboard-data stat-icon"></i>
+          </div>
           <div class="stat-info">
-            <div class="stat-value">{{ fiches.length }}</div>
+            <span class="stat-badge badge bg-light text-dark border">{{ fiches.length }}</span>
             <div class="stat-label">Total Fiches</div>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon">✅</div>
+        <div class="stat-card stat-card-validated">
+          <div class="stat-icon-wrapper bg-success-soft">
+            <i class="bi bi-check-circle-fill stat-icon text-success"></i>
+          </div>
           <div class="stat-info">
-            <div class="stat-value">{{ getCompletedCount() }}</div>
+            <span class="stat-badge badge bg-light text-dark border">{{ getCompletedCount() }}</span>
             <div class="stat-label">Validées</div>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon">❌</div>
+        <div class="stat-card stat-card-rejected">
+          <div class="stat-icon-wrapper bg-danger-soft">
+            <i class="bi bi-x-circle-fill stat-icon text-danger"></i>
+          </div>
           <div class="stat-info">
-            <div class="stat-value">{{ getPendingCount() }}</div>
+            <span class="stat-badge badge bg-light text-dark border">{{ getPendingCount() }}</span>
             <div class="stat-label">Rejetées</div>
           </div>
         </div>
-
       </div>
 
       <!-- Loading -->
@@ -82,9 +78,9 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
       </div>
 
       <!-- Fiches Table -->
-      <div *ngIf="!loading" class="table-container">
-        <table class="fiches-table">
-          <thead>
+      <div *ngIf="!loading" class="table-container table-bootstrap">
+        <table class="table table-hover fiches-table">
+          <thead class="table-dark">
             <tr>
               <th>N° Fiche</th>
               <th>Prestataire</th>
@@ -96,33 +92,33 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
           </thead>
           <tbody>
             <tr *ngFor="let fiche of fiches" class="fiche-row">
-              <td class="fiche-id">{{ fiche.numeroFiche }}</td>
+              <td class="fiche-id fw-bold text-primary">{{ fiche.numeroFiche }}</td>
               <td class="prestataire">{{ (fiche.nomPrestataire || '').trim() }}</td>
               <td class="structure">{{ fiche.nomStructure || fiche.nomItem }}</td>
-              <td class="date">{{ formatDate(fiche.dateRealisation) }}</td>
+              <td class="date text-muted">{{ formatDate(fiche.dateRealisation) }}</td>
               <td class="status">
-                <span class="status-badge" [class]="getStatusClass(fiche.statut)">
+                <span class="badge" [class]="getStatusBootstrapClass(fiche.statut)">
                   {{ getStatusLabel(fiche.statut) }}
                 </span>
               </td>
                <td class="actions">
-                <button mat-icon-button class="btn-action btn-view" (click)="viewFiche(fiche)" title="Voir">
-                  <mat-icon>visibility</mat-icon>
+                <button class="btn btn-sm btn-outline-info btn-action-bootstrap me-1" (click)="viewFiche(fiche)" title="Voir">
+                  <i class="bi bi-eye"></i>
                 </button>
-                <button mat-icon-button class="btn-action btn-print" (click)="printFiche(fiche)" title="Imprimer">
-                  <mat-icon>print</mat-icon>
+                <button class="btn btn-sm btn-outline-warning btn-action-bootstrap me-1" (click)="printFiche(fiche)" title="Imprimer">
+                  <i class="bi bi-printer"></i>
                 </button>
-                <button mat-icon-button class="btn-action btn-pdf" (click)="downloadFichePdf(fiche)" title="Télécharger PDF">
-                  <mat-icon>download</mat-icon>
+                <button class="btn btn-sm btn-outline-danger btn-action-bootstrap me-1" (click)="downloadFichePdf(fiche)" title="Télécharger PDF">
+                  <i class="bi bi-file-earmark-pdf"></i>
                 </button>
-                <button mat-icon-button class="btn-action btn-validate" (click)="validerFiche(fiche)" title="Valider" *ngIf="fiche.statut !== 'VALIDE'">
-                  <mat-icon>check</mat-icon>
+                <button class="btn btn-sm btn-outline-success btn-action-bootstrap me-1" (click)="validerFiche(fiche)" title="Valider" *ngIf="fiche.statut !== 'VALIDE'">
+                  <i class="bi bi-check-lg"></i>
                 </button>
-                <button mat-icon-button class="btn-action btn-reject" (click)="rejeterFiche(fiche)" title="Rejeter" *ngIf="fiche.statut !== 'REJETE'">
-                  <mat-icon>close</mat-icon>
+                <button class="btn btn-sm btn-outline-secondary btn-action-bootstrap me-1" (click)="rejeterFiche(fiche)" title="Rejeter" *ngIf="fiche.statut !== 'REJETE'">
+                  <i class="bi bi-x-lg"></i>
                 </button>
-                <button mat-icon-button class="btn-action btn-delete" (click)="deleteFiche(fiche)" title="Supprimer">
-                  <mat-icon>delete</mat-icon>
+                <button class="btn btn-sm btn-outline-dark btn-action-bootstrap" (click)="deleteFiche(fiche)" title="Supprimer">
+                  <i class="bi bi-trash"></i>
                 </button>
               </td>
             </tr>
@@ -181,8 +177,8 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
             </ng-template>
           </div>
           <div class="modal-footer">
-            <button class="btn-secondary" (click)="closeFicheModal()">Fermer</button>
-            <button class="btn-primary" (click)="printFiche(selectedFiche)">
+            <button class="btn btn-secondary" (click)="closeFicheModal()">Fermer</button>
+            <button class="btn btn-primary" (click)="printFiche(selectedFiche)">
               <mat-icon>print</mat-icon>
               Imprimer
             </button>
@@ -204,9 +200,14 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
       display: flex;
       align-items: flex-start;
       gap: 20px;
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 2px solid #e9ecef;
+      margin-bottom: 40px;
+      margin-left: -20px;
+      margin-right: -20px;
+      margin-top: -20px;
+      padding: 24px 30px;
+      background: #ffffff;
+      border-bottom: 2px solid #dee2e6;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
     .header-actions {
@@ -216,57 +217,72 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
       flex-shrink: 0;
     }
 
-    .btn-generate-global, .btn-generate-prestataire {
-      display: flex;
+    /* Bouton retour avec couleur sidebar (rgb(28, 82, 118)) */
+    .btn-back-sidebar {
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 6px;
-      font-weight: 500;
-      cursor: pointer;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: 2px solid rgb(28, 82, 118);
+      border-radius: 0.5rem;
+      background-color: rgb(28, 82, 118);
+      color: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       transition: all 0.3s ease;
     }
 
-    .btn-generate-global {
-      background: #28a745;
-      color: white;
+    .btn-back-sidebar:hover {
+      transform: translateY(-2px);
+      background-color: rgb(20, 60, 90);
+      border-color: rgb(20, 60, 90);
+      box-shadow: 0 4px 12px rgba(28, 82, 118, 0.35);
     }
 
-    .btn-generate-global:hover {
-      background: #218838;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
-    }
-
-    .btn-generate-prestataire {
-      background: #007bff;
-      color: white;
-    }
-
-    .btn-generate-prestataire:hover {
-      background: #0056b3;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
-    }
-
-    .btn-back {
-      display: flex;
+    /* Boutons Bootstrap améliorés */
+    .btn-bootstrap {
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 10px 16px;
-      background: #f8f9fa;
-      border: 1px solid #dee2e6;
-      border-radius: 6px;
-      color: #495057;
-      cursor: pointer;
+      padding: 12px 24px;
+      font-weight: 600;
+      border-radius: 8px;
       transition: all 0.3s ease;
-      flex-shrink: 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .btn-back:hover {
-      background: #e9ecef;
-      color: #007bff;
+    .btn-bootstrap:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+
+    .btn-bootstrap.btn-success:hover {
+      box-shadow: 0 6px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-bootstrap.btn-primary:hover {
+      box-shadow: 0 6px 12px rgba(0, 123, 255, 0.3);
+    }
+
+    /* Boutons d'action Bootstrap - taille augmentée */
+    .btn-action-bootstrap {
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-action-bootstrap:hover {
+      transform: scale(1.1);
+    }
+
+    .btn-action-bootstrap i {
+      font-size: 18px;
     }
 
     .header-info h1 {
@@ -287,78 +303,151 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 20px;
       margin-bottom: 30px;
+      margin-top: 10px;
     }
 
+    /* Cartes de statistiques avec bordures fines colorées */
     .stat-card {
       background: white;
-      border: 1px solid #e9ecef;
-      border-radius: 8px;
-      padding: 20px;
+      border-radius: 12px;
+      padding: 16px 20px;
       display: flex;
       align-items: center;
-      gap: 15px;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Bordures fines colorées selon le type */
+    .stat-card-total {
+      border: 2px solid #0d6efd;
+    }
+
+    .stat-card-validated {
+      border: 2px solid #198754;
+    }
+
+    .stat-card-rejected {
+      border: 2px solid #dc3545;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Icônes avec fond coloré subtil */
+    .stat-icon-wrapper {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .bg-primary-soft {
+      background: rgba(13, 110, 253, 0.1);
+    }
+
+    .bg-success-soft {
+      background: rgba(25, 135, 84, 0.1);
+    }
+
+    .bg-danger-soft {
+      background: rgba(220, 53, 69, 0.1);
     }
 
     .stat-icon {
       font-size: 24px;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f8f9fa;
-      border-radius: 8px;
     }
 
-    .stat-value {
+    /* Badge pour la valeur */
+    .stat-badge {
       font-size: 20px;
-      font-weight: 600;
-      color: #333;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 8px;
     }
 
     .stat-label {
-      font-size: 14px;
-      color: #666;
+      font-size: 13px;
+      color: #6c757d;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
     }
 
+    .stat-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    /* Tableau Bootstrap avec ombre élégante */
     .table-container {
       background: white;
-      border-radius: 8px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid #dee2e6;
+    }
+
+    .table-bootstrap {
+      margin-bottom: 0;
     }
 
     .fiches-table {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
     }
 
-    .fiches-table th {
-      background: #f8f9fa;
-      padding: 15px 12px;
-      text-align: left;
+    .fiches-table thead th {
+      background: linear-gradient(180deg, #343a40 0%, #212529 100%);
+      color: white;
+      padding: 16px 12px;
       font-weight: 600;
-      color: #495057;
-      border-bottom: 2px solid #dee2e6;
+      font-size: 14px;
+      border: none;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
-    .fiches-table td {
-      padding: 12px;
-      border-bottom: 1px solid #e9ecef;
+    .fiches-table tbody td {
+      padding: 14px 12px;
       vertical-align: middle;
+      border-bottom: 1px solid #e9ecef;
     }
 
-    .fiche-row:hover {
-      background: #f8f9ff;
+    .fiches-table tbody tr {
+      transition: background-color 0.2s ease;
+    }
+
+    .fiches-table tbody tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .fiches-table tbody tr:last-child td {
+      border-bottom: none;
     }
 
     .fiche-id {
-      font-weight: 600;
-      color: #007bff;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 14px;
     }
 
     .prestataire {
       font-weight: 500;
+      color: #495057;
+    }
+
+    .structure {
+      color: #6c757d;
     }
 
     .item {
@@ -371,7 +460,6 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
     }
 
     .date {
-      color: #666;
       font-size: 14px;
       white-space: nowrap;
       min-width: 100px;
@@ -388,70 +476,11 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
       color: #28a745;
     }
 
-    .status-badge {
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-      text-transform: uppercase;
-    }
-
-    .status-validated {
-      background: #d4edda;
-      color: #155724;
-    }
-
-    .status-rejected {
-      background: #f8d7da;
-      color: #721c24;
-    }
-
-    .status-pending {
-      background: #fff3cd;
-      color: #856404;
-    }
-
     .actions {
       display: flex;
-      gap: 8px;
+      gap: 4px;
+      flex-wrap: wrap;
     }
-
-    .btn-action {
-      padding: 4px;
-      /* Use currentColor for border so colored icons set the border color automatically */
-      border: 1px solid currentColor;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      background: transparent !important;
-      width: 34px;
-      height: 34px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .btn-view {
-      color: #1976d2;
-    }
-    .btn-view:hover { background: rgba(25,118,210,0.06); }
-
-    .btn-pdf {
-      color: #dc3545;
-    }
-    .btn-pdf:hover { background: rgba(220,53,69,0.06); }
-
-    .btn-validate { color: #155724; }
-    .btn-validate:hover { background: rgba(21,87,36,0.06); }
-
-    .btn-reject { color: #721c24; }
-    .btn-reject:hover { background: rgba(114,28,36,0.06); }
-
-    .btn-print { color: #ffc107; }
-    .btn-print:hover { background: rgba(255,193,7,0.06); }
-
-    .btn-delete { color: #dc3545; }
-    .btn-delete:hover { background: rgba(220,53,69,0.06); }
 
     .loading-spinner {
       width: 40px;
@@ -484,8 +513,8 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
 
     .modal-content {
       background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
       max-width: 600px;
       width: 90%;
       max-height: 90vh;
@@ -608,39 +637,6 @@ import { ConfirmationService } from '../../../../core/services/confirmation.serv
       border-top: 1px solid #e9ecef;
     }
 
-    .btn-primary {
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-      background: #0056b3;
-    }
-
-    .btn-secondary {
-      background: #f8f9fa;
-      color: #495057;
-      border: 1px solid #dee2e6;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 500;
-      transition: all 0.3s ease;
-    }
-
-    .btn-secondary:hover {
-      background: #e9ecef;
-    }
-
     /* Form Styles */
     .form-grid {
       display: grid;
@@ -751,7 +747,9 @@ export class LotFichesComponent implements OnInit {
     nom: '',
     prestataires: [] as string[],
     nombrePrestataires: 0,
-    description: 'Maintenance préventive des équipements informatiques'
+    description: 'Maintenance préventive des équipements informatiques',
+    villes: [] as string[],
+    regions: [] as string[]
   };
 
   fiches: FichePrestation[] = [];
@@ -844,6 +842,19 @@ export class LotFichesComponent implements OnInit {
         return 'status-pending';
       default:
         return 'status-pending';
+    }
+  }
+
+  getStatusBootstrapClass(statut: any): string {
+    switch (statut) {
+      case 'VALIDE':
+        return 'bg-success';
+      case 'REJETE':
+        return 'bg-danger';
+      case 'EN_ATTENTE':
+        return 'bg-warning text-dark';
+      default:
+        return 'bg-secondary';
     }
   }
 

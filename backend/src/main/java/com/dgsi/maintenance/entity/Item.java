@@ -39,17 +39,17 @@ public class Item {
     private Float prix;
 
 
-    @Column(name = "quantite_min_trimestre")
-    private Integer quantiteMinTrimestre;
+    @Column(name = "quantite_min_trimestre", nullable = true)
+    private Integer quantiteMinTrimestre = 0;
 
     @NotNull
     @Column(name = "quantite_max_trimestre")
     private Integer quantiteMaxTrimestre;
 
-    @Column(name = "quantite_utilisee")
-    private Integer quantiteUtilisee;
+    @Column(name = "quantite_utilisee", nullable = true)
+    private Integer quantiteUtilisee = 0;
 
-    @Column(name = "quantite_utilisee_trimestre")
+    @Column(name = "quantite_utilisee_trimestre", nullable = true)
     private Integer quantiteUtiliseeTrimestre = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)

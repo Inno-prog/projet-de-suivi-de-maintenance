@@ -9,8 +9,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import com.dgsi.maintenance.entity.Notification;
 import com.dgsi.maintenance.entity.User;
 import com.dgsi.maintenance.repository.NotificationRepository;
-import com.dgsi.maintenance.repository.UserRepository;
 import com.dgsi.maintenance.repository.PrestationRepository;
+import com.dgsi.maintenance.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,7 @@ public class NotificationService {
                 nomItem
             ));
             notification.setType("WARNING");
-            notification.setPrestationId(prestationId);
+            notification.setPrestationId(prestationId.toString());
 
             notificationRepository.save(notification);
             // push realtime

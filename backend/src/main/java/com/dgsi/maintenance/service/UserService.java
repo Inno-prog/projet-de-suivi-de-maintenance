@@ -25,7 +25,7 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
-    public User createUser(RegisterRequest registerRequest) {
+    public User createUser(RegisterRequest registerRequest, String keycloakUserId) {
         User user;
         String role = registerRequest.getRole();
 
@@ -43,6 +43,9 @@ public class UserService {
             default:
                 throw new IllegalArgumentException("Unknown role: " + role);
         }
+
+        // Set the same ID as Keycloak
+        user.setId(keycloakUserId);
 
         user.setNom(registerRequest.getNom());
         user.setEmail(registerRequest.getEmail());
@@ -63,6 +66,7 @@ public class UserService {
         if (user instanceof com.dgsi.maintenance.entity.Prestataire) {
             com.dgsi.maintenance.entity.Prestataire prestataire = (com.dgsi.maintenance.entity.Prestataire) user;
             prestataire.setQualification(registerRequest.getQualification());
+            prestataire.setStructure(registerRequest.getStructure()); // Stockage de la structure pour les prestataires
         } else if (user instanceof com.dgsi.maintenance.entity.Administrator) {
             com.dgsi.maintenance.entity.Administrator admin = (com.dgsi.maintenance.entity.Administrator) user;
             admin.setPoste(registerRequest.getPoste());

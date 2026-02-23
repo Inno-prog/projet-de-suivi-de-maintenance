@@ -125,8 +125,18 @@ export class ContratService {
     return this.http.delete(`${this.API_URL}/${id}`);
   }
 
-  getContratsByPrestataire(prestataireId: number): Observable<Contrat[]> {
+  getContratsByPrestataire(prestataireId: string): Observable<Contrat[]> {
     return this.http.get<Contrat[]>(`${this.API_URL}/prestataire/${prestataireId}`);
+  }
+
+  // New method: Get contracts for the currently authenticated user (uses email/nom-based search)
+  // Optionally accepts 'nom' parameter for direct search by local user name
+  getMyContrats(nom?: string): Observable<Contrat[]> {
+    let url = `${this.API_URL}/me`;
+    if (nom) {
+      url += `?nom=${encodeURIComponent(nom)}`;
+    }
+    return this.http.get<Contrat[]>(url);
   }
 
   updateContratStatut(id: number, statut: StatutContrat): Observable<Contrat> {

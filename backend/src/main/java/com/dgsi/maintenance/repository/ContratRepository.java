@@ -47,6 +47,24 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
     @Query("SELECT c FROM Contrat c WHERE c.nomPrestataire LIKE %:nomPrestataire% AND c.statut = com.dgsi.maintenance.entity.StatutContrat.ACTIF")
     List<Contrat> findActiveContratsByNomPrestataireContaining(String nomPrestataire);
 
+    @Query("SELECT c FROM Contrat c WHERE LOWER(c.nomPrestataire) = LOWER(:nomPrestataire) AND c.statut = com.dgsi.maintenance.entity.StatutContrat.ACTIF")
+    List<Contrat> findActiveContratsByNomPrestataireIgnoreCase(String nomPrestataire);
+
+    @Query("SELECT c FROM Contrat c WHERE LOWER(c.nomPrestataire) LIKE LOWER(CONCAT('%', :nomPrestataire, '%')) AND c.statut = com.dgsi.maintenance.entity.StatutContrat.ACTIF")
+    List<Contrat> findActiveContratsByNomPrestataireContainingIgnoreCase(String nomPrestataire);
+
+    // Find contracts by prestataireId with ACTIF status
+    @Query("SELECT c FROM Contrat c WHERE c.prestataireId = :prestataireId AND c.statut = com.dgsi.maintenance.entity.StatutContrat.ACTIF")
+    List<Contrat> findActiveContratsByPrestataireId(String prestataireId);
+
+    // Find contracts by prestataireId without status filter (to check all statuses)
+    @Query("SELECT c FROM Contrat c WHERE c.prestataireId = :prestataireId")
+    List<Contrat> findByPrestataireIdAllStatuses(String prestataireId);
+
+    // Find contracts by nomPrestataire without status filter
+    @Query("SELECT c FROM Contrat c WHERE LOWER(c.nomPrestataire) LIKE LOWER(CONCAT('%', :nomPrestataire, '%'))")
+    List<Contrat> findByNomPrestataireContainingIgnoreCaseAllStatuses(String nomPrestataire);
+
     // Note: This method is kept for backward compatibility but will always return empty list
     // because we no longer store prestataire contact information in the local database
     default List<Contrat> findActiveContratsByContactPrestataireAndLot(String contact, String lot) {
@@ -61,4 +79,18 @@ public interface ContratRepository extends JpaRepository<Contrat, Long> {
     
     @Query("SELECT c FROM Contrat c WHERE c.idContrat LIKE %:keyword% OR c.nomPrestataire LIKE %:keyword% OR c.lot.nomLot LIKE %:keyword%")
     List<Contrat> searchByKeyword(@Param("keyword") String keyword);
+
+    // Find contracts by searching through Prestataire's email (via JPA relationship)
+    // This is useful when Keycloak ID doesn't match local DB ID but we have the email
+    @Query("SELECT DISTINCT c FROM Contrat c JOIN c.prestataire p WHERE LOWER(p.email) = LOWER(:email)")
+    List<Contrat> findByPrestataireEmailIgnoreCase(@Param("email") String email);
+
+    // Find contracts by searching through Prestataire's structure name (nomPrestataire)
+    @Query("SELECT DISTINCT c FROM Contrat c JOIN c.prestataire p WHERE LOWER(p.structure) = LOWER(:structureName)")
+    List<Contrat> findByPrestataireStructureIgnoreCase(@Param("structureName") String structureName);
+
+    // NEW: Search contracts by nomPrestataire containing email prefix (fallback method)
+    // This is useful when the email or email prefix is stored in nomPrestataire field
+    @Query("SELECT c FROM Contrat c WHERE LOWER(c.nomPrestataire) LIKE LOWER(CONCAT('%', :emailPrefix, '%'))")
+    List<Contrat> findByNomPrestataireContainingEmailPrefix(@Param("emailPrefix") String emailPrefix);
 }

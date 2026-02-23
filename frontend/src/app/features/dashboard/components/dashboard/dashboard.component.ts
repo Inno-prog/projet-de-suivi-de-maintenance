@@ -36,8 +36,8 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
               <img src="/assets/logoFinal.png" alt="DGSI Logo">
             </div>
             <div class="header-text">
-              <div class="ministry-name">Ministère de l'Economie, des Finances et du Développement</div>
-              <h1 class="direction-title">DIRECTION GENERALE DES SERVICES INFORMATIQUES</h1>
+              <div class="ministry-name">Ministère de l'Economie et des Finances</div>
+              <h1 class="direction-title">DIRECTION GENERALE DES SYSTÈMES D'INFORMATION</h1>
               <p class="tagline">L'Informatique, pour une gestion efficiente des finances publiques</p>
             </div>
             <div class="logo-right">
@@ -2828,13 +2828,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.prestationService.getPrestationsCount().subscribe({
-      next: (count) => {
-        this.stats.totalPrestations = count;
+    this.fichePrestationService.getAllFiches().subscribe({
+      next: (fiches) => {
+        this.stats.totalPrestations = fiches.length;
       },
       error: (error) => {
         if (error.status !== 401) {
-          console.error('Erreur lors du chargement du comptage des prestations:', error);
+          console.error('Erreur lors du chargement du comptage des fiches prestation:', error);
           const errMsg = error?.message || error?.statusText || JSON.stringify(error) || 'Erreur inconnue';
           this.toastService.show({ type: 'error', title: 'Erreur', message: `Impossible de charger les statistiques des prestations : ${errMsg}` });
         }

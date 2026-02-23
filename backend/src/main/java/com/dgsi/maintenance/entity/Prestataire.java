@@ -30,10 +30,12 @@ public class Prestataire extends User {
     @Column(name = "direction")
     private String direction;
 
-    // Note: The contrats relationship has been removed because the prestataire_id column in contrats
-    // now stores Keycloak user IDs rather than local database IDs. Use the Keycloak API to retrieve
-    // contracts for a specific prestataire.
-    private transient List<Contrat> contrats = new ArrayList<>();
+    // Restore JPA relationship to Contrat so that when a Prestataire entity is fetched from the
+    // database we can navigate to its contracts (read-only navigation using Contrat.prestataire).
+    // The Contrat entity keeps the prestataireId String column; the relationship is backed by the
+    // same column but managed as read-only on the Contrat side (insertable=false, updatable=false).
+    @OneToMany(mappedBy = "prestataire", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Contrat> contrats = new ArrayList<>();
 
     @OneToMany(mappedBy = "prestataire", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<FichePrestation> fichesPrestation = new HashSet<>();

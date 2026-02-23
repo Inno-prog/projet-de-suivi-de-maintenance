@@ -109,7 +109,24 @@ public class BrouillonFicheCleanupConfig {
                 fiche.id, fiche.idPrestation, fiche.nomPrestataire);
         }
 
-        // Supprimer les fiches
+        // D'ABORD supprimer les items liés aux fiches (contrainte de clé étrangère)
+        String deleteItemsSql = """
+            DELETE FROM fiche_prestation_items fpi
+            WHERE EXISTS (
+                SELECT 1 FROM fiches_prestation fp
+                WHERE fp.id = fpi.fiche_prestation_id
+                AND EXISTS (
+                    SELECT 1 FROM prestations p 
+                    WHERE p.id::text = fp.id_prestation 
+                    AND p.statut_validation = 'BROUILLON'
+                )
+            )
+            """;
+        
+        int deletedItemsCount = jdbcTemplate.update(deleteItemsSql);
+        log.info("🗑️ {} items de fiches supprimés", deletedItemsCount);
+
+        // PUIS supprimer les fiches
         String deleteSql = """
             DELETE FROM fiches_prestation fp
             WHERE EXISTS (

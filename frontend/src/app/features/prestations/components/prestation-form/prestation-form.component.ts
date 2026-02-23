@@ -145,7 +145,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     public dialogRef: MatDialogRef<PrestationFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
-    this.isEditMode = !!data?.prestation;
+    this.isEditMode = !!data?.prestation || !!data?.prestationId;
     this.prestationForm = this.fb.group({
       // Step 1: Informations du Prestataire
       nomPrestataire: [data?.prestation?.nomPrestataire || '', Validators.required],
@@ -177,9 +177,55 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** Charger une prestation à partir de son ID pour modification */
+  loadPrestationForEdit(prestationId: string): void {
+    this.loading = true;
+    this.prestationService.getPrestationById(Number(prestationId)).subscribe({
+      next: (prestation) => {
+        console.log('🎯 Prestation loaded for edit:', prestation);
+        // Remplir le formulaire avec les données de la prestation
+        this.prestationForm.patchValue({
+          nomPrestataire: prestation.nomPrestataire,
+          contactPrestataire: prestation.contactPrestataire,
+          nomResponsablePrestation: prestation.nomResponsablePrestation,
+          contactResponsablePrestation: prestation.contactResponsablePrestation,
+          qualificationResponsablePrestation: prestation.qualificationResponsablePrestation,
+          nomStructure: prestation.nomStructure,
+          adresseStructure: prestation.adresseStructure,
+          nomCI: prestation.nomCi,
+          prenomCI: prestation.prenomCi,
+          contactCI: prestation.contactCi,
+          fonctionCI: prestation.fonctionCi,
+          montantIntervention: prestation.montantIntervention,
+          trimestre: prestation.trimestre,
+          dateDebut: prestation.dateDebut,
+          dateFin: prestation.dateFin,
+          statutIntervention: prestation.statutIntervention
+        });
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('❌ Error loading prestation for edit:', error);
+        this.toastService.show({
+          type: 'error',
+          title: 'Erreur',
+          message: 'Impossible de charger la prestation à modifier'
+        });
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   ngOnInit(): void {
     console.log('🚀 PrestationFormComponent ngOnInit called');
     this.showForm = true;
+
+    // Si on a un prestationId, charger la prestation
+    if (this.data?.prestationId) {
+      this.loadPrestationForEdit(this.data.prestationId);
+    }
 
     // Subscribe to user changes to update form when user data is loaded
     this.userSubscription = this.authService.currentUser$.subscribe(user => {
@@ -707,7 +753,9 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     });
 
     // Appeler la validation backend qui enverra des notifications si nécessaire
-    this.prestationService.validateItemSelection(itemQuantities).subscribe({
+    // Utiliser le lot actuellement sélectionné pour la validation
+    const currentLot = this.selectedLotName || this.prestationForm.get('lotSelection')?.value;
+    this.prestationService.validateItemSelection(itemQuantities, currentLot).subscribe({
       next: (response: any) => {
         if (response.valid) {
           // Validation réussie, ouvrir la popup de validation
@@ -786,8 +834,8 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   }
 
   getItemPrestationsCount(item: Item): number {
-    // Utiliser quantiteUtiliseeTrimestre si disponible, sinon quantiteUtilisee
-    return item.quantiteUtiliseeTrimestre ?? item.quantiteUtilisee ?? 0;
+    // Utiliser quantiteUtilisee qui est la valeur correcte calculée par le backend
+    return item.quantiteUtilisee ?? 0;
   }
 
   getItemProgressPercentage(item: Item): number {
@@ -1008,6 +1056,38 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
   canCreate(): boolean {
     // Pour créer, on a besoin de TOUTES les informations (comme canProceedToNext mais pour la dernière étape)
     return this.canProceedToNext() && this.currentStep === this.totalSteps;
+  }
+
+  /**
+   * Vérifie si le formulaire est valide pour la création
+   * et log les erreurs pour debug
+   */
+  isFormValidForCreation(): boolean {
+    const formValid = this.prestationForm.valid;
+    const hasItems = this.selectedItems.length > 0;
+    const hasLot = !!this.prestationForm.get('lotSelection')?.value;
+    
+    // Log pour debug
+    if (!formValid) {
+      const invalidControls: string[] = [];
+      Object.keys(this.prestationForm.controls).forEach(key => {
+        const control = this.prestationForm.get(key);
+        if (control?.invalid) {
+          invalidControls.push(`${key}: ${JSON.stringify(control.errors)}`);
+        }
+      });
+      console.log('❌ Formulaire invalide. Erreurs:', invalidControls);
+    }
+    
+    if (!hasItems) {
+      console.log('❌ Aucun item sélectionné');
+    }
+    
+    if (!hasLot) {
+      console.log('❌ Aucun lot sélectionné');
+    }
+    
+    return formValid && hasItems && hasLot;
   }
 
   canSaveAsDraft(): boolean {
@@ -1350,30 +1430,36 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       console.log('🎯 Items sélectionnés:', this.selectedItems);
       console.log('👤 Utilisateur actuel:', this.currentUser);
 
-
       try {
-        // Créer une prestation avec les données préparées
+        // Préparer les données de la prestation
         const prestationData = this.preparePrestationData();
-        console.log('📤 Données à envoyer:', JSON.stringify(prestationData, null, 2));
 
-        const result = await this.prestationService.createPrestation(prestationData).toPromise();
-        console.log('✅ Prestation créée:', result);
-
-
-
-        // Afficher le message de succès selon le type d'utilisateur
-        if (this.isCurrentUserPrestataire) {
+        if (this.isEditMode) {
+          // Modification d'une prestation existante
+          const prestationId = this.data?.prestation?.id || this.data?.prestationId;
+          await this.prestationService.updatePrestation(Number(prestationId), prestationData).toPromise();
           this.toastService.show({
             type: 'success',
-            title: 'Brouillon créé avec succès',
-            message: `Votre brouillon de prestation a été créé avec succès. Vous pouvez le soumettre pour validation ultérieurement.`
+            title: 'Prestation modifiée',
+            message: 'Votre prestation a été modifiée avec succès'
           });
         } else {
-          this.toastService.show({
-            type: 'success',
-            title: 'Prestation créée',
-            message: `Prestation créée couvrant ${this.selectedItems.length} item(s)`
-          });
+          // Création d'une nouvelle prestation
+          await this.prestationService.createPrestation(prestationData).toPromise();
+          // Afficher le message de succès selon le type d'utilisateur
+          if (this.isCurrentUserPrestataire) {
+            this.toastService.show({
+              type: 'success',
+              title: 'Brouillon créé avec succès',
+              message: `Votre brouillon de prestation a été créé avec succès. Vous pouvez le soumettre pour validation ultérieurement.`
+            });
+          } else {
+            this.toastService.show({
+              type: 'success',
+              title: 'Prestation créée',
+              message: `Prestation créée couvrant ${this.selectedItems.length} item(s)`
+            });
+          }
         }
 
         this.dialogRef.close(true);
@@ -1381,8 +1467,8 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       } catch (error: any) {
         console.error('❌ Erreur complète:', error);
 
-        let errorMessage = 'Erreur lors de la création';
-        let errorTitle = 'Erreur de création';
+        let errorMessage = this.isEditMode ? 'Erreur lors de la modification' : 'Erreur lors de la création';
+        let errorTitle = this.isEditMode ? 'Erreur de modification' : 'Erreur de création';
 
         // Gestion des erreurs spécifiques
         if (error?.error?.message) {
@@ -1447,20 +1533,67 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
     const formValue = this.prestationForm.getRawValue();
     console.log('🔧 Préparation des données:', formValue);
 
+    // CRITIQUE: Toujours utiliser la valeur actuelle du formulaire pour le lot
+    // pour éviter les désynchronisations avec selectedLotName
+    const lotSelectionValue = formValue.lotSelection;
+    let currentLotName = '';
+    let currentLotId: number | null = null;
+
+    if (lotSelectionValue) {
+      // Si c'est un objet (ancien format), extraire nomLot
+      if (typeof lotSelectionValue === 'object' && lotSelectionValue.nomLot) {
+        currentLotName = lotSelectionValue.nomLot;
+        currentLotId = lotSelectionValue.id || null;
+      } else {
+        // Si c'est un ID (nouveau format), chercher dans lotEntities
+        const selectedLotId = Number(lotSelectionValue);
+        const selectedLot = this.lotEntities.find(lot => Number(lot.id) === selectedLotId);
+        if (selectedLot) {
+          currentLotName = selectedLot.nomLot;
+          currentLotId = selectedLot.id;
+        } else if (this.selectedLotId === selectedLotId && this.selectedLotName) {
+          // Fallback: utiliser les valeurs du composant si elles correspondent
+          currentLotName = this.selectedLotName;
+          currentLotId = this.selectedLotId;
+        } else {
+          // Dernier recours: utiliser la valeur brute
+          currentLotName = lotSelectionValue.toString();
+          currentLotId = selectedLotId;
+        }
+      }
+    }
+
+    // SYNCHRONISATION CRITIQUE: Mettre à jour les variables du composant
+    // pour qu'elles correspondent toujours à la valeur du formulaire
+    this.selectedLotName = currentLotName;
+    this.selectedLotId = currentLotId;
+
+    // Forcer la mise à jour du filtrage des items avec le lot correct
+    this.updateFilteredItems();
+
+    console.log('🎯 Lot déterminé et synchronisé:', {
+      lotSelectionValue,
+      currentLotName,
+      currentLotId,
+      selectedLotName: this.selectedLotName,
+      selectedLotId: this.selectedLotId,
+      lotEntitiesCount: this.lotEntities.length
+    });
+
     // VALIDATION CRITIQUE: Vérifier que tous les items appartiennent au lot sélectionné
-    if (this.selectedItems.length > 0 && this.selectedLotId !== null) {
-      console.log('🔍 Validation des items sélectionnés pour le lot ID:', this.selectedLotId);
+    if (this.selectedItems.length > 0 && currentLotId !== null) {
+      console.log('🔍 Validation des items sélectionnés pour le lot ID:', currentLotId);
       
       const invalidItems = this.selectedItems.filter(item => {
         const itemWithLotId = item as any;
         const itemLotId = itemWithLotId.lotId || 0;
-        const isInvalid = itemLotId !== this.selectedLotId;
+        const isInvalid = itemLotId !== currentLotId;
         if (isInvalid) {
           console.error('❌ Item invalide détecté:', {
             item: item.nomItem,
             itemLot: item.lot,
             itemLotId: itemLotId,
-            selectedLotId: this.selectedLotId
+            currentLotId: currentLotId
           });
         }
         return isInvalid;
@@ -1468,11 +1601,11 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
 
       if (invalidItems.length > 0) {
         const itemDetails = invalidItems.map(i => `${i.nomItem} (lot: ${i.lot}, lotId: ${(i as any).lotId})`).join(', ');
-        const errorMsg = `Les items suivants n'appartiennent pas au lot sélectionné (ID: ${this.selectedLotId}): ${itemDetails}`;
+        const errorMsg = `Les items suivants n'appartiennent pas au lot sélectionné (ID: ${currentLotId}): ${itemDetails}`;
         console.error('❌', errorMsg);
         throw new Error(errorMsg);
       }
-      console.log('✅ Tous les items appartiennent au lot ID:', this.selectedLotId);
+      console.log('✅ Tous les items appartiennent au lot ID:', currentLotId);
     }
 
     const formatDateTime = (date: any, time: any) => {
@@ -1523,6 +1656,7 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       equipementsUtilises: '',
       itemIds: formValue.itemsCouverts,
       itemQuantities: itemQuantities,
+      lot: currentLotName, // Utiliser le lot déterminé depuis le formulaire
       trimestre: formValue.trimestre,
       dateHeureDebut: formatDateTime(formValue.dateDebut, formValue.heureDebut),
       dateHeureFin: formatDateTime(formValue.dateFin, formValue.heureFin),

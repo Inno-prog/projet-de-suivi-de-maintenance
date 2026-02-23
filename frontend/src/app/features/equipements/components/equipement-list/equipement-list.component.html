@@ -96,7 +96,7 @@
                 <button
                   class="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded"
                   title="Éditer"
-                  routerLink="/equipements/{{ equipement.id }}/edit"
+                  (click)="editEquipement(equipement)"
                 >
                   <i class="bi bi-pencil-square"></i>
                 </button>

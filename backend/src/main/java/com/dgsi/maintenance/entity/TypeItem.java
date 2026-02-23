@@ -1,7 +1,12 @@
 package com.dgsi.maintenance.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,13 +28,13 @@ public class TypeItem {
     @Column(nullable = false, length = 1000)
     private String prestation;
 
-    @Column(nullable = false)
-    private Integer minArticles;
+    @Column(name = "min_articles", nullable = false)
+    private Integer minItems;
 
-    @Column(nullable = false)
-    private Integer maxArticles;
+    @Column(name = "max_articles", nullable = false)
+    private Integer maxItems;
 
-    @Column(nullable = false)
+    @Column(name = "prix_unitaire", nullable = false)
     private Integer prixUnitaire;
 
     @Column(nullable = false)

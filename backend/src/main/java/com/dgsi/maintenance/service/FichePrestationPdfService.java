@@ -1456,8 +1456,12 @@ public class FichePrestationPdfService {
                 String itemText = (itemIndex + 1) + "- " + itemNom;
                 table.addCell(createTableCell(itemText, normalFont, rowBg, TextAlignment.LEFT));
 
-                 // Quantité réalisée - calculer la quantité utilisée pour cet item dans cette fiche
+                 // Quantité réalisée - utiliser la quantité effectivement utilisée pour cet item depuis FichePrestationItem
                  int qteUtilisee = getItemUsageCount(itemNom, fiche);
+                // Si la quantité est 0 ou null, utiliser 1 par défaut pour éviter les lignes vides
+                if (qteUtilisee == 0) {
+                    qteUtilisee = 1;
+                }
                 String qteStr = String.valueOf(qteUtilisee);
                 table.addCell(createTableCell(qteStr, normalFont, rowBg, TextAlignment.CENTER));
 
@@ -1488,12 +1492,8 @@ public class FichePrestationPdfService {
                         fiche.getDateRealisation().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "N/A";
                 table.addCell(createTableCell(dateStr, normalFont, rowBg, TextAlignment.CENTER));
 
-                 // Montant total - utiliser la quantité totale d'utilisation de l'item (provenant de la table de jointure)
-                 // au lieu de la quantité individuelle de la fiche
+                 // Montant total - utiliser la quantité de la fiche
                  double montant = 0;
-                 
-                 // Utiliser qteUtilisee (provenant de getItemUsageCount qui compte via la table de jointure)
-                 // pour assurer la cohérence avec la page des items
                  if (qteUtilisee > 0) {
                      double prixUnitaireCalc;
                      if (itemPrix != null) {
@@ -1775,7 +1775,9 @@ public class FichePrestationPdfService {
     }
 
     private int getItemUsageCount(String itemNom, FichePrestation currentFiche) {
-        int count = 0;
+        if (itemNom == null || itemNom.trim().isEmpty()) {
+            return 0;
+        }
         
         // Trouver l'item par son nom
         List<Item> items = itemRepository.findByNomItemIgnoreCase(itemNom);
@@ -1786,40 +1788,17 @@ public class FichePrestationPdfService {
             List<FichePrestationItem> ficheItems = fichePrestationItemRepository.findByFichePrestationId(currentFiche.getId());
             for (FichePrestationItem ficheItem : ficheItems) {
                 if (ficheItem.getItem().getId().equals(itemId)) {
-                    count++;
+                    return ficheItem.getQuantiteUtilisee() != null ? ficheItem.getQuantiteUtilisee() : 1;
                 }
             }
         }
         
-        return count;
+        return 0;
     }
 
 
 
-        /**
-         * Calcule la quantité totale réalisée pour un item donné à travers
-         * TOUTES les fiches de la base de données. 
-         * 
-         * Cette méthode est identique à calculateItemUsageQuantity dans ItemController
-         * pour assurer la cohérence des valeurs entre la page des items et le PDF.
-         */
-        private int getItemUsageCount(String itemNom, String lot) {
-                if (itemNom == null || itemNom.trim().isEmpty()) {
-                        return 0;
-                }
-                
-                // Trouver l'item par son nom
-                List<Item> items = itemRepository.findByNomItemIgnoreCase(itemNom);
-                if (items == null || items.isEmpty()) {
-                    return 0;
-                }
-                
-                // Récupérer le premier item trouvé (normalement unique par nom)
-                Item item = items.get(0);
-                
-                // Utiliser le champ quantiteUtilisee de l'item (même logique que le front-end)
-                return item.getQuantiteUtilisee() != null ? item.getQuantiteUtilisee() : 0;
-        }
+
 
 
     private Cell createTableCell(String text, PdfFont font, DeviceRgb bgColor, TextAlignment alignment) {
