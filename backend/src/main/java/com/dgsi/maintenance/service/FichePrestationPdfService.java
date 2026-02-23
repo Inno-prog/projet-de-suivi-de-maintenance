@@ -962,12 +962,16 @@ public class FichePrestationPdfService {
                 items.add(itemMap);
             }
 
-            int quantite = fiche.getQuantite() != null ? fiche.getQuantite() : 0;
-            
-            // Calculer le montant pour chaque item de la fiche
+            // Calculer le montant pour chaque item de la fiche avec sa quantité effective
             for (Map<String, Object> item : items) {
                 String itemNom = (String) item.get("nom");
                 Number itemPrix = (Number) item.get("prix");
+                
+                // Récupérer la quantité effectivement utilisée pour cet item
+                int quantite = getItemUsageCount(itemNom, fiche);
+                if (quantite == 0) {
+                    quantite = 1;
+                }
                 
                 // Calculer le prix unitaire
                 double prixUnitaire;
@@ -1281,11 +1285,9 @@ public class FichePrestationPdfService {
             int validees = (int) fiches.stream().filter(f -> "VALIDE".equals(f.getStatut() != null ? f.getStatut().toString() : "")).count();
             addInfoRow(infoTable, "Fiches validées", String.valueOf(validees), normalFont);
 
-             // Calculer le montant total en utilisant les prix réels des items
+             // Calculer le montant total en utilisant les prix réels des items et les quantités effectivement utilisées
              double totalMontant = 0;
              for (FichePrestation fiche : fiches) {
-                 int quantite = fiche.getQuantite() != null ? fiche.getQuantite() : 0;
-                 
                  // Récupérer les items de la fiche
                  List<java.util.Map<String, Object>> items = new ArrayList<>();
                  String itemsCouverts = fiche.getItemsCouverts();
@@ -1323,10 +1325,16 @@ public class FichePrestationPdfService {
                      items.add(itemMap);
                  }
                  
-                 // Calculer le montant pour chaque item de la fiche
+                 // Calculer le montant pour chaque item de la fiche avec sa quantité effective
                  for (java.util.Map<String, Object> item : items) {
                      String itemNom = (String) item.get("nom");
                      Number itemPrix = (Number) item.get("prix");
+                     
+                     // Récupérer la quantité effectivement utilisée pour cet item
+                     int quantite = getItemUsageCount(itemNom, fiche);
+                     if (quantite == 0) {
+                         quantite = 1;
+                     }
                      
                      double prixUnitaire;
                      if (itemPrix != null) {
