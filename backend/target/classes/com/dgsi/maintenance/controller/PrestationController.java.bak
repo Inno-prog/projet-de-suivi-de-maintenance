@@ -903,23 +903,40 @@ public class PrestationController {
 
             // Pour chaque item dans la sélection
             for (java.util.Map.Entry<String, Integer> entry : itemQuantities.entrySet()) {
-                String itemIdStr = entry.getKey();
+                String itemName = entry.getKey();
                 Integer quantity = entry.getValue();
 
+                // Trouver l'item par nom (décoder au cas où le client envoie des noms encodés)
+                String decodedName = itemName;
                 try {
-                    // Trouver l'item par id
-                    Long itemId = Long.parseLong(itemIdStr);
-                    Optional<com.dgsi.maintenance.entity.Item> itemOpt = itemRepository.findById(itemId);
+                    decodedName = java.net.URLDecoder.decode(itemName, java.nio.charset.StandardCharsets.UTF_8);
+                } catch (Exception ex) {
+                    // si decode échoue, continuer avec la valeur originale
+                }
+                Optional<com.dgsi.maintenance.entity.Item> itemOpt = itemRepository.findFirstByNomItem(decodedName);
+                com.dgsi.maintenance.entity.Item item = null;
+                if (itemOpt.isPresent()) {
+                    item = itemOpt.get();
+                } else {
+                    // Fallbacks: try original key, then partial case-insensitive search
+                    itemOpt = itemRepository.findFirstByNomItem(itemName);
                     if (itemOpt.isPresent()) {
-                        com.dgsi.maintenance.entity.Item item = itemOpt.get();
-                        // Recueillir pour la vérification contractuelle (logique par contrat uniquement)
-                        itemQuantitiesById.put(item.getId(), quantity != null ? quantity : 0);
-                        if (lotForCheck == null) lotForCheck = item.getLot();
+                        item = itemOpt.get();
                     } else {
-                        invalidItems.add(itemIdStr + " (item non trouvé)");
+                        java.util.List<com.dgsi.maintenance.entity.Item> matches = itemRepository.findByNomItemContainingIgnoreCase(decodedName);
+                        if (!matches.isEmpty()) {
+                            item = matches.get(0);
+                            log.info("🔎 Item '{}' résolu par correspondance partielle -> '{}'", itemName, item.getNomItem());
+                        }
                     }
-                } catch (NumberFormatException e) {
-                    invalidItems.add(itemIdStr + " (ID invalide)");
+                }
+
+                if (item != null) {
+                    // Recueillir pour la vérification contractuelle (logique par contrat uniquement)
+                    itemQuantitiesById.put(item.getId(), quantity != null ? quantity : 0);
+                    if (lotForCheck == null) lotForCheck = item.getLot();
+                } else {
+                    invalidItems.add(itemName + " (item non trouvé)");
                 }
             }
 

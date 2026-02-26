@@ -746,10 +746,12 @@ export class PrestationFormComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Préparer les données pour validation backend
+    // Préparer les données pour validation backend (utiliser l'id de l'item au lieu du nom)
     const itemQuantities: { [key: string]: number } = {};
     this.selectedItems.forEach(item => {
-      itemQuantities[item.nomItem] = this.getItemQuantity(item);
+      if (item.id !== undefined && item.id !== null) {
+        itemQuantities[item.id.toString()] = this.getItemQuantity(item);
+      }
     });
 
     // Appeler la validation backend qui enverra des notifications si nécessaire
