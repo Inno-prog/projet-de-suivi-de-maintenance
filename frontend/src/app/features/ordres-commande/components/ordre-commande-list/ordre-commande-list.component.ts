@@ -97,7 +97,7 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
         <!-- Loading State -->
         <div *ngIf="loading" class="flex items-center justify-center py-16">
           <div class="text-center">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[rgb(28,82,118)] mx-auto mb-4"></div>
             <p class="text-gray-600">Chargement des lots...</p>
           </div>
         </div>
@@ -106,7 +106,7 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" *ngIf="!loading && lots.length > 0">
           <div
             *ngFor="let lot of lots; let i = index"
-            class="group bg-white rounded-2xl border border-gray-200 hover:border-blue-300 shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer relative overflow-hidden"
+            class="group bg-white rounded-2xl border border-gray-200 hover:border-[rgba(28,82,118,0.3)] shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer relative overflow-hidden"
             (click)="selectLot(lot)"
           >
             <!-- Top accent bar -->
@@ -117,8 +117,8 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
               <!-- Lot icon and info -->
               <div class="flex items-start justify-between mb-6">
                 <div class="flex items-center space-x-4">
-                  <div class="flex items-center justify-center w-12 h-12 bg-blue-100 rounded-xl">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="flex items-center justify-center w-12 h-12 bg-[rgba(28,82,118,0.1)] rounded-xl">
+                    <svg class="w-6 h-6 text-[rgb(28,82,118)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                     </svg>
                   </div>
@@ -130,7 +130,7 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
 
                 <!-- Arrow indicator -->
                 <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 transform group-hover:translate-x-1">
-                  <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-6 h-6 text-[rgb(28,82,118)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                   </svg>
                 </div>
@@ -155,7 +155,7 @@ import { LotWithContractorDto } from '../../../../core/models/business.models';
               <!-- Action button -->
               <div class="flex items-center justify-between pt-4 border-t border-gray-100">
                 <span class="text-sm text-gray-600">Voir les prestations</span>
-                <button class="inline-flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 group-hover:scale-110 transform">
+                <button class="inline-flex items-center justify-center w-10 h-10 bg-[rgb(28,82,118)] text-white rounded-lg hover:bg-[rgb(28,82,118)] transition-colors duration-200 group-hover:scale-110 transform">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                   </svg>
@@ -292,7 +292,7 @@ export class OrdreCommandeListComponent implements OnInit {
         return 'bg-yellow-100 text-yellow-800';
       case 'termine':
       case 'completed':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-[rgba(28,82,118,0.1)] text-white';
       case 'annule':
       case 'cancelled':
         return 'bg-red-100 text-red-800';

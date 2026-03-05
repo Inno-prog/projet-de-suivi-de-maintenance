@@ -10,7 +10,7 @@ import { User } from '../../../../core/models/auth.models';
   template: `
     <div class="flex items-center justify-center min-h-screen">
       <div class="text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[rgb(28,82,118)] mx-auto mb-4"></div>
         <p class="text-gray-600">Mise à jour de la session...</p>
       </div>
     </div>

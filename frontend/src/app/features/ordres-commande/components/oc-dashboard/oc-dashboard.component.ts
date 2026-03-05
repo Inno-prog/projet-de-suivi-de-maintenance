@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div
           *ngFor="let quarter of quarters"
-          class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer border-2 border-transparent hover:border-blue-500 p-6"
+          class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer border-2 border-transparent hover:border-[rgb(28,82,118)] p-6"
           (click)="navigateToQuarter(quarter)"
         >
           <div class="text-center">

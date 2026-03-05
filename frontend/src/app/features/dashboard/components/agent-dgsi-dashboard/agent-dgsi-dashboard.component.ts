@@ -33,7 +33,7 @@ interface Stats {
               <p class="text-gray-600 text-lg">Bienvenue, {{ authService.getCurrentUser()?.nom }}</p>
             </div>
             <div class="flex items-center gap-6">
-              <button (click)="refreshStats()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-lg">
+              <button (click)="refreshStats()" class="bg-[rgb(28,82,118)] hover:bg-[rgb(28,82,118)] text-white px-6 py-3 rounded-lg text-lg">
                 <i class="fas fa-sync-alt mr-2"></i>Actualiser
               </button>
               <div class="text-right">
@@ -48,8 +48,8 @@ interface Stats {
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div class="bg-white rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow">
             <div class="flex items-center">
-              <div class="p-3 rounded-full bg-blue-100">
-                <i class="fas fa-file-contract text-blue-600 text-2xl"></i>
+              <div class="p-3 rounded-full bg-[rgba(28,82,118,0.1)]">
+                <i class="fas fa-file-contract text-[rgb(28,82,118)] text-2xl"></i>
               </div>
               <div class="ml-4">
                 <h3 class="text-3xl font-bold text-gray-900">{{ stats.totalPrestations }}</h3>
@@ -76,7 +76,7 @@ interface Stats {
               </div>
               <div class="ml-4">
                 <h3 class="text-3xl font-bold text-gray-900">{{ stats.totalStructuresMefp }}</h3>
-                <p class="text-gray-600">Structures MEFP</p>
+                <p class="text-gray-600">Structures MEF</p>
               </div>
             </div>
           </div>
@@ -87,8 +87,8 @@ interface Stats {
           <h2 class="text-2xl font-bold text-gray-900 mb-8">Actions Rapides</h2>
           <div class="flex justify-center gap-6 flex-wrap md:flex-nowrap">
 
-            <a routerLink="/items" class="bg-blue-50 hover:bg-blue-100 p-8 rounded-lg text-center transition flex-1 min-w-[250px] hover:shadow-lg">
-              <i class="fas fa-tools text-blue-600 text-4xl mb-4"></i>
+            <a routerLink="/items" class="bg-[rgba(28,82,118,0.1)] hover:bg-[rgba(28,82,118,0.1)] p-8 rounded-lg text-center transition flex-1 min-w-[250px] hover:shadow-lg">
+              <i class="fas fa-tools text-[rgb(28,82,118)] text-4xl mb-4"></i>
               <p class="font-semibold text-gray-900 text-xl">Items et Lots</p>
             </a>
 
@@ -183,7 +183,7 @@ interface Stats {
       font-weight: 500;
     }
 
-    .bg-blue-500\\/20 {
+    .bg-primary-50\\/20 {
       background-color: rgba(59, 130, 246, 0.2);
     }
 
@@ -192,7 +192,7 @@ interface Stats {
     }
 
     /* Updated styles for white circles and black numbers */
-    .bg-blue-100 {
+    .bg-primary-50 {
       background-color: #ffffff;
       border: 1px solid #e5e7eb;
     }
@@ -334,7 +334,7 @@ interface Stats {
       height: 16rem;
     }
 
-    .bg-blue-700\\/10 {
+    .bg-primary {
       background-color: rgba(29, 78, 216, 0.1);
     }
 

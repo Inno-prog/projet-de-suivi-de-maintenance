@@ -83,7 +83,7 @@ export class PrestationCardComponent implements OnChanges, OnInit {
       case 'REJETER':
         return 'bg-red-100 text-red-800';
       case 'TERMINEE':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-[rgb(28,82,118)] text-white';
       default:
         return 'bg-gray-100 text-gray-800';
     }

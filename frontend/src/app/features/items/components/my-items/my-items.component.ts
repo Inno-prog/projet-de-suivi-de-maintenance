@@ -315,7 +315,7 @@ import { ToastService } from '../../../../core/services/toast.service';
       left: 0;
       right: 0;
       height: 3px;
-      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #f59e0b);
+      background: linear-gradient(90deg, rgb(28, 82, 118), #8b5cf6, #f59e0b);
       border-radius: 20px 20px 0 0;
     }
 
@@ -328,7 +328,7 @@ import { ToastService } from '../../../../core/services/toast.service';
     }
 
     /* Specific card themes */
-    .total-items-card::before { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
+    .total-items-card::before { background: linear-gradient(90deg, rgb(28, 82, 118), rgb(18, 56, 80)); }
     .active-lots-card::before { background: linear-gradient(90deg, #10b981, #059669); }
     .total-value-card::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
     .prestations-card::before { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
@@ -351,8 +351,8 @@ import { ToastService } from '../../../../core/services/toast.service';
 
     /* Icon backgrounds with gradients */
     .total-items-card .stat-icon-bg {
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+      background: linear-gradient(135deg, rgb(28, 82, 118) 0%, rgb(18, 56, 80) 100%);
+      box-shadow: 0 8px 16px rgba(28, 82, 118, 0.3);
     }
 
     .active-lots-card .stat-icon-bg {

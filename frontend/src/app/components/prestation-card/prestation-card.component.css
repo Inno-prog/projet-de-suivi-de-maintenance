@@ -75,10 +75,10 @@
 }
 
 .details-btn {
-  border-color: #3b82f6; /* blue */
-  color: #1e40af;
+  border-color: rgb(28, 82, 118); /* sidebar blue */
+  color: rgb(28, 82, 118);
 }
-.details-btn:hover { background: rgba(59,130,246,0.06); box-shadow: none; }
+.details-btn:hover { background: rgba(28,82,118,0.06); box-shadow: none; }
 
 .submit-btn {
   border-color: #f59e0b; /* amber */
@@ -203,8 +203,8 @@
 }
 
 .status-soumise {
-  background: #dbeafe;
-  color: #1e40af;
+  background: rgba(28, 82, 118, 0.1);
+  color: rgb(28, 82, 118);
 }
 
 /* Actions */
@@ -249,26 +249,26 @@
 /* Button variants */
 .details-btn {
   background: transparent;
-  color: #3b82f6;
-  border: 1px solid #3b82f6;
+  color: rgb(28, 82, 118);
+  border: 1px solid rgb(28, 82, 118);
 }
 
 .details-btn:hover {
-  background: rgba(59, 130, 246, 0.1);
-  color: #1d4ed8;
-  border-color: #1d4ed8;
+  background: rgba(28, 82, 118, 0.1);
+  color: rgb(28, 82, 118);
+  border-color: rgb(28, 82, 118);
 }
 
 .edit-btn {
   background: transparent;
-  color: #6366f1;
-  border: 1px solid #6366f1;
+  color: rgb(28, 82, 118);
+  border: 1px solid rgb(28, 82, 118);
 }
 
 .edit-btn:hover {
-  background: rgba(99, 102, 241, 0.1);
-  color: #4f46e5;
-  border-color: #4f46e5;
+  background: rgba(28, 82, 118, 0.1);
+  color: rgb(28, 82, 118);
+  border-color: rgb(28, 82, 118);
 }
 
 .submit-btn {

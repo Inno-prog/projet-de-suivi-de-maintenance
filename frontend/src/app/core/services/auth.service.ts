@@ -274,17 +274,7 @@ export class AuthService {
       currentUser: this.getCurrentUser()
     });
 
-    // 1. Marquer la session comme déconnectée
-    sessionStorage.setItem('justLoggedOut', 'true');
-    console.log('Marquage de session de déconnexion défini');
-
-    // 2. Effacer l'utilisateur actuel
-    this.currentUserSubject.next(null);
-  // clear session activity marker so UI does not remain visible after explicit logout
-  this.lastAuthenticatedAt = null;
-    console.log('Utilisateur actuel effacé');
-
-    // 3. Obtenir l'id_token avant de nettoyer (fallback depuis localStorage si nécessaire)
+    // 1. Obtenir l'id_token avant de nettoyer (fallback depuis localStorage si nécessaire)
     let idToken: string | null = this.oauthService.getIdToken() || null;
     if (!idToken) {
       try {
@@ -324,8 +314,15 @@ export class AuthService {
       const logoutUrl = logoutBase + '?' + params.toString();
       console.log('URL de logout:', logoutUrl);
 
-      // Nettoyage manuel des tokens locaux en dernier, après avoir capturé id_token
+      // Marquer la session comme déconnectée et effacer l'utilisateur ACTUELLEMENT AVANT la redirection
+      sessionStorage.setItem('justLoggedOut', 'true');
+      this.currentUserSubject.next(null);
+      this.lastAuthenticatedAt = null;
+      
+      // Nettoyage manuel des tokens locaux
       this.manualTokenCleanup();
+      
+      // Rediriger immédiatement
       window.location.href = logoutUrl;
     };
 
@@ -369,9 +366,19 @@ export class AuthService {
     } catch (err) {
       console.warn('Échec du logout manuel, utilisation du logout de la librairie', err);
       try {
+        // Pour le fallback, aussi effacer les données avant la redirection
+        sessionStorage.setItem('justLoggedOut', 'true');
+        this.currentUserSubject.next(null);
+        this.lastAuthenticatedAt = null;
+        this.manualTokenCleanup();
         this.oauthService.logOut();
       } catch (e) {
         console.warn('Fallback oauthService.logOut() failed, redirecting locally', e);
+        // En cas d'échec total, effacer les données et rediriger
+        sessionStorage.setItem('justLoggedOut', 'true');
+        this.currentUserSubject.next(null);
+        this.lastAuthenticatedAt = null;
+        this.manualTokenCleanup();
         window.location.href = window.location.origin;
       }
     }

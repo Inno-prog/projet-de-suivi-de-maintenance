@@ -44,6 +44,31 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
               <img src="/assets/armoiriesbf.png" alt="Armoiries Burkina Faso">
             </div>
           </div>
+
+          <!-- Flash Info Section -->
+          <div class="flash-info-section">
+            <div class="flash-info-container">
+              <div class="flash-info-label" style="margin-right: 0 px;">
+                <span>Flash Infos</span>
+                <span class="flash-info-arrow">»</span>
+              </div>
+              <div class="flash-info-scroll">
+                <div class="flash-info-content">
+                  <div class="flash-info-text" *ngFor="let item of flashInfoItems">
+                    <span class="flash-info-category">{{ item.category }}</span>
+                    <span class="flash-info-separator">•</span>
+                    <span class="flash-info-message">{{ item.text }}</span>
+                  </div>
+                  <!-- Duplicate items for seamless loop -->
+                  <div class="flash-info-text" *ngFor="let item of flashInfoItems">
+                    <span class="flash-info-category">{{ item.category }}</span>
+                    <span class="flash-info-separator">•</span>
+                    <span class="flash-info-message">{{ item.text }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </header>
 
         <!-- NAVBAR -->
@@ -61,20 +86,20 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
           </div>
         </nav>
 
-        <main class="main-content">
-          <div class="floating-shapes">
-            <div class="shape shape-1">⚡</div>
-            <div class="shape shape-2">🔧</div>
-            <div class="shape shape-3">📊</div>
-            <div class="shape shape-4">🚀</div>
-            <div class="shape shape-5">💡</div>
-            <div class="shape shape-6">🔒</div>
-          </div>
+         <main class="main-content">
+           <div class="floating-shapes">
+             <div class="shape shape-1">⚡</div>
+             <div class="shape shape-2">🔧</div>
+             <div class="shape shape-3">📊</div>
+             <div class="shape shape-4">🚀</div>
+             <div class="shape shape-5">💡</div>
+             <div class="shape shape-6">🔒</div>
+           </div>
           <div class="container">
             <div class="dashboard-header" style="max-width: 65%; margin: 0 auto; margin-top: 50px; margin-bottom: -20px; padding: 2rem 2rem; background: linear-gradient(135deg, #1e4d7b 0%, #2d5a8a 100%); border-top: 1px solid #1e293b;">
               <div class="welcome-section" style="margin-top: 20px;">
-                <h1 class="animated-title" style="margin-left: 50px;">
-                  <span class="title-text">Bienvenue sur </span><span class="title-text-3d" style="margin-left: 10px;"> SUMIO DGSI</span>
+                <h1 class="animated-title" style="margin-left: 140px; text-align: center;">
+                  <span class="title-text">Bienvenue sur </span><span class="title-text-3d" style="margin-left: 10px; "> SUMIO DGSI</span>
                 </h1>
                 <p class="animated-subtitle">
                   <span class="word" style="animation-delay: 0.8s">Notre</span>
@@ -548,12 +573,150 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
       backdrop-filter: blur(10px);
     }
 
+    /* Flash Info Section */
+    .flash-info-section {
+      background: rgba(255, 255, 255, 0.95);
+      color: #1f2937;
+      padding: 0.4rem 0;
+      overflow: hidden;
+      position: relative;
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
+      border-bottom: 4px solid #f97316;
+    }
+
+    .flash-info-container {
+      max-width: 1400px;
+      margin-left: -10 px;
+      margin: 6px;
+      padding: 0 ;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .flash-info-label {
+      background: linear-gradient(135deg, #1e4d7b 0%, #2d5a8a 100%);
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .flash-info-arrow {
+      color: #f97316;
+      font-size: 1rem;
+    }
+
+    .flash-info-scroll {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .flash-info-content {
+      display: flex;
+      gap: 3rem;
+      animation: scrollLeft 20s linear infinite;
+      white-space: nowrap;
+      align-items: center;
+    }
+
+    .flash-info-content:hover {
+      animation-play-state: paused;
+    }
+
+    .flash-info-text {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: #2d3748;
+      line-height: 1.4;
+      transition: all 0.3s ease;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .flash-info-text:hover {
+      color: #f97316;
+      background-color: rgba(249, 115, 22, 0.1);
+    }
+
+    .flash-info-category {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #f97316;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 0.5rem;
+    }
+
+    .flash-info-separator {
+      color: #9ca3af;
+      margin: 0 0.25rem;
+    }
+
+    .flash-info-message {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #2d3748;
+      line-height: 1.4;
+    }
+
+    .flash-info-text::before {
+      content: '';
+      position: absolute;
+      left: -1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 4px;
+      background-color: #f97316;
+      border-radius: 50%;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .flash-info-text:hover::before {
+      opacity: 1;
+      left: -1rem;
+    }
+
+    @keyframes scrollLeft {
+      0% {
+        transform: translateX(100%);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    /* Smooth fade-in effect for the flash info section */
+    .flash-info-section {
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     /* HEADER OFFICIEL */
     .official-header {
       background: linear-gradient(135deg, var(--blue) 0%, #2d5a8a 100%);
       color: white;
-      padding: 1.5rem 0;
-      border-bottom: 4px solid var(--primary);
+      padding: 1.5rem 0 0 0;
       box-shadow: 0 4px 20px rgba(0,0,0,.15);
     }
 
@@ -2615,6 +2778,11 @@ import { Contrat, FichePrestation } from '../../../../core/models/business.model
   `]
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+  // Flash Info items
+  flashInfoItems = [
+    { category: 'Nouveauté', text: 'SUMIO DGSI, la nouvelle plateforme de suivi des prestations. A votre première connexion, veuillez réinitialiser votre mot de passe pour plus de sécurité' }
+  ];
+
   stats = {
     totalUsers: 0,
     totalContrats: 0,

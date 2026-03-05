@@ -855,7 +855,7 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
       left: 0;
       right: 0;
       height: 3px;
-      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #f59e0b);
+      background: linear-gradient(90deg, rgb(28, 82, 118), #8b5cf6, #f59e0b);
       border-radius: 20px 20px 0 0;
     }
 
@@ -867,9 +867,9 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
     }
 
-    /* Specific card themes */
-    .total-items-card::before { background: linear-gradient(90deg, #3b82f6, #1d4ed8); }
-    .active-lots-card::before { background: linear-gradient(90deg, #10b981, #059669); }
+     /* Specific card themes */
+     .total-items-card::before { background: linear-gradient(90deg, rgb(28, 82, 118), rgb(18, 56, 80)); }
+     .active-lots-card::before { background: linear-gradient(90deg, #10b981, #059669); }
     .total-value-card::before { background: linear-gradient(90deg, #f59e0b, #d97706); }
     .prestations-card::before { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
 
@@ -913,7 +913,7 @@ import { LotManagerComponent } from '../lot-manager/lot-manager.component';
     }
 
     /* Color the icons (not the circle) to match the previous theme colors */
-    .total-items-card .stat-icon { color: #1d4ed8; }
+    .total-items-card .stat-icon { color: rgb(28, 82, 118); }
     .active-lots-card .stat-icon { color: #059669; }
     .total-value-card .stat-icon { color: #d97706; }
     .prestations-card .stat-icon { color: #7c3aed; }

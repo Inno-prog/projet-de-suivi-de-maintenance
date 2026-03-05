@@ -118,8 +118,8 @@ import { CommonModule } from '@angular/common';
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- Feature 1 -->
             <div class="text-center">
-              <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-xl mb-4">
-                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="inline-flex items-center justify-center w-16 h-16 bg-[rgba(28,82,118,0.1)] rounded-xl mb-4">
+                <svg class="w-8 h-8 text-[rgb(28,82,118)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                 </svg>
               </div>
@@ -160,7 +160,7 @@ import { CommonModule } from '@angular/common';
     }
 
     /* Custom gradient backgrounds for quarters */
-    .bg-blue-500 {
+    .bg-[rgba(28,82,118,0.1)]0 {
       background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
     }
 
@@ -225,14 +225,14 @@ export class OrdreCommandeMainComponent {
       numero: 1,
       nom: 'Premier trimestre',
       mois: 'Janvier - Mars',
-      cardBorder: 'border-blue-200 hover:border-blue-300',
-      accentBar: 'bg-blue-500',
-      iconBg: 'bg-blue-600',
-      badgeBg: 'bg-blue-100',
-      badgeText: 'text-blue-800',
-      buttonBg: 'bg-blue-600',
-      buttonHover: 'hover:bg-blue-700',
-      arrowColor: 'text-blue-600'
+      cardBorder: 'border-[rgba(28,82,118,0.2)] hover:border-[rgba(28,82,118,0.3)]',
+      accentBar: 'bg-primary-50',
+      iconBg: 'bg-[rgb(28,82,118)]',
+      badgeBg: 'bg-[rgba(28,82,118,0.1)]',
+      badgeText: 'text-white',
+      buttonBg: 'bg-[rgb(28,82,118)]',
+      buttonHover: 'hover:bg-[rgb(28,82,118)]',
+      arrowColor: 'text-[rgb(28,82,118)]'
     },
     {
       numero: 2,

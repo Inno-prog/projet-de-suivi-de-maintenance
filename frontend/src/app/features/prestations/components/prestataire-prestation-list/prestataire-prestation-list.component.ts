@@ -25,7 +25,7 @@ import { PrestationFormComponent } from '../prestation-form/prestation-form.comp
       <!-- HEADER -->
       <div class="flex items-center justify-center mb-10">
         <h1 class="text-3xl font-extrabold text-gray-900 flex items-center gap-3">
-          <svg class="w-7 h-7 text-blue-600" viewBox="0 0 24 24" fill="none">
+          <svg class="w-7 h-7 text-[rgb(28,82,118)]" viewBox="0 0 24 24" fill="none">
             <path d="M3 7V5a2 2 0 0 1 2-2h2l2-2h4l2 2h2a2 2 0 0 1 2 2v2l-3 6H6l-3-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M16 21H8a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
@@ -38,9 +38,9 @@ import { PrestationFormComponent } from '../prestation-form/prestation-form.comp
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex justify-between items-center hover:shadow-md transition">
           <div>
             <p class="text-sm text-gray-500">Total Prestations</p>
-            <h3 class="text-3xl font-bold text-blue-600">{{ displayItems.length }}</h3>
+            <h3 class="text-3xl font-bold text-[rgb(28,82,118)]">{{ displayItems.length }}</h3>
           </div>
-          <i class="fas fa-clipboard-list text-3xl text-blue-500"></i>
+          <i class="fas fa-clipboard-list text-3xl text-[rgb(28,82,118)]"></i>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex justify-between items-center hover:shadow-md transition">
@@ -74,7 +74,7 @@ import { PrestationFormComponent } from '../prestation-form/prestation-form.comp
       <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
         <div class="flex items-center justify-between mb-6">
           <h2 class="text-2xl font-bold text-gray-900">Liste des Prestations</h2>
-          <button class="flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition" (click)="creerNouvellePrestation()">
+          <button class="flex items-center gap-2 bg-[rgb(28,82,118)] text-white px-5 py-2 rounded-lg shadow hover:bg-[rgb(28,82,118)] transition" (click)="creerNouvellePrestation()">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
             </svg>
@@ -90,14 +90,14 @@ import { PrestationFormComponent } from '../prestation-form/prestation-form.comp
               [(ngModel)]="searchTerm"
               (input)="onSearch()"
               placeholder="Rechercher une prestation..."
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[rgb(28,82,118)]"
             />
           </div>
           <div class="md:w-64">
             <select
               [(ngModel)]="selectedStatutValidation"
               (change)="onFilterChange()"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-[rgb(28,82,118)]"
             >
               <option value="">Tous les statuts</option>
               <option value="BROUILLON">Brouillon</option>
@@ -116,7 +116,7 @@ import { PrestationFormComponent } from '../prestation-form/prestation-form.comp
         </div>
 
         <div *ngIf="loading; else cardsContent" class="flex flex-col items-center justify-center py-16 text-gray-600">
-          <div class="loader mb-4 border-4 border-blue-300 border-t-transparent rounded-full w-12 h-12 animate-spin"></div>
+          <div class="loader mb-4 border-4 border-[rgba(28,82,118,0.3)] border-t-transparent rounded-full w-12 h-12 animate-spin"></div>
           <p>Chargement de vos prestations...</p>
         </div>
 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import com.dgsi.maintenance.dto.PaginationResponse;
 import com.dgsi.maintenance.entity.FichePrestation;
+import com.dgsi.maintenance.entity.Item;
 import com.dgsi.maintenance.entity.Prestation;
 import com.dgsi.maintenance.entity.StatutFiche;
 import com.dgsi.maintenance.repository.FichePrestationRepository;
@@ -14,6 +15,7 @@ import com.dgsi.maintenance.service.PrestationPdfService;
 import com.dgsi.maintenance.service.PrestationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -497,6 +499,32 @@ public class PrestationController {
         return prestationRepository.searchByKeyword(keyword);
     }
     
+    @GetMapping("/test-prestation")
+    public ResponseEntity<?> getTestPrestation() {
+        try {
+            // Find NetCom Africa's prestation
+            List<Prestation> prestations = prestationRepository.findByNomPrestataire("NetCom Africa");
+            if (prestations.isEmpty()) {
+                return ResponseEntity.ok("No NetCom Africa prestation found");
+            }
+            
+            Prestation prestation = prestations.get(0);
+            System.out.println("=== Prestation Details ===");
+            System.out.println("ID: " + prestation.getId());
+            System.out.println("Nom Prestataire: " + prestation.getNomPrestataire());
+            System.out.println("Items Utilises: " + prestation.getItemsUtilises().size() + " items");
+            for (Item item : prestation.getItemsUtilises()) {
+                System.out.println("  Item ID: " + item.getId() + ", Nom: " + item.getNomItem());
+            }
+            System.out.println("Item Quantities: " + prestation.getItemQuantities());
+            
+            return ResponseEntity.ok(prestation);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error: " + e.getMessage());
+        }
+    }
+
     @GetMapping("/count")
     @PreAuthorize("hasRole('ADMINISTRATEUR') or hasRole('AGENT_DGSI')")
     @Transactional(readOnly = true)

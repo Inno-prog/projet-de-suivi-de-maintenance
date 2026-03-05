@@ -51,7 +51,7 @@ import { AuthService } from '../../../../core/services/auth.service';
         </div>
 
         <!-- Sélection de période -->
-        <div class="bg-blue-50 p-4 rounded-lg">
+        <div class="bg-[rgba(28,82,118,0.1)] p-4 rounded-lg">
           <h4 class="text-lg font-semibold text-gray-700 mb-3">Sélection de la période</h4>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

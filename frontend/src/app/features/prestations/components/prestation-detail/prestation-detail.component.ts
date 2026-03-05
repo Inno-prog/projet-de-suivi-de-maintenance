@@ -665,14 +665,79 @@ export class PrestationDetailComponent implements OnInit, OnDestroy {
   getItemsArray(): { nom: string; quantite: number }[] {
     if (!this.prestation) return [];
     const p = this.prestation as any;
-    const itemsFromPrestation = p.itemsUtilises;
-    if (itemsFromPrestation && Array.isArray(itemsFromPrestation) && itemsFromPrestation.length > 0) {
-      return itemsFromPrestation.map((item: any) => {
-        const nom = item.nomItem || item.nom || item.nom_item || 'Item';
-        const quantite = item.quantite || 1;
-        return { nom, quantite };
-      });
+    
+    // Parse item quantities from JSON string (stored as {"itemId": quantity})
+    let itemQuantitiesMap: { [key: string]: number } = {};
+    if (p.itemQuantities) {
+      try {
+        itemQuantitiesMap = JSON.parse(p.itemQuantities);
+      } catch (e) {
+        console.error('Error parsing item quantities:', e);
+      }
     }
+    
+    // If we have itemQuantities, use them directly to build the items array
+    // This is the most reliable source when itemsUtilises might not be available
+    if (Object.keys(itemQuantitiesMap).length > 0) {
+      const items: { nom: string; quantite: number }[] = [];
+      
+      // First try to get items from itemsUtilises if available
+      const itemsFromPrestation = p.itemsUtilises;
+      if (itemsFromPrestation && Array.isArray(itemsFromPrestation) && itemsFromPrestation.length > 0) {
+        // We have both items and quantities - match them up
+        itemsFromPrestation.forEach((item: any) => {
+          const itemId = item.id;
+          const nom = item.nomItem || item.nom || item.nom_item || 'Item';
+          // Try string key first (most common from JSON), then number key
+          let quantite = itemQuantitiesMap[String(itemId)] || itemQuantitiesMap[itemId] || 1;
+          items.push({ nom, quantite });
+        });
+      } else {
+        // We only have quantities, but no items - need to fetch item names
+        // This is a fallback scenario - use the quantity map keys as item IDs
+        // and store them as "Item {id}" - in a real app, you'd want to fetch item names
+        const nomPrestationValue = this.prestation?.nomPrestation || '';
+        
+        Object.entries(itemQuantitiesMap).forEach(([itemId, quantite]) => {
+          // If nomPrestation contains item names, try to use them
+          let nom = `Item ${itemId}`;
+          
+          if (nomPrestationValue) {
+            // Try to extract item names from nomPrestation
+            try {
+              const parsed = JSON.parse(nomPrestationValue);
+              if (Array.isArray(parsed)) {
+                // Match by index
+                const index = parseInt(itemId) - 1;
+                if (index >= 0 && index < parsed.length) {
+                  nom = parsed[index];
+                }
+              }
+            } catch (e) {
+              // Not JSON, try comma-separated
+              if (nomPrestationValue.includes(',')) {
+                const names = nomPrestationValue.split(',').map((n: string) => n.trim());
+                const index = parseInt(itemId) - 1;
+                if (index >= 0 && index < names.length) {
+                  nom = names[index];
+                }
+              } else {
+                // Single item
+                nom = nomPrestationValue.trim();
+              }
+            }
+          }
+          
+          items.push({ nom, quantite: quantite as number });
+        });
+      }
+      
+      if (items.length > 0) {
+        return items;
+      }
+    }
+    
+    // Fallback: parse from nomPrestation (for older data without itemQuantities)
     if (this.prestation.nomPrestation && typeof this.prestation.nomPrestation === 'string') {
       try {
         const parsed = JSON.parse(this.prestation.nomPrestation);
@@ -680,6 +745,7 @@ export class PrestationDetailComponent implements OnInit, OnDestroy {
           return parsed.map((nom: string) => ({ nom, quantite: 1 }));
         }
       } catch (e) {}
+      
       if (this.prestation.nomPrestation.includes(',')) {
         return this.prestation.nomPrestation.split(',').map((nom: string) => ({
           nom: nom.trim(),
@@ -689,6 +755,7 @@ export class PrestationDetailComponent implements OnInit, OnDestroy {
         return [{ nom: this.prestation.nomPrestation.trim(), quantite: 1 }];
       }
     }
+    
     return [];
   }
 

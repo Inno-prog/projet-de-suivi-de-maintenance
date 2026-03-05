@@ -427,11 +427,24 @@ public class PrestationPdfService {
         
         // Try itemsUtilises first
         if (prestation.getItemsUtilises() != null && !prestation.getItemsUtilises().isEmpty()) {
+            // Parse item quantities from JSON string
+            java.util.Map<String, Integer> itemQuantitiesMap = new java.util.HashMap<>();
+            if (prestation.getItemQuantities() != null && !prestation.getItemQuantities().isEmpty()) {
+                try {
+                    itemQuantitiesMap = new com.fasterxml.jackson.databind.ObjectMapper().readValue(prestation.getItemQuantities(), java.util.Map.class);
+                } catch (Exception e) {
+                    log.warn("Erreur lors de la parse des quantités d'items: {}", e.getMessage());
+                }
+            }
+            
             for (com.dgsi.maintenance.entity.Item item : prestation.getItemsUtilises()) {
                 String nomItem = item.getNomItem() != null ? item.getNomItem() : "Item";
                 Float prix = item.getPrix();
                 String prixStr = prix != null ? String.valueOf(prix) : "0";
-                items.add(new String[]{nomItem, prixStr, "1"});
+                // Get quantity from itemQuantitiesMap, default to 1 if not found
+                Integer quantity = itemQuantitiesMap.get(String.valueOf(item.getId()));
+                String quantiteStr = quantity != null ? String.valueOf(quantity) : "1";
+                items.add(new String[]{nomItem, prixStr, quantiteStr});
             }
             return items;
         }

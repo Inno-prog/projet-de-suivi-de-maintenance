@@ -1576,7 +1576,9 @@ export class FicheListComponent implements OnInit {
       // If itemsCouverts is an array, check if it contains objects with "nom" property
       return fiche.itemsCouverts.map(item => {
         if (typeof item === 'object' && item !== null && 'nom' in item) {
-          return item.nom; // Extract the "nom" property
+          const nom = item.nom;
+          const quantite = item.quantite || 1;
+          return `${nom} (${quantite})`; // Include quantity
         }
         return String(item);
       });
@@ -1584,11 +1586,13 @@ export class FicheListComponent implements OnInit {
     if (typeof fiche.itemsCouverts === 'string') {
       try {
         const parsed = JSON.parse(fiche.itemsCouverts);
-        // If parsed is an array, extract item names
+        // If parsed is an array, extract item names with quantities
         if (Array.isArray(parsed)) {
           return parsed.map(item => {
             if (typeof item === 'object' && item !== null && 'nom' in item) {
-              return item.nom; // Extract the "nom" property
+              const nom = item.nom;
+              const quantite = item.quantite || 1;
+              return `${nom} (${quantite})`; // Include quantity
             }
             return String(item);
           });
@@ -1630,7 +1634,35 @@ export class FicheListComponent implements OnInit {
       return ficheAny.montantIntervention;
     }
 
-    // Try to calculate from item price and quantity
+    // Try to calculate from itemsCouverts (JSON with prix and quantite)
+    if (fiche.itemsCouverts) {
+      try {
+        let itemsArray = [];
+        if (typeof fiche.itemsCouverts === 'string') {
+          itemsArray = JSON.parse(fiche.itemsCouverts);
+        } else if (Array.isArray(fiche.itemsCouverts)) {
+          itemsArray = fiche.itemsCouverts;
+        }
+
+        if (Array.isArray(itemsArray) && itemsArray.length > 0) {
+          let total = 0;
+          for (const item of itemsArray) {
+            if (typeof item === 'object' && item !== null && 'prix' in item && 'quantite' in item) {
+              const prix = Number(item.prix) || 0;
+              const quantite = Number(item.quantite) || 1;
+              total += prix * quantite;
+            }
+          }
+          if (total > 0) {
+            return total;
+          }
+        }
+      } catch {
+        // Ignore errors parsing itemsCouverts
+      }
+    }
+
+    // Try to calculate from item price and quantity (fallback)
     if (ficheAny.item && ficheAny.item.prix && fiche.quantite) {
       return ficheAny.item.prix * fiche.quantite;
     }

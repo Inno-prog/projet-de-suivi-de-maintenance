@@ -60,8 +60,8 @@ button[title="Modifier"],
 button[title="Editer"],
 button[title="Éditer"] {
   background-color: transparent !important;
-  color: #1e40af !important; /* primary blue for edit */
-  border: 1px solid rgba(99,102,241,0.25) !important; /* light blue border */
+  color: rgb(28, 82, 118) !important; /* sidebar blue for edit */
+  border: 1px solid rgba(28,82,118,0.25) !important; /* light sidebar blue border */
   box-shadow: none !important;
 }
 
@@ -72,7 +72,7 @@ button.edit-btn:hover,
 button[title="Modifier"]:hover,
 button[title="Editer"]:hover,
 button[title="Éditer"]:hover {
-  background-color: rgba(30,64,175,0.06) !important; /* light blue tint */
+  background-color: rgba(28,82,118,0.06) !important; /* light sidebar blue tint */
 }
 
 /* Ensure icons inside outlined buttons inherit the color */
@@ -300,11 +300,11 @@ body {
 :root {
   --app-navbar-height: 64px;
   --app-overlay-gap: 32px;
-  --primary: #f97316;
-  --primary-dark: #ea580c;
+  --primary: rgb(28, 82, 118);
+  --primary-dark: rgb(18, 56, 80);
   --secondary: #475569;
   --secondary-dark: #334155;
-  --accent: #3b82f6;
+  --accent: rgb(28, 82, 118);
   --success: #10b981;
   --warning: #f59e0b;
   --error: #ef4444;
@@ -533,15 +533,15 @@ p {
   color: var(--primary);
   border: 1px solid var(--primary);
   box-shadow: 
-    0 4px 12px rgba(249, 115, 22, 0.3),
+    0 4px 12px rgba(28, 82, 118, 0.3),
     0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: rgba(249, 115, 22, 0.1);
+  background: rgba(28, 82, 118, 0.1);
   transform: translateY(-1px);
   box-shadow: 
-    0 6px 16px rgba(249, 115, 22, 0.4),
+    0 6px 16px rgba(28, 82, 118, 0.4),
     0 4px 8px rgba(0, 0, 0, 0.15);
 }
 

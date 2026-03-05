@@ -4,14 +4,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import com.dgsi.maintenance.entity.FichePrestation;
+import com.dgsi.maintenance.entity.FichePrestationItem;
+import com.dgsi.maintenance.entity.FichePrestationItemId;
 import com.dgsi.maintenance.entity.Item;
 import com.dgsi.maintenance.entity.OrdreCommande;
 import com.dgsi.maintenance.entity.Prestation;
 import com.dgsi.maintenance.entity.StatutFiche;
-import com.dgsi.maintenance.entity.FichePrestationItem;
-import com.dgsi.maintenance.entity.FichePrestationItemId;
-import com.dgsi.maintenance.repository.FichePrestationRepository;
 import com.dgsi.maintenance.repository.FichePrestationItemRepository;
+import com.dgsi.maintenance.repository.FichePrestationRepository;
 import com.dgsi.maintenance.repository.ItemRepository;
 import com.dgsi.maintenance.repository.PrestationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,12 +150,12 @@ public class PrestationService {
                     verifierEtatBudgetApresDeduction(savedPrestation.getNomPrestataire());
                 }
 
-                // CORRECTION : Créer automatiquement une fiche si la prestation a des items
-                if (savedPrestation.getItemsUtilises() != null && !savedPrestation.getItemsUtilises().isEmpty()) {
-                    log.info("📄 Création automatique de la fiche pour prestation avec items...");
-                    FichePrestation fiche = creerFichePourPrestation(savedPrestation);
-                    fichePrestationRepository.save(fiche);
-                    log.info("✅ Fiche créée automatiquement pour prestation ID: {}", savedPrestation.getId());
+                 // CORRECTION : Créer automatiquement une fiche si la prestation a des items
+                 if (savedPrestation.getItemsUtilises() != null && !savedPrestation.getItemsUtilises().isEmpty()) {
+                     log.info("📄 Création automatique de la fiche pour prestation avec items...");
+                     FichePrestation fiche = creerFichePourPrestation(savedPrestation, request.getItemQuantities());
+                     fichePrestationRepository.save(fiche);
+                     log.info("✅ Fiche créée automatiquement pour prestation ID: {}", savedPrestation.getId());
                     
                     // Envoyer notification aux admins si la prestation est soumise (pas en brouillon)
                     if (savedPrestation.getStatutValidation() != null && 
@@ -244,10 +244,20 @@ public class PrestationService {
         // Items will be set in the transaction to ensure they are managed
         prestation.setItemsUtilises(new HashSet<>());
 
-        // Valeurs par défaut
-        prestation.setNbPrestRealise(0);
+         // Valeurs par défaut
+         prestation.setNbPrestRealise(0);
 
-        return prestation;
+         // Set item quantities as JSON string
+         if (request.getItemQuantities() != null && !request.getItemQuantities().isEmpty()) {
+             try {
+                 com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+                 prestation.setItemQuantities(mapper.writeValueAsString(request.getItemQuantities()));
+             } catch (Exception e) {
+                 log.warn("⚠️ Erreur lors de la conversion des quantités d'items en JSON: {}", e.getMessage());
+             }
+         }
+
+         return prestation;
     }
 
     /**
@@ -781,13 +791,13 @@ public class PrestationService {
     }
 
     /**
-     * Récupération avec gestion d'erreur
+     * Récupération avec gestion d'erreur - utilise findAllWithItems pour éviter LazyInitializationException
      */
     @Transactional(readOnly = true)
     public List<Prestation> getAllPrestations() {
         try {
-            log.info("Fetching all prestations from database");
-            List<Prestation> prestations = prestationRepository.findAll();
+            log.info("Fetching all prestations from database with items");
+            List<Prestation> prestations = prestationRepository.findAllActiveWithItems();
             log.info("Found " + prestations.size() + " prestations in database");
             return prestations;
         } catch (Exception e) {
@@ -920,7 +930,7 @@ public class PrestationService {
     /**
      * Crée automatiquement une fiche de prestation pour validation administrative
      */
-    public FichePrestation creerFichePourPrestation(Prestation prestation) {
+     public FichePrestation creerFichePourPrestation(Prestation prestation, java.util.Map<Long, Integer> itemQuantities) {
         FichePrestation fiche = new FichePrestation();
 
         // CORRECTION: S'assurer que la prestation a un ID avant de créer la fiche
@@ -945,6 +955,12 @@ public class PrestationService {
                     java.util.Map<String, Object> itemInfo = new java.util.HashMap<>();
                     itemInfo.put("nom", item.getNomItem());
                     itemInfo.put("prix", item.getPrix());
+                    // Ajouter la quantité de l'item
+                    if (itemQuantities != null && itemQuantities.containsKey(item.getId())) {
+                        itemInfo.put("quantite", itemQuantities.get(item.getId()));
+                    } else {
+                        itemInfo.put("quantite", 1); // Défaut si pas de quantité spécifiée
+                    }
                     itemsWithPrices.add(itemInfo);
                 }
                 String itemsCouverts = mapper.writeValueAsString(itemsWithPrices);
@@ -969,6 +985,12 @@ public class PrestationService {
                 fichePrestationItem.setId(new FichePrestationItemId(fiche.getId(), item.getId()));
                 fichePrestationItem.setFichePrestation(fiche);
                 fichePrestationItem.setItem(item);
+                // Ajouter la quantité à la relation fiche-prestation-item
+                if (itemQuantities != null && itemQuantities.containsKey(item.getId())) {
+                    fichePrestationItem.setQuantiteUtilisee(itemQuantities.get(item.getId()));
+                } else {
+                    fichePrestationItem.setQuantiteUtilisee(1); // Défaut si pas de quantité spécifiée
+                }
                 fichePrestationItemRepository.save(fichePrestationItem);
             }
             log.info("✅ Items liés à la fiche prestation ID: {}", fiche.getId());
@@ -981,8 +1003,35 @@ public class PrestationService {
         // Statut initial : en attente de validation
         fiche.setStatut(StatutFiche.EN_ATTENTE);
 
-        // Quantité réalisée : 1 par défaut (une prestation = une quantité de 1)
-        fiche.setQuantite(1);
+        // Calculer la quantité totale des items utilisés
+        int totalQuantite = 0;
+        if (prestation.getItemsUtilises() != null && !prestation.getItemsUtilises().isEmpty()) {
+            for (Item item : prestation.getItemsUtilises()) {
+                if (itemQuantities != null && itemQuantities.containsKey(item.getId())) {
+                    totalQuantite += itemQuantities.get(item.getId());
+                } else {
+                    totalQuantite += 1; // Défaut si pas de quantité spécifiée
+                }
+            }
+        }
+        fiche.setQuantite(totalQuantite);
+
+        // Calculer le montant total de la fiche
+        double montantTotal = 0.0;
+        if (prestation.getItemsUtilises() != null && !prestation.getItemsUtilises().isEmpty()) {
+            for (Item item : prestation.getItemsUtilises()) {
+                int quantite = itemQuantities != null && itemQuantities.containsKey(item.getId()) ?
+                    itemQuantities.get(item.getId()) : 1;
+                double prixUnitaire = item.getPrix() != null ? item.getPrix() : 0.0;
+                montantTotal += quantite * prixUnitaire;
+            }
+        }
+        fiche.setMontantTotal(montantTotal);
+
+        // Calculer le prix unitaire moyen (pour compatibilité)
+        if (totalQuantite > 0) {
+            fiche.setPrixUnitaire(montantTotal / totalQuantite);
+        }
 
         // Commentaire initial
         fiche.setCommentaire("Fiche créée automatiquement pour la prestation " + prestation.getNomPrestation());
@@ -991,8 +1040,8 @@ public class PrestationService {
         fiche.setStatutIntervention(prestation.getStatutIntervention());
 
         // Log pour debug avec vérification
-        log.info("Création fiche prestation: idPrestation={}, statut={}, prestationId={}, nomStructure={}",
-            fiche.getIdPrestation(), fiche.getStatut(), prestation.getId(), fiche.getNomStructure());
+        log.info("Création fiche prestation: idPrestation={}, statut={}, prestationId={}, nomStructure={}, quantite={}, montantTotal={}",
+            fiche.getIdPrestation(), fiche.getStatut(), prestation.getId(), fiche.getNomStructure(), fiche.getQuantite(), fiche.getMontantTotal());
 
         return fichePrestationRepository.save(fiche);
     }
@@ -1166,8 +1215,8 @@ public class PrestationService {
         try {
             log.info("🔢 Comptage de toutes les prestations non supprimées");
 
-            // Compter toutes les prestations qui ne sont pas marquées comme supprimées
-            List<Prestation> allPrestations = prestationRepository.findAll();
+            // Compter toutes les prestations qui ne sont pas marquées comme supprimées - utilise findAllActiveWithItems pour éviter LazyInitializationException
+            List<Prestation> allPrestations = prestationRepository.findAllActiveWithItems();
             long count = allPrestations.stream()
                 .filter(p -> p.getDeleted() == null || !p.getDeleted())
                 .count();

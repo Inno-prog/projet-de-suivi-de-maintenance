@@ -73,7 +73,7 @@ public interface PrestationRepository extends JpaRepository<Prestation, Long> {
     @Query("SELECT p FROM Prestation p LEFT JOIN FETCH p.itemsUtilises WHERE p.id = :id")
     Optional<Prestation> findByIdForPdf(@Param("id") Long id);
 
-    @Query("SELECT p FROM Prestation p WHERE p.statutValidation IS NULL OR p.statutValidation != 'BROUILLON'")
+    @Query("SELECT p FROM Prestation p LEFT JOIN FETCH p.itemsUtilises WHERE p.statutValidation IS NULL OR p.statutValidation != 'BROUILLON'")
     Page<Prestation> findAllForAdminDashboard(Pageable pageable);
 
     @Query("SELECT COUNT(p) FROM Prestation p WHERE p.statutValidation IS NULL OR p.statutValidation != 'BROUILLON'")
